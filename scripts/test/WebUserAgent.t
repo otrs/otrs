@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -51,7 +51,7 @@ my @Tests = (
     },
     {
         Name        => 'GET - http - invalid proxy - Test ' . $TestNumber++,
-        URL         => "http://ftp.otrs.org/pub/otrs/packages/otrs.xml",
+        URL         => "http://ftp.ligero.org/pub/ligero/packages/ligero.xml",
         Timeout     => $TimeOut,
         Proxy       => 'http://NoProxy',
         Success     => 0,
@@ -59,7 +59,7 @@ my @Tests = (
     },
     {
         Name        => 'GET - http - ftp proxy - Test ' . $TestNumber++,
-        URL         => "http://ftp.otrs.org/pub/otrs/packages/otrs.xml",
+        URL         => "http://ftp.ligero.org/pub/ligero/packages/ligero.xml",
         Timeout     => $TimeOut,
         Proxy       => 'ftp://NoProxy',
         Success     => 0,
@@ -67,14 +67,14 @@ my @Tests = (
     },
     {
         Name    => 'GET - http - long timeout - Test ' . $TestNumber++,
-        URL     => "http://ftp.otrs.org/pub/otrs/packages/otrs.xml",
+        URL     => "http://ftp.ligero.org/pub/ligero/packages/ligero.xml",
         Timeout => 100,
         Proxy   => $Proxy,
         Success => 1,
     },
     {
         Name    => 'GET - http - Header ' . $TestNumber++,
-        URL     => "http://ftp.otrs.org/pub/otrs/packages/otrs.xml",
+        URL     => "http://ftp.ligero.org/pub/ligero/packages/ligero.xml",
         Timeout => 100,
         Proxy   => $Proxy,
         Success => 1,
@@ -86,7 +86,7 @@ my @Tests = (
     },
     {
         Name        => 'GET - http - Credentials ' . $TestNumber++,
-        URL         => "https://makalu.otrs.com/unittest/HTTPBasicAuth/",
+        URL         => "https://makalu.ligero.com/unittest/HTTPBasicAuth/",
         Timeout     => 100,
         Proxy       => $Proxy,
         Success     => 1,
@@ -94,12 +94,12 @@ my @Tests = (
             User     => 'guest',
             Password => 'guest',
             Realm    => 'OTRS UnitTest',
-            Location => 'makalu.otrs.com:443',
+            Location => 'makalu.ligero.com:443',
         },
     },
     {
         Name        => 'GET - http - MissingCredentials ' . $TestNumber++,
-        URL         => "https://makalu.otrs.com/unittest/HTTPBasicAuth/",
+        URL         => "https://makalu.ligero.com/unittest/HTTPBasicAuth/",
         Timeout     => 100,
         Proxy       => $Proxy,
         Success     => 0,
@@ -107,7 +107,7 @@ my @Tests = (
     },
     {
         Name        => 'GET - http - IncompleteCredentials ' . $TestNumber++,
-        URL         => "https://makalu.otrs.com/unittest/HTTPBasicAuth/",
+        URL         => "https://makalu.ligero.com/unittest/HTTPBasicAuth/",
         Timeout     => 100,
         Proxy       => $Proxy,
         Credentials => {

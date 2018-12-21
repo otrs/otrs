@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -63,7 +63,7 @@ $Selenium->RunTest(
         # Create test dynamic field.
         my $RandomNumber     = $Helper->GetRandomNumber();
         my $DynamicFieldName = 'LinkPreview';
-        my $DynamicFieldLink = "http://bugs.otrs.org/show_bug.cgi?id=[% Data.TicketID | uri %]";
+        my $DynamicFieldLink = "http://bugs.ligero.org/show_bug.cgi?id=[% Data.TicketID | uri %]";
         my $DynamicFieldID   = $DynamicFieldObject->DynamicFieldAdd(
             Name       => $DynamicFieldName,
             Label      => $DynamicFieldName,
@@ -144,7 +144,7 @@ $Selenium->RunTest(
         );
 
         # Check dynamic field link.
-        $DynamicFieldLink = "http://bugs.otrs.org/show_bug.cgi?id=$TicketID";
+        $DynamicFieldLink = "http://bugs.ligero.org/show_bug.cgi?id=$TicketID";
         $Self->Is(
             $Selenium->execute_script(
                 "return \$('.SidebarColumn a.DynamicFieldLink').attr('href');"

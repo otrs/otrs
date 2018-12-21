@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -262,8 +262,8 @@ Return example:
 
         #System Address Data
         'ID'              => '1',
-        'Name'            => 'otrs@localhost',
-        'Address'         => 'otrs@localhost',  #Compatibility with OTRS 2.1
+        'Name'            => 'ligero@localhost',
+        'Address'         => 'ligero@localhost',  #Compatibility with OTRS 2.1
         'Realname'        => 'OTRS System',
         'Comment'         => 'Standard Address.',
         'ValidID'         => '1',
@@ -590,7 +590,7 @@ sub _NameExistsCheck {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

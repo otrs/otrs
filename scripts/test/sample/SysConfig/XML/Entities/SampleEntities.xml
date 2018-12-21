@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<otrs_config version="2.0" init="Application">
+<ligero_config version="2.0" init="Application">
     <Setting Name="Ticket::Frontend::AgentTicketPriority###StateDefault" Required="0" Valid="1">
         <Description Translatable="1">Entity test.</Description>
         <Navigation>Frontend::Agent::Ticket::ViewPriority</Navigation>
@@ -75,4 +75,4 @@
             </Array>
         </Value>
     </Setting>
-</otrs_config>
+</ligero_config>

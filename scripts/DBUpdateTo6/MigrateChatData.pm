@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -32,7 +32,7 @@ sub Run {
     my $Verbose  = $Param{CommandlineOptions}->{Verbose} || 0;
 
     my $TableExists = $Self->TableExists(
-        Table => 'article_data_otrs_chat',
+        Table => 'article_data_ligero_chat',
     );
 
     return 1 if !$TableExists;
@@ -72,7 +72,7 @@ sub Run {
 
     # Get amount of article entries
     $DBObject->Prepare(
-        SQL => "SELECT COUNT(*) FROM article_data_otrs_chat",
+        SQL => "SELECT COUNT(*) FROM article_data_ligero_chat",
     );
     while ( my @Row = $DBObject->FetchrowArray() ) {
         $ChatCount = $Row[0] || 0;
@@ -260,13 +260,13 @@ sub _MigrateData {
         %DatabaseSQL = (
             Start     => 'INSERT ALL ',
             FirstLine => '
-                INTO article_data_otrs_chat (
+                INTO article_data_ligero_chat (
                     article_id,chat_participant_id,chat_participant_name,
                     chat_participant_type,message_text,system_generated,create_time
                 )
                 VALUES ( ?, ?, ?, ?, ?, ?, ? ) ',
             NextLine => '
-                INTO article_data_otrs_chat (
+                INTO article_data_ligero_chat (
                     article_id,chat_participant_id,chat_participant_name,
                     chat_participant_type,message_text,system_generated,create_time
                 )
@@ -277,7 +277,7 @@ sub _MigrateData {
     else {
         %DatabaseSQL = (
             Start => '
-                INSERT INTO article_data_otrs_chat (
+                INSERT INTO article_data_ligero_chat (
                     article_id,chat_participant_id,chat_participant_name,
                     chat_participant_type,message_text,system_generated,create_time
                 )',
@@ -452,7 +452,7 @@ sub _CheckChatArticles {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

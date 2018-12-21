@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -316,7 +316,7 @@ sub Run {
             $Result{Data}->{Error} = $Kernel::OM->Get('Kernel::Language')->Translate(
                 "This feature is part of the %s. Please contact us at %s for an upgrade."
                 , 'OTRS Business Solution™'
-                , 'sales@otrs.com'
+                , 'sales@ligero.com'
             );
         }
         else {
@@ -895,7 +895,7 @@ sub _SettingReset {
         $Result{Data}->{Error} = $LayoutObject->{LanguageObject}->Translate(
             "This feature is part of the %s. Please contact us at %s for an upgrade."
             , 'OTRS Business Solution™'
-            , 'sales@otrs.com'
+            , 'sales@ligero.com'
         );
     }
     elsif ( $Setting{ModifiedID} ) {

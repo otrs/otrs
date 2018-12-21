@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -34,13 +34,13 @@ my $EmailParserObject = Kernel::System::EmailParser->new(
 
 $Self->Is(
     $EmailParserObject->GetParam( WHAT => 'To' ),
-    'darthvader@otrs.org',
+    'darthvader@ligero.org',
     "#1 GetParam(WHAT => 'To')",
 );
 
 $Self->Is(
     $EmailParserObject->GetParam( WHAT => 'From' ),
-    'Skywalker Attachment <skywalker@otrs.org>',
+    'Skywalker Attachment <skywalker@ligero.org>',
     "#1 GetParam(WHAT => 'From')",
 );
 

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -89,12 +89,12 @@ $Selenium->RunTest(
         # If package is installed, remove it so we can install it again in the test.
         if ($PackageCheck) {
             my $FileString = '<?xml version="1.0" encoding="utf-8" ?>
-                <otrs_package version="1.0">
+                <ligero_package version="1.0">
                   <Name>Test</Name>
                   <Version>0.0.1</Version>
                   <Framework>x.x.x</Framework>
                   <Vendor>OTRS AG</Vendor>
-                  <URL>https://otrs.com/</URL>
+                  <URL>https://ligero.com/</URL>
                   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
                   <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
                   <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
@@ -130,7 +130,7 @@ $Selenium->RunTest(
                     <File Location="var/tmp/Test" Permission="644" Encode="Base64">aGVsbG8K</File>
                     <File Location="var/Test" Permission="644" Encode="Base64">aGVsbG8K</File>
                   </Filelist>
-                </otrs_package>';
+                </ligero_package>';
 
             my $PackageUninstall = $PackageObject->PackageUninstall( String => $FileString );
             $Self->True(
@@ -305,7 +305,7 @@ $Selenium->RunTest(
             Valid => 1,
             Key   => 'Package::RepositoryList',
             Value => {
-                'ftp://ftp.example.com/pub/otrs/misc/packages/' => '[Example] ftp://ftp.example.com/'
+                'ftp://ftp.example.com/pub/ligero/misc/packages/' => '[Example] ftp://ftp.example.com/'
             },
         );
 
@@ -315,7 +315,7 @@ $Selenium->RunTest(
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminPackageManager");
         $Selenium->InputFieldValueSet(
             Element => '#Soruce',
-            Value   => 'ftp://ftp.example.com/pub/otrs/misc/packages/',
+            Value   => 'ftp://ftp.example.com/pub/ligero/misc/packages/',
         );
         $Selenium->find_element("//button[\@name=\'GetRepositoryList']")->VerifiedClick();
 

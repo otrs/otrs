@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -234,7 +234,7 @@ sub Run {
         # if no errors occurred
         if ( !%Errors ) {
 
-            if ( $GetParam{Password} eq 'otrs-dummy-password-placeholder' ) {
+            if ( $GetParam{Password} eq 'ligero-dummy-password-placeholder' ) {
                 my %OriginalData = $MailAccount->MailAccountGet(%GetParam);
                 $GetParam{Password} = $OriginalData{Password};
             }

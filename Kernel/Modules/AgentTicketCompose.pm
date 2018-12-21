@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -1338,7 +1338,7 @@ sub Run {
             last ARTICLEMETADATA;
         }
 
-        # Merge ticket data with article data, see bug#13995 (https://bugs.otrs.org/show_bug.cgi?id=13995).
+        # Merge ticket data with article data, see bug#13995 (https://bugs.ligero.org/show_bug.cgi?id=13995).
         %Data = ( %Ticket, %Data );
 
         # If article is not a MIMEBase article, get customer recipients from the backend.

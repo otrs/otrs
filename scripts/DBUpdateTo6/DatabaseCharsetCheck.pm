@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -97,7 +97,7 @@ sub CheckPreviousRequirement {
     if ($DatabaseIsUTF8MB4) {
         print "\n    Error: The setting character_set_database is set to '$DatabaseCharacterSet'.";
         print
-            "\n    Error: This character set is not yet supported, please see https://bugs.otrs.org/show_bug.cgi?id=12361.";
+            "\n    Error: This character set is not yet supported, please see https://bugs.ligero.org/show_bug.cgi?id=12361.";
         print "\n    Error: Please convert your database to the character set 'utf8'.\n";
         return;
     }
@@ -138,7 +138,7 @@ sub CheckPreviousRequirement {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

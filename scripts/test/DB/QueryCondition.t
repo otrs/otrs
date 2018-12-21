@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -1097,8 +1097,8 @@ for my $Query (@Queries) {
 
 # extended test
 %Fill = (
-    Some0 => '0 otrs',
-    Some1 => '1 otrs',
+    Some0 => '0 ligero',
+    Some1 => '1 ligero',
 );
 for my $Key ( sort keys %Fill ) {
     my $SQL = "INSERT INTO test_condition (name_a, name_b) VALUES ('$Key', '$Fill{$Key}')";
@@ -1112,14 +1112,14 @@ for my $Key ( sort keys %Fill ) {
 }
 @Queries = (
     {
-        Query  => '0 otrs',
+        Query  => '0 ligero',
         Result => {
             Some0 => 1,
             Some1 => 0,
         },
     },
     {
-        Query  => '1 otrs',
+        Query  => '1 ligero',
         Result => {
             Some0 => 0,
             Some1 => 1,

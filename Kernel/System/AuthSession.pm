@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -140,7 +140,7 @@ sub CheckAgentSessionLimitPriorWarning {
                 )
             {
                 $PriorWarningMessage
-                    = Translatable('You have exceeded the number of concurrent agents - contact sales@otrs.com.');
+                    = Translatable('You have exceeded the number of concurrent agents - contact sales@ligero.com.');
             }
             else {
                 $PriorWarningMessage = Translatable('Please note that the session limit is almost reached.');
@@ -272,7 +272,7 @@ sub CreateSessionID {
                 )
             {
                 $Self->{SessionIDErrorMessage} = Translatable(
-                    'Login rejected! You have exceeded the maximum number of concurrent Agents! Contact sales@otrs.com immediately!'
+                    'Login rejected! You have exceeded the maximum number of concurrent Agents! Contact sales@ligero.com immediately!'
                 );
             }
             else {
@@ -452,7 +452,7 @@ sub CleanUp {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

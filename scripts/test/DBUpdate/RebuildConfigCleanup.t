@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -60,7 +60,7 @@ my $AddSetting = sub {
     # Add a setting without an XML counterpart
     my $ValidSettingXML = <<'EOF',
 <?xml version="1.0" encoding="utf-8" ?>
-<otrs_config version="2.0" init="Framework">
+<ligero_config version="2.0" init="Framework">
     <Setting Name="Test1" Required="1" Valid="1">
         <Description Translatable="1">Test 1.</Description>
         <Navigation>Core::Ticket</Navigation>
@@ -68,7 +68,7 @@ my $AddSetting = sub {
             <Item ValueType="String" ValueRegex=".*">Test setting 1</Item>
         </Value>
     </Setting>
-</otrs_config>
+</ligero_config>
 EOF
 
         my $SysConfigXMLObject = $Kernel::OM->Get('Kernel::System::SysConfig::XML');
@@ -136,11 +136,11 @@ $Version .= '.x';
 
 # Define test packages
 my $String1 = qq|<?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.1">
+<ligero_package version="1.1">
     <Name>TestPackage1</Name>
     <Version>0.0.1</Version>
     <Vendor>OTRS AG</Vendor>
-    <URL>https://otrs.com/</URL>
+    <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
     <Description Lang="en">TestPackage1.</Description>
     <Framework>$Version</Framework>
@@ -149,7 +149,7 @@ my $String1 = qq|<?xml version="1.0" encoding="utf-8" ?>
     <Filelist>
         <File Location="Kernel/Config/Files/XML/TestPackage1.xml" Permission="660" Encode="Base64">PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiID8+CjxvdHJzX2NvbmZpZyB2ZXJzaW9uPSIyLjAiIGluaXQ9IkFwcGxpY2F0aW9uIj4KICAgIDxTZXR0aW5nIE5hbWU9IlRlc3RQYWNrYWdlMTo6U2V0dGluZzEiIFJlcXVpcmVkPSIwIiBWYWxpZD0iMSI+IAogICAgICAgIDxEZXNjcmlwdGlvbiBUcmFuc2xhdGFibGU9IjEiPlRlc3QgU2V0dGluZy48L0Rlc2NyaXB0aW9uPgogICAgICAgIDxLZXl3b3Jkcz5UZXN0UGFja2FnZTwvS2V5d29yZHM+CiAgICAgICAgPE5hdmlnYXRpb24+Q29yZTo6VGVzdFBhY2thZ2U8L05hdmlnYXRpb24+CiAgICAgICAgICAgIDxWYWx1ZT4KICAgICAgICAgICAgICAgIDxJdGVtIFZhbHVlVHlwZT0iU3RyaW5nIj48L0l0ZW0+CiAgICAgICAgICAgIDwvVmFsdWU+CiAgICA8L1NldHRpbmc+Cjwvb3Ryc19jb25maWc+Cg==</File>
     </Filelist>
-</otrs_package>
+</ligero_package>
 |;
 
 my $PackageObject = $Kernel::OM->Get('Kernel::System::Package');

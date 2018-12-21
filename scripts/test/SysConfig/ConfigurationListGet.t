@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -54,7 +54,7 @@ my $SettingsAdd = sub {
 
         my $XMLContentRaw = << "EOF";
 <?xml version="1.0" encoding="utf-8" ?>
-<otrs_config version="2.0" init="Framework">
+<ligero_config version="2.0" init="Framework">
     <Setting Name="$SettingName" Required="1" Valid="1">
         <Description Translatable="1">Test.</Description>
         <Navigation>Core::Test</Navigation>
@@ -62,7 +62,7 @@ my $SettingsAdd = sub {
             <Item ValueType="String" ValueRegex=".*">Test</Item>
         </Value>
     </Setting>
-</otrs_config>
+</ligero_config>
 EOF
 
         my @DefaultSettingAddParams = $SysConfigXMLObject->SettingListParse(

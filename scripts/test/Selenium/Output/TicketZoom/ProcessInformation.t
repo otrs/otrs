@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -130,7 +130,7 @@ $Selenium->RunTest(
         $Selenium->find_element( "#RichText", 'css' )->send_keys('Test Process Body');
 
         # Check if default value for title is shown.
-        # See bug#13937 https://bugs.otrs.org/show_bug.cgi?id=13937.
+        # See bug#13937 https://bugs.ligero.org/show_bug.cgi?id=13937.
         my $TitleValue = 'Test Process Title Default';
 
         $Self->Is(

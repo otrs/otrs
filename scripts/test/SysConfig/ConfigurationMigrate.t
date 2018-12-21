@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -145,7 +145,7 @@ my $Success = $Kernel::OM->Get('Kernel::System::SysConfig::Migration')->MigrateC
 
 $Self->True(
     $Success,
-    "Config was successfully migrated from otrs5 to 6."
+    "Config was successfully migrated from ligero5 to 6."
 );
 
 # RebuildConfig
@@ -183,7 +183,7 @@ $Success = $Kernel::OM->Get('Kernel::System::SysConfig::Migration')->MigrateConf
 
 $Self->True(
     $Success,
-    "Config was successfully migrated from otrs5 to 6."
+    "Config was successfully migrated from ligero5 to 6."
 );
 if ( ref $Success eq 'HASH' ) {
 

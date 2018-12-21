@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -138,10 +138,10 @@ my @Tests = (
     },
 
     # Local part of email address is too long according to RFC.
-    # See http://isemail.info/modperl-uc.1384763750.ffhelkebjhfdihihkbce-michiel.beijen%3Dotrs.com%40perl.apache.org
+    # See http://isemail.info/modperl-uc.1384763750.ffhelkebjhfdihihkbce-michiel.beijen%3Dligero.com%40perl.apache.org
     {
         Email =>
-            'modperl-uc.1384763750.ffhelkebjhfdihihkbce-michiel.beijen=otrs.com@perl.apache.org',
+            'modperl-uc.1384763750.ffhelkebjhfdihihkbce-michiel.beijen=ligero.com@perl.apache.org',
         Valid => 0,
     },
 

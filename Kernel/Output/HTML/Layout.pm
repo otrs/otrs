@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -30,7 +30,7 @@ our @ObjectDependencies = (
     'Kernel::System::JSON',
     'Kernel::System::Log',
     'Kernel::System::Main',
-    'Kernel::System::OTRSBusiness',
+    'Kernel::System::LIGEROBusiness',
     'Kernel::System::State',
     'Kernel::System::Storable',
     'Kernel::System::SystemMaintenance',
@@ -613,8 +613,8 @@ sub Redirect {
 
     # check if IIS 6 is used, add absolute url for IIS workaround
     # see also:
-    #  o http://bugs.otrs.org/show_bug.cgi?id=2230
-    #  o http://bugs.otrs.org/show_bug.cgi?id=9835
+    #  o http://bugs.ligero.org/show_bug.cgi?id=2230
+    #  o http://bugs.ligero.org/show_bug.cgi?id=9835
     #  o http://support.microsoft.com/default.aspx?scid=kb;en-us;221154
     if ( $ENV{SERVER_SOFTWARE} =~ /^microsoft\-iis\/6/i ) {
         my $Host     = $ENV{HTTP_HOST} || $ConfigObject->Get('FQDN');
@@ -685,8 +685,8 @@ sub Login {
             # Restrict Cookie to HTTPS if it is used.
             $CookieSecureAttribute = 1;
         }
-        $Self->{SetCookies}->{OTRSBrowserHasCookie} = $Kernel::OM->Get('Kernel::System::Web::Request')->SetCookie(
-            Key      => 'OTRSBrowserHasCookie',
+        $Self->{SetCookies}->{LIGEROBrowserHasCookie} = $Kernel::OM->Get('Kernel::System::Web::Request')->SetCookie(
+            Key      => 'LIGEROBrowserHasCookie',
             Value    => 1,
             Expires  => '+1y',
             Path     => $ConfigObject->Get('ScriptAlias'),
@@ -716,10 +716,10 @@ sub Login {
     $Self->LoaderCreateJavaScriptTranslationData();
     $Self->LoaderCreateJavaScriptTemplateData();
 
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
-    $Param{OTRSBusinessIsInstalled} = $OTRSBusinessObject->OTRSBusinessIsInstalled();
-    $Param{OTRSSTORMIsInstalled}    = $OTRSBusinessObject->OTRSSTORMIsInstalled();
-    $Param{OTRSCONTROLIsInstalled}  = $OTRSBusinessObject->OTRSCONTROLIsInstalled();
+    my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
+    $Param{LIGEROBusinessIsInstalled} = $LIGEROBusinessObject->LIGEROBusinessIsInstalled();
+    $Param{LIGEROSTORMIsInstalled}    = $LIGEROBusinessObject->LIGEROSTORMIsInstalled();
+    $Param{LIGEROCONTROLIsInstalled}  = $LIGEROBusinessObject->LIGEROCONTROLIsInstalled();
 
     # we need the baselink for VerfifiedGet() of selenium tests
     $Self->AddJSData(
@@ -1041,10 +1041,10 @@ sub Error {
         if (
             $Kernel::OM->Get('Kernel::Config')->Get('SecureMode')
             && $Kernel::OM->Get('Kernel::Config')->Get('DatabaseDSN')
-            && !$Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled()
+            && !$Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled()
             )
         {
-            $Param{ShowOTRSBusinessHint}++;
+            $Param{ShowLIGEROBusinessHint}++;
         }
     }
 
@@ -1425,7 +1425,7 @@ sub Header {
                 next MODULE if !%{ $Modules{$Key} };
 
                 # For ToolBarSearchFulltext module take into consideration SearchInArchive settings.
-                # See bug#13790 (https://bugs.otrs.org/show_bug.cgi?id=13790).
+                # See bug#13790 (https://bugs.ligero.org/show_bug.cgi?id=13790).
                 if ( $ConfigObject->Get('Ticket::ArchiveSystem') && $Modules{$Key}->{Block} eq 'ToolBarSearchFulltext' )
                 {
                     $Modules{$Key}->{SearchInArchive}
@@ -1496,7 +1496,7 @@ sub Header {
     }
 
     if ( $ConfigObject->Get('SecureMode') ) {
-        $Param{OTRSBusinessIsInstalled} = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled();
+        $Param{LIGEROBusinessIsInstalled} = $Kernel::OM->Get('Kernel::System::LIGEROBusiness')->LIGEROBusinessIsInstalled();
     }
 
     # create & return output
@@ -1574,14 +1574,14 @@ sub Footer {
         }
     }
 
-    # get OTRS business object
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    # get LIGERO business object
+    my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
 
     # don't check for business package if the database was not yet configured (in the installer)
     if ( $ConfigObject->Get('SecureMode') ) {
-        $Param{OTRSBusinessIsInstalled} = $OTRSBusinessObject->OTRSBusinessIsInstalled();
-        $Param{OTRSSTORMIsInstalled}    = $OTRSBusinessObject->OTRSSTORMIsInstalled();
-        $Param{OTRSCONTROLIsInstalled}  = $OTRSBusinessObject->OTRSCONTROLIsInstalled();
+        $Param{LIGEROBusinessIsInstalled} = $LIGEROBusinessObject->LIGEROBusinessIsInstalled();
+        $Param{LIGEROSTORMIsInstalled}    = $LIGEROBusinessObject->LIGEROSTORMIsInstalled();
+        $Param{LIGEROCONTROLIsInstalled}  = $LIGEROBusinessObject->LIGEROCONTROLIsInstalled();
     }
 
     # Check if video chat is enabled.
@@ -1617,7 +1617,7 @@ sub Footer {
         CustomerInfoSet                => $ConfigObject->Get('Ticket::Frontend::CustomerInfoCompose'),
         IncludeUnknownTicketCustomers  => $ConfigObject->Get('Ticket::IncludeUnknownTicketCustomers'),
         InputFieldsActivated           => $ConfigObject->Get('ModernizeFormFields'),
-        OTRSBusinessIsInstalled        => $Param{OTRSBusinessIsInstalled},
+        LIGEROBusinessIsInstalled        => $Param{LIGEROBusinessIsInstalled},
         VideoChatEnabled               => $Param{VideoChatEnabled},
         PendingStateIDs                => \@PendingStateIDs,
         CheckSearchStringsForStopWords => (
@@ -1707,8 +1707,8 @@ sub Print {
 
     # There seems to be a bug in FastCGI that it cannot handle unicode output properly.
     #   Work around this by converting to an utf8 byte stream instead.
-    #   See also http://bugs.otrs.org/show_bug.cgi?id=6284 and
-    #   http://bugs.otrs.org/show_bug.cgi?id=9802.
+    #   See also http://bugs.ligero.org/show_bug.cgi?id=6284 and
+    #   http://bugs.ligero.org/show_bug.cgi?id=9802.
     if ( $INC{'CGI/Fast.pm'} || $ENV{FCGI_ROLE} || $ENV{FCGI_SOCKET_PATH} ) {    # are we on FCGI?
         $Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput( $Param{Output} );
         binmode STDOUT, ':bytes';
@@ -2580,7 +2580,7 @@ sub Attachment {
         # Disallow external and inline scripts, active content, frames, but keep allowing inline styles
         #   as this is a common use case in emails.
         # Also disallow referrer headers to prevent referrer leaks via old-style policy directive. Please note this has
-        #   been deprecated and will be removed in future OTRS versions in favor of a separate header (see below).
+        #   been deprecated and will be removed in future LIGERO versions in favor of a separate header (see below).
         # img-src:    allow external and inline (data:) images
         # script-src: block all scripts
         # object-src: allow 'self' so that the browser can load plugins for PDF display
@@ -3258,7 +3258,7 @@ sub TransformDateSelection {
     my $Prefix = $Param{Prefix} || '';
 
     # time zone translation if needed
-    # from user time zone to OTRS time zone
+    # from user time zone to LIGERO time zone
     if ( $Self->{UserTimeZone} ) {
         my $DateTimeObject = $Kernel::OM->Create(
             'Kernel::System::DateTime',
@@ -3274,7 +3274,7 @@ sub TransformDateSelection {
         );
 
         if ($DateTimeObject) {
-            $DateTimeObject->ToOTRSTimeZone();
+            $DateTimeObject->ToLIGEROTimeZone();
             my $DateTimeValues = $DateTimeObject->Get();
 
             $Param{ $Prefix . 'Year' }   = $DateTimeValues->{Year};
@@ -3809,8 +3809,8 @@ sub CustomerLogin {
             # Restrict Cookie to HTTPS if it is used.
             $CookieSecureAttribute = 1;
         }
-        $Self->{SetCookies}->{OTRSBrowserHasCookie} = $Kernel::OM->Get('Kernel::System::Web::Request')->SetCookie(
-            Key      => 'OTRSBrowserHasCookie',
+        $Self->{SetCookies}->{LIGEROBrowserHasCookie} = $Kernel::OM->Get('Kernel::System::Web::Request')->SetCookie(
+            Key      => 'LIGEROBrowserHasCookie',
             Value    => 1,
             Expires  => '+1y',
             Path     => $ConfigObject->Get('ScriptAlias'),
@@ -3840,10 +3840,10 @@ sub CustomerLogin {
     $Self->LoaderCreateJavaScriptTranslationData();
     $Self->LoaderCreateJavaScriptTemplateData();
 
-    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
-    $Param{OTRSBusinessIsInstalled} = $OTRSBusinessObject->OTRSBusinessIsInstalled();
-    $Param{OTRSSTORMIsInstalled}    = $OTRSBusinessObject->OTRSSTORMIsInstalled();
-    $Param{OTRSCONTROLIsInstalled}  = $OTRSBusinessObject->OTRSCONTROLIsInstalled();
+    my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
+    $Param{LIGEROBusinessIsInstalled} = $LIGEROBusinessObject->LIGEROBusinessIsInstalled();
+    $Param{LIGEROSTORMIsInstalled}    = $LIGEROBusinessObject->LIGEROSTORMIsInstalled();
+    $Param{LIGEROCONTROLIsInstalled}  = $LIGEROBusinessObject->LIGEROCONTROLIsInstalled();
 
     $Self->AddJSData(
         Key   => 'Baselink',
@@ -4211,10 +4211,10 @@ sub CustomerFooter {
 
     # don't check for business package if the database was not yet configured (in the installer)
     if ( $ConfigObject->Get('SecureMode') ) {
-        my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
-        $Param{OTRSBusinessIsInstalled} = $OTRSBusinessObject->OTRSBusinessIsInstalled();
-        $Param{OTRSSTORMIsInstalled}    = $OTRSBusinessObject->OTRSSTORMIsInstalled();
-        $Param{OTRSCONTROLIsInstalled}  = $OTRSBusinessObject->OTRSCONTROLIsInstalled();
+        my $LIGEROBusinessObject = $Kernel::OM->Get('Kernel::System::LIGEROBusiness');
+        $Param{LIGEROBusinessIsInstalled} = $LIGEROBusinessObject->LIGEROBusinessIsInstalled();
+        $Param{LIGEROSTORMIsInstalled}    = $LIGEROBusinessObject->LIGEROSTORMIsInstalled();
+        $Param{LIGEROCONTROLIsInstalled}  = $LIGEROBusinessObject->LIGEROCONTROLIsInstalled();
     }
 
     # AutoComplete-Config
@@ -4239,9 +4239,9 @@ sub CustomerFooter {
         CustomerPanelSessionName => $ConfigObject->Get('CustomerPanelSessionName'),
         UserLanguage             => $Self->{UserLanguage},
         CheckEmailAddresses      => $ConfigObject->Get('CheckEmailAddresses'),
-        OTRSBusinessIsInstalled  => $Param{OTRSBusinessIsInstalled},
-        OTRSSTORMIsInstalled     => $Param{OTRSSTORMIsInstalled},
-        OTRSCONTROLIsInstalled   => $Param{OTRSCONTROLIsInstalled},
+        LIGEROBusinessIsInstalled  => $Param{LIGEROBusinessIsInstalled},
+        LIGEROSTORMIsInstalled     => $Param{LIGEROSTORMIsInstalled},
+        LIGEROCONTROLIsInstalled   => $Param{LIGEROCONTROLIsInstalled},
         InputFieldsActivated     => $ConfigObject->Get('ModernizeCustomerFormFields'),
         Autocomplete             => $AutocompleteConfig,
         VideoChatEnabled         => $Param{VideoChatEnabled},
@@ -6349,7 +6349,7 @@ sub UserInitialsGet {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

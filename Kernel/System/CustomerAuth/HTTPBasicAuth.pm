@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -11,9 +11,9 @@
 # config settings:
 #
 # If use isn't login through apache ($ENV{REMOTE_USER} or $ENV{HTTP_REMOTE_USER})
-# $Self->{CustomerPanelLoginURL} = 'http://host.example.com/not-authorised-for-otrs.html';
+# $Self->{CustomerPanelLoginURL} = 'http://host.example.com/not-authorised-for-ligero.html';
 #
-# $Self->{CustomerPanelLogoutURL} = 'http://host.example.com/thanks-for-using-otrs.html';
+# $Self->{CustomerPanelLogoutURL} = 'http://host.example.com/thanks-for-using-ligero.html';
 # --
 
 package Kernel::System::CustomerAuth::HTTPBasicAuth;

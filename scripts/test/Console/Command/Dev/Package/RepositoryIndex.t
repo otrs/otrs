@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -40,8 +40,8 @@ $Self->Is(
 $Self->Is(
     $Result,
     '<?xml version="1.0" encoding="utf-8" ?>
-<otrs_package_list version="1.0">
-</otrs_package_list>
+<ligero_package_list version="1.0">
+</ligero_package_list>
 ',
     "Dev::Package::RepositoryIndex result for empty directory",
 );

@@ -26,7 +26,7 @@ INSERT INTO valid (name, create_by, create_time, change_by, change_time)
 -- ----------------------------------------------------------
 INSERT INTO users (first_name, last_name, login, pw, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    ('Admin', 'OTRS', 'root@localhost', 'roK20XGbWEsSM', 1, 1, current_timestamp, 1, current_timestamp);
+    ('Admin', 'LIGERO', 'root@localhost', 'roK20XGbWEsSM', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table groups
 -- ----------------------------------------------------------
@@ -188,7 +188,7 @@ INSERT INTO ticket_state (name, comments, type_id, valid_id, create_by, create_t
 -- ----------------------------------------------------------
 INSERT INTO salutation (name, text, content_type, comments, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    ('system standard salutation (en)', 'Dear <OTRS_CUSTOMER_REALNAME>,
+    ('system standard salutation (en)', 'Dear <LIGERO_CUSTOMER_REALNAME>,
 
 Thank you for your request.
 
@@ -201,7 +201,7 @@ INSERT INTO signature (name, text, content_type, comments, valid_id, create_by, 
     ('system standard signature (en)', '
 Your Ticket-Team
 
- <OTRS_Agent_UserFirstname> <OTRS_Agent_UserLastname>
+ <LIGERO_Agent_UserFirstname> <LIGERO_Agent_UserLastname>
 
 --
  Super Support - Waterford Business Park
@@ -213,7 +213,7 @@ Your Ticket-Team
 -- ----------------------------------------------------------
 INSERT INTO system_address (value0, value1, comments, valid_id, queue_id, create_by, create_time, change_by, change_time)
     VALUES
-    ('otrs@localhost', 'OTRS System', 'Standard Address.', 1, 1, 1, current_timestamp, 1, current_timestamp);
+    ('ligero@localhost', 'LIGERO System', 'Standard Address.', 1, 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table follow_up_possible
 -- ----------------------------------------------------------
@@ -333,14 +333,14 @@ It could contain something like:
 Thanks for your email. A new ticket has been created.
 
 You wrote:
-<OTRS_CUSTOMER_EMAIL[6]>
+<LIGERO_CUSTOMER_EMAIL[6]>
 
 Your email will be answered by a human ASAP
 
-Have fun with OTRS! :-)
+Have fun with LIGERO! :-)
 
-Your OTRS Team
-', 'RE: <OTRS_CUSTOMER_SUBJECT[24]>', 'text/plain', '', 1, 1, current_timestamp, 1, current_timestamp);
+Your LIGERO Team
+', 'RE: <LIGERO_CUSTOMER_SUBJECT[24]>', 'text/plain', '', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table auto_response
 -- ----------------------------------------------------------
@@ -352,8 +352,8 @@ INSERT INTO auto_response (type_id, system_address_id, name, text0, text1, conte
 
 Please create a new ticket.
 
-Your OTRS Team
-', 'Your email has been rejected! (RE: <OTRS_CUSTOMER_SUBJECT[24]>)', 'text/plain', '', 1, 1, current_timestamp, 1, current_timestamp);
+Your LIGERO Team
+', 'Your email has been rejected! (RE: <LIGERO_CUSTOMER_SUBJECT[24]>)', 'text/plain', '', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table auto_response
 -- ----------------------------------------------------------
@@ -362,14 +362,14 @@ INSERT INTO auto_response (type_id, system_address_id, name, text0, text1, conte
     (3, 1, 'default follow-up (after a ticket follow-up has been added)', 'Thanks for your follow-up email
 
 You wrote:
-<OTRS_CUSTOMER_EMAIL[6]>
+<LIGERO_CUSTOMER_EMAIL[6]>
 
 Your email will be answered by a human ASAP.
 
-Have fun with OTRS!
+Have fun with LIGERO!
 
-Your OTRS Team
-', 'RE: <OTRS_CUSTOMER_SUBJECT[24]>', 'text/plain', '', 1, 1, current_timestamp, 1, current_timestamp);
+Your LIGERO Team
+', 'RE: <LIGERO_CUSTOMER_SUBJECT[24]>', 'text/plain', '', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table auto_response
 -- ----------------------------------------------------------
@@ -380,14 +380,14 @@ INSERT INTO auto_response (type_id, system_address_id, name, text0, text1, conte
 -- A new ticket has been created for you. --
 
 You wrote:
-<OTRS_CUSTOMER_EMAIL[6]>
+<LIGERO_CUSTOMER_EMAIL[6]>
 
 Your email will be answered by a human ASAP.
 
-Have fun with OTRS!
+Have fun with LIGERO!
 
-Your OTRS Team
-', 'New ticket has been created! (RE: <OTRS_CUSTOMER_SUBJECT[24]>)', 'text/plain', '', 1, 1, current_timestamp, 1, current_timestamp);
+Your LIGERO Team
+', 'New ticket has been created! (RE: <LIGERO_CUSTOMER_SUBJECT[24]>)', 'text/plain', '', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table ticket_type
 -- ----------------------------------------------------------
@@ -771,7 +771,7 @@ INSERT INTO article_sender_type (name, valid_id, create_by, create_time, change_
 -- ----------------------------------------------------------
 INSERT INTO ticket (tn, queue_id, ticket_lock_id, user_id, responsible_user_id, ticket_priority_id, ticket_state_id, title, timeout, until_time, escalation_time, escalation_response_time, escalation_update_time, escalation_solution_time, create_by, create_time, change_by, change_time)
     VALUES
-    ('2015071510123456', 2, 1, 1, 1, 3, 1, 'Welcome to OTRS!', 0, 0, 0, 0, 0, 0, 1, current_timestamp, 1, current_timestamp);
+    ('2015071510123456', 2, 1, 1, 1, 3, 1, 'Welcome to LIGERO!', 0, 0, 0, 0, 0, 0, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table communication_channel
 -- ----------------------------------------------------------
@@ -819,7 +819,7 @@ INSERT INTO communication_channel (name, module, package_name, channel_data, val
     ('Chat', 'Kernel::System::CommunicationChannel::Chat', 'Framework', '---
 ArticleDataArticleIDField: article_id
 ArticleDataTables:
-- article_data_otrs_chat
+- article_data_ligero_chat
 ', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table article
@@ -832,86 +832,86 @@ INSERT INTO article (ticket_id, communication_channel_id, article_sender_type_id
 -- ----------------------------------------------------------
 INSERT INTO article_data_mime (article_id, a_from, a_to, a_subject, a_body, a_message_id, incoming_time, content_path, create_by, create_time, change_by, change_time)
     VALUES
-    (1, 'OTRS Feedback <marketing@otrs.com>', 'Your OTRS System <otrs@localhost>', 'Welcome to OTRS!', 'Welcome to OTRS!
+    (1, 'LIGERO Feedback <marketing@ligero.com>', 'Your LIGERO System <ligero@localhost>', 'Welcome to LIGERO!', 'Welcome to LIGERO!
 
-Thank you for installing ((OTRS)) Community Edition, the world’s most popular open source service management software, available in 38 languages and used by more than 170,000 companies worldwide.
+Thank you for installing ((LIGERO)) Community Edition, the world’s most popular open source service management software, available in 38 languages and used by more than 170,000 companies worldwide.
 
-Please be aware that we do not offer official vendor support for the ((OTRS)) Community Edition.
+Please be aware that we do not offer official vendor support for the ((LIGERO)) Community Edition.
 
 Resources for You
 
-You can find updates and patches at https://www.otrs.com/download-open-source-help-desk-software-otrs-free/.
+You can find updates and patches at https://www.ligero.com/download-open-source-help-desk-software-ligero-free/.
 
-Find help and exchange ideas in our knowledge base at https://community.otrs.com/open-source/:
-Be part of the OTRS Community and take advantage of our blog posts. Report a bug, suggest a feature or discover online documentation.
+Find help and exchange ideas in our knowledge base at https://community.ligero.com/open-source/:
+Be part of the LIGERO Community and take advantage of our blog posts. Report a bug, suggest a feature or discover online documentation.
 
-Mailing lists are available at http://lists.otrs.org/
+Mailing lists are available at http://lists.ligero.org/
 
-Get More Out of OTRS
+Get More Out of LIGERO
 
-To get the most out of OTRS and receive the best possible support for your business, we recommend that you use our fully-managed version of OTRS: https://otrs.com/how-to-buy/.
+To get the most out of LIGERO and receive the best possible support for your business, we recommend that you use our fully-managed version of LIGERO: https://ligero.com/how-to-buy/.
 
 Profit from:
 
-- exclusive OTRS Features
-- OTRS Feature Add-ons
+- exclusive LIGERO Features
+- LIGERO Feature Add-ons
 - included professional services
 - (security) updates
 - implementation and configuration by our experts
 
-Find more information at https://www.otrs.com/solutions/.
+Find more information at https://www.ligero.com/solutions/.
 
-Ready to get started with OTRS? -> Contact Sales: https://otrs.com/contact/
+Ready to get started with LIGERO? -> Contact Sales: https://ligero.com/contact/
 
-Best regards and ((enjoy)) ((OTRS)) Community Edition,
+Best regards and ((enjoy)) ((LIGERO)) Community Edition,
 
-Your OTRS Team
+Your LIGERO Team
 ', '<007@localhost>', 1436949030, '2015/07/15', 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table article_data_mime_plain
 -- ----------------------------------------------------------
 INSERT INTO article_data_mime_plain (article_id, body, create_by, create_time, change_by, change_time)
     VALUES
-    (1, 'From: OTRS Feedback <marketing@otrs.com>
-To: Your OTRS System <otrs@localhost>
-Subject: Welcome to OTRS!
+    (1, 'From: LIGERO Feedback <marketing@ligero.com>
+To: Your LIGERO System <ligero@localhost>
+Subject: Welcome to LIGERO!
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 
-Welcome to OTRS!
+Welcome to LIGERO!
 
-Thank you for installing ((OTRS)) Community Edition, the world’s most popular open source service management software, available in 38 languages and used by more than 170,000 companies worldwide.
+Thank you for installing ((LIGERO)) Community Edition, the world’s most popular open source service management software, available in 38 languages and used by more than 170,000 companies worldwide.
 
-Please be aware that we do not offer official vendor support for the ((OTRS)) Community Edition.
+Please be aware that we do not offer official vendor support for the ((LIGERO)) Community Edition.
 
 Resources for You
 
-You can find updates and patches at https://www.otrs.com/download-open-source-help-desk-software-otrs-free/.
+You can find updates and patches at https://www.ligero.com/download-open-source-help-desk-software-ligero-free/.
 
-Find help and exchange ideas in our knowledge base at https://community.otrs.com/open-source/:
-Be part of the OTRS Community and take advantage of our blog posts. Report a bug, suggest a feature or discover online documentation.
+Find help and exchange ideas in our knowledge base at https://community.ligero.com/open-source/:
+Be part of the LIGERO Community and take advantage of our blog posts. Report a bug, suggest a feature or discover online documentation.
 
-Mailing lists are available at http://lists.otrs.org/
+Mailing lists are available at http://lists.ligero.org/
 
-Get More Out of OTRS
+Get More Out of LIGERO
 
-To get the most out of OTRS and receive the best possible support for your business, we recommend that you use our fully-managed version of OTRS: https://otrs.com/how-to-buy/.
+To get the most out of LIGERO and receive the best possible support for your business, we recommend that you use our fully-managed version of LIGERO: https://ligero.com/how-to-buy/.
 
 Profit from:
 
-- exclusive OTRS Features
-- OTRS Feature Add-ons
+- exclusive LIGERO Features
+- LIGERO Feature Add-ons
 - included professional services
 - (security) updates
 - implementation and configuration by our experts
 
-Find more information at https://www.otrs.com/solutions/.
+Find more information at https://www.ligero.com/solutions/.
 
-Ready to get started with OTRS? -> Contact Sales: https://otrs.com/contact/
+Ready to get started with LIGERO? -> Contact Sales: https://ligero.com/contact/
 
-Best regards and ((enjoy)) ((OTRS)) Community Edition,
+Best regards and ((enjoy)) ((LIGERO)) Community Edition,
 
-Your OTRS Team
+Your LIGERO Team
 ', 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table ticket_history
@@ -1686,1515 +1686,1515 @@ INSERT INTO notification_event_item (notification_id, event_key, event_value)
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (1, 'text/plain', 'en', 'Ticket Created: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (1, 'text/plain', 'en', 'Ticket Created: <LIGERO_TICKET_Title>', 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has been created in queue <OTRS_TICKET_Queue>.
+ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] has been created in queue <LIGERO_TICKET_Queue>.
 
-<OTRS_CUSTOMER_REALNAME> wrote:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> wrote:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (2, 'text/plain', 'en', 'Unlocked Ticket Follow-Up: <OTRS_CUSTOMER_SUBJECT[24]>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (2, 'text/plain', 'en', 'Unlocked Ticket Follow-Up: <LIGERO_CUSTOMER_SUBJECT[24]>', 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-the unlocked ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] received a follow-up.
+the unlocked ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] received a follow-up.
 
-<OTRS_CUSTOMER_REALNAME> wrote:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> wrote:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (3, 'text/plain', 'en', 'Locked Ticket Follow-Up: <OTRS_CUSTOMER_SUBJECT[24]>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (3, 'text/plain', 'en', 'Locked Ticket Follow-Up: <LIGERO_CUSTOMER_SUBJECT[24]>', 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-the locked ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] received a follow-up.
+the locked ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] received a follow-up.
 
-<OTRS_CUSTOMER_REALNAME> wrote:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> wrote:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (4, 'text/plain', 'en', 'Ticket Lock Timeout: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (4, 'text/plain', 'en', 'Ticket Lock Timeout: <LIGERO_TICKET_Title>', 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has reached its lock timeout period and is now unlocked.
+ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] has reached its lock timeout period and is now unlocked.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (5, 'text/plain', 'en', 'Ticket Owner Update to <OTRS_OWNER_UserFullname>: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (5, 'text/plain', 'en', 'Ticket Owner Update to <LIGERO_OWNER_UserFullname>: <LIGERO_TICKET_Title>', 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-the owner of ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has been updated to <OTRS_TICKET_OWNER_UserFullname> by <OTRS_CURRENT_UserFullname>.
+the owner of ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] has been updated to <LIGERO_TICKET_OWNER_UserFullname> by <LIGERO_CURRENT_UserFullname>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (6, 'text/plain', 'en', 'Ticket Responsible Update to <OTRS_RESPONSIBLE_UserFullname>: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (6, 'text/plain', 'en', 'Ticket Responsible Update to <LIGERO_RESPONSIBLE_UserFullname>: <LIGERO_TICKET_Title>', 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-the responsible agent of ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has been updated to <OTRS_TICKET_RESPONSIBLE_UserFullname> by <OTRS_CURRENT_UserFullname>.
+the responsible agent of ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] has been updated to <LIGERO_TICKET_RESPONSIBLE_UserFullname> by <LIGERO_CURRENT_UserFullname>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (7, 'text/plain', 'en', 'Ticket Note: <OTRS_AGENT_SUBJECT[24]>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (7, 'text/plain', 'en', 'Ticket Note: <LIGERO_AGENT_SUBJECT[24]>', 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-<OTRS_CURRENT_UserFullname> wrote:
-<OTRS_AGENT_BODY[30]>
+<LIGERO_CURRENT_UserFullname> wrote:
+<LIGERO_AGENT_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (8, 'text/plain', 'en', 'Ticket Queue Update to <OTRS_TICKET_Queue>: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (8, 'text/plain', 'en', 'Ticket Queue Update to <LIGERO_TICKET_Queue>: <LIGERO_TICKET_Title>', 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has been updated to queue <OTRS_TICKET_Queue>.
+ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] has been updated to queue <LIGERO_TICKET_Queue>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (9, 'text/plain', 'en', 'Locked Ticket Pending Reminder Time Reached: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (9, 'text/plain', 'en', 'Locked Ticket Pending Reminder Time Reached: <LIGERO_TICKET_Title>', 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-the pending reminder time of the locked ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has been reached.
+the pending reminder time of the locked ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] has been reached.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (10, 'text/plain', 'en', 'Unlocked Ticket Pending Reminder Time Reached: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (10, 'text/plain', 'en', 'Unlocked Ticket Pending Reminder Time Reached: <LIGERO_TICKET_Title>', 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-the pending reminder time of the unlocked ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has been reached.
+the pending reminder time of the unlocked ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] has been reached.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (11, 'text/plain', 'en', 'Ticket Escalation! <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (11, 'text/plain', 'en', 'Ticket Escalation! <LIGERO_TICKET_Title>', 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] is escalated!
+ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] is escalated!
 
-Escalated at: <OTRS_TICKET_EscalationDestinationDate>
-Escalated since: <OTRS_TICKET_EscalationDestinationIn>
+Escalated at: <LIGERO_TICKET_EscalationDestinationDate>
+Escalated since: <LIGERO_TICKET_EscalationDestinationIn>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (12, 'text/plain', 'en', 'Ticket Escalation Warning! <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (12, 'text/plain', 'en', 'Ticket Escalation Warning! <LIGERO_TICKET_Title>', 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] will escalate!
+ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] will escalate!
 
-Escalation at: <OTRS_TICKET_EscalationDestinationDate>
-Escalation in: <OTRS_TICKET_EscalationDestinationIn>
+Escalation at: <LIGERO_TICKET_EscalationDestinationDate>
+Escalation in: <LIGERO_TICKET_EscalationDestinationIn>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (13, 'text/plain', 'en', 'Ticket Service Update to <OTRS_TICKET_Service>: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (13, 'text/plain', 'en', 'Ticket Service Update to <LIGERO_TICKET_Service>: <LIGERO_TICKET_Title>', 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-the service of ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has been updated to <OTRS_TICKET_Service>.
+the service of ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] has been updated to <LIGERO_TICKET_Service>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (14, 'text/html', 'en', 'Reminder: <OTRS_APPOINTMENT_TITLE>', 'Hi &lt;OTRS_NOTIFICATION_RECIPIENT_UserFirstname&gt;,<br />
+    (14, 'text/html', 'en', 'Reminder: <LIGERO_APPOINTMENT_TITLE>', 'Hi &lt;LIGERO_NOTIFICATION_RECIPIENT_UserFirstname&gt;,<br />
 <br />
-appointment &quot;&lt;OTRS_APPOINTMENT_TITLE&gt;&quot; has reached its notification time.<br />
+appointment &quot;&lt;LIGERO_APPOINTMENT_TITLE&gt;&quot; has reached its notification time.<br />
 <br />
-Description: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;<br />
-Location: &lt;OTRS_APPOINTMENT_LOCATION&gt;<br />
-Calendar: <span style="color: &lt;OTRS_CALENDAR_COLOR&gt;;">■</span> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
-Start date: &lt;OTRS_APPOINTMENT_STARTTIME&gt;<br />
-End date: &lt;OTRS_APPOINTMENT_ENDTIME&gt;<br />
-All-day: &lt;OTRS_APPOINTMENT_ALLDAY&gt;<br />
-Repeat: &lt;OTRS_APPOINTMENT_RECURRING&gt;<br />
+Description: &lt;LIGERO_APPOINTMENT_DESCRIPTION&gt;<br />
+Location: &lt;LIGERO_APPOINTMENT_LOCATION&gt;<br />
+Calendar: <span style="color: &lt;LIGERO_CALENDAR_COLOR&gt;;">■</span> &lt;LIGERO_CALENDAR_CALENDARNAME&gt;<br />
+Start date: &lt;LIGERO_APPOINTMENT_STARTTIME&gt;<br />
+End date: &lt;LIGERO_APPOINTMENT_ENDTIME&gt;<br />
+All-day: &lt;LIGERO_APPOINTMENT_ALLDAY&gt;<br />
+Repeat: &lt;LIGERO_APPOINTMENT_RECURRING&gt;<br />
 <br />
-<a href="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;">&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;</a><br />
+<a href="&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;">&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;</a><br />
 <br />
--- &lt;OTRS_CONFIG_NotificationSenderName&gt;');
+-- &lt;LIGERO_CONFIG_NotificationSenderName&gt;');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (1, 'text/plain', 'de', 'Ticket erstellt: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (1, 'text/plain', 'de', 'Ticket erstellt: <LIGERO_TICKET_Title>', 'Hallo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname> <LIGERO_NOTIFICATION_RECIPIENT_UserLastname>,
 
-das Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] wurde in der Queue <OTRS_TICKET_Queue> erstellt.
+das Ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] wurde in der Queue <LIGERO_TICKET_Queue> erstellt.
 
-<OTRS_CUSTOMER_REALNAME> schrieb:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> schrieb:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (2, 'text/plain', 'de', 'Nachfrage zum freigegebenen Ticket: <OTRS_CUSTOMER_SUBJECT[24]>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (2, 'text/plain', 'de', 'Nachfrage zum freigegebenen Ticket: <LIGERO_CUSTOMER_SUBJECT[24]>', 'Hallo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname> <LIGERO_NOTIFICATION_RECIPIENT_UserLastname>,
 
-zum freigegebenen Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] gibt es eine Nachfrage.
+zum freigegebenen Ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] gibt es eine Nachfrage.
 
-<OTRS_CUSTOMER_REALNAME> schrieb:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> schrieb:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (3, 'text/plain', 'de', 'Nachfrage zum gesperrten Ticket: <OTRS_CUSTOMER_SUBJECT[24]>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (3, 'text/plain', 'de', 'Nachfrage zum gesperrten Ticket: <LIGERO_CUSTOMER_SUBJECT[24]>', 'Hallo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname> <LIGERO_NOTIFICATION_RECIPIENT_UserLastname>,
 
-zum gesperrten Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] gibt es eine Nachfrage.
+zum gesperrten Ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] gibt es eine Nachfrage.
 
-<OTRS_CUSTOMER_REALNAME> schrieb:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> schrieb:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (4, 'text/plain', 'de', 'Ticketsperre aufgehoben: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (4, 'text/plain', 'de', 'Ticketsperre aufgehoben: <LIGERO_TICKET_Title>', 'Hallo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname> <LIGERO_NOTIFICATION_RECIPIENT_UserLastname>,
 
-die Sperrzeit des Tickets [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] ist abgelaufen. Es ist jetzt freigegeben.
+die Sperrzeit des Tickets [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] ist abgelaufen. Es ist jetzt freigegeben.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (5, 'text/plain', 'de', 'Änderung des Ticket-Besitzers auf <OTRS_OWNER_UserFullname>: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (5, 'text/plain', 'de', 'Änderung des Ticket-Besitzers auf <LIGERO_OWNER_UserFullname>: <LIGERO_TICKET_Title>', 'Hallo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname> <LIGERO_NOTIFICATION_RECIPIENT_UserLastname>,
 
-der Besitzer des Tickets [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] wurde von <OTRS_CURRENT_UserFullname> geändert auf <OTRS_TICKET_OWNER_UserFullname>.
+der Besitzer des Tickets [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] wurde von <LIGERO_CURRENT_UserFullname> geändert auf <LIGERO_TICKET_OWNER_UserFullname>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (6, 'text/plain', 'de', 'Änderung des Ticket-Verantwortlichen auf <OTRS_RESPONSIBLE_UserFullname>: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (6, 'text/plain', 'de', 'Änderung des Ticket-Verantwortlichen auf <LIGERO_RESPONSIBLE_UserFullname>: <LIGERO_TICKET_Title>', 'Hallo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname> <LIGERO_NOTIFICATION_RECIPIENT_UserLastname>,
 
-der Verantwortliche für das Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] wurde von <OTRS_CURRENT_UserFullname> geändert auf <OTRS_TICKET_RESPONSIBLE_UserFullname>.
+der Verantwortliche für das Ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] wurde von <LIGERO_CURRENT_UserFullname> geändert auf <LIGERO_TICKET_RESPONSIBLE_UserFullname>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (7, 'text/plain', 'de', 'Ticket-Notiz: <OTRS_AGENT_SUBJECT[24]>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (7, 'text/plain', 'de', 'Ticket-Notiz: <LIGERO_AGENT_SUBJECT[24]>', 'Hallo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname> <LIGERO_NOTIFICATION_RECIPIENT_UserLastname>,
 
-<OTRS_CURRENT_UserFullname> schrieb:
-<OTRS_AGENT_BODY[30]>
+<LIGERO_CURRENT_UserFullname> schrieb:
+<LIGERO_AGENT_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (8, 'text/plain', 'de', 'Ticket-Queue geändert zu <OTRS_TICKET_Queue>: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (8, 'text/plain', 'de', 'Ticket-Queue geändert zu <LIGERO_TICKET_Queue>: <LIGERO_TICKET_Title>', 'Hallo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname> <LIGERO_NOTIFICATION_RECIPIENT_UserLastname>,
 
-das Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] wurde in die Queue <OTRS_TICKET_Queue> verschoben.
+das Ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] wurde in die Queue <LIGERO_TICKET_Queue> verschoben.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (9, 'text/plain', 'de', 'Erinnerungszeit des gesperrten Tickets erreicht: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (9, 'text/plain', 'de', 'Erinnerungszeit des gesperrten Tickets erreicht: <LIGERO_TICKET_Title>', 'Hallo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname> <LIGERO_NOTIFICATION_RECIPIENT_UserLastname>,
 
-die Erinnerungszeit für das gesperrte Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] wurde erreicht.
+die Erinnerungszeit für das gesperrte Ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] wurde erreicht.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (10, 'text/plain', 'de', 'Erinnerungszeit des freigegebenen Tickets erreicht: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (10, 'text/plain', 'de', 'Erinnerungszeit des freigegebenen Tickets erreicht: <LIGERO_TICKET_Title>', 'Hallo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname> <LIGERO_NOTIFICATION_RECIPIENT_UserLastname>,
 
-die Erinnerungszeit für das freigegebene Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] wurde erreicht.
+die Erinnerungszeit für das freigegebene Ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] wurde erreicht.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (11, 'text/plain', 'de', 'Ticket-Eskalation! <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (11, 'text/plain', 'de', 'Ticket-Eskalation! <LIGERO_TICKET_Title>', 'Hallo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname> <LIGERO_NOTIFICATION_RECIPIENT_UserLastname>,
 
-das Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] ist eskaliert!
+das Ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] ist eskaliert!
 
-Eskaliert am: <OTRS_TICKET_EscalationDestinationDate>
-Eskaliert seit: <OTRS_TICKET_EscalationDestinationIn>
+Eskaliert am: <LIGERO_TICKET_EscalationDestinationDate>
+Eskaliert seit: <LIGERO_TICKET_EscalationDestinationIn>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (12, 'text/plain', 'de', 'Ticket-Eskalations-Warnung! <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (12, 'text/plain', 'de', 'Ticket-Eskalations-Warnung! <LIGERO_TICKET_Title>', 'Hallo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname> <LIGERO_NOTIFICATION_RECIPIENT_UserLastname>,
 
-das Ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] wird bald eskalieren!
+das Ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] wird bald eskalieren!
 
-Eskalation um: <OTRS_TICKET_EscalationDestinationDate>
-Eskalation in: <OTRS_TICKET_EscalationDestinationIn>
+Eskalation um: <LIGERO_TICKET_EscalationDestinationDate>
+Eskalation in: <LIGERO_TICKET_EscalationDestinationIn>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (13, 'text/plain', 'de', 'Ticket-Service aktualisiert zu <OTRS_TICKET_Service>: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (13, 'text/plain', 'de', 'Ticket-Service aktualisiert zu <LIGERO_TICKET_Service>: <LIGERO_TICKET_Title>', 'Hallo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname> <LIGERO_NOTIFICATION_RECIPIENT_UserLastname>,
 
-der Service des Tickets [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] wurde geändert zu <OTRS_TICKET_Service>.
+der Service des Tickets [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] wurde geändert zu <LIGERO_TICKET_Service>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (14, 'text/html', 'de', 'Erinnerung: <OTRS_APPOINTMENT_TITLE>', 'Hallo &lt;OTRS_NOTIFICATION_RECIPIENT_UserFirstname&gt;,<br />
+    (14, 'text/html', 'de', 'Erinnerung: <LIGERO_APPOINTMENT_TITLE>', 'Hallo &lt;LIGERO_NOTIFICATION_RECIPIENT_UserFirstname&gt;,<br />
 <br />
-Termin &quot;&lt;OTRS_APPOINTMENT_TITLE&gt;&quot; hat seine Benachrichtigungszeit erreicht.<br />
+Termin &quot;&lt;LIGERO_APPOINTMENT_TITLE&gt;&quot; hat seine Benachrichtigungszeit erreicht.<br />
 <br />
-Beschreibung: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;<br />
-Standort: &lt;OTRS_APPOINTMENT_LOCATION&gt;<br />
-Kalender: <span style="color: &lt;OTRS_CALENDAR_COLOR&gt;;">■</span> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
-Startzeitpunkt: &lt;OTRS_APPOINTMENT_STARTTIME&gt;<br />
-Endzeitpunkt: &lt;OTRS_APPOINTMENT_ENDTIME&gt;<br />
-Ganztägig: &lt;OTRS_APPOINTMENT_ALLDAY&gt;<br />
-Wiederholung: &lt;OTRS_APPOINTMENT_RECURRING&gt;<br />
+Beschreibung: &lt;LIGERO_APPOINTMENT_DESCRIPTION&gt;<br />
+Standort: &lt;LIGERO_APPOINTMENT_LOCATION&gt;<br />
+Kalender: <span style="color: &lt;LIGERO_CALENDAR_COLOR&gt;;">■</span> &lt;LIGERO_CALENDAR_CALENDARNAME&gt;<br />
+Startzeitpunkt: &lt;LIGERO_APPOINTMENT_STARTTIME&gt;<br />
+Endzeitpunkt: &lt;LIGERO_APPOINTMENT_ENDTIME&gt;<br />
+Ganztägig: &lt;LIGERO_APPOINTMENT_ALLDAY&gt;<br />
+Wiederholung: &lt;LIGERO_APPOINTMENT_RECURRING&gt;<br />
 <br />
-<a href="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;">&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;</a><br />
+<a href="&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;">&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;</a><br />
 <br />
--- &lt;OTRS_CONFIG_NotificationSenderName&gt;');
+-- &lt;LIGERO_CONFIG_NotificationSenderName&gt;');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (1, 'text/plain', 'es_MX', 'Se ha creado un ticket: <OTRS_TICKET_Title>', 'Hola <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (1, 'text/plain', 'es_MX', 'Se ha creado un ticket: <LIGERO_TICKET_Title>', 'Hola <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-el ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] se ha creado en la fila <OTRS_TICKET_Queue>.
+el ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] se ha creado en la fila <LIGERO_TICKET_Queue>.
 
-<OTRS_CUSTOMER_REALNAME> escribió:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> escribió:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (2, 'text/plain', 'es_MX', 'Seguimiento a ticket desbloqueado: <OTRS_CUSTOMER_SUBJECT[24]>', 'Hola <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (2, 'text/plain', 'es_MX', 'Seguimiento a ticket desbloqueado: <LIGERO_CUSTOMER_SUBJECT[24]>', 'Hola <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-el ticket desbloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] recibió un seguimiento.
+el ticket desbloqueado [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] recibió un seguimiento.
 
-<OTRS_CUSTOMER_REALNAME> escribió:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> escribió:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (3, 'text/plain', 'es_MX', 'Seguimiento a ticket bloqueado: <OTRS_CUSTOMER_SUBJECT[24]>', 'Hola <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (3, 'text/plain', 'es_MX', 'Seguimiento a ticket bloqueado: <LIGERO_CUSTOMER_SUBJECT[24]>', 'Hola <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-el ticket bloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] recibió un seguimiento.
+el ticket bloqueado [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] recibió un seguimiento.
 
-<OTRS_CUSTOMER_REALNAME> escribió:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> escribió:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (4, 'text/plain', 'es_MX', 'Terminó tiempo de bloqueo: <OTRS_TICKET_Title>', 'Hola <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (4, 'text/plain', 'es_MX', 'Terminó tiempo de bloqueo: <LIGERO_TICKET_Title>', 'Hola <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-el ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>]  ha alcanzado su tiempo de espera como bloqueado y ahora se encuentra desbloqueado.
+el ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>]  ha alcanzado su tiempo de espera como bloqueado y ahora se encuentra desbloqueado.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (5, 'text/plain', 'es_MX', 'Actualización del propietario de ticket a <OTRS_OWNER_UserFullname>: <OTRS_TICKET_Title>', 'Hola <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (5, 'text/plain', 'es_MX', 'Actualización del propietario de ticket a <LIGERO_OWNER_UserFullname>: <LIGERO_TICKET_Title>', 'Hola <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-el propietario del ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] se ha modificado  a <OTRS_TICKET_OWNER_UserFullname> por <OTRS_CURRENT_UserFullname>.
+el propietario del ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] se ha modificado  a <LIGERO_TICKET_OWNER_UserFullname> por <LIGERO_CURRENT_UserFullname>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (6, 'text/plain', 'es_MX', 'Actualización del responsable de ticket a <OTRS_RESPONSIBLE_UserFullname>: <OTRS_TICKET_Title>', 'Hola <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (6, 'text/plain', 'es_MX', 'Actualización del responsable de ticket a <LIGERO_RESPONSIBLE_UserFullname>: <LIGERO_TICKET_Title>', 'Hola <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-el agente responsable del ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] se ha modificado a <OTRS_TICKET_RESPONSIBLE_UserFullname> por <OTRS_CURRENT_UserFullname>.
+el agente responsable del ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] se ha modificado a <LIGERO_TICKET_RESPONSIBLE_UserFullname> por <LIGERO_CURRENT_UserFullname>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (7, 'text/plain', 'es_MX', 'Nota de ticket: <OTRS_AGENT_SUBJECT[24]>', 'Hola <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (7, 'text/plain', 'es_MX', 'Nota de ticket: <LIGERO_AGENT_SUBJECT[24]>', 'Hola <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-<OTRS_CURRENT_UserFullname> escribió:
-<OTRS_AGENT_BODY[30]>
+<LIGERO_CURRENT_UserFullname> escribió:
+<LIGERO_AGENT_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (8, 'text/plain', 'es_MX', 'La fila del ticket ha cambiado a <OTRS_TICKET_Queue>: <OTRS_TICKET_Title>', 'Hola <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (8, 'text/plain', 'es_MX', 'La fila del ticket ha cambiado a <LIGERO_TICKET_Queue>: <LIGERO_TICKET_Title>', 'Hola <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-el ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] ha cambiado de fila a <OTRS_TICKET_Queue>.
+el ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] ha cambiado de fila a <LIGERO_TICKET_Queue>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (9, 'text/plain', 'es_MX', 'Recordatorio pendiente en ticket bloqueado se ha alcanzado: <OTRS_TICKET_Title>', 'Hola <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (9, 'text/plain', 'es_MX', 'Recordatorio pendiente en ticket bloqueado se ha alcanzado: <LIGERO_TICKET_Title>', 'Hola <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-el tiempo del recordatorio pendiente para el ticket bloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] se ha alcanzado.
+el tiempo del recordatorio pendiente para el ticket bloqueado [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] se ha alcanzado.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (10, 'text/plain', 'es_MX', 'Recordatorio pendiente en ticket desbloqueado se ha alcanzado: <OTRS_TICKET_Title>', 'Hola <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (10, 'text/plain', 'es_MX', 'Recordatorio pendiente en ticket desbloqueado se ha alcanzado: <LIGERO_TICKET_Title>', 'Hola <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-el tiempo del recordatorio pendiente para el ticket desbloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] se ha alcanzado.
+el tiempo del recordatorio pendiente para el ticket desbloqueado [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] se ha alcanzado.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (11, 'text/plain', 'es_MX', '¡Escalación de ticket! <OTRS_TICKET_Title>', 'Hola <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (11, 'text/plain', 'es_MX', '¡Escalación de ticket! <LIGERO_TICKET_Title>', 'Hola <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-el ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] se ha escalado!
+el ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] se ha escalado!
 
-Escaló: <OTRS_TICKET_EscalationDestinationDate>
-Escalado desde: <OTRS_TICKET_EscalationDestinationIn>
+Escaló: <LIGERO_TICKET_EscalationDestinationDate>
+Escalado desde: <LIGERO_TICKET_EscalationDestinationIn>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (12, 'text/plain', 'es_MX', 'Aviso de escalación de ticket! <OTRS_TICKET_Title>', 'Hola <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (12, 'text/plain', 'es_MX', 'Aviso de escalación de ticket! <LIGERO_TICKET_Title>', 'Hola <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-el ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] se encuentra proximo a escalar!
+el ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] se encuentra proximo a escalar!
 
-Escalará: <OTRS_TICKET_EscalationDestinationDate>
-Escalará en: <OTRS_TICKET_EscalationDestinationIn>
+Escalará: <LIGERO_TICKET_EscalationDestinationDate>
+Escalará en: <LIGERO_TICKET_EscalationDestinationIn>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (13, 'text/plain', 'es_MX', 'El servicio del ticket ha cambiado a <OTRS_TICKET_Service>: <OTRS_TICKET_Title>', 'Hola <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (13, 'text/plain', 'es_MX', 'El servicio del ticket ha cambiado a <LIGERO_TICKET_Service>: <LIGERO_TICKET_Title>', 'Hola <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-el servicio del ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] se ha cambiado a <OTRS_TICKET_Service>.
+el servicio del ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] se ha cambiado a <LIGERO_TICKET_Service>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (1, 'text/plain', 'zh_CN', '票据编制 工单已创建：<OTRS_TICKET_Title>', '您好 <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (1, 'text/plain', 'zh_CN', '票据编制 工单已创建：<LIGERO_TICKET_Title>', '您好 <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-票据工单 [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 已在等待队列 已在队列<OTRS_TICKET_Queue> 中被编制完成。中被创建完成
+票据工单 [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] 已在等待队列 已在队列<LIGERO_TICKET_Queue> 中被编制完成。中被创建完成
 
-<OTRS_CUSTOMER_REALNAME> 写道：
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> 写道：
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (2, 'text/plain', 'zh_CN', '解锁票据的后续作业解锁工单的后续： <OTRS_CUSTOMER_SUBJECT[24]>', '您好<OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (2, 'text/plain', 'zh_CN', '解锁票据的后续作业解锁工单的后续： <LIGERO_CUSTOMER_SUBJECT[24]>', '您好<LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-解锁票据解锁工单[<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 已获得一项后续作业。
+解锁票据解锁工单[<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] 已获得一项后续作业。
 
-<OTRS_CUSTOMER_REALNAME> 写道:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> 写道:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (3, 'text/plain', 'zh_CN', '加锁票据的后续作业 锁定工单后续：<OTRS_CUSTOMER_SUBJECT[24]>', '您好 <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (3, 'text/plain', 'zh_CN', '加锁票据的后续作业 锁定工单后续：<LIGERO_CUSTOMER_SUBJECT[24]>', '您好 <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-加锁票据锁定工单 [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 已获得一项后续作业。
+加锁票据锁定工单 [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] 已获得一项后续作业。
 
-<OTRS_CUSTOMER_REALNAME> 写道：
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> 写道：
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (4, 'text/plain', 'zh_CN', '票据加锁超时工单锁定超时：<OTRS_TICKET_Title>', '您好 <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (4, 'text/plain', 'zh_CN', '票据加锁超时工单锁定超时：<LIGERO_TICKET_Title>', '您好 <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-票据工单 [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 已达到其锁定时限，现在解锁。
+票据工单 [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] 已达到其锁定时限，现在解锁。
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (5, 'text/plain', 'zh_CN', '票据的拥有人升级为工单所有者更新为 <OTRS_OWNER_UserFullname>: <OTRS_TICKET_Title>', '您好 <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (5, 'text/plain', 'zh_CN', '票据的拥有人升级为工单所有者更新为 <LIGERO_OWNER_UserFullname>: <LIGERO_TICKET_Title>', '您好 <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-票据的所有人工单的所有者 [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 已被该信为 <OTRS_TICKET_OWNER_UserFullname> 的 <OTRS_CURRENT_UserFullname>。
+票据的所有人工单的所有者 [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] 已被该信为 <LIGERO_TICKET_OWNER_UserFullname> 的 <LIGERO_CURRENT_UserFullname>。
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (6, 'text/plain', 'zh_CN', '票据的负责人 工单负责人更新为<OTRS_RESPONSIBLE_UserFullname>: <OTRS_TICKET_Title>', '您好 <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (6, 'text/plain', 'zh_CN', '票据的负责人 工单负责人更新为<LIGERO_RESPONSIBLE_UserFullname>: <LIGERO_TICKET_Title>', '您好 <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-工单的负责人 [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 已被升级为 已被更新为 <OTRS_TICKET_RESPONSIBLE_UserFullname> 的 <OTRS_CURRENT_UserFullname>.
+工单的负责人 [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] 已被升级为 已被更新为 <LIGERO_TICKET_RESPONSIBLE_UserFullname> 的 <LIGERO_CURRENT_UserFullname>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (7, 'text/plain', 'zh_CN', '票据备注工单备注：<OTRS_AGENT_SUBJECT[24]>', '您好 <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (7, 'text/plain', 'zh_CN', '票据备注工单备注：<LIGERO_AGENT_SUBJECT[24]>', '您好 <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-<OTRS_CURRENT_UserFullname> 写道：
-<OTRS_AGENT_BODY[30]>
+<LIGERO_CURRENT_UserFullname> 写道：
+<LIGERO_AGENT_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (8, 'text/plain', 'zh_CN', '票据序列已升级为工单队列更新为<OTRS_TICKET_Queue>: <OTRS_TICKET_Title>', '您好 <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (8, 'text/plain', 'zh_CN', '票据序列已升级为工单队列更新为<LIGERO_TICKET_Queue>: <LIGERO_TICKET_Title>', '您好 <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-票据工单 [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 已被升级为序列已被更新为队列 <OTRS_TICKET_Queue>。
+票据工单 [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] 已被升级为序列已被更新为队列 <LIGERO_TICKET_Queue>。
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (9, 'text/plain', 'zh_CN', '已达到锁定票据即将到期的提醒时间已到达锁定工单挂起提醒时间：<OTRS_TICKET_Title>', '您好 <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (9, 'text/plain', 'zh_CN', '已达到锁定票据即将到期的提醒时间已到达锁定工单挂起提醒时间：<LIGERO_TICKET_Title>', '您好 <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-锁定票据即将到期的提醒时间锁定工单挂起提醒时间 [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 已到达。
+锁定票据即将到期的提醒时间锁定工单挂起提醒时间 [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] 已到达。
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (10, 'text/plain', 'zh_CN', '未锁定票据即将到期的提醒时间已到已到未锁定工单的挂起提醒时间：<OTRS_TICKET_Title>', '您好 <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (10, 'text/plain', 'zh_CN', '未锁定票据即将到期的提醒时间已到已到未锁定工单的挂起提醒时间：<LIGERO_TICKET_Title>', '您好 <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-未锁定票据即将到期的提醒时间未锁定工单的挂起提醒时间 [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 已到已到达。
+未锁定票据即将到期的提醒时间未锁定工单的挂起提醒时间 [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] 已到已到达。
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (11, 'text/plain', 'zh_CN', '票据升级！工单升级！<OTRS_TICKET_Title>', '您好 <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (11, 'text/plain', 'zh_CN', '票据升级！工单升级！<LIGERO_TICKET_Title>', '您好 <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-票据工单 [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 已被升级！
+票据工单 [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] 已被升级！
 
-升级地点升级开始时间：<OTRS_TICKET_EscalationDestinationDate>
-升级开始时间升级在：<OTRS_TICKET_EscalationDestinationIn>内
+升级地点升级开始时间：<LIGERO_TICKET_EscalationDestinationDate>
+升级开始时间升级在：<LIGERO_TICKET_EscalationDestinationIn>内
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (12, 'text/plain', 'zh_CN', '工单升级警告Ticket Escalation Warning! <OTRS_TICKET_Title>', '您好  <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (12, 'text/plain', 'zh_CN', '工单升级警告Ticket Escalation Warning! <LIGERO_TICKET_Title>', '您好  <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-票据工单 [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 将升级！
+票据工单 [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] 将升级！
 
-升级地点升级开始时间：<OTRS_TICKET_EscalationDestinationDate>
-升级开始时间升级在：<OTRS_TICKET_EscalationDestinationIn>内
+升级地点升级开始时间：<LIGERO_TICKET_EscalationDestinationDate>
+升级开始时间升级在：<LIGERO_TICKET_EscalationDestinationIn>内
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (13, 'text/plain', 'zh_CN', '票据服务升级为工单服务更新为<OTRS_TICKET_Service>: <OTRS_TICKET_Title>', '您好 <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (13, 'text/plain', 'zh_CN', '票据服务升级为工单服务更新为<LIGERO_TICKET_Service>: <LIGERO_TICKET_Title>', '您好 <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-票据服务工单服务 [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] 已被升级为已被更新为 <OTRS_TICKET_Service>。
+票据服务工单服务 [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] 已被升级为已被更新为 <LIGERO_TICKET_Service>。
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (1, 'text/plain', 'pt_BR', 'Ticket criado: <OTRS_TICKET_Title>', 'Oi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (1, 'text/plain', 'pt_BR', 'Ticket criado: <LIGERO_TICKET_Title>', 'Oi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-o ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] foi criado na fila <OTRS_TICKET_Queue>.
+o ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] foi criado na fila <LIGERO_TICKET_Queue>.
 
-<OTRS_CUSTOMER_REALNAME> escreveu:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> escreveu:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (2, 'text/plain', 'pt_BR', 'Acompanhamento do ticket desbloqueado: <OTRS_CUSTOMER_SUBJECT[24]>', 'Oi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (2, 'text/plain', 'pt_BR', 'Acompanhamento do ticket desbloqueado: <LIGERO_CUSTOMER_SUBJECT[24]>', 'Oi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-o ticket desbloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] recebeu uma resposta.
+o ticket desbloqueado [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] recebeu uma resposta.
 
-<OTRS_CUSTOMER_REALNAME> escreveu:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> escreveu:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (3, 'text/plain', 'pt_BR', 'Acompanhamento do ticket bloqueado: <OTRS_CUSTOMER_SUBJECT[24]>', 'Oi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (3, 'text/plain', 'pt_BR', 'Acompanhamento do ticket bloqueado: <LIGERO_CUSTOMER_SUBJECT[24]>', 'Oi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-o ticket bloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] recebeu uma resposta.
+o ticket bloqueado [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] recebeu uma resposta.
 
-<OTRS_CUSTOMER_REALNAME> escreveu:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> escreveu:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (4, 'text/plain', 'pt_BR', 'Tempo limite de bloqueio do ticket: <OTRS_TICKET_Title>', 'Oi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (4, 'text/plain', 'pt_BR', 'Tempo limite de bloqueio do ticket: <LIGERO_TICKET_Title>', 'Oi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-o ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] atingiu o seu período de tempo limite de bloqueio e agora está desbloqueado.
+o ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] atingiu o seu período de tempo limite de bloqueio e agora está desbloqueado.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (5, 'text/plain', 'pt_BR', 'Atualização de proprietário de ticket para <OTRS_OWNER_UserFullname>: <OTRS_TICKET_Title>', 'Oi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (5, 'text/plain', 'pt_BR', 'Atualização de proprietário de ticket para <LIGERO_OWNER_UserFullname>: <LIGERO_TICKET_Title>', 'Oi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-o proprietário do ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] foi atualizado para <OTRS_TICKET_OWNER_UserFullname> por <OTRS_CURRENT_UserFullname>.
+o proprietário do ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] foi atualizado para <LIGERO_TICKET_OWNER_UserFullname> por <LIGERO_CURRENT_UserFullname>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (6, 'text/plain', 'pt_BR', 'Atualização de responsável de ticket para <OTRS_RESPONSIBLE_UserFullname>: <OTRS_TICKET_Title>', 'Oi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (6, 'text/plain', 'pt_BR', 'Atualização de responsável de ticket para <LIGERO_RESPONSIBLE_UserFullname>: <LIGERO_TICKET_Title>', 'Oi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-o agente responsável do ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] foi atualizado para <OTRS_TICKET_RESPONSIBLE_UserFullname> por <OTRS_CURRENT_UserFullname>.
+o agente responsável do ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] foi atualizado para <LIGERO_TICKET_RESPONSIBLE_UserFullname> por <LIGERO_CURRENT_UserFullname>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (7, 'text/plain', 'pt_BR', 'Observação sobre o ticket: <OTRS_AGENT_SUBJECT[24]>', 'Oi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (7, 'text/plain', 'pt_BR', 'Observação sobre o ticket: <LIGERO_AGENT_SUBJECT[24]>', 'Oi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-<OTRS_CURRENT_UserFullname> escreveu:
-<OTRS_AGENT_BODY[30]>
+<LIGERO_CURRENT_UserFullname> escreveu:
+<LIGERO_AGENT_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (8, 'text/plain', 'pt_BR', 'Atualização da fila do ticket para <OTRS_TICKET_Queue>: <OTRS_TICKET_Title>', 'Oi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (8, 'text/plain', 'pt_BR', 'Atualização da fila do ticket para <LIGERO_TICKET_Queue>: <LIGERO_TICKET_Title>', 'Oi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-o ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] foi atualizado na fila <OTRS_TICKET_Queue>.
+o ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] foi atualizado na fila <LIGERO_TICKET_Queue>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (9, 'text/plain', 'pt_BR', 'Tempo de Lembrete de Pendência do Ticket Bloqueado Atingido: <OTRS_TICKET_Title>', 'Oi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (9, 'text/plain', 'pt_BR', 'Tempo de Lembrete de Pendência do Ticket Bloqueado Atingido: <LIGERO_TICKET_Title>', 'Oi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-o tempo de lembrete pendente do ticket bloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] foi atingido.
+o tempo de lembrete pendente do ticket bloqueado [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] foi atingido.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (10, 'text/plain', 'pt_BR', 'Tempo de Lembrete Pendente do Ticket Desbloqueado Atingido: <OTRS_TICKET_Title>', 'Oi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (10, 'text/plain', 'pt_BR', 'Tempo de Lembrete Pendente do Ticket Desbloqueado Atingido: <LIGERO_TICKET_Title>', 'Oi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-o tempo de lembrete pendente do ticket desbloqueado [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] foi atingido.
+o tempo de lembrete pendente do ticket desbloqueado [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] foi atingido.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (11, 'text/plain', 'pt_BR', 'Escalonamento do ticket! <OTRS_TICKET_Title>', 'Oi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (11, 'text/plain', 'pt_BR', 'Escalonamento do ticket! <LIGERO_TICKET_Title>', 'Oi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-o ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] foi escalonado!
+o ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] foi escalonado!
 
-Escalonado em: <OTRS_TICKET_EscalationDestinationDate>
-Escalonado desde: <OTRS_TICKET_EscalationDestinationIn>
+Escalonado em: <LIGERO_TICKET_EscalationDestinationDate>
+Escalonado desde: <LIGERO_TICKET_EscalationDestinationIn>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (12, 'text/plain', 'pt_BR', 'Aviso de escalonamento do ticket! <OTRS_TICKET_Title>', 'Oi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (12, 'text/plain', 'pt_BR', 'Aviso de escalonamento do ticket! <LIGERO_TICKET_Title>', 'Oi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-o ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] será escalonado!
+o ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] será escalonado!
 
-Escalonamento em: <OTRS_TICKET_EscalationDestinationDate>
-Escalonamento em: <OTRS_TICKET_EscalationDestinationIn>
+Escalonamento em: <LIGERO_TICKET_EscalationDestinationDate>
+Escalonamento em: <LIGERO_TICKET_EscalationDestinationIn>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (13, 'text/plain', 'pt_BR', 'Atualização do serviço do ticket para <OTRS_TICKET_Service>: <OTRS_TICKET_Title>', 'Oi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (13, 'text/plain', 'pt_BR', 'Atualização do serviço do ticket para <LIGERO_TICKET_Service>: <LIGERO_TICKET_Title>', 'Oi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-o serviço do ticket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] foi atualizado para <OTRS_TICKET_Service>.
+o serviço do ticket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] foi atualizado para <LIGERO_TICKET_Service>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (1, 'text/plain', 'hu', 'Jegy létrehozva: <OTRS_TICKET_Title>', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+    (1, 'text/plain', 'hu', 'Jegy létrehozva: <LIGERO_TICKET_Title>', 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-A(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy létrejött a következő várólistában: <OTRS_TICKET_Queue>.
+A(z) [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] jegy létrejött a következő várólistában: <LIGERO_TICKET_Queue>.
 
-<OTRS_CUSTOMER_REALNAME> ezt írta:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> ezt írta:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (2, 'text/plain', 'hu', 'Feloldott jegy követése: <OTRS_CUSTOMER_SUBJECT[24]>', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+    (2, 'text/plain', 'hu', 'Feloldott jegy követése: <LIGERO_CUSTOMER_SUBJECT[24]>', 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-A feloldott [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy egy követő üzenetet kapott.
+A feloldott [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] jegy egy követő üzenetet kapott.
 
-<OTRS_CUSTOMER_REALNAME> ezt írta:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> ezt írta:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (3, 'text/plain', 'hu', 'Zárolt jegy követése: <OTRS_CUSTOMER_SUBJECT[24]>', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+    (3, 'text/plain', 'hu', 'Zárolt jegy követése: <LIGERO_CUSTOMER_SUBJECT[24]>', 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-A zárolt [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy egy követő üzenetet kapott.
+A zárolt [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] jegy egy követő üzenetet kapott.
 
-<OTRS_CUSTOMER_REALNAME> ezt írta:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> ezt írta:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (4, 'text/plain', 'hu', 'Jegyzár időkorlát: <OTRS_TICKET_Title>', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+    (4, 'text/plain', 'hu', 'Jegyzár időkorlát: <LIGERO_TICKET_Title>', 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-A(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy elérte a zárolás időkorlátjának időtartamát, és most feloldásra került.
+A(z) [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] jegy elérte a zárolás időkorlátjának időtartamát, és most feloldásra került.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (5, 'text/plain', 'hu', 'Jegytulajdonos frissítés <OTRS_OWNER_UserLastname> <OTRS_OWNER_UserFirstname> ügyintézőre: <OTRS_TICKET_Title>', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+    (5, 'text/plain', 'hu', 'Jegytulajdonos frissítés <LIGERO_OWNER_UserLastname> <LIGERO_OWNER_UserFirstname> ügyintézőre: <LIGERO_TICKET_Title>', 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-A(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy tulajdonosát <OTRS_CURRENT_UserLastname> <OTRS_CURRENT_UserFirstname> frissítette <OTRS_OWNER_UserLastname> <OTRS_OWNER_UserFirstname> ügyintézőre.
+A(z) [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] jegy tulajdonosát <LIGERO_CURRENT_UserLastname> <LIGERO_CURRENT_UserFirstname> frissítette <LIGERO_OWNER_UserLastname> <LIGERO_OWNER_UserFirstname> ügyintézőre.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (6, 'text/plain', 'hu', 'Jegyfelelős frissítés <OTRS_RESPONSIBLE_UserLastname> <OTRS_RESPONSIBLE_UserFirstname> ügyintézőre: <OTRS_TICKET_Title>', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+    (6, 'text/plain', 'hu', 'Jegyfelelős frissítés <LIGERO_RESPONSIBLE_UserLastname> <LIGERO_RESPONSIBLE_UserFirstname> ügyintézőre: <LIGERO_TICKET_Title>', 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-A(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy felelős ügyintézőjét <OTRS_CURRENT_UserLastname> <OTRS_CURRENT_UserFirstname> frissítette <OTRS_RESPONSIBLE_UserLastname> <OTRS_RESPONSIBLE_UserFirstname> ügyintézőre.
+A(z) [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] jegy felelős ügyintézőjét <LIGERO_CURRENT_UserLastname> <LIGERO_CURRENT_UserFirstname> frissítette <LIGERO_RESPONSIBLE_UserLastname> <LIGERO_RESPONSIBLE_UserFirstname> ügyintézőre.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (7, 'text/plain', 'hu', 'Új jegyzet: <OTRS_AGENT_SUBJECT[24]>', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+    (7, 'text/plain', 'hu', 'Új jegyzet: <LIGERO_AGENT_SUBJECT[24]>', 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-<OTRS_CURRENT_UserLastname> <OTRS_CURRENT_UserFirstname> ezt írta:
-<OTRS_AGENT_BODY[30]>
+<LIGERO_CURRENT_UserLastname> <LIGERO_CURRENT_UserFirstname> ezt írta:
+<LIGERO_AGENT_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (8, 'text/plain', 'hu', 'Jegy várólista frissítés <OTRS_TICKET_Queue> várólistára: <OTRS_TICKET_Title>', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+    (8, 'text/plain', 'hu', 'Jegy várólista frissítés <LIGERO_TICKET_Queue> várólistára: <LIGERO_TICKET_Title>', 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-A(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegyet áthelyezték a következő várólistába: <OTRS_TICKET_Queue>.
+A(z) [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] jegyet áthelyezték a következő várólistába: <LIGERO_TICKET_Queue>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (9, 'text/plain', 'hu', 'Zárolt jegy „emlékeztető függőben” ideje elérve: <OTRS_TICKET_Title>', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+    (9, 'text/plain', 'hu', 'Zárolt jegy „emlékeztető függőben” ideje elérve: <LIGERO_TICKET_Title>', 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-A zárolt [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy elérte az „emlékeztető függőben” idejét.
+A zárolt [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] jegy elérte az „emlékeztető függőben” idejét.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (10, 'text/plain', 'hu', 'Feloldott jegy „emlékeztető függőben” ideje elérve: <OTRS_TICKET_Title>', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+    (10, 'text/plain', 'hu', 'Feloldott jegy „emlékeztető függőben” ideje elérve: <LIGERO_TICKET_Title>', 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-A feloldott [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy elérte az „emlékeztető függőben” idejét.
+A feloldott [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] jegy elérte az „emlékeztető függőben” idejét.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (11, 'text/plain', 'hu', 'Jegyeszkaláció! <OTRS_TICKET_Title>', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+    (11, 'text/plain', 'hu', 'Jegyeszkaláció! <LIGERO_TICKET_Title>', 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-A(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy eszkalálódott!
+A(z) [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] jegy eszkalálódott!
 
-Eszkaláció időpontja: <OTRS_TICKET_EscalationDestinationDate>
-Eszkaláció óta eltelt idő: <OTRS_TICKET_EscalationDestinationIn>
+Eszkaláció időpontja: <LIGERO_TICKET_EscalationDestinationDate>
+Eszkaláció óta eltelt idő: <LIGERO_TICKET_EscalationDestinationIn>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (12, 'text/plain', 'hu', 'Jegyeszkaláció figyelmeztetés! <OTRS_TICKET_Title>', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+    (12, 'text/plain', 'hu', 'Jegyeszkaláció figyelmeztetés! <LIGERO_TICKET_Title>', 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-A(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy eszkalálódni fog!
+A(z) [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] jegy eszkalálódni fog!
 
-Eszkaláció időpontja: <OTRS_TICKET_EscalationDestinationDate>
-Eszkalációig fennmaradó idő: <OTRS_TICKET_EscalationDestinationIn>
+Eszkaláció időpontja: <LIGERO_TICKET_EscalationDestinationDate>
+Eszkalációig fennmaradó idő: <LIGERO_TICKET_EscalationDestinationIn>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (13, 'text/plain', 'hu', 'Jegyszolgáltatás frissítve <OTRS_TICKET_Service> szolgáltatásra: <OTRS_TICKET_Title>', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+    (13, 'text/plain', 'hu', 'Jegyszolgáltatás frissítve <LIGERO_TICKET_Service> szolgáltatásra: <LIGERO_TICKET_Title>', 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-A(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy szolgáltatása frissítve lett a következőre: <OTRS_TICKET_Service>.
+A(z) [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] jegy szolgáltatása frissítve lett a következőre: <LIGERO_TICKET_Service>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (14, 'text/html', 'hu', 'Emlékeztető: <OTRS_APPOINTMENT_TITLE>', 'Kedves &lt;OTRS_NOTIFICATION_RECIPIENT_UserFirstname&gt;!<br />
+    (14, 'text/html', 'hu', 'Emlékeztető: <LIGERO_APPOINTMENT_TITLE>', 'Kedves &lt;LIGERO_NOTIFICATION_RECIPIENT_UserFirstname&gt;!<br />
 <br />
-A következő esemény elérte az értesítési idejét: &lt;OTRS_APPOINTMENT_TITLE&gt;<br />
+A következő esemény elérte az értesítési idejét: &lt;LIGERO_APPOINTMENT_TITLE&gt;<br />
 <br />
-Leírás: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;<br />
-Hely: &lt;OTRS_APPOINTMENT_LOCATION&gt;<br />
-Naptár: <span style="color: &lt;OTRS_CALENDAR_COLOR&gt;;">■</span> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
-Kezdési dátum: &lt;OTRS_APPOINTMENT_STARTTIME&gt;<br />
-Befejezési dátum: &lt;OTRS_APPOINTMENT_ENDTIME&gt;<br />
-Egész napos: &lt;OTRS_APPOINTMENT_ALLDAY&gt;<br />
-Ismétlődés: &lt;OTRS_APPOINTMENT_RECURRING&gt;<br />
+Leírás: &lt;LIGERO_APPOINTMENT_DESCRIPTION&gt;<br />
+Hely: &lt;LIGERO_APPOINTMENT_LOCATION&gt;<br />
+Naptár: <span style="color: &lt;LIGERO_CALENDAR_COLOR&gt;;">■</span> &lt;LIGERO_CALENDAR_CALENDARNAME&gt;<br />
+Kezdési dátum: &lt;LIGERO_APPOINTMENT_STARTTIME&gt;<br />
+Befejezési dátum: &lt;LIGERO_APPOINTMENT_ENDTIME&gt;<br />
+Egész napos: &lt;LIGERO_APPOINTMENT_ALLDAY&gt;<br />
+Ismétlődés: &lt;LIGERO_APPOINTMENT_RECURRING&gt;<br />
 <br />
-<a href="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;">&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;</a><br />
+<a href="&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;">&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;</a><br />
 <br />
--- &lt;OTRS_CONFIG_NotificationSenderName&gt;');
+-- &lt;LIGERO_CONFIG_NotificationSenderName&gt;');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (1, 'text/plain', 'sr_Cyrl', 'Oтворен тикет: <OTRS_TICKET_Title>', 'Здраво <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (1, 'text/plain', 'sr_Cyrl', 'Oтворен тикет: <LIGERO_TICKET_Title>', 'Здраво <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-тикет [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] је отворен у реду <OTRS_TICKET_Queue>.
+тикет [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] је отворен у реду <LIGERO_TICKET_Queue>.
 
-<OTRS_CUSTOMER_REALNAME> је написао/ла:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> је написао/ла:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (2, 'text/plain', 'sr_Cyrl', 'Наставак откључаног тикета: <OTRS_CUSTOMER_SUBJECT[24]>', 'Здраво <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (2, 'text/plain', 'sr_Cyrl', 'Наставак откључаног тикета: <LIGERO_CUSTOMER_SUBJECT[24]>', 'Здраво <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-откључани тикет [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] је примио наставак.
+откључани тикет [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] је примио наставак.
 
-<OTRS_CUSTOMER_REALNAME> је написао/ла:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> је написао/ла:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (3, 'text/plain', 'sr_Cyrl', 'Наставак закључаног тикета: <OTRS_CUSTOMER_SUBJECT[24]>', 'Здраво <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (3, 'text/plain', 'sr_Cyrl', 'Наставак закључаног тикета: <LIGERO_CUSTOMER_SUBJECT[24]>', 'Здраво <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-закључани тикет [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] је примио наставак.
+закључани тикет [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] је примио наставак.
 
-<OTRS_CUSTOMER_REALNAME> је написао/ла:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> је написао/ла:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (4, 'text/plain', 'sr_Cyrl', 'Истек закључаног тикета: <OTRS_TICKET_Title>', 'Здраво <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (4, 'text/plain', 'sr_Cyrl', 'Истек закључаног тикета: <LIGERO_TICKET_Title>', 'Здраво <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-тикет [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] је достигао време откључавања.
+тикет [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] је достигао време откључавања.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (5, 'text/plain', 'sr_Cyrl', 'Промена власника тикета на <OTRS_OWNER_UserFullname>: <OTRS_TICKET_Title>', 'Здраво <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (5, 'text/plain', 'sr_Cyrl', 'Промена власника тикета на <LIGERO_OWNER_UserFullname>: <LIGERO_TICKET_Title>', 'Здраво <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-власник тикета [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] је промењен на <OTRS_TICKET_OWNER_UserFullname> од стране <OTRS_CURRENT_UserFullname>.
+власник тикета [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] је промењен на <LIGERO_TICKET_OWNER_UserFullname> од стране <LIGERO_CURRENT_UserFullname>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (6, 'text/plain', 'sr_Cyrl', 'Промена одговорног за тикет на <OTRS_RESPONSIBLE_UserFullname>: <OTRS_TICKET_Title>', 'Здраво <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (6, 'text/plain', 'sr_Cyrl', 'Промена одговорног за тикет на <LIGERO_RESPONSIBLE_UserFullname>: <LIGERO_TICKET_Title>', 'Здраво <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-одговорни оператер тикета [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] је промењен на <OTRS_TICKET_RESPONSIBLE_UserFullname> од стране <OTRS_CURRENT_UserFullname>.
+одговорни оператер тикета [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] је промењен на <LIGERO_TICKET_RESPONSIBLE_UserFullname> од стране <LIGERO_CURRENT_UserFullname>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (7, 'text/plain', 'sr_Cyrl', 'Напомена тикета: <OTRS_AGENT_SUBJECT[24]>', 'Здраво <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (7, 'text/plain', 'sr_Cyrl', 'Напомена тикета: <LIGERO_AGENT_SUBJECT[24]>', 'Здраво <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-<OTRS_CURRENT_UserFullname> је написао/ла:
-<OTRS_AGENT_BODY[30]>
+<LIGERO_CURRENT_UserFullname> је написао/ла:
+<LIGERO_AGENT_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (8, 'text/plain', 'sr_Cyrl', 'Промена реда тикета у <OTRS_TICKET_Queue>: <OTRS_TICKET_Title>', 'Здраво <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (8, 'text/plain', 'sr_Cyrl', 'Промена реда тикета у <LIGERO_TICKET_Queue>: <LIGERO_TICKET_Title>', 'Здраво <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-тикету [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] је промењен ред у <OTRS_TICKET_Queue>.
+тикету [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] је промењен ред у <LIGERO_TICKET_Queue>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (9, 'text/plain', 'sr_Cyrl', 'Истек закључаног тикета на чекању: <OTRS_TICKET_Title>', 'Здраво <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (9, 'text/plain', 'sr_Cyrl', 'Истек закључаног тикета на чекању: <LIGERO_TICKET_Title>', 'Здраво <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-време закључаног тикета на чекању [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] је достигнуто.
+време закључаног тикета на чекању [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] је достигнуто.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (10, 'text/plain', 'sr_Cyrl', 'Истек откључаног тикета на чекању: <OTRS_TICKET_Title>', 'Здраво <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (10, 'text/plain', 'sr_Cyrl', 'Истек откључаног тикета на чекању: <LIGERO_TICKET_Title>', 'Здраво <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-време откључаног тикета на чекању [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] је достигнуто.
+време откључаног тикета на чекању [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] је достигнуто.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (11, 'text/plain', 'sr_Cyrl', 'Ескалација тикета! <OTRS_TICKET_Title>', 'Здраво <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (11, 'text/plain', 'sr_Cyrl', 'Ескалација тикета! <LIGERO_TICKET_Title>', 'Здраво <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-тикет [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] је ескалирао!
+тикет [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] је ескалирао!
 
-Време ескалације: <OTRS_TICKET_EscalationDestinationDate>
-Ескалиран од: <OTRS_TICKET_EscalationDestinationIn>
+Време ескалације: <LIGERO_TICKET_EscalationDestinationDate>
+Ескалиран од: <LIGERO_TICKET_EscalationDestinationIn>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (12, 'text/plain', 'sr_Cyrl', 'Упозорење на ескалацију тикета! <OTRS_TICKET_Title>', 'Здраво <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (12, 'text/plain', 'sr_Cyrl', 'Упозорење на ескалацију тикета! <LIGERO_TICKET_Title>', 'Здраво <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-тикет [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] ће ескалирати!
+тикет [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] ће ескалирати!
 
-Време ескалације: <OTRS_TICKET_EscalationDestinationDate>
-Ескалира за: <OTRS_TICKET_EscalationDestinationIn>
+Време ескалације: <LIGERO_TICKET_EscalationDestinationDate>
+Ескалира за: <LIGERO_TICKET_EscalationDestinationIn>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (13, 'text/plain', 'sr_Cyrl', 'Промена сервиса тикета на <OTRS_TICKET_Service>: <OTRS_TICKET_Title>', 'Здраво <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (13, 'text/plain', 'sr_Cyrl', 'Промена сервиса тикета на <LIGERO_TICKET_Service>: <LIGERO_TICKET_Title>', 'Здраво <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-сервис тикета [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] је промењен на <OTRS_TICKET_Service>.
+сервис тикета [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] је промењен на <LIGERO_TICKET_Service>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (14, 'text/html', 'sr_Cyrl', 'Подсетник: <OTRS_APPOINTMENT_TITLE>', 'Здраво &lt;OTRS_NOTIFICATION_RECIPIENT_UserFirstname&gt;,<br />
+    (14, 'text/html', 'sr_Cyrl', 'Подсетник: <LIGERO_APPOINTMENT_TITLE>', 'Здраво &lt;LIGERO_NOTIFICATION_RECIPIENT_UserFirstname&gt;,<br />
 <br />
-време је за обавештење у вези термина &quot;&lt;OTRS_APPOINTMENT_TITLE&gt;&quot;.<br />
+време је за обавештење у вези термина &quot;&lt;LIGERO_APPOINTMENT_TITLE&gt;&quot;.<br />
 <br />
-Опис: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;<br />
-Локација: &lt;OTRS_APPOINTMENT_LOCATION&gt;<br />
-Календар: <span style="color: &lt;OTRS_CALENDAR_COLOR&gt;;">■</span> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
-Датум почетка: &lt;OTRS_APPOINTMENT_STARTTIME&gt;<br />
-Датум краја: &lt;OTRS_APPOINTMENT_ENDTIME&gt;<br />
-Целодневно: &lt;OTRS_APPOINTMENT_ALLDAY&gt;<br />
-Понављање: &lt;OTRS_APPOINTMENT_RECURRING&gt;<br />
+Опис: &lt;LIGERO_APPOINTMENT_DESCRIPTION&gt;<br />
+Локација: &lt;LIGERO_APPOINTMENT_LOCATION&gt;<br />
+Календар: <span style="color: &lt;LIGERO_CALENDAR_COLOR&gt;;">■</span> &lt;LIGERO_CALENDAR_CALENDARNAME&gt;<br />
+Датум почетка: &lt;LIGERO_APPOINTMENT_STARTTIME&gt;<br />
+Датум краја: &lt;LIGERO_APPOINTMENT_ENDTIME&gt;<br />
+Целодневно: &lt;LIGERO_APPOINTMENT_ALLDAY&gt;<br />
+Понављање: &lt;LIGERO_APPOINTMENT_RECURRING&gt;<br />
 <br />
-<a href="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;">&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;</a><br />
+<a href="&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;">&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;</a><br />
 <br />
--- &lt;OTRS_CONFIG_NotificationSenderName&gt;');
+-- &lt;LIGERO_CONFIG_NotificationSenderName&gt;');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (1, 'text/plain', 'sr_Latn', 'Otvoren tiket: <OTRS_TICKET_Title>', 'Zdravo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (1, 'text/plain', 'sr_Latn', 'Otvoren tiket: <LIGERO_TICKET_Title>', 'Zdravo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-tiket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] je otvoren u redu <OTRS_TICKET_Queue>.
+tiket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] je otvoren u redu <LIGERO_TICKET_Queue>.
 
-<OTRS_CUSTOMER_REALNAME> je napisao/la:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> je napisao/la:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (2, 'text/plain', 'sr_Latn', 'Nastavak otključanog tiketa: <OTRS_CUSTOMER_SUBJECT[24]>', 'Zdravo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (2, 'text/plain', 'sr_Latn', 'Nastavak otključanog tiketa: <LIGERO_CUSTOMER_SUBJECT[24]>', 'Zdravo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-otključani tiket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] je primio nastavak.
+otključani tiket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] je primio nastavak.
 
-<OTRS_CUSTOMER_REALNAME> je napisao/la:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> je napisao/la:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (3, 'text/plain', 'sr_Latn', 'Nastavak zaključanog tiketa: <OTRS_CUSTOMER_SUBJECT[24]>', 'Zdravo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (3, 'text/plain', 'sr_Latn', 'Nastavak zaključanog tiketa: <LIGERO_CUSTOMER_SUBJECT[24]>', 'Zdravo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-zaključani tiket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] je primio nastavak.
+zaključani tiket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] je primio nastavak.
 
-<OTRS_CUSTOMER_REALNAME> je napisao/la:
-<OTRS_CUSTOMER_BODY[30]>
+<LIGERO_CUSTOMER_REALNAME> je napisao/la:
+<LIGERO_CUSTOMER_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (4, 'text/plain', 'sr_Latn', 'Istek zaključanog tiketa: <OTRS_TICKET_Title>', 'Zdravo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (4, 'text/plain', 'sr_Latn', 'Istek zaključanog tiketa: <LIGERO_TICKET_Title>', 'Zdravo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-tiket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] je dostigao vreme otključavanja.
+tiket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] je dostigao vreme otključavanja.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (5, 'text/plain', 'sr_Latn', 'Promena vlasnika tiketa na <OTRS_OWNER_UserFullname>: <OTRS_TICKET_Title>', 'Zdravo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (5, 'text/plain', 'sr_Latn', 'Promena vlasnika tiketa na <LIGERO_OWNER_UserFullname>: <LIGERO_TICKET_Title>', 'Zdravo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-vlasnik tiketa [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] je promenjen na <OTRS_TICKET_OWNER_UserFullname> by <OTRS_CURRENT_UserFullname>.
+vlasnik tiketa [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] je promenjen na <LIGERO_TICKET_OWNER_UserFullname> by <LIGERO_CURRENT_UserFullname>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (6, 'text/plain', 'sr_Latn', 'Promena odgovornog za tiket na <OTRS_RESPONSIBLE_UserFullname>: <OTRS_TICKET_Title>', 'Zdravo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (6, 'text/plain', 'sr_Latn', 'Promena odgovornog za tiket na <LIGERO_RESPONSIBLE_UserFullname>: <LIGERO_TICKET_Title>', 'Zdravo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-odgovorni operater tiketa [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] je promenjen na <OTRS_TICKET_RESPONSIBLE_UserFullname> by <OTRS_CURRENT_UserFullname>.
+odgovorni operater tiketa [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] je promenjen na <LIGERO_TICKET_RESPONSIBLE_UserFullname> by <LIGERO_CURRENT_UserFullname>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (7, 'text/plain', 'sr_Latn', 'Napomena tiketa: <OTRS_AGENT_SUBJECT[24]>', 'Zdravo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (7, 'text/plain', 'sr_Latn', 'Napomena tiketa: <LIGERO_AGENT_SUBJECT[24]>', 'Zdravo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-<OTRS_CURRENT_UserFullname> je napisao/la:
-<OTRS_AGENT_BODY[30]>
+<LIGERO_CURRENT_UserFullname> je napisao/la:
+<LIGERO_AGENT_BODY[30]>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (8, 'text/plain', 'sr_Latn', 'Promena reda tiketa u <OTRS_TICKET_Queue>: <OTRS_TICKET_Title>', 'Zdravo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (8, 'text/plain', 'sr_Latn', 'Promena reda tiketa u <LIGERO_TICKET_Queue>: <LIGERO_TICKET_Title>', 'Zdravo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-tiketu [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] je promenjen red u <OTRS_TICKET_Queue>.
+tiketu [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] je promenjen red u <LIGERO_TICKET_Queue>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (9, 'text/plain', 'sr_Latn', 'Istek zaključanog tiketa na čekanju: <OTRS_TICKET_Title>', 'Zdravo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (9, 'text/plain', 'sr_Latn', 'Istek zaključanog tiketa na čekanju: <LIGERO_TICKET_Title>', 'Zdravo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-vreme zaključanog tiketa na čekanju [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] je dostignuto.
+vreme zaključanog tiketa na čekanju [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] je dostignuto.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (10, 'text/plain', 'sr_Latn', 'Istek otključanog tiketa na čekanju: <OTRS_TICKET_Title>', 'Zdravo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (10, 'text/plain', 'sr_Latn', 'Istek otključanog tiketa na čekanju: <LIGERO_TICKET_Title>', 'Zdravo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-vreme otključanog tiketa na čekanju [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] je dostignuto.
+vreme otključanog tiketa na čekanju [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] je dostignuto.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (11, 'text/plain', 'sr_Latn', 'Eskalacija tiketa! <OTRS_TICKET_Title>', 'Zdravo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (11, 'text/plain', 'sr_Latn', 'Eskalacija tiketa! <LIGERO_TICKET_Title>', 'Zdravo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-tiket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] je eskalirao!
+tiket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] je eskalirao!
 
-Vreme eskalacije: <OTRS_TICKET_EscalationDestinationDate>
-Eskaliran od: <OTRS_TICKET_EscalationDestinationIn>
+Vreme eskalacije: <LIGERO_TICKET_EscalationDestinationDate>
+Eskaliran od: <LIGERO_TICKET_EscalationDestinationIn>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (12, 'text/plain', 'sr_Latn', 'Upozorenje na eskalaciju tiketa! <OTRS_TICKET_Title>', 'Zdravo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (12, 'text/plain', 'sr_Latn', 'Upozorenje na eskalaciju tiketa! <LIGERO_TICKET_Title>', 'Zdravo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-tiket [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] će eskalirati!
+tiket [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] će eskalirati!
 
-Vreme eskalacije: <OTRS_TICKET_EscalationDestinationDate>
-Eskalira za: <OTRS_TICKET_EscalationDestinationIn>
+Vreme eskalacije: <LIGERO_TICKET_EscalationDestinationDate>
+Eskalira za: <LIGERO_TICKET_EscalationDestinationIn>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (13, 'text/plain', 'sr_Latn', 'Promena servisa tiketa na <OTRS_TICKET_Service>: <OTRS_TICKET_Title>', 'Zdravo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (13, 'text/plain', 'sr_Latn', 'Promena servisa tiketa na <LIGERO_TICKET_Service>: <LIGERO_TICKET_Title>', 'Zdravo <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-servis tiketa [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] je promenjen na <OTRS_TICKET_Service>.
+servis tiketa [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] je promenjen na <LIGERO_TICKET_Service>.
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (14, 'text/html', 'sr_Latn', 'Podsetnik: <OTRS_APPOINTMENT_TITLE>', 'Zdravo &lt;OTRS_NOTIFICATION_RECIPIENT_UserFirstname&gt;,<br />
+    (14, 'text/html', 'sr_Latn', 'Podsetnik: <LIGERO_APPOINTMENT_TITLE>', 'Zdravo &lt;LIGERO_NOTIFICATION_RECIPIENT_UserFirstname&gt;,<br />
 <br />
-vreme je za obaveštenje u vezi termina &quot;&lt;OTRS_APPOINTMENT_TITLE&gt;&quot;.<br />
+vreme je za obaveštenje u vezi termina &quot;&lt;LIGERO_APPOINTMENT_TITLE&gt;&quot;.<br />
 <br />
-Opis: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;<br />
-Lokacije: &lt;OTRS_APPOINTMENT_LOCATION&gt;<br />
-Kalendar: <span style="color: &lt;OTRS_CALENDAR_COLOR&gt;;">■</span> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
-Datum početka: &lt;OTRS_APPOINTMENT_STARTTIME&gt;<br />
-Datum kraja: &lt;OTRS_APPOINTMENT_ENDTIME&gt;<br />
-Celodnevno: &lt;OTRS_APPOINTMENT_ALLDAY&gt;<br />
-Ponavljanje: &lt;OTRS_APPOINTMENT_RECURRING&gt;<br />
+Opis: &lt;LIGERO_APPOINTMENT_DESCRIPTION&gt;<br />
+Lokacije: &lt;LIGERO_APPOINTMENT_LOCATION&gt;<br />
+Kalendar: <span style="color: &lt;LIGERO_CALENDAR_COLOR&gt;;">■</span> &lt;LIGERO_CALENDAR_CALENDARNAME&gt;<br />
+Datum početka: &lt;LIGERO_APPOINTMENT_STARTTIME&gt;<br />
+Datum kraja: &lt;LIGERO_APPOINTMENT_ENDTIME&gt;<br />
+Celodnevno: &lt;LIGERO_APPOINTMENT_ALLDAY&gt;<br />
+Ponavljanje: &lt;LIGERO_APPOINTMENT_RECURRING&gt;<br />
 <br />
-<a href="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;">&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;</a><br />
+<a href="&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;">&lt;LIGERO_CONFIG_HttpType&gt;://&lt;LIGERO_CONFIG_FQDN&gt;/&lt;LIGERO_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;LIGERO_APPOINTMENT_APPOINTMENTID&gt;</a><br />
 <br />
--- &lt;OTRS_CONFIG_NotificationSenderName&gt;');
+-- &lt;LIGERO_CONFIG_NotificationSenderName&gt;');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (15, 'text/plain', 'en', 'Email Delivery Failure', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (15, 'text/plain', 'en', 'Email Delivery Failure', 'Hi <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-Please note, that the delivery of an email article of [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has failed. Please check the email address of your recipient for mistakes and try again. You can manually resend the article from the ticket if required.
+Please note, that the delivery of an email article of [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] has failed. Please check the email address of your recipient for mistakes and try again. You can manually resend the article from the ticket if required.
 
 Error Message:
-<OTRS_AGENT_TransmissionStatusMessage>
+<LIGERO_AGENT_TransmissionStatusMessage>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>;ArticleID=<OTRS_AGENT_ArticleID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>;ArticleID=<LIGERO_AGENT_ArticleID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table notification_event_message
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (15, 'text/plain', 'hu', 'E-mail kézbesítési hiba', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+    (15, 'text/plain', 'hu', 'E-mail kézbesítési hiba', 'Kedves <LIGERO_NOTIFICATION_RECIPIENT_UserFirstname>!
 
-Felhívjuk a figyelmét, hogy a(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy e-mail bejegyzésének kézbesítése nem sikerült. Ellenőrizze, hogy nincs-e a címzett e-mail címében hiba, és próbálja meg újra. Kézileg is újraküldheti a bejegyzést a jegyből, ha szükséges.
+Felhívjuk a figyelmét, hogy a(z) [<LIGERO_CONFIG_Ticket::Hook><LIGERO_CONFIG_Ticket::HookDivider><LIGERO_TICKET_TicketNumber>] jegy e-mail bejegyzésének kézbesítése nem sikerült. Ellenőrizze, hogy nincs-e a címzett e-mail címében hiba, és próbálja meg újra. Kézileg is újraküldheti a bejegyzést a jegyből, ha szükséges.
 
 Hibaüzenet:
-<OTRS_AGENT_TransmissionStatusMessage>
+<LIGERO_AGENT_TransmissionStatusMessage>
 
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>;ArticleID=<OTRS_AGENT_ArticleID>
+<LIGERO_CONFIG_HttpType>://<LIGERO_CONFIG_FQDN>/<LIGERO_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<LIGERO_TICKET_TicketID>;ArticleID=<LIGERO_AGENT_ArticleID>
 
--- <OTRS_CONFIG_NotificationSenderName>');
+-- <LIGERO_CONFIG_NotificationSenderName>');
 -- ----------------------------------------------------------
 --  insert into table dynamic_field
 -- ----------------------------------------------------------

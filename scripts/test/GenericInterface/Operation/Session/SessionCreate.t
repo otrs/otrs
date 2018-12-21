@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -101,7 +101,7 @@ my $WebserviceConfig = {
             Type   => 'HTTP::SOAP',
             Config => {
                 MaxLength => 10000000,
-                NameSpace => 'http://otrs.org/SoapTestInterface/',
+                NameSpace => 'http://ligero.org/SoapTestInterface/',
                 Endpoint  => $RemoteSystem,
             },
         },
@@ -115,7 +115,7 @@ my $WebserviceConfig = {
         Transport => {
             Type   => 'HTTP::SOAP',
             Config => {
-                NameSpace => 'http://otrs.org/SoapTestInterface/',
+                NameSpace => 'http://ligero.org/SoapTestInterface/',
                 Encoding  => 'UTF-8',
                 Endpoint  => $RemoteSystem,
                 Timeout   => 120,

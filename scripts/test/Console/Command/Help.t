@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -42,7 +42,7 @@ $Self->Is(
 );
 
 $Self->True(
-    index( $Result, 'otrs.Console.pl Help command' ) > -1,
+    index( $Result, 'ligero.Console.pl Help command' ) > -1,
     "Found Help for 'Help' command",
 );
 
@@ -61,7 +61,7 @@ $Self->Is(
 );
 
 $Self->False(
-    index( $Result, 'otrs.Console.pl Help command' ) > -1,
+    index( $Result, 'ligero.Console.pl Help command' ) > -1,
     "Help for 'Help' command not found",
 );
 
@@ -85,7 +85,7 @@ $Self->Is(
 );
 
 $Self->False(
-    index( $Result, 'otrs.Console.pl Help command' ) > -1,
+    index( $Result, 'ligero.Console.pl Help command' ) > -1,
     "Help for 'Help' command not found",
 );
 

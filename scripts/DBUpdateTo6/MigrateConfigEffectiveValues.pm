@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -31,31 +31,31 @@ sub Run {
 
     my $Verbose = $Param{CommandlineOptions}->{Verbose} || 0;
 
-    # Move and rename ZZZAuto.pm from OTRS 5 away from Kernel/Config/Files
+    # Move and rename ZZZAuto.pm from LIGERO 5 away from Kernel/Config/Files
     my ( $FileClass, $FilePath ) = $Self->_MoveZZZAuto();
 
     # check error
     if ( !$FilePath ) {
         if ($Verbose) {
             print
-                "    Could not find Kernel/Config/Files/ZZZAuto.pm or Kernel/Config/Backups/ZZZAutoOTRS5.pm, skipping...\n";
+                "    Could not find Kernel/Config/Files/ZZZAuto.pm or Kernel/Config/Backups/ZZZAutoLIGERO5.pm, skipping...\n";
         }
         return 1;
     }
 
-    # Rebuild config to read the xml config files from otrs 6 to write them
+    # Rebuild config to read the xml config files from ligero 6 to write them
     # to the database and deploy them to ZZZAAuto.pm
     $Self->RebuildConfig();
     if ($Verbose) {
         print "\n    If you see errors about 'Setting ... is invalid', that's fine, no need to worry! \n"
-            . "    This could happen because some config settings are no longer needed for OTRS 6 \n"
+            . "    This could happen because some config settings are no longer needed for LIGERO 6 \n"
             . "    or you may have some packages installed, which will be migrated \n"
             . "    in a later step (during the package upgrade). \n"
             . "\n"
             . "    The configuration migration can take some time, please be patient.\n";
     }
 
-    # migrate the effective values from modified settings in OTRS 5 to OTRS 6
+    # migrate the effective values from modified settings in LIGERO 5 to LIGERO 6
     my $Success = $Kernel::OM->Get('Kernel::System::SysConfig::Migration')->MigrateConfigEffectiveValues(
         FileClass => $FileClass,
         FilePath  => $FilePath,
@@ -74,16 +74,16 @@ sub _MoveZZZAuto {
     my $OldLocation  = "$Home/Kernel/Config/Files/ZZZAuto.pm";
     my $OldFileClass = 'Kernel::Config::Files::ZZZAuto';
 
-    # define backup directory, new location of ZZZAuto.pm (renamed to ZZZAutoOTRS5.pm)
+    # define backup directory, new location of ZZZAuto.pm (renamed to ZZZAutoLIGERO5.pm)
     # and new file class
     my $BackupDirectory = "$Home/Kernel/Config/Backups";
-    my $NewLocation     = "$BackupDirectory/ZZZAutoOTRS5.pm";
-    my $NewFileClass    = 'Kernel::Config::Backups::ZZZAutoOTRS5';
+    my $NewLocation     = "$BackupDirectory/ZZZAutoLIGERO5.pm";
+    my $NewFileClass    = 'Kernel::Config::Backups::ZZZAutoLIGERO5';
 
     # ZZZAuto.pm file does not exist
     if ( !-e $OldLocation ) {
 
-        # but Kernel/Config/Backups/ZZZAutoOTRS5.pm exists already
+        # but Kernel/Config/Backups/ZZZAutoLIGERO5.pm exists already
         return ( $NewFileClass, $NewLocation ) if -e $NewLocation;
 
         # error
@@ -133,7 +133,7 @@ sub _MoveZZZAuto {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

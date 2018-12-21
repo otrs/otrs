@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -15,14 +15,14 @@ use vars (qw($Self));
 my @Tests = (
     {
         Name      => 'Command completion',
-        COMP_LINE => 'bin/otrs.Console.pl Hel',
-        Arguments => [ 'bin/otrs.Console.pl', 'Hel', 'bin/otrs.Console.pl' ],
+        COMP_LINE => 'bin/ligero.Console.pl Hel',
+        Arguments => [ 'bin/ligero.Console.pl', 'Hel', 'bin/ligero.Console.pl' ],
         Result    => "Help",
     },
     {
         Name      => 'Argument list',
-        COMP_LINE => 'bin/otrs.Console.pl Admin::Article::StorageSwitch ',
-        Arguments => [ 'bin/otrs.Console.pl', '', 'Admin::Article::SwitchStorage' ],
+        COMP_LINE => 'bin/ligero.Console.pl Admin::Article::StorageSwitch ',
+        Arguments => [ 'bin/ligero.Console.pl', '', 'Admin::Article::SwitchStorage' ],
         Result    => "--target
 --tickets-closed-before-date
 --tickets-closed-before-days
@@ -32,8 +32,8 @@ my @Tests = (
     },
     {
         Name      => 'Argument list limitted',
-        COMP_LINE => 'bin/otrs.Console.pl Admin::Article::StorageSwitch --to',
-        Arguments => [ 'bin/otrs.Console.pl', '--to', 'Admin::Article::SwitchStorage' ],
+        COMP_LINE => 'bin/ligero.Console.pl Admin::Article::StorageSwitch --to',
+        Arguments => [ 'bin/ligero.Console.pl', '--to', 'Admin::Article::SwitchStorage' ],
         Result    => "--tolerant",
     },
 );

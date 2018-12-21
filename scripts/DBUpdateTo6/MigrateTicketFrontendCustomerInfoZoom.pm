@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -30,23 +30,23 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     my $Home     = $Kernel::OM->Get('Kernel::Config')->Get('Home');
-    my $FilePath = "$Home/Kernel/Config/Backups/ZZZAutoOTRS5.pm";
+    my $FilePath = "$Home/Kernel/Config/Backups/ZZZAutoLIGERO5.pm";
     my $Verbose  = $Param{CommandlineOptions}->{Verbose} || 0;
 
     if ( !-f $FilePath ) {
-        print "    Could not find Kernel/Config/Backups/ZZZAutoOTRS5.pm, skipping...\n" if $Verbose;
+        print "    Could not find Kernel/Config/Backups/ZZZAutoLIGERO5.pm, skipping...\n" if $Verbose;
         return 1;
     }
 
-    my %OTRS5Config;
+    my %LIGERO5Config;
     $Kernel::OM->Get('Kernel::System::Main')->Require(
-        'Kernel::Config::Backups::ZZZAutoOTRS5'
+        'Kernel::Config::Backups::ZZZAutoLIGERO5'
     );
-    Kernel::Config::Backups::ZZZAutoOTRS5->Load( \%OTRS5Config );
+    Kernel::Config::Backups::ZZZAutoLIGERO5->Load( \%LIGERO5Config );
 
     if (
-        !defined $OTRS5Config{'Ticket::Frontend::CustomerInfoZoom'}
-        || $OTRS5Config{'Ticket::Frontend::CustomerInfoZoom'}
+        !defined $LIGERO5Config{'Ticket::Frontend::CustomerInfoZoom'}
+        || $LIGERO5Config{'Ticket::Frontend::CustomerInfoZoom'}
         )
     {
         return 1;
@@ -70,7 +70,7 @@ sub Run {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

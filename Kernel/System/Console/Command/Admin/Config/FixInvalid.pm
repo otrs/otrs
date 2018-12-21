@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -211,7 +211,7 @@ sub Run {
             $Self->Print(
                 "\nFollowing settings were not fixed:\n"
                     . join( ",\n", map {"  - $_"} @NotFixedSettings ) . "\n"
-                    . "\nPlease use console command (bin/otrs.Console.pl Admin::Config::Update --help) or GUI to fix them.\n\n"
+                    . "\nPlease use console command (bin/ligero.Console.pl Admin::Config::Update --help) or GUI to fix them.\n\n"
             );
         }
     }

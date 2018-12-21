@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<otrs_config version="2.0" init="Framework">
+<ligero_config version="2.0" init="Framework">
     <Setting Name="SecureMode" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Disables the web installer (http://yourhost.example.com/otrs/installer.pl), to prevent the system from being hijacked. If not enabled, the system can be reinstalled and the current basic configuration will be used to pre-populate the questions within the installer script. If enabled, it also disables the GenericAgent, PackageManager and SQL Box.</Description>
+        <Description Translatable="1">Disables the web installer (http://yourhost.example.com/ligero/installer.pl), to prevent the system from being hijacked. If not enabled, the system can be reinstalled and the current basic configuration will be used to pre-populate the questions within the installer script. If enabled, it also disables the GenericAgent, PackageManager and SQL Box.</Description>
         <Navigation>Core</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -102,7 +102,7 @@
         <Description Translatable="1">Sets the prefix to the scripts folder on the server, as configured on the web server. This setting is used as a variable, OTRS_CONFIG_ScriptAlias which is found in all forms of messaging used by the application, to build links to the tickets within the system.</Description>
         <Navigation>Frontend::Base</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">otrs/</Item>
+            <Item ValueType="String" ValueRegex="">ligero/</Item>
         </Value>
     </Setting>
     <Setting Name="AdminEmail" Required="1" Valid="1">
@@ -239,7 +239,7 @@
         </Value>
     </Setting>
     <Setting Name="DefaultTheme" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Defines the default front-end (HTML) theme to be used by the agents and customers. If you like, you can add your own theme. Please refer the administrator manual located at http://otrs.github.io/doc/.</Description>
+        <Description Translatable="1">Defines the default front-end (HTML) theme to be used by the agents and customers. If you like, you can add your own theme. Please refer the administrator manual located at http://ligero.github.io/doc/.</Description>
         <Navigation>Frontend::Base</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex="">Standard</Item>
@@ -367,7 +367,7 @@
         <Description Translatable="1">Defines the URL base path of icons, CSS and Java Script.</Description>
         <Navigation>Frontend::Base</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">/otrs-web/</Item>
+            <Item ValueType="String" ValueRegex="">/ligero-web/</Item>
         </Value>
     </Setting>
     <Setting Name="Frontend::ImagePath" Required="1" Valid="1" ConfigLevel="200">
@@ -627,7 +627,7 @@
         <Description Translatable="1">If "file" was selected for LogModule, a logfile must be specified. If the file doesn't exist, it will be created by the system.</Description>
         <Navigation>Core::Log</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">/tmp/otrs.log</Item>
+            <Item ValueType="String" ValueRegex="">/tmp/ligero.log</Item>
         </Value>
     </Setting>
     <Setting Name="LogModule::LogFile::Date" Required="1" Valid="1">
@@ -805,7 +805,7 @@
         <Description Translatable="1">Defines an alternate URL, where the logout link refers to.</Description>
         <Navigation>Frontend::Agent</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">http://host.example.com/thanks-for-using-otrs.html</Item>
+            <Item ValueType="String" ValueRegex="">http://host.example.com/thanks-for-using-ligero.html</Item>
         </Value>
     </Setting>
     <Setting Name="PreApplicationModule###AgentInfo" Required="0" Valid="0" ConfigLevel="300">
@@ -970,7 +970,7 @@
                 <Item Key="Priority">Warning</Item>
                 <Item Key="Text">The OTRS Website</Item>
                 <Item Key="File">&lt;OTRS_CONFIG_Home&gt;/var/notify.txt</Item>
-                <Item Key="Link">http://www.otrs.com</Item>
+                <Item Key="Link">http://www.ligero.com</Item>
             </Hash>
         </Value>
     </Setting>
@@ -2696,16 +2696,16 @@
         <Navigation>Core::Package</Navigation>
         <Value>
             <Array>
-                <Item>https://ftp.otrs.org/pub/otrs/misc/packages/repository.xml</Item>
+                <Item>https://ftp.ligero.org/pub/ligero/misc/packages/repository.xml</Item>
             </Array>
         </Value>
     </Setting>
     <Setting Name="Package::RepositoryList" Required="0" Valid="0" ConfigLevel="200">
-        <Description Translatable="1">Defines the list of online repositories. Another installations can be used as repository, for example: Key="http://example.com/otrs/public.pl?Action=PublicRepository;File=" and Content="Some Name".</Description>
+        <Description Translatable="1">Defines the list of online repositories. Another installations can be used as repository, for example: Key="http://example.com/ligero/public.pl?Action=PublicRepository;File=" and Content="Some Name".</Description>
         <Navigation>Core::Package</Navigation>
         <Value>
             <Hash>
-                <Item Key="ftp://ftp.example.com/pub/otrs/misc/packages/">[Example] ftp://ftp.example.com/</Item>
+                <Item Key="ftp://ftp.example.com/pub/ligero/misc/packages/">[Example] ftp://ftp.example.com/</Item>
             </Hash>
         </Value>
     </Setting>
@@ -2844,7 +2844,7 @@
         <Description Translatable="1">Specifies the path of the file for the logo in the page header (gif|jpg|png, 700 x 100 pixel).</Description>
         <Navigation>Core::PDF</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">&lt;OTRS_CONFIG_Home&gt;/var/logo-otrs.png</Item>
+            <Item ValueType="String" ValueRegex="">&lt;OTRS_CONFIG_Home&gt;/var/logo-ligero.png</Item>
         </Value>
     </Setting>
     <Setting Name="PDF::PageSize" Required="1" Valid="1">
@@ -2959,7 +2959,7 @@
         <Description Translatable="1">Sets the options for PGP binary.</Description>
         <Navigation>Core::Crypt::PGP</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">--homedir /opt/otrs/.gnupg/ --batch --no-tty --yes</Item>
+            <Item ValueType="String" ValueRegex="">--homedir /opt/ligero/.gnupg/ --batch --no-tty --yes</Item>
         </Value>
     </Setting>
     <Setting Name="PGP::Options::DigestPreference" Required="0" Valid="1">
@@ -3066,17 +3066,17 @@
         </Value>
     </Setting>
     <Setting Name="NotificationSenderName" Required="1" Valid="1">
-        <Description Translatable="1">Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "OTRS Notifications" otrs@your.example.com).</Description>
+        <Description Translatable="1">Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "OTRS Notifications" ligero@your.example.com).</Description>
         <Navigation>Core::Email</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex="">OTRS Notifications</Item>
         </Value>
     </Setting>
     <Setting Name="NotificationSenderEmail" Required="1" Valid="1">
-        <Description Translatable="1">Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "OTRS Notifications" otrs@your.example.com). You can use the OTRS_CONFIG_FQDN variable as set in your configuation, or choose another email address.</Description>
+        <Description Translatable="1">Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "OTRS Notifications" ligero@your.example.com). You can use the OTRS_CONFIG_FQDN variable as set in your configuation, or choose another email address.</Description>
         <Navigation>Core::Email</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">otrs@&lt;OTRS_CONFIG_FQDN&gt;</Item>
+            <Item ValueType="String" ValueRegex="">ligero@&lt;OTRS_CONFIG_FQDN&gt;</Item>
         </Value>
     </Setting>
     <Setting Name="NotificationSubjectLostPasswordToken" Required="1" Valid="1">
@@ -3868,7 +3868,7 @@ via the Preferences button after logging in.
         <Description Translatable="1">If "LDAP" was selected for Customer::Authmodule, you can check if the user is allowed to authenticate because he is in a posixGroup, e.g. user needs to be in a group xyz to use OTRS. Specify the group, who may access the system.</Description>
         <Navigation>Core::Auth::Customer</Navigation>
         <Value>
-            <Item ValueType="String" ValueRegex="">cn=otrsallow,ou=posixGroups,dc=example,dc=com</Item>
+            <Item ValueType="String" ValueRegex="">cn=ligeroallow,ou=posixGroups,dc=example,dc=com</Item>
         </Value>
     </Setting>
     <Setting Name="Customer::AuthModule::LDAP::AccessAttr" Required="0" Valid="0" ConfigLevel="200">
@@ -7214,7 +7214,7 @@ via the Preferences button after logging in.
         <Navigation>Frontend::Public</Navigation>
         <Value>
             <Hash>
-                <Item Key="https://www.otrs.com">OTRS Homepage</Item>
+                <Item Key="https://www.ligero.com">OTRS Homepage</Item>
             </Hash>
         </Value>
     </Setting>
@@ -7691,12 +7691,12 @@ via the Preferences button after logging in.
                 <Item Key="Module">Kernel::Output::HTML::Dashboard::RSS</Item>
                 <Item Key="Title" Translatable="1">Custom RSS Feed</Item>
                 <Item Key="Description" Translatable="1">Custom RSS feed.</Item>
-                <Item Key="URL">http://www.otrs.com/en/rss.xml</Item>
-                <Item Key="URL_de">http://www.otrs.com/de/rss.xml</Item>
-                <Item Key="URL_es">http://www.otrs.com/es/rss.xml</Item>
-                <Item Key="URL_nl">http://www.otrs.com/nl/rss.xml</Item>
-                <Item Key="URL_ru">http://www.otrs.com/ru/rss.xml</Item>
-                <Item Key="URL_zh">http://www.otrs.com/cn/rss.xml</Item>
+                <Item Key="URL">http://www.ligero.com/en/rss.xml</Item>
+                <Item Key="URL_de">http://www.ligero.com/de/rss.xml</Item>
+                <Item Key="URL_es">http://www.ligero.com/es/rss.xml</Item>
+                <Item Key="URL_nl">http://www.ligero.com/nl/rss.xml</Item>
+                <Item Key="URL_ru">http://www.ligero.com/ru/rss.xml</Item>
+                <Item Key="URL_zh">http://www.ligero.com/cn/rss.xml</Item>
                 <Item Key="Block">ContentSmall</Item>
                 <Item Key="Limit">6</Item>
                 <Item Key="Group"></Item>
@@ -7732,11 +7732,11 @@ via the Preferences button after logging in.
                 <Item Key="Title" Translatable="1">A picture</Item>
                 <Item Key="Description" Translatable="1">Some picture description!</Item>
                 <Item Key="Block">ContentLarge</Item>
-                <Item Key="URL">http://www.otrs.com/wp-uploads//2013/10/OTRS_Logo-300x170.png</Item>
+                <Item Key="URL">http://www.ligero.com/wp-uploads//2013/10/OTRS_Logo-300x170.png</Item>
                 <Item Key="Group"></Item>
                 <Item Key="Default">1</Item>
-                <Item Key="Link">http://otrs.org/</Item>
-                <Item Key="LinkTitle">http://otrs.org/</Item>
+                <Item Key="Link">http://ligero.org/</Item>
+                <Item Key="LinkTitle">http://ligero.org/</Item>
                 <Item Key="Width">198</Item>
                 <Item Key="Height">140</Item>
                 <Item Key="Mandatory">0</Item>
@@ -7766,10 +7766,10 @@ via the Preferences button after logging in.
                 <Item Key="Title" Translatable="1">A Website</Item>
                 <Item Key="Description" Translatable="1">Some description!</Item>
                 <Item Key="Block">ContentLarge</Item>
-                <Item Key="URL">http://www.otrs.org/</Item>
+                <Item Key="URL">http://www.ligero.org/</Item>
                 <Item Key="Group"></Item>
                 <Item Key="Default">1</Item>
-                <Item Key="Link">http://otrs.org/</Item>
+                <Item Key="Link">http://ligero.org/</Item>
                 <Item Key="LinkTitle">OTRS.org/</Item>
                 <Item Key="Width">1024</Item>
                 <Item Key="Height">800</Item>
@@ -8252,7 +8252,7 @@ via the Preferences button after logging in.
                 <Item Key="InternalName">default</Item>
                 <Item Key="VisibleName" Translatable="1">Default</Item>
                 <Item Key="Description" Translatable="1">This is the default orange - black skin.</Item>
-                <Item Key="HomePage">www.otrs.org</Item>
+                <Item Key="HomePage">www.ligero.org</Item>
             </Hash>
         </Value>
     </Setting>
@@ -8264,7 +8264,7 @@ via the Preferences button after logging in.
                 <Item Key="InternalName">slim</Item>
                 <Item Key="VisibleName" Translatable="1">Default (Slim)</Item>
                 <Item Key="Description" Translatable="1">"Slim" skin which tries to save screen space for power users.</Item>
-                <Item Key="HomePage">www.otrs.org</Item>
+                <Item Key="HomePage">www.ligero.org</Item>
             </Hash>
         </Value>
     </Setting>
@@ -8300,7 +8300,7 @@ via the Preferences button after logging in.
                 <Item Key="InternalName">highcontrast</Item>
                 <Item Key="VisibleName" Translatable="1">High Contrast</Item>
                 <Item Key="Description" Translatable="1">High contrast skin for visually impaired users.</Item>
-                <Item Key="HomePage">www.otrs.com</Item>
+                <Item Key="HomePage">www.ligero.com</Item>
             </Hash>
         </Value>
     </Setting>
@@ -8329,7 +8329,7 @@ via the Preferences button after logging in.
                 <Item Key="InternalName">default</Item>
                 <Item Key="VisibleName" Translatable="1">Default</Item>
                 <Item Key="Description" Translatable="1">This is the default orange - black skin for the customer interface.</Item>
-                <Item Key="HomePage">www.otrs.org</Item>
+                <Item Key="HomePage">www.ligero.org</Item>
             </Hash>
         </Value>
     </Setting>
@@ -9009,4 +9009,4 @@ via the Preferences button after logging in.
             </Array>
         </Value>
     </Setting>
-</otrs_config>
+</ligero_config>

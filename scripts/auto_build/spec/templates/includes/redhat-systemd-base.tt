@@ -1,15 +1,15 @@
 [% INCLUDE 'includes/copyright.tt' -%]
 
 Summary:      OTRS Help Desk.
-Name:         otrs
+Name:         ligero
 Version:      0.0
 Copyright:    GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
 Group:        Applications/Mail
-Provides:     otrs
+Provides:     ligero
 Requires:     [% Requires.join(' ') %]
 AutoReqProv:  no
 Release:      01
-Source0:      otrs-%{version}.tar.bz2
+Source0:      ligero-%{version}.tar.bz2
 BuildArch:    noarch
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
 
@@ -26,34 +26,34 @@ BuildRoot:    %{_tmppath}/%{name}-%{version}-build
 [% '#' %] delete old RPM_BUILD_ROOT
 rm -rf $RPM_BUILD_ROOT
 [% '#' %] set DESTROOT
-export DESTROOT="/opt/otrs/"
+export DESTROOT="/opt/ligero/"
 [% '#' %] create RPM_BUILD_ROOT DESTROOT
 mkdir -p $RPM_BUILD_ROOT/$DESTROOT/
 [% '#' %] copy files
 cp -R . $RPM_BUILD_ROOT/$DESTROOT
 [% '#' %] configure apache
 install -d -m 755 $RPM_BUILD_ROOT/etc/httpd/conf.d
-install -m 644 scripts/apache2-httpd.include.conf $RPM_BUILD_ROOT/etc/httpd/conf.d/zzz_otrs.conf
+install -m 644 scripts/apache2-httpd.include.conf $RPM_BUILD_ROOT/etc/httpd/conf.d/zzz_ligero.conf
 
 [% '#' %] set permission
-export OTRSUSER=otrs
+export OTRSUSER=ligero
 useradd $OTRSUSER || :
 useradd apache || :
 groupadd apache || :
-$RPM_BUILD_ROOT/opt/otrs/bin/otrs.SetPermissions.pl --web-group=apache
+$RPM_BUILD_ROOT/opt/ligero/bin/ligero.SetPermissions.pl --web-group=apache
 
 %pre
 [% '#' %] useradd
-export OTRSUSER=otrs
+export OTRSUSER=ligero
 echo -n "Check OTRS user ... "
 if id $OTRSUSER >/dev/null 2>&1; then
     echo "$OTRSUSER exists."
     [% '#' %] update groups
     usermod -g apache $OTRSUSER
     [% '#' %] update home dir
-    usermod -d /opt/otrs $OTRSUSER
+    usermod -d /opt/ligero $OTRSUSER
 else
-    useradd $OTRSUSER -d /opt/otrs/ -s /bin/bash -g apache -c 'OTRS System User' && echo "$OTRSUSER added."
+    useradd $OTRSUSER -d /opt/ligero/ -s /bin/bash -g apache -c 'OTRS System User' && echo "$OTRSUSER added."
 fi
 
 
@@ -65,5 +65,5 @@ fi
 rm -rf $RPM_BUILD_ROOT
 
 %files
-%config /etc/httpd/conf.d/zzz_otrs.conf
+%config /etc/httpd/conf.d/zzz_ligero.conf
 [% INCLUDE 'includes/files.tt' -%]

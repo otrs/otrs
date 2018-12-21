@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -18,7 +18,7 @@ use Kernel::System::EmailParser;
 This is a test for an email from the Win7 snipping tool. This email is an invalid
 mime message and therefore cannot be parsed by MIME::Tools correctly.
 
-See also: http://bugs.otrs.org/show_bug.cgi?id=8092
+See also: http://bugs.ligero.org/show_bug.cgi?id=8092
 =cut
 
 my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');

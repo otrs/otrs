@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -547,7 +547,7 @@ for my $ModuleFile (@BackendModuleFiles) {
         "#$Module - CleanUp after session limit tests()",
     );
 
-    # Test the speical otrs business values from the cloudservice.
+    # Test the speical ligero business values from the cloudservice.
     # First reset the config and session object
     #   and generate some dummy data in the system data.
     $ConfigObject->Set(
@@ -582,25 +582,25 @@ for my $ModuleFile (@BackendModuleFiles) {
 
     my $SystemDataObject = $Kernel::OM->Get('Kernel::System::SystemData');
 
-    my %OTRSBusinessAgentSessionLimits = (
+    my %LIGEROBusinessAgentSessionLimits = (
         AgentSessionLimit             => 3,
         AgentSessionLimitPriorWarning => 1,
     );
 
-    for my $Key ( sort keys %OTRSBusinessAgentSessionLimits ) {
-        my $FullKey = 'OTRSBusiness::' . $Key;
+    for my $Key ( sort keys %LIGEROBusinessAgentSessionLimits ) {
+        my $FullKey = 'LIGEROBusiness::' . $Key;
 
         if ( defined $SystemDataObject->SystemDataGet( Key => $FullKey ) ) {
             $SystemDataObject->SystemDataUpdate(
                 Key    => $FullKey,
-                Value  => $OTRSBusinessAgentSessionLimits{$Key},
+                Value  => $LIGEROBusinessAgentSessionLimits{$Key},
                 UserID => 1,
             );
         }
         else {
             $SystemDataObject->SystemDataAdd(
                 Key    => $FullKey,
-                Value  => $OTRSBusinessAgentSessionLimits{$Key},
+                Value  => $LIGEROBusinessAgentSessionLimits{$Key},
                 UserID => 1,
             );
         }
@@ -620,7 +620,7 @@ for my $ModuleFile (@BackendModuleFiles) {
 
     $Self->False(
         $AgentSessionLimitPriorWarningMessage,
-        "#$Module - CheckAgentSessionLimitPriorWarning() - OTRSBusiness - AgentSessionLimitPriorWarning not reached",
+        "#$Module - CheckAgentSessionLimitPriorWarning() - LIGEROBusiness - AgentSessionLimitPriorWarning not reached",
     );
 
     for my $Count ( 1 .. 2 ) {
@@ -642,7 +642,7 @@ for my $ModuleFile (@BackendModuleFiles) {
 
     $Self->True(
         $AgentSessionLimitPriorWarningMessage,
-        "#$Module - CheckAgentSessionLimitPriorWarning() - OTRSBusiness - AgentSessionLimitPriorWarning reached",
+        "#$Module - CheckAgentSessionLimitPriorWarning() - LIGEROBusiness - AgentSessionLimitPriorWarning reached",
     );
 
     $SessionID = $SessionObject->CreateSessionID(
@@ -652,19 +652,19 @@ for my $ModuleFile (@BackendModuleFiles) {
 
     $Self->False(
         $SessionID,
-        "#$Module - CreateSessionID() - OTRSBusiness - AgentSessionLimit reached",
+        "#$Module - CreateSessionID() - LIGEROBusiness - AgentSessionLimit reached",
     );
 
-    %OTRSBusinessAgentSessionLimits = (
+    %LIGEROBusinessAgentSessionLimits = (
         AgentSessionLimit => 4,
     );
 
-    for my $Key ( sort keys %OTRSBusinessAgentSessionLimits ) {
-        my $FullKey = 'OTRSBusiness::' . $Key;
+    for my $Key ( sort keys %LIGEROBusinessAgentSessionLimits ) {
+        my $FullKey = 'LIGEROBusiness::' . $Key;
 
         $SystemDataObject->SystemDataUpdate(
             Key    => $FullKey,
-            Value  => $OTRSBusinessAgentSessionLimits{$Key},
+            Value  => $LIGEROBusinessAgentSessionLimits{$Key},
             UserID => 1,
         );
     }
@@ -676,7 +676,7 @@ for my $ModuleFile (@BackendModuleFiles) {
 
     $Self->True(
         $SessionID,
-        "#$Module - CreateSessionID() - OTRSBusiness - AgentSessionLimit not reached (after increase)",
+        "#$Module - CreateSessionID() - LIGEROBusiness - AgentSessionLimit not reached (after increase)",
     );
 
     $ConfigObject->Set(
@@ -713,17 +713,17 @@ for my $ModuleFile (@BackendModuleFiles) {
         "#$Module - CleanUp after normal session limit tests()",
     );
 
-    %OTRSBusinessAgentSessionLimits = (
+    %LIGEROBusinessAgentSessionLimits = (
         AgentSessionLimit             => 0,
         AgentSessionLimitPriorWarning => 0,
     );
 
-    for my $Key ( sort keys %OTRSBusinessAgentSessionLimits ) {
-        my $FullKey = 'OTRSBusiness::' . $Key;
+    for my $Key ( sort keys %LIGEROBusinessAgentSessionLimits ) {
+        my $FullKey = 'LIGEROBusiness::' . $Key;
 
         $SystemDataObject->SystemDataUpdate(
             Key    => $FullKey,
-            Value  => $OTRSBusinessAgentSessionLimits{$Key},
+            Value  => $LIGEROBusinessAgentSessionLimits{$Key},
             UserID => 1,
         );
     }
@@ -745,7 +745,7 @@ for my $ModuleFile (@BackendModuleFiles) {
 
         $Self->True(
             $SessionID,
-            "#$Module - CreateSessionID() - with emptry OTRSBusiness session limit values.",
+            "#$Module - CreateSessionID() - with emptry LIGEROBusiness session limit values.",
         );
     }
 
@@ -753,7 +753,7 @@ for my $ModuleFile (@BackendModuleFiles) {
 
     $Self->False(
         $AgentSessionLimitPriorWarningMessage,
-        "#$Module - CheckAgentSessionLimitPriorWarning() - with emptry OTRSBusiness session limit values.",
+        "#$Module - CheckAgentSessionLimitPriorWarning() - with emptry LIGEROBusiness session limit values.",
     );
 
     $CleanUp = $SessionObject->CleanUp();
@@ -763,9 +763,9 @@ for my $ModuleFile (@BackendModuleFiles) {
         "#$Module - CleanUp after normal session limit tests()",
     );
 
-    for my $Key ( sort keys %OTRSBusinessAgentSessionLimits ) {
+    for my $Key ( sort keys %LIGEROBusinessAgentSessionLimits ) {
         $SystemDataObject->SystemDataDelete(
-            Key    => 'OTRSBusiness::' . $Key,
+            Key    => 'LIGEROBusiness::' . $Key,
             UserID => 1,
         );
     }

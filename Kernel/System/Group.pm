@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -767,7 +767,7 @@ the result looks like
     %Roles = (
         '1' => 'role_helpdesk_agent',
         '2' => 'role_systemsmanagement_agent',
-        '3' => 'role_otrs_admin',
+        '3' => 'role_ligero_admin',
         '4' => 'role_faq_manager',
     );
 
@@ -2893,7 +2893,7 @@ sub _PermissionTypeList {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

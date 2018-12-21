@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -202,7 +202,7 @@ sub RepositoryList {
         }
 
         # Correct any 'dos-style' line endings that might have been introduced by saving an
-        #   opm file from a mail client on Windows (see http://bugs.otrs.org/show_bug.cgi?id=9838).
+        #   opm file from a mail client on Windows (see http://bugs.ligero.org/show_bug.cgi?id=9838).
         $Content =~ s{\r\n}{\n}xmsg;
         $Package{MD5sum} = $MainObject->MD5sum( String => \$Content );
 
@@ -1396,7 +1396,7 @@ sub PackageOnlineList {
     }
     if ( !defined $Param{Cache} ) {
 
-        if ( $Param{URL} =~ m{ \.otrs\.org\/ }xms ) {
+        if ( $Param{URL} =~ m{ \.ligero\.org\/ }xms ) {
             $Param{Cache} = 1;
         }
         else {
@@ -1424,7 +1424,7 @@ sub PackageOnlineList {
     my $Filelist;
     if ( !$Param{FromCloud} ) {
 
-        my $XML = $Self->_Download( URL => $Param{URL} . '/otrs.xml' );
+        my $XML = $Self->_Download( URL => $Param{URL} . '/ligero.xml' );
         return if !$XML;
 
         my @XMLARRAY = $Kernel::OM->Get('Kernel::System::XML')->XMLParse( String => $XML );
@@ -1910,7 +1910,7 @@ sub PackageVerify {
     # investigate name
     my $Name = $Param{Structure}->{Name}->{Content} || $Param{Name};
 
-    # correct any 'dos-style' line endings - http://bugs.otrs.org/show_bug.cgi?id=9838
+    # correct any 'dos-style' line endings - http://bugs.ligero.org/show_bug.cgi?id=9838
     $Param{Package} =~ s{\r\n}{\n}xmsg;
 
     # create MD5 sum
@@ -2166,7 +2166,7 @@ build an opm package
             Content => 'OTRS AG',
         },
         URL => {
-            Content => 'L<http://otrs.org/>',
+            Content => 'L<http://ligero.org/>',
         },
         License => {
             Content => 'GNU GENERAL PUBLIC LICENSE Version 3, November 2007',
@@ -2233,7 +2233,7 @@ sub PackageBuild {
     if ( !$Param{Type} ) {
         $XML .= '<?xml version="1.0" encoding="utf-8" ?>';
         $XML .= "\n";
-        $XML .= '<otrs_package version="1.1">';
+        $XML .= '<ligero_package version="1.1">';
         $XML .= "\n";
     }
 
@@ -2462,7 +2462,7 @@ sub PackageBuild {
         }
     }
 
-    $XML .= '</otrs_package>';
+    $XML .= '</ligero_package>';
 
     return $XML;
 }
@@ -4336,7 +4336,7 @@ sub _FileSystemCheck {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "ERROR: Need write permissions for directory $Home$Filepath\n"
-                . " Try: $Home/bin/otrs.SetPermissions.pl!",
+                . " Try: $Home/bin/ligero.SetPermissions.pl!",
         );
 
         return;
@@ -5218,14 +5218,14 @@ Returns:
                         # ... ,
                     },
                 ],
-                URL => 'http://otrs.org/',
+                URL => 'http://ligero.org/',
                 Vendor => 'OTRS AG',
             },
             # ...
         ];
         PackageLookup  => {
             Test => {
-                   URL        => 'http://otrs.org/',
+                   URL        => 'http://ligero.org/',
                     FromCloud => 1,                     # 1 or 0,
                     Version   => '6.0.20',
                     File      => 'Test-6.0.20.opm',
@@ -5303,7 +5303,7 @@ framework version.
 Returns:
 
     %RepositoryList = (
-        'http://ftp.otrs.org/pub/otrs/packages' => 'OTRS Freebie Features',
+        'http://ftp.ligero.org/pub/ligero/packages' => 'OTRS Freebie Features',
         # ...,
     );
 
@@ -5325,14 +5325,14 @@ sub _ConfiguredRepositoryDefinitionGet {
     return () if !%RepositoryList;
 
     # Make sure ITSM repository matches the current framework version.
-    my @Matches = grep { $_ =~ m{http://ftp\.otrs\.org/pub/otrs/itsm/packages\d+/}msxi } sort keys %RepositoryList;
+    my @Matches = grep { $_ =~ m{http://ftp\.ligero\.org/pub/ligero/itsm/packages\d+/}msxi } sort keys %RepositoryList;
 
     return %RepositoryList if !@Matches;
 
     my @FrameworkVersionParts = split /\./, $Self->{ConfigObject}->Get('Version');
     my $FrameworkVersion      = $FrameworkVersionParts[0];
 
-    my $CurrentITSMRepository = "http://ftp.otrs.org/pub/otrs/itsm/packages$FrameworkVersion/";
+    my $CurrentITSMRepository = "http://ftp.ligero.org/pub/ligero/itsm/packages$FrameworkVersion/";
 
     # Delete all old ITSM repositories, but leave the current if exists
     for my $Repository (@Matches) {
@@ -5455,7 +5455,7 @@ sub DESTROY {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

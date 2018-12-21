@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -173,7 +173,7 @@ sub _CheckMySQLInvalidDefaultValues {
     }
     else {
         $Error
-            .= "\n\n *** Please correct these problems manually with the following SQL statements or use 'otrs.Console.pl $Self->{Name} --repair'. *** \n\n";
+            .= "\n\n *** Please correct these problems manually with the following SQL statements or use 'ligero.Console.pl $Self->{Name} --repair'. *** \n\n";
     }
 
     my @SQLRepairStatements;

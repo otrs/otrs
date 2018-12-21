@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -31,25 +31,25 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     my $Home     = $Kernel::OM->Get('Kernel::Config')->Get('Home');
-    my $FilePath = "$Home/Kernel/Config/Backups/ZZZAutoOTRS5.pm";
+    my $FilePath = "$Home/Kernel/Config/Backups/ZZZAutoLIGERO5.pm";
     my $Verbose  = $Param{CommandlineOptions}->{Verbose} || 0;
 
-    # Check for modified ZoomExpand value for migration from OTRS 5 to OTRS 6
-    my %OTRS5Config;
+    # Check for modified ZoomExpand value for migration from LIGERO 5 to LIGERO 6
+    my %LIGERO5Config;
     if ( -f $FilePath ) {
         $Kernel::OM->Get('Kernel::System::Main')->Require(
-            'Kernel::Config::Backups::ZZZAutoOTRS5'
+            'Kernel::Config::Backups::ZZZAutoLIGERO5'
         );
-        Kernel::Config::Backups::ZZZAutoOTRS5->Load( \%OTRS5Config );
+        Kernel::Config::Backups::ZZZAutoLIGERO5->Load( \%LIGERO5Config );
     }
 
-    # Check for modified ZoomExpand value for patch level update from less then OTRS 6.0.5.
+    # Check for modified ZoomExpand value for patch level update from less then LIGERO 6.0.5.
     my $SysConfigDBObject  = $Kernel::OM->Get('Kernel::System::SysConfig::DB');
     my %ZoomExpandModified = $SysConfigDBObject->ModifiedSettingGet(
         Name => 'Ticket::Frontend::ZoomExpand',
     );
 
-    my $ZoomExpandValue = $ZoomExpandModified{EffectiveValue} || $OTRS5Config{'Ticket::Frontend::ZoomExpand'};
+    my $ZoomExpandValue = $ZoomExpandModified{EffectiveValue} || $LIGERO5Config{'Ticket::Frontend::ZoomExpand'};
 
     # If original ZoomExpand config is not modified there is nothing to migrate.
     if ( !$ZoomExpandValue ) {
@@ -93,7 +93,7 @@ sub Run {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

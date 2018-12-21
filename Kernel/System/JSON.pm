@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -12,7 +12,7 @@ use strict;
 use warnings;
 
 # on PerlEx JSON::XS causes problems so force JSON::PP as backend
-# see http://bugs.otrs.org/show_bug.cgi?id=7337
+# see http://bugs.ligero.org/show_bug.cgi?id=7337
 BEGIN {
     if ( $ENV{GATEWAY_INTERFACE} && $ENV{GATEWAY_INTERFACE} =~ m{\A CGI-PerlEx}xmsi ) {
         $ENV{PERL_JSON_BACKEND} = 'JSON::PP';    ## no critic
@@ -240,7 +240,7 @@ sub _BooleansProcess {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -123,7 +123,7 @@ ArticleDataTables:
             <Data Key="channel_data" Type="Quote">---
 ArticleDataArticleIDField: article_id
 ArticleDataTables:
-- article_data_otrs_chat
+- article_data_ligero_chat
             </Data>
             <Data Key="valid_id">1</Data>
             <Data Key="create_by">1</Data>
@@ -144,7 +144,7 @@ ArticleDataTables:
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -421,7 +421,7 @@ sub AgentQueueListOption {
 
         # transform data from Hash in Array because of ordering in frontend by Queue name
         # it was a problem with name like '(some_queue)'
-        # see bug#10621 http://bugs.otrs.org/show_bug.cgi?id=10621
+        # see bug#10621 http://bugs.ligero.org/show_bug.cgi?id=10621
         my %QueueDataHash  = %{ $Param{Data} || {} };
         my @QueueDataArray = map {
             {
@@ -1117,7 +1117,7 @@ sub TicketMetaItems {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

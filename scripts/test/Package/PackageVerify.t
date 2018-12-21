@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -23,11 +23,11 @@ $OTRSVersion =~ s{ (\d+ \. \d+) .+ }{$1}msx;
 $OTRSVersion .= '.x';
 
 my $String = '<?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.0">
+<ligero_package version="1.0">
   <Name>Test</Name>
   <Version>0.0.1</Version>
   <Vendor>OTRS AG</Vendor>
-  <URL>https://otrs.com/</URL>
+  <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
   <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
@@ -64,15 +64,15 @@ my $String = '<?xml version="1.0" encoding="utf-8" ?>
     <File Location="Test" Permission="644" Encode="Base64">aGVsbG8K</File>
     <File Location="var/Test" Permission="644" Encode="Base64">aGVsbG8K</File>
   </Filelist>
-</otrs_package>
+</ligero_package>
 ';
 
 my $StringSecond = "<?xml version='1.0' encoding='utf-8' ?>
-<otrs_package version='1.0'>
+<ligero_package version='1.0'>
   <Name>TestSecond</Name>
   <Version>0.0.1</Version>
   <Vendor>OTRS AG</Vendor>
-  <URL>https://otrs.com/</URL>
+  <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
   <Description Lang='en'>A test package (some test &lt; &gt; &amp;).\nNew line for testing.</Description>
@@ -85,7 +85,7 @@ my $StringSecond = "<?xml version='1.0' encoding='utf-8' ?>
     <File Location='TestSecond' Permission='644' Encode='Base64'>aGVsbG8K</File>
     <File Location='var/TestSecond' Permission='644' Encode='Base64'>aGVsbG8K</File>
   </Filelist>
-</otrs_package>
+</ligero_package>
 ";
 
 # Override Request() from K::S::CloudService::Backend::Run to always return expected data without any real web call.
@@ -168,7 +168,7 @@ my @Tests = (
 
 for my $Test (@Tests) {
 
-    # Change line endings in the package source, see http://bugs.otrs.org/show_bug.cgi?id=9838 for more information.
+    # Change line endings in the package source, see http://bugs.ligero.org/show_bug.cgi?id=9838 for more information.
     if ( $Test->{ChangeLineEndings} ) {
         $Test->{Package} =~ s{\n}{\r\n}xmsg;
     }

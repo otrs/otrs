@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -58,7 +58,7 @@ $Self->True(
 
 my $XML = <<"EOS";
 <?xml version="1.0" encoding="utf-8" ?>
-<otrs_config version="2.0" init="Application">
+<ligero_config version="2.0" init="Application">
     <Setting Name="UnitTest::DummyModule::$RandomID" Required="1" Valid="1">
         <Description Translatable="1">Dummy module registration for a unit test</Description>
         <Navigation>UnitTest</Navigation>
@@ -66,7 +66,7 @@ my $XML = <<"EOS";
             <Item ValueType="PerlModule" ValueFilter="Kernel/*.pm">Kernel::FixInvalid$RandomID</Item>
         </Value>
     </Setting>
-</otrs_config>
+</ligero_config>
 EOS
 
 my $XMLFile = $MainObject->FileWrite(
@@ -129,7 +129,7 @@ $Self->False(
 $Self->True(
     (
         $Result
-            =~ m{Following settings were not fixed:.*UnitTest::DummyModule::$RandomID.*Please use console command \(bin/otrs\.Console\.pl Admin::Config::Update --help\) or GUI to fix them\.}ms
+            =~ m{Following settings were not fixed:.*UnitTest::DummyModule::$RandomID.*Please use console command \(bin/ligero\.Console\.pl Admin::Config::Update --help\) or GUI to fix them\.}ms
     ) // 0,
     'Check expected command output'
 );

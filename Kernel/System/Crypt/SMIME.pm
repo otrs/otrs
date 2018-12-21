@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -2117,7 +2117,7 @@ sub CheckCertPath {
 
     # normalize private secret file names
     #
-    # in otrs 3.0 private secret files are stored in format like 12345678.p, from otrs 3.1 this
+    # in ligero 3.0 private secret files are stored in format like 12345678.p, from ligero 3.1 this
     # files must be in a format like 12345678.0.p where .0 could be from 0 to 9 depending on the
     # private key file name.
 
@@ -2211,7 +2211,7 @@ sub _FetchAttributesFromCert {
     # cause for openssl 1.0.0 that the -CApath option (e.g. in verify function) will not find the
     # CA files in the path, due that openssl search for the file names based in current algorithm
     #
-    # -subject_hash_old was used in otrs in the past (to keep the old hashes style, and perhaps to
+    # -subject_hash_old was used in ligero in the past (to keep the old hashes style, and perhaps to
     # ease a migration between openssl versions ) but now is not recommended anymore.
 
     # testing new solution
@@ -2986,7 +2986,7 @@ sub _ReHashCertificates {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

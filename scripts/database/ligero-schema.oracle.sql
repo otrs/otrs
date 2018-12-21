@@ -2185,9 +2185,9 @@ END;
 --
 ;
 -- ----------------------------------------------------------
---  create table article_data_otrs_chat
+--  create table article_data_ligero_chat
 -- ----------------------------------------------------------
-CREATE TABLE article_data_otrs_chat (
+CREATE TABLE article_data_ligero_chat (
     id NUMBER (20, 0) NOT NULL,
     article_id NUMBER (20, 0) NOT NULL,
     chat_participant_id VARCHAR2 (255) NOT NULL,
@@ -2197,16 +2197,16 @@ CREATE TABLE article_data_otrs_chat (
     system_generated NUMBER (5, 0) NOT NULL,
     create_time DATE NOT NULL
 );
-ALTER TABLE article_data_otrs_chat ADD CONSTRAINT PK_article_data_otrs_chat PRIMARY KEY (id);
+ALTER TABLE article_data_ligero_chat ADD CONSTRAINT PK_article_data_ligero_chat PRIMARY KEY (id);
 BEGIN
-    EXECUTE IMMEDIATE 'DROP SEQUENCE SE_article_data_otrs_chat';
+    EXECUTE IMMEDIATE 'DROP SEQUENCE SE_article_data_ligero_chat';
 EXCEPTION
     WHEN OTHERS THEN NULL;
 END;
 /
 --
 ;
-CREATE SEQUENCE SE_article_data_otrs_chat
+CREATE SEQUENCE SE_article_data_ligero_chat
 INCREMENT BY 1
 START WITH 1
 NOMAXVALUE
@@ -2215,19 +2215,19 @@ CACHE 20
 ORDER
 ;
 BEGIN
-    EXECUTE IMMEDIATE 'DROP TRIGGER SE_article_data_otrs_chat_t';
+    EXECUTE IMMEDIATE 'DROP TRIGGER SE_article_data_ligero_chat_t';
 EXCEPTION
     WHEN OTHERS THEN NULL;
 END;
 /
 --
 ;
-CREATE OR REPLACE TRIGGER SE_article_data_otrs_chat_t
-BEFORE INSERT ON article_data_otrs_chat
+CREATE OR REPLACE TRIGGER SE_article_data_ligero_chat_t
+BEFORE INSERT ON article_data_ligero_chat
 FOR EACH ROW
 BEGIN
     IF :new.id IS NULL THEN
-        SELECT SE_article_data_otrs_chat.nextval
+        SELECT SE_article_data_ligero_chat.nextval
         INTO :new.id
         FROM DUAL;
     END IF;
@@ -2236,7 +2236,7 @@ END;
 --
 ;
 BEGIN
-    EXECUTE IMMEDIATE 'CREATE INDEX article_data_otrs_chat_artic16 ON article_data_otrs_chat (article_id)';
+    EXECUTE IMMEDIATE 'CREATE INDEX article_data_ligero_chat_artic16 ON article_data_ligero_chat (article_id)';
 EXCEPTION
   WHEN OTHERS THEN NULL;
 END;

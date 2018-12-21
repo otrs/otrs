@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -353,7 +353,7 @@ sub Sync {
     # variable to store group permissions from ldap
     my %GroupPermissionsFromLDAP;
 
-    # sync ldap group 2 otrs group permissions
+    # sync ldap group 2 ligero group permissions
     my $UserSyncGroupsDefinition = $ConfigObject->Get(
         'AuthSyncModule::LDAP::UserSyncGroupsDefinition' . $Self->{Count}
     );
@@ -437,7 +437,7 @@ sub Sync {
         }
     }
 
-    # sync ldap attribute 2 otrs group permissions
+    # sync ldap attribute 2 ligero group permissions
     my $UserSyncAttributeGroupsDefinition = $ConfigObject->Get(
         'AuthSyncModule::LDAP::UserSyncAttributeGroupsDefinition' . $Self->{Count}
     );
@@ -572,7 +572,7 @@ sub Sync {
     # variable to store role permissions from ldap
     my %RolePermissionsFromLDAP;
 
-    # sync ldap group 2 otrs role permissions
+    # sync ldap group 2 ligero role permissions
     my $UserSyncRolesDefinition = $ConfigObject->Get(
         'AuthSyncModule::LDAP::UserSyncRolesDefinition' . $Self->{Count}
     );
@@ -644,7 +644,7 @@ sub Sync {
         }
     }
 
-    # sync ldap attribute 2 otrs role permissions
+    # sync ldap attribute 2 ligero role permissions
     my $UserSyncAttributeRolesDefinition = $ConfigObject->Get(
         'AuthSyncModule::LDAP::UserSyncAttributeRolesDefinition' . $Self->{Count}
     );

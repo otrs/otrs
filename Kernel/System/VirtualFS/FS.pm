@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -38,9 +38,9 @@ sub new {
 
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'notice',
-            Message  => "Can't write $Self->{DataDir}! try: \$OTRS_HOME/bin/otrs.SetPermissions.pl!",
+            Message  => "Can't write $Self->{DataDir}! try: \$OTRS_HOME/bin/ligero.SetPermissions.pl!",
         );
-        die "Can't write $Self->{DataDir}! try: \$OTRS_HOME/bin/otrs.SetPermissions.pl!";
+        die "Can't write $Self->{DataDir}! try: \$OTRS_HOME/bin/ligero.SetPermissions.pl!";
     }
 
     # config (not used right now)

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -65,7 +65,7 @@ my @Tests = (
                             User     => 'basic auth user',
                         },
                         Encoding             => 'UTF-8',
-                        Endpoint             => 'http://localhost/otrs/nph-genericinterface.pl/Webservice/Test',
+                        Endpoint             => 'http://localhost/ligero/nph-genericinterface.pl/Webservice/Test',
                         NameSpace            => '',
                         RequestNameFreeText  => '',
                         RequestNameScheme    => 'Request',
@@ -94,7 +94,7 @@ my @Tests = (
                 BasicAuthUser     => 'basic auth user',
             },
             Encoding  => 'UTF-8',
-            Endpoint  => 'http://localhost/otrs/nph-genericinterface.pl/Webservice/Test',
+            Endpoint  => 'http://localhost/ligero/nph-genericinterface.pl/Webservice/Test',
             NameSpace => '',
             Proxy     => {
                 ProxyExclude  => 'No',
@@ -139,7 +139,7 @@ my @Tests = (
                             User     => 'basic auth user',
                         },
                         DefaultCommand           => 'POST',
-                        Host                     => 'http://localhost/otrs/nph-genericinterface.pl/Webservice/Test',
+                        Host                     => 'http://localhost/ligero/nph-genericinterface.pl/Webservice/Test',
                         InvokerControllerMapping => {
                             TestSimple => {
                                 Controller => '/Test',
@@ -162,7 +162,7 @@ my @Tests = (
                 BasicAuthUser     => 'basic auth user',
             },
             DefaultCommand           => 'POST',
-            Host                     => 'http://localhost/otrs/nph-genericinterface.pl/Webservice/Test',
+            Host                     => 'http://localhost/ligero/nph-genericinterface.pl/Webservice/Test',
             InvokerControllerMapping => {
                 TestSimple => {
                     Controller => '/Test',

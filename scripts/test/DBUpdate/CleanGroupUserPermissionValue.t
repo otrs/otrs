@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -16,8 +16,8 @@ my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 my $Home   = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
 my @DatabaseXMLFiles = (
-    "$Home/scripts/test/sample/DBUpdate/otrs5-schema.xml",
-    "$Home/scripts/test/sample/DBUpdate/otrs5-initial_insert.xml",
+    "$Home/scripts/test/sample/DBUpdate/ligero5-schema.xml",
+    "$Home/scripts/test/sample/DBUpdate/ligero5-initial_insert.xml",
 );
 
 my $Success = $Helper->ProvideTestDatabase(

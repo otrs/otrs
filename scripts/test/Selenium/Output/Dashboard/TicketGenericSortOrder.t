@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -216,7 +216,7 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".Loading").length' );
 
      # Verify ticket with different priority is present on screen with filter, it's still on the first page.
-     # See bug#11422 ( http://bugs.otrs.org/show_bug.cgi?id=11422 ), there is no change in order when activating filter.
+     # See bug#11422 ( http://bugs.ligero.org/show_bug.cgi?id=11422 ), there is no change in order when activating filter.
         $Self->True(
             $Selenium->find_element("//a[contains(\@title, \'Queue, filter active' )]"),
             "Filter for queue column is active",

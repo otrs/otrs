@@ -1,6 +1,6 @@
 #!/bin/bash
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ set -ev
 
 if [ $DB = 'postgresql' ]; then
     # PostgreSQL data is on a small ramdisk in Travis; make sure that it stays small by always performing VACUUM FULL.
-    perl bin/otrs.Console.pl Dev::UnitTest::Run --post-test-script 'psql -U postgres otrs -c "VACUUM FULL"'
+    perl bin/ligero.Console.pl Dev::UnitTest::Run --post-test-script 'psql -U postgres ligero -c "VACUUM FULL"'
 else
-    perl bin/otrs.Console.pl Dev::UnitTest::Run
+    perl bin/ligero.Console.pl Dev::UnitTest::Run
 fi

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -61,7 +61,7 @@ my $QueueID2 = $QueueObject->QueueAdd(
 
 # add SystemAddress
 my $SystemAddressEmail    = $Helper->GetRandomID() . '@example.com';
-my $SystemAddressRealname = "OTRS-Team";
+my $SystemAddressRealname = "LIGERO-Team";
 
 my %SystemAddressData = (
     Name     => $SystemAddressEmail,
@@ -97,7 +97,7 @@ $Self->False(
 
 # add SystemAddress
 my $SystemAddressEmail2    = $Helper->GetRandomID() . '@example.com';
-my $SystemAddressRealname2 = "OTRS-Team2";
+my $SystemAddressRealname2 = "LIGERO-Team2";
 my $SystemAddressID2       = $SystemAddressObject->SystemAddressAdd(
     Name     => $SystemAddressEmail2,
     Realname => $SystemAddressRealname2,

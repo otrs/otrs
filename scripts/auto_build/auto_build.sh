@@ -1,7 +1,7 @@
 #!/bin/sh
 # --
-# auto_build.sh - build automatically OTRS tar, rpm and src-rpm
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# auto_build.sh - build automatically LIGERO tar, rpm and src-rpm
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,15 +17,15 @@
 # along with this program. If not, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-echo "auto_build.sh - build OTRS release files"
-echo "Copyright (C) 2001-2018 OTRS AG, https://otrs.com/";
+echo "auto_build.sh - build LIGERO release files"
+echo "Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/";
 
 PATH_TO_CVS_SRC=$1
-PRODUCT=OTRS
+PRODUCT=LIGERO
 VERSION=$2
 RELEASE=$3
-ARCHIVE_DIR="otrs-$VERSION"
-PACKAGE=otrs
+ARCHIVE_DIR="ligero-$VERSION"
+PACKAGE=ligero
 PACKAGE_BUILD_DIR="/tmp/$PACKAGE-build"
 PACKAGE_DEST_DIR="/tmp/$PACKAGE-packages"
 PACKAGE_TMP_SPEC="/tmp/$PACKAGE.spec"
@@ -40,7 +40,7 @@ if ! test $PATH_TO_CVS_SRC || ! test $VERSION || ! test $RELEASE; then
     echo ""
     echo "Usage: auto_build.sh <PATH_TO_CVS_SRC> <VERSION> <BUILD>"
     echo ""
-    echo "  Try: auto_build.sh /home/ernie/src/otrs 3.1.0.beta1 01"
+    echo "  Try: auto_build.sh /home/ernie/src/ligero 3.1.0.beta1 01"
     echo ""
     exit 1;
 else
@@ -48,7 +48,7 @@ else
     # check dir
     # --
     if ! test -e $PATH_TO_CVS_SRC/RELEASE; then
-        echo "Error: $PATH_TO_CVS_SRC is not OTRS CVS directory!"
+        echo "Error: $PATH_TO_CVS_SRC is not LIGERO CVS directory!"
         exit 1;
     fi
 fi
@@ -121,7 +121,7 @@ find -name ".#*" | xargs rm -rf
 find -name ".keep" | xargs rm -f
 
 # mk ARCHIVE
-bin/otrs.CheckSum.pl -a create
+bin/ligero.CheckSum.pl -a create
 # Create needed directories
 mkdir -p var/tmp var/article var/log
 
@@ -166,11 +166,11 @@ function CreateRPM() {
     mv $SYSTEM_SRPM_DIR/$PACKAGE*$VERSION*$RELEASE*.src.rpm $PACKAGE_DEST_DIR/SRPMS/$TargetPath
 }
 
-CreateRPM "SuSE 12"   "suse12-otrs.spec"   "suse/12/"
-CreateRPM "SuSE 13"   "suse13-otrs.spec"   "suse/13/"
-CreateRPM "Fedora 25" "fedora25-otrs.spec" "fedora/25/"
-CreateRPM "Fedora 26" "fedora26-otrs.spec" "fedora/26/"
-CreateRPM "RHEL 7"    "rhel7-otrs.spec"    "rhel/7"
+CreateRPM "SuSE 12"   "suse12-ligero.spec"   "suse/12/"
+CreateRPM "SuSE 13"   "suse13-ligero.spec"   "suse/13/"
+CreateRPM "Fedora 25" "fedora25-ligero.spec" "fedora/25/"
+CreateRPM "Fedora 26" "fedora26-ligero.spec" "fedora/26/"
+CreateRPM "RHEL 7"    "rhel7-ligero.spec"    "rhel/7"
 
 echo "-----------------------------------------------------------------";
 echo "You will find your tar.gz, RPMs and SRPMs in $PACKAGE_DEST_DIR";
@@ -179,7 +179,7 @@ find . -name "*$PACKAGE*" | xargs ls -lo
 echo "-----------------------------------------------------------------";
 if which md5sum >> /dev/null; then
     echo "MD5 message digest (128-bit) checksums in wiki table format";
-    find . -name "*$PACKAGE*" | xargs md5sum | sed -e "s/^/| /" -e "s/\.\//| http:\/\/ftp.otrs.org\/pub\/otrs\//" -e "s/$/ |/"
+    find . -name "*$PACKAGE*" | xargs md5sum | sed -e "s/^/| /" -e "s/\.\//| http:\/\/ftp.ligero.org\/pub\/ligero\//" -e "s/$/ |/"
 else
     echo "No md5sum found in \$PATH!"
 fi

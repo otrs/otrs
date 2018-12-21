@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -56,11 +56,11 @@ for a package file.',
     {
         Name   => 'Normal package content',
         String => '<?xml version="1.0" encoding="utf-8" ?>
-    <otrs_package version="1.0">
+    <ligero_package version="1.0">
       <Name>TestPackage</Name>
       <Version>1.0.1</Version>
       <Vendor>OTRS AG</Vendor>
-      <URL>https://otrs.com/</URL>
+      <URL>https://ligero.com/</URL>
       <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
       <ChangeLog>2013-08-14 New package (some test &lt; &gt; &amp;).</ChangeLog>
       <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
@@ -72,9 +72,9 @@ for a package file.',
       <Filelist>
         <File Location="Test" Permission="644" Encode="Base64">aGVsbG8K</File>
         <File Location="var/Test" Permission="644" Encode="Base64">aGVsbG8K</File>
-        <File Location="bin/otrs.CheckDB.pl" Permission="755" Encode="Base64">aGVsbG8K</File>
+        <File Location="bin/ligero.CheckDB.pl" Permission="755" Encode="Base64">aGVsbG8K</File>
       </Filelist>
-    </otrs_package>
+    </ligero_package>
 ',
         Success => 1,
     },

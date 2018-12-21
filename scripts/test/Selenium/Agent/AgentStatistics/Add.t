@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -209,7 +209,7 @@ $Selenium->RunTest(
                 );
 
                 # Set invalid date for CreateTime (31.06.).
-                # See bug #13938 (https://bugs.otrs.org/show_bug.cgi?id=13938).
+                # See bug #13938 (https://bugs.ligero.org/show_bug.cgi?id=13938).
                 if ( $StatsData->{XAxis} eq 'XAxisCreateTime' ) {
                     $Selenium->InputFieldValueSet(
                         Element => '#XAxisCreateTimeStopMonth',

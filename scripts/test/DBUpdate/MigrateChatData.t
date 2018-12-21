@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -18,8 +18,8 @@ my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
 my @DatabaseXMLFiles = (
-    "$Home/scripts/test/sample/DBUpdate/otrs5-schema.xml",
-    "$Home/scripts/test/sample/DBUpdate/otrs5-initial_insert.xml",
+    "$Home/scripts/test/sample/DBUpdate/ligero5-schema.xml",
+    "$Home/scripts/test/sample/DBUpdate/ligero5-initial_insert.xml",
 );
 
 my $Success = $Helper->ProvideTestDatabase(
@@ -71,7 +71,7 @@ for my $ArticleTypeName (qw(chat-internal chat-external)) {
 
 # Load the upgrade XML file.
 my $XMLString = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
-    Location => "$Home/scripts/test/sample/DBUpdate/otrs5-initial_insert_chat.xml",
+    Location => "$Home/scripts/test/sample/DBUpdate/ligero5-initial_insert_chat.xml",
 );
 
 # Execute the the upgrade XML file.
@@ -82,7 +82,7 @@ $Helper->DatabaseXMLExecute(
 # Check tables are not present before migration script
 my @Tables = $DBObject->ListTables();
 
-my @NewTablesName = ( 'article_data_mime', 'article_data_otrs_chat' );
+my @NewTablesName = ( 'article_data_mime', 'article_data_ligero_chat' );
 
 my %CurrentTables = map { lc($_) => 1 } @Tables;
 
@@ -185,7 +185,7 @@ my $CheckData = sub {
 
     # Get amount of article entries
     $DBObject->Prepare(
-        SQL => "SELECT COUNT(*) FROM article_data_otrs_chat",
+        SQL => "SELECT COUNT(*) FROM article_data_ligero_chat",
     );
     while ( my @Row = $DBObject->FetchrowArray() ) {
         $ChatCount = $Row[0] || 0;
@@ -207,18 +207,18 @@ my $CheckData = sub {
         $Self->IsNot(
             $ArticleChatCount,
             $ChatCount,
-            "The same amount of rows should NOT be present in article_data_mime($ArticleChatCount) and article_data_otrs_chat($ChatCount) tables.",
+            "The same amount of rows should NOT be present in article_data_mime($ArticleChatCount) and article_data_ligero_chat($ChatCount) tables.",
         );
         $Self->True(
             1,
-            'The article_data_mime and article_data_otrs_chat tables have not chat rows.',
+            'The article_data_mime and article_data_ligero_chat tables have not chat rows.',
         );
     }
     else {
         $Self->IsNot(
             $ArticleChatCount,
             $ChatCount,
-            'In article_data_mime and article_data_otrs_chat should not be the same amount of data.',
+            'In article_data_mime and article_data_ligero_chat should not be the same amount of data.',
         );
         $Self->IsNot(
             $ArticleChatCount,

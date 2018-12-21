@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -448,7 +448,7 @@ sub GeneratePackageList {
 
 =head2 GenerateRegistrationInfo()
 
-Generates a C<.json> file with the otrs system registration information
+Generates a C<.json> file with the ligero system registration information
 
     my ( $Content, $Filename ) = $SupportBundleGeneratorObject->GenerateRegistrationInfo();
 
@@ -498,7 +498,7 @@ sub GenerateRegistrationInfo {
 
 =head2 GenerateConfigurationDump()
 
-Generates a <.yml> file with the otrs system registration information
+Generates a <.yml> file with the ligero system registration information
 
     my ( $Content, $Filename ) = $SupportBundleGeneratorObject->GenerateConfigurationDump();
 
@@ -719,7 +719,7 @@ sub _MaskPasswords {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -1233,7 +1233,7 @@ sub _Replace {
 
                 # Change time to customer user's timezone if exists (if comes from AutoResponse function)
                 # and later append timezone information.
-                # For more information, see bug#13865 (https://bugs.otrs.org/show_bug.cgi?id=13865).
+                # For more information, see bug#13865 (https://bugs.ligero.org/show_bug.cgi?id=13865).
                 if ($CustomerUserTimeZone) {
                     my $DateTimeObject = $Kernel::OM->Create(
                         'Kernel::System::DateTime',
@@ -1652,7 +1652,7 @@ sub _Replace {
                 for my $Counter ( 0 .. $Line - 1 ) {
 
                     # 2002-06-14 patch of Pablo Ruiz Garcia
-                    # http://lists.otrs.org/pipermail/dev/2002-June/000012.html
+                    # http://lists.ligero.org/pipermail/dev/2002-June/000012.html
                     if ( $#Body >= $Counter ) {
 
                         # add no quote char, do it later by using DocumentCleanup()
@@ -1711,7 +1711,7 @@ sub _Replace {
 
             if ( $DataType eq 'OTRS_CUSTOMER_' ) {
 
-                # Arnold Ligtvoet - otrs@ligtvoet.org
+                # Arnold Ligtvoet - ligero@ligtvoet.org
                 # get <OTRS_EMAIL_DATE[]> from body and replace with received date
                 use POSIX qw(strftime);
                 $Tag = $Start . 'OTRS_EMAIL_DATE';
@@ -1861,7 +1861,7 @@ sub _RemoveUnSupportedTag {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

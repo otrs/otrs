@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -330,7 +330,7 @@ sub Run {
                     Item                => Translatable('Configure MySQL'),
                     Step                => $StepCounter,
                     InstallType         => $DBInstallType,
-                    DefaultDBUser       => $DBInstallType eq 'CreateDB' ? 'root' : 'otrs',
+                    DefaultDBUser       => $DBInstallType eq 'CreateDB' ? 'root' : 'ligero',
                     PasswordExplanation => $PasswordExplanation,
                 },
             );
@@ -373,7 +373,7 @@ sub Run {
                     Item          => Translatable('Database'),
                     Step          => $StepCounter,
                     InstallType   => $DBInstallType,
-                    DefaultDBUser => $DBInstallType eq 'CreateDB' ? 'postgres' : 'otrs',
+                    DefaultDBUser => $DBInstallType eq 'CreateDB' ? 'postgres' : 'ligero',
                 },
             );
             if ( $DBInstallType eq 'CreateDB' ) {
@@ -633,7 +633,7 @@ sub Run {
 
         # Create database tables and insert initial values.
         my @SQLPost;
-        for my $SchemaFile (qw(otrs-schema otrs-initial_insert)) {
+        for my $SchemaFile (qw(ligero-schema ligero-initial_insert)) {
             if ( !-f "$DirOfSQLFiles/$SchemaFile.xml" ) {
                 $LayoutObject->FatalError(
                     Message => $LayoutObject->{LanguageObject}
@@ -660,7 +660,7 @@ sub Run {
             );
 
             # If we parsed the schema, catch post instructions.
-            @SQLPost = $DBObject->SQLProcessorPost() if $SchemaFile eq 'otrs-schema';
+            @SQLPost = $DBObject->SQLProcessorPost() if $SchemaFile eq 'ligero-schema';
 
             for my $SQL (@SQL) {
                 $DBObject->Do( SQL => $SQL );

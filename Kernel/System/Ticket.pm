@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -6252,7 +6252,7 @@ sub TicketMergeLinkedObjects {
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # Delete all duplicate links relations between merged tickets.
-    # See bug#12994 (https://bugs.otrs.org/show_bug.cgi?id=12994).
+    # See bug#12994 (https://bugs.ligero.org/show_bug.cgi?id=12994).
     $DBObject->Prepare(
         SQL => '
             SELECT target_key
@@ -7853,7 +7853,7 @@ sub _TicketGetFirstLock {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

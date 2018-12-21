@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -107,7 +107,7 @@ sub PreProcessBindData {
         #   The mysql_enable_utf8 flag seems to be unusable because it treats ALL data as UTF8 unless
         #   it has a custom bind data type like SQL_BLOB.
         #
-        #   See also https://bugs.otrs.org/show_bug.cgi?id=12677.
+        #   See also https://bugs.ligero.org/show_bug.cgi?id=12677.
         $EncodeObject->EncodeOutput( \$BindRef->[$I] );
     }
     return;

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -46,9 +46,9 @@ $Selenium->RunTest(
               xmlns:sy=\"http://purl.org/rss/1.0/modules/syndication/\"
               xmlns:slash=\"http://purl.org/rss/1.0/modules/slash/\"  >
               <channel>
-                  <title>Press Releases &#8211; otrs.com| OTRS Simple Service Management</title>
-                  <atom:link href=\"https://www.otrs.com/feed/?cat=112%2C254%2C111\" rel=\"self\" type=\"application/rss+xml\" />
-                  <link>https://www.otrs.com</link>
+                  <title>Press Releases &#8211; ligero.com| OTRS Simple Service Management</title>
+                  <atom:link href=\"https://www.ligero.com/feed/?cat=112%2C254%2C111\" rel=\"self\" type=\"application/rss+xml\" />
+                  <link>https://www.ligero.com</link>
                   <description>Simple service management</description>
                   <lastBuildDate>Fri, 26 Jan 2018 13:37:52 +0000</lastBuildDate>
                   <language>en-EN</language>
@@ -57,12 +57,12 @@ $Selenium->RunTest(
                   <generator>https://wordpress.org/?v=4.9.2</generator>
                   <item>
                       <title>$RandomRSSTitle</title>
-                      <link>https://www.otrs.com/$RandomRSSTitle</link>
+                      <link>https://www.ligero.com/$RandomRSSTitle</link>
                       <pubDate>Tue, 16 Jan 2018 09:00:07 +0000</pubDate>
                       <dc:creator><![CDATA[Marketing OTRS]]></dc:creator>
                       <category><![CDATA[Release and Security Notes]]></category>
                       <category><![CDATA[Release Notes: OTRS Business Solution™]]></category>
-                      <guid isPermaLink=\"false\">https://www.otrs.com/?p=61580</guid>
+                      <guid isPermaLink=\"false\">https://www.ligero.com/?p=61580</guid>
                       <description><![CDATA[&#160; January 16, 2018 — OTRS, test]]></description>
                       <content:encoded><![CDATA[<div class=\"row box-space-md\"> <div class=\"col-lg-12 col-md-12 col-sm-12 column1\"></div> </div>]]></content:encoded>
                   </item>
@@ -100,7 +100,7 @@ $Selenium->RunTest(
         # Test if RSS feed is shown.
         $Self->True(
             $Selenium->execute_script(
-                "return \$('#Dashboard0410-RSS tbody a[href*=\"www.otrs.com/$RandomRSSTitle\"]').text().trim() === '$RandomRSSTitle'"
+                "return \$('#Dashboard0410-RSS tbody a[href*=\"www.ligero.com/$RandomRSSTitle\"]').text().trim() === '$RandomRSSTitle'"
             ),
             "RSS feed '$RandomRSSTitle' - found",
         );

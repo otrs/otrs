@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -290,7 +290,7 @@ sub Send {
 
     # Check from
     if ( !$Param{From} ) {
-        $Param{From} = $ConfigObject->Get('AdminEmail') || 'otrs@localhost';
+        $Param{From} = $ConfigObject->Get('AdminEmail') || 'ligero@localhost';
     }
 
     # Replace all <br/> tags with <br /> tags (with a space) to show newlines in Lotus Notes.
@@ -1089,7 +1089,7 @@ sub _CreateMimeEntity {
     }
     else {
         $Header{'X-Mailer'}     = "$Product Mail Service ($Version)";
-        $Header{'X-Powered-By'} = 'OTRS (https://otrs.com/)';
+        $Header{'X-Powered-By'} = 'OTRS (https://ligero.com/)';
     }
     $Header{Type} = $Param{MimeType} || 'text/plain';
 
@@ -1132,7 +1132,7 @@ sub _CreateMimeEntity {
     my $EncodeObject = $Kernel::OM->Get('Kernel::System::Encode');
 
     # build MIME::Entity, Data should be bytes, not utf-8
-    # see http://bugs.otrs.org/show_bug.cgi?id=9832
+    # see http://bugs.ligero.org/show_bug.cgi?id=9832
     $EncodeObject->EncodeOutput( \$Param{Body} );
     my $Entity = MIME::Entity->build( %Header, Data => $Param{Body} );
 
@@ -1297,7 +1297,7 @@ sub _CreateMimeEntity {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

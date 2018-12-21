@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -55,7 +55,7 @@ sub Run {
         my $Text = $LayoutObject->{LanguageObject}->Translate(
             'This system uses the %s without a proper license! Please make contact with %s to renew or activate your contract!',
             $OTRSBusinessLabel,
-            'sales@otrs.com',    # no mailto link as these are currently not displayed in the CI
+            'sales@ligero.com',    # no mailto link as these are currently not displayed in the CI
         );
         $Output .= $LayoutObject->Notify(
             Data     => $Text,

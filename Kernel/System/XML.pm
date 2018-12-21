@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -756,7 +756,7 @@ sub XMLParse {
     if ($Checksum) {
 
         # set CacheInMemory to 0 to prevent modification of the cache from outside
-        # See bug#[12761](https://bugs.otrs.org/show_bug.cgi?id=12761) for further details
+        # See bug#[12761](https://bugs.ligero.org/show_bug.cgi?id=12761) for further details
         my $Cache = $CacheObject->Get(
             Type          => 'XMLParse',
             Key           => $Checksum,
@@ -847,7 +847,7 @@ sub XMLParse {
     if ($Checksum) {
 
         # set CacheInMemory to 0 to prevent modification of the cache from outside
-        # See bug#[12761](https://bugs.otrs.org/show_bug.cgi?id=12761) for further details
+        # See bug#[12761](https://bugs.ligero.org/show_bug.cgi?id=12761) for further details
         $CacheObject->Set(
             Type          => 'XMLParse',
             Key           => $Checksum,
@@ -1567,7 +1567,7 @@ sub _ES {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

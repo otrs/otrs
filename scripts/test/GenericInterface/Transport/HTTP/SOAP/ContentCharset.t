@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -28,7 +28,7 @@ my $SOAPObject = Kernel::GenericInterface::Transport::HTTP::SOAP->new(
     TransportConfig => {
         Config => {
             MaxLength            => 100000000,
-            NameSpace            => 'http://www.otrs.org/TicketConnector/',
+            NameSpace            => 'http://www.ligero.org/TicketConnector/',
             RequestNameFreeText  => '',
             RequestNameScheme    => 'Plain',
             ResponseNameFreeText => '',
@@ -84,7 +84,7 @@ my @Tests = (
 for my $Test (@Tests) {
 
     my $Request = << "EOF";
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tic="http://www.otrs.org/TicketConnector/">
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tic="http://www.ligero.org/TicketConnector/">
    <soapenv:Header/>
    <soapenv:Body>
       <tic:Test>

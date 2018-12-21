@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+// Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -202,7 +202,7 @@ Core.Agent.TicketAction = (function (TargetNS) {
         });
 
         // Prevent form submit, if To, CC or Bcc are not correctly saved yet
-        // see http://bugs.otrs.org/show_bug.cgi?id=10022 for details
+        // see http://bugs.ligero.org/show_bug.cgi?id=10022 for details
         $('#submitRichText').on('click', function (Event) {
             var ToCustomer = $('#ToCustomer').val() || '',
                 CcCustomer = $('#CcCustomer').val() || '',

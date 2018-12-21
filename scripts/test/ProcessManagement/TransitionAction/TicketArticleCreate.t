@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -71,7 +71,7 @@ my $ArticleID1 = $ArticleBackendObject->ArticleCreate(
     TicketID             => $TicketID,
     IsVisibleForCustomer => 0,
     SenderType           => 'agent',
-    From                 => 'Some Agent <otrs@example.com>',
+    From                 => 'Some Agent <ligero@example.com>',
     To                   => 'Suplier<suplier@example.com>',
     Subject              => 'Email for suplier',
     Body           => "the message text\nthe message text\nthe message text\nthe message text\nthe message text\n",

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -179,7 +179,7 @@ $Selenium->RunTest(
         }
 
         # Check if PendingDiffTime set to 0 submits phone inbound form if state not pending.
-        # See bug#13906 https://bugs.otrs.org/show_bug.cgi?id=13906.
+        # See bug#13906 https://bugs.ligero.org/show_bug.cgi?id=13906.
 
         # Setup 'PendingDiffTime' config to 0 seconds.
         $Helper->ConfigSettingChange(

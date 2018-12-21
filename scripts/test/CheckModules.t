@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -18,7 +18,7 @@ my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 my $Home = $ConfigObject->Get('Home');
 my $TmpSumString;
 
-if ( open( $TmpSumString, '-|', "$^X $Home/bin/otrs.CheckModules.pl --all NoColors" ) )
+if ( open( $TmpSumString, '-|', "$^X $Home/bin/ligero.CheckModules.pl --all NoColors" ) )
 {    ## no critic
 
     LINE:

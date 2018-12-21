@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -804,9 +804,9 @@ sub DisableAsyncCalls {
 Provide temporary database for the test. Please first define test database settings in C<Config.pm>, i.e:
 
     $Self->{TestDatabase} = {
-        DatabaseDSN  => 'DBI:mysql:database=otrs_test;host=127.0.0.1;',
-        DatabaseUser => 'otrs_test',
-        DatabasePw   => 'otrs_test',
+        DatabaseDSN  => 'DBI:mysql:database=ligero_test;host=127.0.0.1;',
+        DatabaseUser => 'ligero_test',
+        DatabasePw   => 'ligero_test',
     };
 
 The method call will override global database configuration for duration of the test, i.e. temporary database will
@@ -818,8 +818,8 @@ All database contents will be automatically dropped when the Helper object is de
         DatabaseXMLString => $XML,      # (optional) OTRS database XML schema to execute
                                         # or
         DatabaseXMLFiles => [           # (optional) List of XML files to load and execute
-            '/opt/otrs/scripts/database/otrs-schema.xml',
-            '/opt/otrs/scripts/database/otrs-initial_insert.xml',
+            '/opt/ligero/scripts/database/ligero-schema.xml',
+            '/opt/ligero/scripts/database/ligero-initial_insert.xml',
         ],
     );
 
@@ -1129,7 +1129,7 @@ sub DatabaseXMLExecute {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

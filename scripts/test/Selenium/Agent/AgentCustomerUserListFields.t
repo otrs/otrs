@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -132,7 +132,7 @@ $Selenium->RunTest(
         $Selenium->find_element( '#RecipientSelect', 'css' )->click();
 
         # Check if CustomerUserListFields are correctly joined.
-        # See bug#13821 (https://bugs.otrs.org/show_bug.cgi?id=13821).
+        # See bug#13821 (https://bugs.ligero.org/show_bug.cgi?id=13821).
         $Self->Is(
             $Selenium->execute_script("return \$('input[id*=\"CustomerTicketText_\"]').val()"),
             "\"$UserFirstname $UserLastname $CustomerID\" \<$UserEmail\>",

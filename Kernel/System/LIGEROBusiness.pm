@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -65,10 +65,10 @@ sub new {
     # Check if cloud services are disabled
     $Self->{CloudServicesDisabled} = $ConfigObject->Get('CloudServices::Disabled') || 0;
 
-    # If we cannot connect to cloud.otrs.com for more than the second period, show an error.
+    # If we cannot connect to cloud.ligero.com for more than the second period, show an error.
     $Self->{NoConnectErrorPeriod} = 60 * 60 * 24 * 15;    # 15 days
 
-    # If we cannot connect to cloud.otrs.com for more than the second period, block the system.
+    # If we cannot connect to cloud.ligero.com for more than the second period, block the system.
     $Self->{NoConnectBlockPeriod} = 60 * 60 * 24 * 25;    # 25 days
 
     # If the contract is about to expire in less than this time, show a hint
@@ -190,7 +190,7 @@ sub OTRSCONTROLIsInstalled {
 
 =head2 OTRSBusinessIsAvailable()
 
-checks with C<cloud.otrs.com> if OTRSBusiness is available for the current framework.
+checks with C<cloud.ligero.com> if OTRSBusiness is available for the current framework.
 
 =cut
 
@@ -319,7 +319,7 @@ sub OTRSBusinessIsReinstallable {
 
 =head2 OTRSBusinessIsUpdateable()
 
-checks with C<cloud.otrs.com> if the OTRSBusiness package is available in a newer version
+checks with C<cloud.ligero.com> if the OTRSBusiness package is available in a newer version
 than the one currently installed. The result of this check will be stored in the
 system_data table for offline usage.
 
@@ -455,7 +455,7 @@ sub OTRSBusinessGetDependencies {
 
 =head2 OTRSBusinessEntitlementCheck()
 
-determines the OTRSBusiness entitlement status of this system as reported by C<cloud.otrs.com>
+determines the OTRSBusiness entitlement status of this system as reported by C<cloud.ligero.com>
 and stores it in the system_data cache.
 
 Returns 1 if the cloud call was successful.
@@ -507,7 +507,7 @@ sub OTRSBusinessEntitlementCheck {
     }
 
     if ( !IsHashRefWithData($RequestResult) || !$RequestResult->{Success} ) {
-        my $Message = "BusinessPermission - Can't contact cloud.otrs.com server";
+        my $Message = "BusinessPermission - Can't contact cloud.ligero.com server";
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => $Message
@@ -589,7 +589,7 @@ sub OTRSBusinessEntitlementStatus {
         return 'warning-error';
     }
 
-    # If we cannot connect to cloud.otrs.com for more than the first period, show a warning.
+    # If we cannot connect to cloud.ligero.com for more than the first period, show a warning.
     my $NoConnectWarningPeriod = 60 * 60 * 24 * 5;    # 5 days
     if ( $Self->OTRSSTORMIsInstalled() ) {
         $NoConnectWarningPeriod = 60 * 60 * 24 * 10;    # 10 days
@@ -661,7 +661,7 @@ sub HandleBusinessPermissionCloudServiceResult {
     # We store the current time as LastUpdateTime so that we know when the last
     #   permission check could be successfully made with the server. This is needed
     #   to determine if the results can still be used later, if a connection to
-    #   cloud.otrs.com cannot be made temporarily.
+    #   cloud.ligero.com cannot be made temporarily.
     my %StoreData = (
         BusinessPermission            => $OperationResult->{Data}->{BusinessPermission}            // 0,
         ExpiryDate                    => $OperationResult->{Data}->{ExpiryDate}                    // '',
@@ -1091,7 +1091,7 @@ sub _GetCONTROLPackageFromRepository {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

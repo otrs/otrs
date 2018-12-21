@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -58,7 +58,7 @@ sub Run {
 
         # Here we use a system call because Maint::PostMaster::Read has special exception handling
         #   and will die if certain problems occur.
-        my $Result = system("$^X $Home/bin/otrs.Console.pl Maint::PostMaster::Read <  $File ");
+        my $Result = system("$^X $Home/bin/ligero.Console.pl Maint::PostMaster::Read <  $File ");
 
         # Exit code 0 == success
         if ( !$Result ) {

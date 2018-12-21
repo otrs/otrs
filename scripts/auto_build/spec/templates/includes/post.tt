@@ -1,4 +1,4 @@
-export OTRSUSER=otrs
+export OTRSUSER=ligero
 
 [% '#' %] note
 HOST=`hostname -f`
@@ -11,11 +11,11 @@ echo ""
 echo "[install the OTRS database]"
 echo " Make sure your database server is running."
 echo " Use a web browser and open this link:"
-echo " http://$HOST/otrs/installer.pl"
+echo " http://$HOST/ligero/installer.pl"
 echo ""
 echo "[start OTRS daemon and corresponding watchdog cronjob]"
-echo " /opt/otrs/bin/otrs.Daemon.pl start"
-echo " /opt/otrs/bin/Cron.sh start"
+echo " /opt/ligero/bin/ligero.Daemon.pl start"
+echo " /opt/ligero/bin/Cron.sh start"
 echo ""
 echo "((enjoy))"
 echo " Your OTRS Team"

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -244,7 +244,7 @@ sub ImportAction {
             Param    => 'File',
             Encoding => 'Raw'
         );
-        if ( $UploadStuff{Content} =~ m{<otrs_stats>}x ) {
+        if ( $UploadStuff{Content} =~ m{<ligero_stats>}x ) {
             my $StatID = $Kernel::OM->Get('Kernel::System::Stats')->Import(
                 Content => $UploadStuff{Content},
                 UserID  => $Self->{UserID},

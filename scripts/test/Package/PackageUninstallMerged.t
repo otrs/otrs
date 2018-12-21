@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -43,11 +43,11 @@ if ( !$DeveloperSystem ) {
 
     # install package normally
     my $String = '<?xml version="1.0" encoding="utf-8" ?>
-    <otrs_package version="1.0">
+    <ligero_package version="1.0">
       <Name>Test</Name>
       <Version>0.0.1</Version>
       <Vendor>OTRS AG</Vendor>
-      <URL>https://otrs.com/</URL>
+      <URL>https://ligero.com/</URL>
       <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
       <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
       <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
@@ -60,7 +60,7 @@ if ( !$DeveloperSystem ) {
         <File Location="Test" Permission="644" Encode="Base64">aGVsbG8K</File>
         <File Location="var/Test" Permission="644" Encode="Base64">aGVsbG8K</File>
       </Filelist>
-    </otrs_package>
+    </ligero_package>
     ';
     my $PackageInstall = $PackageObject->PackageInstall( String => $String );
 
@@ -83,11 +83,11 @@ if ( !$DeveloperSystem ) {
     # will be uninstalled, the not framework files will be removed and the framework files will
     # remain
     $String = '<?xml version="1.0" encoding="utf-8" ?>
-    <otrs_package version="1.0">
+    <ligero_package version="1.0">
       <Name>Test</Name>
       <Version>0.0.1</Version>
       <Vendor>OTRS AG</Vendor>
-      <URL>https://otrs.com/</URL>
+      <URL>https://ligero.com/</URL>
       <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
       <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
       <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
@@ -99,9 +99,9 @@ if ( !$DeveloperSystem ) {
       <Filelist>
         <File Location="Test" Permission="644" Encode="Base64">aGVsbG8K</File>
         <File Location="var/Test" Permission="644" Encode="Base64">aGVsbG8K</File>
-        <File Location="bin/otrs.CheckSum.pl" Permission="755" Encode="Base64">aGVsbG8K</File>
+        <File Location="bin/ligero.CheckSum.pl" Permission="755" Encode="Base64">aGVsbG8K</File>
       </Filelist>
-    </otrs_package>
+    </ligero_package>
     ';
     my $PackageName = 'Test';
 
@@ -119,14 +119,14 @@ if ( !$DeveloperSystem ) {
 
     # now create an .save file for the framework file, content doesn't matter as it will be deleted
     my $Write = $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
-        Location   => $Home . '/bin/otrs.CheckSum.pl.save',
+        Location   => $Home . '/bin/ligero.CheckSum.pl.save',
         Content    => \$Content,
         Mode       => 'binmode',
         Permission => '644',
     );
     $Self->True(
         $Write,
-        '#FileWrite() - bin/otrs.CheckSum.pl.save',
+        '#FileWrite() - bin/ligero.CheckSum.pl.save',
     );
 
     # create PackageObject again to make sure cache is cleared
@@ -141,7 +141,7 @@ if ( !$DeveloperSystem ) {
 
     # check that the original files from the package does not exist anymore
     # these files are suppose to be old files that are not required anymore by the merged package
-    for my $File (qw( Test var/Test bin/otrs.CheckSum.pl.save )) {
+    for my $File (qw( Test var/Test bin/ligero.CheckSum.pl.save )) {
         my $RealFile = $Home . '/' . $File;
         $RealFile =~ s/\/\//\//g;
         $Self->False(
@@ -151,7 +151,7 @@ if ( !$DeveloperSystem ) {
     }
 
     # check that the framework file still exists
-    for my $File (qw( bin/otrs.CheckSum.pl )) {
+    for my $File (qw( bin/ligero.CheckSum.pl )) {
         my $RealFile = $Home . '/' . $File;
         $RealFile =~ s/\/\//\//g;
         $Self->True(

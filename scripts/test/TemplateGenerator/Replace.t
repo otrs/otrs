@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -172,7 +172,7 @@ $Self->IsNot(
 my $Success = $BackendObject->ValueSet(
     DynamicFieldConfig => $DynamicFieldConfigs{Text},
     ObjectID           => $TicketID,
-    Value              => 'otrs',
+    Value              => 'ligero',
     UserID             => 1,
 );
 $Self->True(
@@ -254,17 +254,17 @@ my @Tests = (
         Name => 'OTRS customer subject',    # <OTRS_CUSTOMER_SUBJECT>
         Data => {
             From    => 'test@home.com',
-            Subject => 'otrs',
+            Subject => 'ligero',
         },
         RichText => 0,
         Template => 'Test <OTRS_CUSTOMER_SUBJECT>',
-        Result   => 'Test otrs',
+        Result   => 'Test ligero',
     },
     {
         Name => 'OTRS customer subject 3 letters',    # <OTRS_CUSTOMER_SUBJECT[20]>
         Data => {
             From    => 'test@home.com',
-            Subject => 'otrs',
+            Subject => 'ligero',
         },
         RichText => 0,
         Template => 'Test <OTRS_CUSTOMER_SUBJECT[3]>',
@@ -274,11 +274,11 @@ my @Tests = (
         Name => 'OTRS customer subject 20 letters + garbarge',    # <OTRS_CUSTOMER_SUBJECT[20]>
         Data => {
             From    => 'test@home.com',
-            Subject => 'RE: otrs',
+            Subject => 'RE: ligero',
         },
         RichText => 0,
         Template => 'Test <OTRS_CUSTOMER_SUBJECT[20]>',
-        Result   => 'Test otrs',
+        Result   => 'Test ligero',
     },
     {
         Name => 'OTRS responsible firstname',                     # <OTRS_RESPONSIBLE_UserFirstname>
@@ -341,7 +341,7 @@ my @Tests = (
         },
         RichText => 0,
         Template => 'Test <OTRS_TICKET_DynamicField_Replace1' . $RandomID . '>',
-        Result   => 'Test otrs',
+        Result   => 'Test ligero',
     },
     {
         Name => 'OTRS dynamic field value (text)',                # <OTRS_TICKET_DynamicField_*_Value>
@@ -350,7 +350,7 @@ my @Tests = (
         },
         RichText => 0,
         Template => 'Test <OTRS_TICKET_DynamicField_Replace1' . $RandomID . '_Value>',
-        Result   => 'Test otrs',
+        Result   => 'Test ligero',
     },
     {
         Name => 'OTRS dynamic field (Dropdown)',                  # <OTRS_TICKET_DynamicField_*>
@@ -407,13 +407,13 @@ my @Tests = (
         },
         RichText => 1,
         Template =>
-            'mailto-Link <a href="mailto:skywalker@otrs.org?subject=From%3A%20%3COTRS_CUSTOMER_From%3E&amp;body=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Subject und Body</a><br />
+            'mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20%3COTRS_CUSTOMER_From%3E&amp;body=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Subject und Body</a><br />
 <br />
-mailto-Link <a href="mailto:skywalker@otrs.org?subject=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Subject</a><br />
+mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Subject</a><br />
 <br />
-mailto-Link <a href="mailto:skywalker@otrs.org?body=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Body</a><br />',
+mailto-Link <a href="mailto:skywalker@ligero.org?body=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Body</a><br />',
         Result =>
-            'mailto-Link <a href="mailto:skywalker@otrs.org?subject=From%3A%20test%40home.com&amp;body=From%3A%20test%40home.com">E-Mail mit Subject und Body</a><br /><br />mailto-Link <a href="mailto:skywalker@otrs.org?subject=From%3A%20test%40home.com">E-Mail mit Subject</a><br /><br />mailto-Link <a href="mailto:skywalker@otrs.org?body=From%3A%20test%40home.com">E-Mail mit Body</a><br />',
+            'mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20test%40home.com&amp;body=From%3A%20test%40home.com">E-Mail mit Subject und Body</a><br /><br />mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20test%40home.com">E-Mail mit Subject</a><br /><br />mailto-Link <a href="mailto:skywalker@ligero.org?body=From%3A%20test%40home.com">E-Mail mit Body</a><br />',
     },
     {
         Name => 'mailto-Links',
@@ -422,17 +422,17 @@ mailto-Link <a href="mailto:skywalker@otrs.org?body=From%3A%20%3COTRS_CUSTOMER_F
         },
         RichText => 0,
         Template =>
-            'mailto-Link <a href="mailto:skywalker@otrs.org?subject=From%3A%20%3COTRS_CUSTOMER_From%3E&amp;body=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Subject und Body</a><br />
+            'mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20%3COTRS_CUSTOMER_From%3E&amp;body=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Subject und Body</a><br />
 <br />
-mailto-Link <a href="mailto:skywalker@otrs.org?subject=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Subject</a><br />
+mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Subject</a><br />
 <br />
-mailto-Link <a href="mailto:skywalker@otrs.org?body=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Body</a><br />',
+mailto-Link <a href="mailto:skywalker@ligero.org?body=From%3A%20%3COTRS_CUSTOMER_From%3E">E-Mail mit Body</a><br />',
         Result =>
-            'mailto-Link <a href="mailto:skywalker@otrs.org?subject=From%3A%20test%40home.com&amp;body=From%3A%20test%40home.com">E-Mail mit Subject und Body</a><br />
+            'mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20test%40home.com&amp;body=From%3A%20test%40home.com">E-Mail mit Subject und Body</a><br />
 <br />
-mailto-Link <a href="mailto:skywalker@otrs.org?subject=From%3A%20test%40home.com">E-Mail mit Subject</a><br />
+mailto-Link <a href="mailto:skywalker@ligero.org?subject=From%3A%20test%40home.com">E-Mail mit Subject</a><br />
 <br />
-mailto-Link <a href="mailto:skywalker@otrs.org?body=From%3A%20test%40home.com">E-Mail mit Body</a><br />',
+mailto-Link <a href="mailto:skywalker@ligero.org?body=From%3A%20test%40home.com">E-Mail mit Body</a><br />',
     },
     {
         Name => 'OTRS AGENT + CUSTOMER FROM',    # <OTRS_TICKET_DynamicField_*_Value>

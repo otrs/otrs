@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -33,11 +33,11 @@ my $TmpDir = $ConfigObject->Get('TempDir');
 
 # install package normally
 my $MergeOne = '<?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.0">
+<ligero_package version="1.0">
   <Name>MergeOne</Name>
   <Version>2.0.1</Version>
   <Vendor>OTRS AG</Vendor>
-  <URL>https://otrs.com/</URL>
+  <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <ChangeLog>2012-04-28 New package (some test &lt; &gt; &amp;).</ChangeLog>
   <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
@@ -51,7 +51,7 @@ my $MergeOne = '<?xml version="1.0" encoding="utf-8" ?>
     <File Location="var/Test" Permission="644" Encode="Base64">aGVsbG8K</File>
     <File Location="DeleteMe" Permission="644" Encode="Base64">aGVsbG8K</File>
   </Filelist>
-</otrs_package>
+</ligero_package>
 ';
 
 # install package using package manager API
@@ -84,11 +84,11 @@ for my $File (qw( Test var/Test DeleteMe)) {
 }
 
 my $MainPackageOne = '<?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.0">
+<ligero_package version="1.0">
     <Name>TestMainPackage</Name>
     <Version>1.0.1</Version>
     <Vendor>OTRS AG</Vendor>
-    <URL>https://otrs.com/</URL>
+    <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
     <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
     <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
@@ -100,7 +100,7 @@ my $MainPackageOne = '<?xml version="1.0" encoding="utf-8" ?>
     <Filelist>
     <File Location="Test" Permission="644" Encode="Base64">aGVsbG8K</File>
     <File Location="var/Test" Permission="644" Encode="Base64">aGVsbG8K</File>
-    <File Location="bin/otrs.CheckDB.pl" Permission="755" Encode="Base64">aGVsbG8K</File>
+    <File Location="bin/ligero.CheckDB.pl" Permission="755" Encode="Base64">aGVsbG8K</File>
     </Filelist>
     <PackageMerge Name="MergeOne" TargetVersion="2.0.0">
       <DatabaseUpgrade Type="merge">
@@ -110,7 +110,7 @@ my $MainPackageOne = '<?xml version="1.0" encoding="utf-8" ?>
           </TableCreate>
       </DatabaseUpgrade>
     </PackageMerge>
-</otrs_package>
+</ligero_package>
 ';
 
 # install main package where the Test package was merged
@@ -137,11 +137,11 @@ $Self->True(
 );
 
 my $MainPackageTwo = '<?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.0">
+<ligero_package version="1.0">
     <Name>TestMainPackage</Name>
     <Version>1.0.1</Version>
     <Vendor>OTRS AG</Vendor>
-    <URL>https://otrs.com/</URL>
+    <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
     <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
     <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
@@ -153,7 +153,7 @@ my $MainPackageTwo = '<?xml version="1.0" encoding="utf-8" ?>
     <Filelist>
     <File Location="Test" Permission="644" Encode="Base64">aGVsbG8K</File>
     <File Location="var/Test" Permission="644" Encode="Base64">aGVsbG8K</File>
-    <File Location="bin/otrs.CheckDB.pl" Permission="755" Encode="Base64">aGVsbG8K</File>
+    <File Location="bin/ligero.CheckDB.pl" Permission="755" Encode="Base64">aGVsbG8K</File>
     </Filelist>
     <PackageMerge Name="MergeOne" TargetVersion="2.0.1">
       <DatabaseUpgrade Type="merge" Version="2.0.2">
@@ -197,7 +197,7 @@ my $MainPackageTwo = '<?xml version="1.0" encoding="utf-8" ?>
     <DatabaseUninstall Type="post">
       <TableDrop Name="merge_package"/>
     </DatabaseUninstall>
-</otrs_package>
+</ligero_package>
 ';
 
 # install main package where the Test package was merged
@@ -233,7 +233,7 @@ for my $File (qw( Delete DeleteMe )) {
 }
 
 # check that the framework file still exists including the .save file
-for my $File (qw( bin/otrs.CheckDB.pl )) {
+for my $File (qw( bin/ligero.CheckDB.pl )) {
     my $RealFile = $Home . '/' . $File;
     $RealFile =~ s/\/\//\//g;
     $Self->True(
@@ -355,11 +355,11 @@ $PackageObject->PackageUninstall( String => $MainPackageThree );
 
 # define package for merging
 my $MergeThree = '<?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.0">
+<ligero_package version="1.0">
   <Name>MergeThree</Name>
   <Version>3.0.1</Version>
   <Vendor>OTRS AG</Vendor>
-  <URL>https://otrs.com/</URL>
+  <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">The third test package.</Description>
   <Framework>' . $OTRSVersion . '</Framework>
@@ -368,15 +368,15 @@ my $MergeThree = '<?xml version="1.0" encoding="utf-8" ?>
   <Filelist>
     <File Location="DeleteMePlease" Permission="644" Encode="Base64">aGVsbG8K</File>
   </Filelist>
-</otrs_package>
+</ligero_package>
 ';
 
 my $MainPackageFour = '<?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.0">
+<ligero_package version="1.0">
     <Name>TestMainPackageFour</Name>
     <Version>1.0.1</Version>
     <Vendor>OTRS AG</Vendor>
-    <URL>https://otrs.com/</URL>
+    <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
     <ChangeLog>2014-04-28 New package (some test &lt; &gt; &amp;).</ChangeLog>
     <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
@@ -414,7 +414,7 @@ my $MainPackageFour = '<?xml version="1.0" encoding="utf-8" ?>
             Content  => \$Content,
         );
     ]]></CodeInstall>
-</otrs_package>
+</ligero_package>
 ';
 
 my $PackageMergeSection = '<PackageMerge Name="MergeThree" TargetVersion="3.0.2"></PackageMerge>';
@@ -638,11 +638,11 @@ for my $Test (@Tests) {
 
 # define initial package
 my $PackageFour = '<?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.0">
+<ligero_package version="1.0">
   <Name>PackageFour</Name>
   <Version>4.0.1</Version>
   <Vendor>OTRS AG</Vendor>
-  <URL>https://otrs.com/</URL>
+  <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">The third test package.</Description>
   <Framework>' . $OTRSVersion . '</Framework>
@@ -651,7 +651,7 @@ my $PackageFour = '<?xml version="1.0" encoding="utf-8" ?>
   <Filelist>
     <File Location="DeleteMePlease" Permission="644" Encode="Base64">aGVsbG8K</File>
   </Filelist>
-</otrs_package>
+</ligero_package>
 ';
 
 # install predefined package
@@ -682,11 +682,11 @@ $Self->True(
 );
 
 $PackageFour = '<?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.0">
+<ligero_package version="1.0">
   <Name>PackageFour</Name>
   <Version>4.0.2</Version>
   <Vendor>OTRS AG</Vendor>
-  <URL>https://otrs.com/</URL>
+  <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <Description Lang="en">The third test package.</Description>
   <Framework>' . $OTRSVersion . '</Framework>
@@ -717,7 +717,7 @@ $PackageFour = '<?xml version="1.0" encoding="utf-8" ?>
             Content  => \$Content,
         );
   ]]></CodeUpgrade>
-</otrs_package>
+</ligero_package>
 ';
 
 my $PackageUpgrade = $PackageObject->PackageUpgrade( String => $PackageFour );

@@ -12,7 +12,7 @@
 # andronati <ipfound@gmail.com>, 2018
 # Gennady Marchenko <gennadym@gmail.com>, 2018
 # Udo Bretz, 2018
-# Carlos Rodríguez <carlos.rodriguez@otrs.com>, 2018
+# Carlos Rodríguez <carlos.rodriguez@ligero.com>, 2018
 # Shader <shader@dautkom.lv>, 2018
 # Vladislav Yaroslavlev <vladon@vladon.com>, 2018
 # Makdorf <makdorf@gmail.com>, 2018
@@ -28,7 +28,7 @@
 # Siarhei Gribov <Bars232@gmail.com>, 2018
 # Alexey Yusov <yusovas@gmail.com>, 2018
 # Rasim Kalimullin <neutrino.vm@gmail.com>, 2018
-# Martin Gruner <martin.gruner@otrs.com>, 2018
+# Martin Gruner <martin.gruner@ligero.com>, 2018
 # Sergey Nikitin <nikitin.sergey.v@gmail.com>, 2018
 # 
 msgid ""
@@ -37,7 +37,7 @@ msgstr ""
 "POT-Creation-Date: 2018-12-06 17:43+0000\n"
 "PO-Revision-Date: 2018-09-20 13:03+0000\n"
 "Last-Translator: Sergey Nikitin <nikitin.sergey.v@gmail.com>, 2018\n"
-"Language-Team: Russian (https://www.transifex.com/otrs/teams/23435/ru/)\n"
+"Language-Team: Russian (https://www.transifex.com/ligero/teams/23435/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1013,10 +1013,10 @@ msgstr ""
 
 #. Template: AdminCloudServiceSupportDataCollector
 msgid ""
-"It is highly recommended to send this data to OTRS Group in order to get "
+"It is highly recommended to send this data to LIGERO Group in order to get "
 "better support."
 msgstr ""
-"Настоятельно рекомендуется отправлять эти данные в OTRS Group для получения "
+"Настоятельно рекомендуется отправлять эти данные в LIGERO Group для получения "
 "более точной поддержки."
 
 #. Template: AdminCloudServiceSupportDataCollector
@@ -1030,10 +1030,10 @@ msgstr "Выслать данные для технической поддерж
 #. Template: AdminCloudServiceSupportDataCollector
 msgid ""
 "This will allow the system to send additional support data information to "
-"OTRS Group."
+"LIGERO Group."
 msgstr ""
 "Это позволит системе оправлять дополнительную информацию для поддержки в "
-"OTRS Group."
+"LIGERO Group."
 
 #. Template: AdminCloudServiceSupportDataCollector
 msgid "Update"
@@ -1045,12 +1045,12 @@ msgstr "Регистрация системы"
 
 #. Template: AdminCloudServiceSupportDataCollector
 msgid ""
-"To enable data sending, please register your system with OTRS Group or "
+"To enable data sending, please register your system with LIGERO Group or "
 "update your system registration information (make sure to activate the 'send"
 " support data' option.)"
 msgstr ""
 "Для включения возможности отсылки данных, зарегистрируйте свою систему в "
-"OTRS Group или обновите ваши регистрационные данные (убедитесь, что "
+"LIGERO Group или обновите ваши регистрационные данные (убедитесь, что "
 "активирована функция 'send support data/послать данные для поддержки'.)"
 
 #. Template: AdminCloudServiceSupportDataCollector
@@ -1065,18 +1065,18 @@ msgstr "System Registration отключена для вашей системы.
 
 #. Template: AdminCloudServices
 msgid ""
-"System registration is a service of OTRS Group, which provides a lot of "
+"System registration is a service of LIGERO Group, which provides a lot of "
 "advantages!"
 msgstr ""
-"Регистрация системы - это сервис от OTRS Group, который предоставляет много "
+"Регистрация системы - это сервис от LIGERO Group, который предоставляет много "
 "преимуществ!"
 
 #. Template: AdminCloudServices
 msgid ""
-"Please note that the use of OTRS cloud services requires the system to be "
+"Please note that the use of LIGERO cloud services requires the system to be "
 "registered."
 msgstr ""
-"Обращаем внимание, что использование облачных сервисов OTRS требует "
+"Обращаем внимание, что использование облачных сервисов LIGERO требует "
 "регистрации системы."
 
 #. Template: AdminCloudServices
@@ -2740,10 +2740,10 @@ msgstr "Error handling module backend"
 
 #. Template: AdminGenericInterfaceErrorHandlingDefault
 msgid ""
-"This OTRS error handling backend module will be called internally to process"
+"This LIGERO error handling backend module will be called internally to process"
 " the error handling mechanism."
 msgstr ""
-"Этот серверный модуль обработки ошибок OTRS будет вызываться скрыто для "
+"Этот серверный модуль обработки ошибок LIGERO будет вызываться скрыто для "
 "обеспечения работы механизма обработки ошибок."
 
 #. Template: AdminGenericInterfaceErrorHandlingDefault
@@ -3102,10 +3102,10 @@ msgstr "Invoker бэкэнд"
 
 #. Template: AdminGenericInterfaceInvokerDefault
 msgid ""
-"This OTRS invoker backend module will be called to prepare the data to be "
+"This LIGERO invoker backend module will be called to prepare the data to be "
 "sent to the remote system, and to process its response data."
 msgstr ""
-"Этот модуль OTRS invoker будет вызываться для подготовки данных, "
+"Этот модуль LIGERO invoker будет вызываться для подготовки данных, "
 "отправляемых в удаленную систему и для обработки ответных данных."
 
 #. Template: AdminGenericInterfaceInvokerDefault
@@ -3118,10 +3118,10 @@ msgstr "Конфигурировать"
 
 #. Template: AdminGenericInterfaceInvokerDefault
 msgid ""
-"The data from the invoker of OTRS will be processed by this mapping, to "
+"The data from the invoker of LIGERO will be processed by this mapping, to "
 "transform it to the kind of data the remote system expects."
 msgstr ""
-"Данные полученные из OTRS Invoker будут обработаны, для преобразования их в "
+"Данные полученные из LIGERO Invoker будут обработаны, для преобразования их в "
 "данные которые ожидает удаленная сторона."
 
 #. Template: AdminGenericInterfaceInvokerDefault
@@ -3131,10 +3131,10 @@ msgstr "Сопоставление данных для входящего зап
 #. Template: AdminGenericInterfaceInvokerDefault
 msgid ""
 "The response data will be processed by this mapping, to transform it to the "
-"kind of data the invoker of OTRS expects."
+"kind of data the invoker of LIGERO expects."
 msgstr ""
 "Запрашиваемые данные будут обработаны, преобразованы в формат поддерживаемый"
-" OTRS"
+" LIGERO"
 
 #. Template: AdminGenericInterfaceInvokerDefault
 msgid "Asynchronous"
@@ -3162,10 +3162,10 @@ msgstr ""
 
 #. Template: AdminGenericInterfaceInvokerDefault
 msgid ""
-"Asynchronous event triggers are handled by the OTRS Scheduler Daemon in "
+"Asynchronous event triggers are handled by the LIGERO Scheduler Daemon in "
 "background (recommended)."
 msgstr ""
-"Асинхронные триггеры событий будут обрабатываться Планировщиком OTRS в "
+"Асинхронные триггеры событий будут обрабатываться Планировщиком LIGERO в "
 "фоновом режиме (рекомендуется)."
 
 #. Template: AdminGenericInterfaceInvokerDefault
@@ -3535,10 +3535,10 @@ msgstr "Бэкэнд для операций"
 
 #. Template: AdminGenericInterfaceOperationDefault
 msgid ""
-"This OTRS operation backend module will be called internally to process the "
+"This LIGERO operation backend module will be called internally to process the "
 "request, generating data for the response."
 msgstr ""
-"Этот модуль OTRS будет вызываться для обработки запроса и подготавливать "
+"Этот модуль LIGERO будет вызываться для обработки запроса и подготавливать "
 "данные для ответа."
 
 #. Template: AdminGenericInterfaceOperationDefault
@@ -3548,10 +3548,10 @@ msgstr "Сопоставление для входящего запроса да
 #. Template: AdminGenericInterfaceOperationDefault
 msgid ""
 "The request data will be processed by this mapping, to transform it to the "
-"kind of data OTRS expects."
+"kind of data LIGERO expects."
 msgstr ""
 "Запрашиваемые данные будут обработаны и преобразованы в формат "
-"поддерживаемый OTRS"
+"поддерживаемый LIGERO"
 
 #. Template: AdminGenericInterfaceOperationDefault
 msgid "Mapping for outgoing response data"
@@ -3617,10 +3617,10 @@ msgstr "Это поле должно быть целым числом."
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
 msgid ""
-"Here you can specify the maximum size (in bytes) of REST messages that OTRS "
+"Here you can specify the maximum size (in bytes) of REST messages that LIGERO "
 "will process."
 msgstr ""
-"Здесь вы можете задать макс. размер (в байтах) REST сообщений, которые OTRS "
+"Здесь вы можете задать макс. размер (в байтах) REST сообщений, которые LIGERO "
 "будет обрабатывать."
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
@@ -3652,8 +3652,8 @@ msgid "URI to indicate specific location for accessing a web service."
 msgstr "URI для указания точного расположения для доступа к веб-сервису."
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
-msgid "e.g https://www.otrs.com:10745/api/v1.0 (without trailing backslash)"
-msgstr "например, https://www.otrs.com:10745/api/v1.0 (без обратных слэшей)"
+msgid "e.g https://www.ligero.com:10745/api/v1.0 (without trailing backslash)"
+msgstr "например, https://www.ligero.com:10745/api/v1.0 (без обратных слэшей)"
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
 msgid "Timeout"
@@ -3756,8 +3756,8 @@ msgstr ""
 "PEM, DER или PKCS#12)."
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
-msgid "e.g. /opt/otrs/var/certificates/SOAP/certificate.pem"
-msgstr "например /opt/otrs/var/certificates/SOAP/certificate.pem"
+msgid "e.g. /opt/ligero/var/certificates/SOAP/certificate.pem"
+msgstr "например /opt/ligero/var/certificates/SOAP/certificate.pem"
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
 msgid "Client Certificate Key"
@@ -3772,8 +3772,8 @@ msgstr ""
 "включен в файл сертификата)."
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
-msgid "e.g. /opt/otrs/var/certificates/SOAP/key.pem"
-msgstr "например /opt/otrs/var/certificates/SOAP/key.pem"
+msgid "e.g. /opt/ligero/var/certificates/SOAP/key.pem"
+msgstr "например /opt/ligero/var/certificates/SOAP/key.pem"
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
 msgid "Client Certificate Key Password"
@@ -3794,8 +3794,8 @@ msgid ""
 msgstr "Полный путь и имя файла сертификата для проверки SSL "
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
-msgid "e.g. /opt/otrs/var/certificates/SOAP/CA/ca.pem"
-msgstr "например, /opt/otrs/var/certificates/SOAP/CA/ca.pem"
+msgid "e.g. /opt/ligero/var/certificates/SOAP/CA/ca.pem"
+msgstr "например, /opt/ligero/var/certificates/SOAP/CA/ca.pem"
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
 msgid "Certification Authority (CA) Directory"
@@ -3810,8 +3810,8 @@ msgstr ""
 "certificates. "
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
-msgid "e.g. /opt/otrs/var/certificates/SOAP/CA"
-msgstr "например, /opt/otrs/var/certificates/SOAP/CA"
+msgid "e.g. /opt/ligero/var/certificates/SOAP/CA"
+msgstr "например, /opt/ligero/var/certificates/SOAP/CA"
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
 msgid "Controller mapping for Invoker"
@@ -3848,8 +3848,8 @@ msgid "The default HTTP command to use for the requests."
 msgstr "Команда HTTP по умолчанию для использования в запросах."
 
 #. Template: AdminGenericInterfaceTransportHTTPSOAP
-msgid "e.g. https://local.otrs.com:8000/Webservice/Example"
-msgstr "например https://local.otrs.com:8000/Webservice/Example"
+msgid "e.g. https://local.ligero.com:8000/Webservice/Example"
+msgstr "например https://local.ligero.com:8000/Webservice/Example"
 
 #. Template: AdminGenericInterfaceTransportHTTPSOAP
 msgid "Set SOAPAction"
@@ -3924,11 +3924,11 @@ msgstr ""
 
 #. Template: AdminGenericInterfaceTransportHTTPSOAP
 msgid ""
-"e.g urn:otrs-com:soap:functions or "
-"http://www.otrs.com/GenericInterface/actions"
+"e.g urn:ligero-com:soap:functions or "
+"http://www.ligero.com/GenericInterface/actions"
 msgstr ""
-"например, urn:otrs-com:soap:functions или "
-"http://www.otrs.com/GenericInterface/actions"
+"например, urn:ligero-com:soap:functions или "
+"http://www.ligero.com/GenericInterface/actions"
 
 #. Template: AdminGenericInterfaceTransportHTTPSOAP
 msgid "Request name scheme"
@@ -3982,10 +3982,10 @@ msgstr "Произвольный текст схемы именования "
 
 #. Template: AdminGenericInterfaceTransportHTTPSOAP
 msgid ""
-"Here you can specify the maximum size (in bytes) of SOAP messages that OTRS "
+"Here you can specify the maximum size (in bytes) of SOAP messages that LIGERO "
 "will process."
 msgstr ""
-"Здесь вы можете задать макс. размер (в байтах) SOAP сообщений, которые OTRS "
+"Здесь вы можете задать макс. размер (в байтах) SOAP сообщений, которые LIGERO "
 "будет обрабатывать."
 
 #. Template: AdminGenericInterfaceTransportHTTPSOAP
@@ -4143,14 +4143,14 @@ msgstr "Порог отладки"
 
 #. Template: AdminGenericInterfaceWebservice
 msgid ""
-"In provider mode, OTRS offers web services which are used by remote systems."
+"In provider mode, LIGERO offers web services which are used by remote systems."
 msgstr ""
-"В режиме provider, OTRS предлагает веб-сервисы используемые удаленной "
+"В режиме provider, LIGERO предлагает веб-сервисы используемые удаленной "
 "системой."
 
 #. Template: AdminGenericInterfaceWebservice
-msgid "In requester mode, OTRS uses web services of remote systems."
-msgstr "В режиме requester, OTRS использует веб-сервисы удаленной системы."
+msgid "In requester mode, LIGERO uses web services of remote systems."
+msgstr "В режиме requester, LIGERO использует веб-сервисы удаленной системы."
 
 #. Template: AdminGenericInterfaceWebservice
 msgid "Network transport"
@@ -4358,12 +4358,12 @@ msgstr ""
 
 #. Template: AdminMailAccount
 msgid ""
-"If your account is marked as trusted, the X-OTRS headers already existing at"
+"If your account is marked as trusted, the X-LIGERO headers already existing at"
 " arrival time (for priority etc.) will be kept and used, for example in "
 "PostMaster filters."
 msgstr ""
 "Если ваша учётная запись помечена как доверенная, все уже существующие в "
-"письмах на момент получения заголовки X-OTRS (для выставления приоритета и "
+"письмах на момент получения заголовки X-LIGERO (для выставления приоритета и "
 "прочих данных) будут приняты и использованы, например в фильтрах PostMaster."
 
 #. Template: AdminMailAccount
@@ -4609,37 +4609,37 @@ msgstr ""
 
 #. Template: AdminNotificationEventTransportEmailSettings
 msgid ""
-"You can use OTRS-tags like <OTRS_TICKET_DynamicField_...> to insert values "
+"You can use LIGERO-tags like <LIGERO_TICKET_DynamicField_...> to insert values "
 "from the current ticket."
 msgstr ""
-"Вы можете использовать OTRS-тэги типа <OTRS_TICKET_DynamicField_...> для "
+"Вы можете использовать LIGERO-тэги типа <LIGERO_TICKET_DynamicField_...> для "
 "вставки значений из текущей заявки."
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid "Manage %s"
 msgstr "Упровление %s"
 
-#. Template: AdminOTRSBusinessInstalled
-msgid "Downgrade to ((OTRS)) Community Edition"
-msgstr "Обновиться до ((OTRS)) Community Edition"
+#. Template: AdminLIGEROBusinessInstalled
+msgid "Downgrade to ((LIGERO)) Community Edition"
+msgstr "Обновиться до ((LIGERO)) Community Edition"
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid "Read documentation"
 msgstr "Читайте документацию"
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid ""
-"%s makes contact regularly with cloud.otrs.com to check on available updates"
+"%s makes contact regularly with cloud.ligero.com to check on available updates"
 " and the validity of the underlying contract."
 msgstr ""
-"%s выполняет регулярную связь с cloud.otrs.com для проверки доступных "
+"%s выполняет регулярную связь с cloud.ligero.com для проверки доступных "
 "обновлений и срока действия основного договора."
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid "Unauthorized Usage Detected"
 msgstr "Обнаружено несанкционированное использование "
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid ""
 "This system uses the %s without a proper license! Please make contact with "
 "%s to renew or activate your contract!"
@@ -4647,11 +4647,11 @@ msgstr ""
 "Эта система использует %s без соответствующей лицензии! Свяжитесь, "
 "пожалуйста с %s для обновления или активации вашего контракта!"
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid "%s not Correctly Installed"
 msgstr "%s некорректно установлен"
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid ""
 "Your %s is not correctly installed. Please reinstall it with the button "
 "below."
@@ -4659,16 +4659,16 @@ msgstr ""
 "Ваш %s  некорректно установлен. Пожалуйста, переустановите его с помощью "
 "кнопки расположенной ниже."
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid "Reinstall %s"
 msgstr "Переустановите %s "
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid ""
 "Your %s is not correctly installed, and there is also an update available."
 msgstr "Ваш %s некорректно установлен, а также доступно обновление для него."
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid ""
 "You can either reinstall your current version or perform an update with the "
 "buttons below (update recommended)."
@@ -4676,118 +4676,118 @@ msgstr ""
 "Вы можете либо переустановить текущую версию продукта, либо обновить его с "
 "помощью кнопок расположенных ниже (рекомендуется выполнить обновление)."
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid "Update %s"
 msgstr "Обновить %s "
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid "%s Not Yet Available"
 msgstr "%s в данный момент еще недоступен"
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid "%s will be available soon."
 msgstr "%s скоро будет доступен."
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid "%s Update Available"
 msgstr "Доступно обновление для %s"
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid "An update for your %s is available! Please update at your earliest!"
 msgstr "Обновление для вашего %s  доступно! Обновите его в ближайшее время!"
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid "%s Correctly Deployed"
 msgstr "%s правильно развернут/установлен"
 
-#. Template: AdminOTRSBusinessInstalled
+#. Template: AdminLIGEROBusinessInstalled
 msgid "Congratulations, your %s is correctly installed and up to date!"
 msgstr "Поздравляем, ваш %s правильно установлен и имеет последнюю версию!"
 
-#. Template: AdminOTRSBusinessNotInstalled
-msgid "Go to the OTRS customer portal"
-msgstr "Перейти на портал клиентов OTRS"
+#. Template: AdminLIGEROBusinessNotInstalled
+msgid "Go to the LIGERO customer portal"
+msgstr "Перейти на портал клиентов LIGERO"
 
-#. Template: AdminOTRSBusinessNotInstalled
+#. Template: AdminLIGEROBusinessNotInstalled
 msgid "%s will be available soon. Please check again in a few days."
 msgstr ""
 "Обновление для %s будет скоро доступно. Проверьте повторно в ближайшие дни."
 
-#. Template: AdminOTRSBusinessNotInstalled
+#. Template: AdminLIGEROBusinessNotInstalled
 msgid "Please have a look at %s for more information."
 msgstr "Пожалуйста, обратитесь к %s за дополнительной информацией."
 
-#. Template: AdminOTRSBusinessNotInstalled
+#. Template: AdminLIGEROBusinessNotInstalled
 msgid ""
-"Your ((OTRS)) Community Edition is the base for all future actions. Please "
+"Your ((LIGERO)) Community Edition is the base for all future actions. Please "
 "register first before you continue with the upgrade process of %s!"
 msgstr ""
-"Ваша ((OTRS)) Community Edition - базовая версия для последующих действий в "
+"Ваша ((LIGERO)) Community Edition - базовая версия для последующих действий в "
 "будущем. Пожалуйста зарегистрируйтесь перед тем, как продолжить процесс "
 "обновления %s! "
 
-#. Template: AdminOTRSBusinessNotInstalled
+#. Template: AdminLIGEROBusinessNotInstalled
 msgid ""
 "Before you can benefit from %s, please contact %s to get your %s contract."
 msgstr ""
 "Для получения пользы от использования %s, свяжитесь с %s для получения "
 "вашего контракта на %s."
 
-#. Template: AdminOTRSBusinessNotInstalled
+#. Template: AdminLIGEROBusinessNotInstalled
 msgid ""
-"Connection to cloud.otrs.com via HTTPS couldn't be established. Please make "
-"sure that your OTRS can connect to cloud.otrs.com via port 443."
+"Connection to cloud.ligero.com via HTTPS couldn't be established. Please make "
+"sure that your LIGERO can connect to cloud.ligero.com via port 443."
 msgstr ""
-"Соединение с cloud.otrs.com по HTTPS не может быть установлено. Убедитесь, "
-"что ваша система OTRS использует порт 443 для соединения с cloud.otrs.com."
+"Соединение с cloud.ligero.com по HTTPS не может быть установлено. Убедитесь, "
+"что ваша система LIGERO использует порт 443 для соединения с cloud.ligero.com."
 
-#. Template: AdminOTRSBusinessNotInstalled
-msgid "Package installation requires patch level update of OTRS."
-msgstr "Установка пакета требует обновление OTRS уровня патч."
+#. Template: AdminLIGEROBusinessNotInstalled
+msgid "Package installation requires patch level update of LIGERO."
+msgstr "Установка пакета требует обновление LIGERO уровня патч."
 
-#. Template: AdminOTRSBusinessNotInstalled
+#. Template: AdminLIGEROBusinessNotInstalled
 msgid "Please visit our customer portal and file a request."
 msgstr "Посетите наш клиентский портал и отправьте запрос."
 
-#. Template: AdminOTRSBusinessNotInstalled
+#. Template: AdminLIGEROBusinessNotInstalled
 msgid "Everything else will be done as part of your contract."
 msgstr "Все остальное будет сделано в рамках вашего контракта."
 
-#. Template: AdminOTRSBusinessNotInstalled
-msgid "Your installed OTRS version is %s."
-msgstr "Установлена OTRS версии %s."
+#. Template: AdminLIGEROBusinessNotInstalled
+msgid "Your installed LIGERO version is %s."
+msgstr "Установлена LIGERO версии %s."
 
-#. Template: AdminOTRSBusinessNotInstalled
-msgid "To install this package, you need to update to OTRS %s or higher."
-msgstr "Для установки пакета необходимо обновить OTRS до версии %s или выше."
+#. Template: AdminLIGEROBusinessNotInstalled
+msgid "To install this package, you need to update to LIGERO %s or higher."
+msgstr "Для установки пакета необходимо обновить LIGERO до версии %s или выше."
 
-#. Template: AdminOTRSBusinessNotInstalled
-msgid "To install this package, the Maximum OTRS Version is %s."
-msgstr "Для установки пакета необходима версия OTRS не выше %s."
+#. Template: AdminLIGEROBusinessNotInstalled
+msgid "To install this package, the Maximum LIGERO Version is %s."
+msgstr "Для установки пакета необходима версия LIGERO не выше %s."
 
-#. Template: AdminOTRSBusinessNotInstalled
+#. Template: AdminLIGEROBusinessNotInstalled
 msgid "To install this package, the required Framework version is %s."
 msgstr "Для установки этого пакета требуется Framework версии %s"
 
-#. Template: AdminOTRSBusinessNotInstalled
-msgid "Why should I keep OTRS up to date?"
-msgstr "Почему я должен постоянно обновлять OTRS?"
+#. Template: AdminLIGEROBusinessNotInstalled
+msgid "Why should I keep LIGERO up to date?"
+msgstr "Почему я должен постоянно обновлять LIGERO?"
 
-#. Template: AdminOTRSBusinessNotInstalled
+#. Template: AdminLIGEROBusinessNotInstalled
 msgid "You will receive updates about relevant security issues."
 msgstr "Вы получите обновления о соответствующих выпусках безопасности."
 
-#. Template: AdminOTRSBusinessNotInstalled
-msgid "You will receive updates for all other relevant OTRS issues"
-msgstr "Вы получите обновления для всех других соответствующих вопросов OTRS"
+#. Template: AdminLIGEROBusinessNotInstalled
+msgid "You will receive updates for all other relevant LIGERO issues"
+msgstr "Вы получите обновления для всех других соответствующих вопросов LIGERO"
 
-#. Template: AdminOTRSBusinessNotInstalled
+#. Template: AdminLIGEROBusinessNotInstalled
 msgid "With your existing contract you can only use a small part of the %s."
 msgstr ""
 "Ваш существующий контракт позволяет использовать лишь малую часть "
 "возможностей %s."
 
-#. Template: AdminOTRSBusinessNotInstalled
+#. Template: AdminLIGEROBusinessNotInstalled
 msgid ""
 "If you would like to take full advantage of the %s get your contract "
 "upgraded now! Contact %s."
@@ -4795,15 +4795,15 @@ msgstr ""
 "Если вы желаете получить все возможности %s обновите свой контракт! "
 "Свяжитесь с %s."
 
-#. Template: AdminOTRSBusinessUninstall
+#. Template: AdminLIGEROBusinessUninstall
 msgid "Cancel downgrade and go back"
 msgstr "Прервать процесс возврата к предыдущей версии и вернуться назад"
 
-#. Template: AdminOTRSBusinessUninstall
-msgid "Go to OTRS Package Manager"
-msgstr "Перейти к Менеджеру пакетов OTRS "
+#. Template: AdminLIGEROBusinessUninstall
+msgid "Go to LIGERO Package Manager"
+msgstr "Перейти к Менеджеру пакетов LIGERO "
 
-#. Template: AdminOTRSBusinessUninstall
+#. Template: AdminLIGEROBusinessUninstall
 msgid ""
 "Sorry, but currently you can't downgrade due to the following packages which"
 " depend on %s:"
@@ -4811,54 +4811,54 @@ msgstr ""
 "Извините, но вы не можете сделать возврат к предыдущей версии из-за "
 "следующих пакетов, которые зависят от %s:"
 
-#. Template: AdminOTRSBusinessUninstall
+#. Template: AdminLIGEROBusinessUninstall
 msgid "Vendor"
 msgstr "Изготовитель"
 
-#. Template: AdminOTRSBusinessUninstall
+#. Template: AdminLIGEROBusinessUninstall
 msgid ""
 "Please uninstall the packages first using the package manager and try again."
 msgstr ""
 "Пожалуйста, деинсталлируйте сначала пакеты с помощью Менеджера пакетов и "
 "попробуйте повторить заново."
 
-#. Template: AdminOTRSBusinessUninstall
+#. Template: AdminLIGEROBusinessUninstall
 msgid ""
-"You are about to downgrade to ((OTRS)) Community Edition and will lose the "
+"You are about to downgrade to ((LIGERO)) Community Edition and will lose the "
 "following features and all data related to these:"
 msgstr ""
-"Вы собираетесь перейти на одну их предыдущих версий ((OTRS)) Community "
+"Вы собираетесь перейти на одну их предыдущих версий ((LIGERO)) Community "
 "Edition и потеряете следующие возможности и все данные, связанные с ними:"
 
-#. Template: AdminOTRSBusinessUninstall
+#. Template: AdminLIGEROBusinessUninstall
 msgid "Chat"
 msgstr "Чат"
 
-#. Template: AdminOTRSBusinessUninstall
+#. Template: AdminLIGEROBusinessUninstall
 msgid "Report Generator"
 msgstr "Генератор отчетов"
 
-#. Template: AdminOTRSBusinessUninstall
+#. Template: AdminLIGEROBusinessUninstall
 msgid "Timeline view in ticket zoom"
 msgstr "Хронологический вид при подробном просмотре заявки"
 
-#. Template: AdminOTRSBusinessUninstall
+#. Template: AdminLIGEROBusinessUninstall
 msgid "DynamicField ContactWithData"
 msgstr "Динамическое поле ContactWithData"
 
-#. Template: AdminOTRSBusinessUninstall
+#. Template: AdminLIGEROBusinessUninstall
 msgid "DynamicField Database"
 msgstr "База данных Динамических полей"
 
-#. Template: AdminOTRSBusinessUninstall
+#. Template: AdminLIGEROBusinessUninstall
 msgid "SLA Selection Dialog"
 msgstr "Диалог выбора SLA "
 
-#. Template: AdminOTRSBusinessUninstall
+#. Template: AdminLIGEROBusinessUninstall
 msgid "Ticket Attachment View"
 msgstr "Обзор вложений заявки"
 
-#. Template: AdminOTRSBusinessUninstall
+#. Template: AdminLIGEROBusinessUninstall
 msgid "The %s skin"
 msgstr "Обложка %s"
 
@@ -4875,8 +4875,8 @@ msgid "PGP support is disabled"
 msgstr "Поддержка PGP отключена"
 
 #. Template: AdminPGP
-msgid "To be able to use PGP in OTRS, you have to enable it first."
-msgstr "Чтобы использовать PGP в OTRS, сначала надо включить его поддержку."
+msgid "To be able to use PGP in LIGERO, you have to enable it first."
+msgstr "Чтобы использовать PGP в LIGERO, сначала надо включить его поддержку."
 
 #. Template: AdminPGP
 msgid "Enable PGP support"
@@ -4971,41 +4971,41 @@ msgid "package information"
 msgstr "Информация о пакете"
 
 #. Template: AdminPackageManager
-msgid "Package installation requires a patch level update of OTRS."
-msgstr "Установка пакета требует обновления уровня патчей OTRS."
+msgid "Package installation requires a patch level update of LIGERO."
+msgstr "Установка пакета требует обновления уровня патчей LIGERO."
 
 #. Template: AdminPackageManager
-msgid "Package update requires a patch level update of OTRS."
-msgstr "Обновление пакета требует обновления уровня патчей OTRS."
+msgid "Package update requires a patch level update of LIGERO."
+msgstr "Обновление пакета требует обновления уровня патчей LIGERO."
 
 #. Template: AdminPackageManager
 msgid ""
-"If you are a OTRS Business Solution™ customer, please visit our customer "
+"If you are a LIGERO Business Solution™ customer, please visit our customer "
 "portal and file a request."
 msgstr ""
-"Если вы являетесь покупателем OTRS Business Solution™ посетите наш "
+"Если вы являетесь покупателем LIGERO Business Solution™ посетите наш "
 "клиентский портал и отправьте запрос."
 
 #. Template: AdminPackageManager
-msgid "Please note that your installed OTRS version is %s."
-msgstr "Установлена OTRS версии %s."
+msgid "Please note that your installed LIGERO version is %s."
+msgstr "Установлена LIGERO версии %s."
 
 #. Template: AdminPackageManager
 msgid ""
-"To install this package, you need to update OTRS to version %s or newer."
-msgstr "Для установки пакета необходимо обновить OTRS до версии %s или выше."
+"To install this package, you need to update LIGERO to version %s or newer."
+msgstr "Для установки пакета необходимо обновить LIGERO до версии %s или выше."
 
 #. Template: AdminPackageManager
-msgid "This package can only be installed on OTRS version %s or older."
-msgstr "Этот пакет может быть установлен для версий OTRS не выше %s."
+msgid "This package can only be installed on LIGERO version %s or older."
+msgstr "Этот пакет может быть установлен для версий LIGERO не выше %s."
 
 #. Template: AdminPackageManager
-msgid "This package can only be installed on OTRS version %s or newer."
-msgstr "Этот пакет может быть установлен на OTRS версии не ниже %s."
+msgid "This package can only be installed on LIGERO version %s or newer."
+msgstr "Этот пакет может быть установлен на LIGERO версии не ниже %s."
 
 #. Template: AdminPackageManager
-msgid "You will receive updates for all other relevant OTRS issues."
-msgstr "Вы получите обновления для всех других соответствующих вопросов OTRS."
+msgid "You will receive updates for all other relevant LIGERO issues."
+msgstr "Вы получите обновления для всех других соответствующих вопросов LIGERO."
 
 #. Template: AdminPackageManager
 msgid "How can I do a patch level update if I don’t have a contract?"
@@ -5059,8 +5059,8 @@ msgid "Cloud services are currently disabled."
 msgstr "Облачные сервисы в настоящее время отключены."
 
 #. Template: AdminPackageManager
-msgid "OTRS Verify™ can not continue!"
-msgstr "OTRS Verify™ не может быть продолжена!"
+msgid "LIGERO Verify™ can not continue!"
+msgstr "LIGERO Verify™ не может быть продолжена!"
 
 #. Template: AdminPackageManager
 msgid "Enable cloud services"
@@ -5087,8 +5087,8 @@ msgid "Local Repository"
 msgstr "Локальный репозиторий"
 
 #. Template: AdminPackageManager
-msgid "This package is verified by OTRSverify (tm)"
-msgstr "Этот пакет проверен с помощью OTRSverify (tm)"
+msgid "This package is verified by LIGEROverify (tm)"
+msgstr "Этот пакет проверен с помощью LIGEROverify (tm)"
 
 #. Template: AdminPackageManager
 msgid "Uninstall"
@@ -6182,8 +6182,8 @@ msgid "Register System"
 msgstr "Регистрация системы"
 
 #. Template: AdminRegistration
-msgid "Validate OTRS-ID"
-msgstr "Подтвердить OTRS-ID"
+msgid "Validate LIGERO-ID"
+msgstr "Подтвердить LIGERO-ID"
 
 #. Template: AdminRegistration
 msgid "Deregister System"
@@ -6206,8 +6206,8 @@ msgid "Overview of registered systems"
 msgstr "Обзор зарегистрированных систем"
 
 #. Template: AdminRegistration
-msgid "This system is registered with OTRS Group."
-msgstr "Эта система зарегистрирована в OTRS Group."
+msgid "This system is registered with LIGERO Group."
+msgstr "Эта система зарегистрирована в LIGERO Group."
 
 #. Template: AdminRegistration
 msgid "System type"
@@ -6227,7 +6227,7 @@ msgstr "Регистрация системы/System registration невозмо
 
 #. Template: AdminRegistration
 msgid ""
-"Please note that you can't register your system if OTRS Daemon is not "
+"Please note that you can't register your system if LIGERO Daemon is not "
 "running correctly!"
 msgstr ""
 "Обратите внимание, что вы не сможете зарегистрировать вашу систему если "
@@ -6250,26 +6250,26 @@ msgstr ""
 "%s или имеете действующий контракт на поддержку."
 
 #. Template: AdminRegistration
-msgid "OTRS-ID Login"
-msgstr "Уч. запись OTRS-ID"
+msgid "LIGERO-ID Login"
+msgstr "Уч. запись LIGERO-ID"
 
 #. Template: AdminRegistration
 msgid "Read more"
 msgstr "Читайте дополнительно"
 
 #. Template: AdminRegistration
-msgid "You need to log in with your OTRS-ID to register your system."
+msgid "You need to log in with your LIGERO-ID to register your system."
 msgstr ""
-"Вы должны войти в систему со своей уч. записью OTRS-ID, чтобы "
+"Вы должны войти в систему со своей уч. записью LIGERO-ID, чтобы "
 "зарегистрировать Вашу систему."
 
 #. Template: AdminRegistration
 msgid ""
-"Your OTRS-ID is the email address you used to sign up on the OTRS.com "
+"Your LIGERO-ID is the email address you used to sign up on the LIGERO.com "
 "webpage."
 msgstr ""
-"Ваша уч. запись OTRS-ID - это адрес электронной почты, Вы раньше "
-"регистрировались в системе на веб-странице OTRS.com."
+"Ваша уч. запись LIGERO-ID - это адрес электронной почты, Вы раньше "
+"регистрировались в системе на веб-странице LIGERO.com."
 
 #. Template: AdminRegistration
 msgid "Data Protection"
@@ -6300,16 +6300,16 @@ msgid "We will inform you about our new services and offerings soon."
 msgstr "Мы сообщим Вам о наших новых службах и предложениях быстрее."
 
 #. Template: AdminRegistration
-msgid "Can I use OTRS without being registered?"
-msgstr "Я могу использовать OTRS без регистрации?"
+msgid "Can I use LIGERO without being registered?"
+msgstr "Я могу использовать LIGERO без регистрации?"
 
 #. Template: AdminRegistration
 msgid "System registration is optional."
 msgstr "Регистрация как дополнительная опция."
 
 #. Template: AdminRegistration
-msgid "You can download and use OTRS without being registered."
-msgstr "Вы можете загрузить и использовать OTRS без регистрации."
+msgid "You can download and use LIGERO without being registered."
+msgstr "Вы можете загрузить и использовать LIGERO без регистрации."
 
 #. Template: AdminRegistration
 msgid "Is it possible to deregister?"
@@ -6325,15 +6325,15 @@ msgid "Which data is transfered when registering?"
 msgstr "Какие данные будут переданы, при регистрации?"
 
 #. Template: AdminRegistration
-msgid "A registered system sends the following data to OTRS Group:"
-msgstr "Зарегистрированная система посылает следующие данные в OTRS Group:"
+msgid "A registered system sends the following data to LIGERO Group:"
+msgstr "Зарегистрированная система посылает следующие данные в LIGERO Group:"
 
 #. Template: AdminRegistration
 msgid ""
-"Fully Qualified Domain Name (FQDN), OTRS version, Database, Operating System"
+"Fully Qualified Domain Name (FQDN), LIGERO version, Database, Operating System"
 " and Perl version."
 msgstr ""
-"Fully Qualified Domain Name (FQDN), версия OTRS, Базаданных, Операционная "
+"Fully Qualified Domain Name (FQDN), версия LIGERO, Базаданных, Операционная "
 "система и версия Perl"
 
 #. Template: AdminRegistration
@@ -6353,15 +6353,15 @@ msgstr ""
 "идентифицировать и управлять деталями своих зарегистрированных систем."
 
 #. Template: AdminRegistration
-msgid "How often does my OTRS system send updates?"
-msgstr "Как часто моя система OTRS отправляет обновления(отчеты)?"
+msgid "How often does my LIGERO system send updates?"
+msgstr "Как часто моя система LIGERO отправляет обновления(отчеты)?"
 
 #. Template: AdminRegistration
 msgid ""
 "Your system will send updates to the registration server at regular "
 "intervals."
 msgstr ""
-"Ваша система отправит обновления (отчет) на сервер OTRS Group периодически."
+"Ваша система отправит обновления (отчет) на сервер LIGERO Group периодически."
 
 #. Template: AdminRegistration
 msgid "Typically this would be around once every three days."
@@ -6374,18 +6374,18 @@ msgstr ""
 "выгоды:"
 
 #. Template: AdminRegistration
-msgid "You need to log in with your OTRS-ID to deregister your system."
+msgid "You need to log in with your LIGERO-ID to deregister your system."
 msgstr ""
-"Вы должны войти в систему под своей уч. записью OTRS-ID, чтобы удалить "
+"Вы должны войти в систему под своей уч. записью LIGERO-ID, чтобы удалить "
 "зарегистрированую Вашу систему."
 
 #. Template: AdminRegistration
-msgid "OTRS-ID"
-msgstr "OTRS-ID"
+msgid "LIGERO-ID"
+msgstr "LIGERO-ID"
 
 #. Template: AdminRegistration
-msgid "You don't have an OTRS-ID yet?"
-msgstr "У Вас еще нет уч. записи OTRS-ID?"
+msgid "You don't have an LIGERO-ID yet?"
+msgstr "У Вас еще нет уч. записи LIGERO-ID?"
 
 #. Template: AdminRegistration
 msgid "Sign up now"
@@ -6405,10 +6405,10 @@ msgstr "Вперед"
 
 #. Template: AdminRegistration
 msgid ""
-"This data will be frequently transferred to OTRS Group when you register "
+"This data will be frequently transferred to LIGERO Group when you register "
 "this system."
 msgstr ""
-"Эти данные будут часто передаваться OTRS Group, когда Вы зарегистрируете эту"
+"Эти данные будут часто передаваться LIGERO Group, когда Вы зарегистрируете эту"
 " систему."
 
 #. Template: AdminRegistration
@@ -6420,8 +6420,8 @@ msgid "FQDN"
 msgstr "Полное имя домена"
 
 #. Template: AdminRegistration
-msgid "OTRS Version"
-msgstr "Версия OTRS"
+msgid "LIGERO Version"
+msgstr "Версия LIGERO"
 
 #. Template: AdminRegistration
 msgid "Operating System"
@@ -6440,9 +6440,9 @@ msgid "Register"
 msgstr "Регистрация"
 
 #. Template: AdminRegistration
-msgid "Continuing with this step will deregister the system from OTRS Group."
+msgid "Continuing with this step will deregister the system from LIGERO Group."
 msgstr ""
-"Продолжите этот шаг и вы удалите зарегистрированиую ситему из скписка OTRS "
+"Продолжите этот шаг и вы удалите зарегистрированиую ситему из скписка LIGERO "
 "Group."
 
 #. Template: AdminRegistration
@@ -6641,8 +6641,8 @@ msgid "SMIME support is disabled"
 msgstr "Поддержка SMIME отключена"
 
 #. Template: AdminSMIME
-msgid "To be able to use SMIME in OTRS, you have to enable it first."
-msgstr "Чтобы использовать SMIME в OTRS, сначала надо включить его поддержку."
+msgid "To be able to use SMIME in LIGERO, you have to enable it first."
+msgstr "Чтобы использовать SMIME в LIGERO, сначала надо включить его поддержку."
 
 #. Template: AdminSMIME
 msgid "Enable SMIME support"
@@ -7028,8 +7028,8 @@ msgid "This state is used in the following config settings:"
 msgstr "Это состояние используется в следующих параметрах конфигурации:"
 
 #. Template: AdminSupportDataCollector
-msgid "Sending support data to OTRS Group is not possible!"
-msgstr "Отправка необходимых данных в OTRS Group невозможна!"
+msgid "Sending support data to LIGERO Group is not possible!"
+msgstr "Отправка необходимых данных в LIGERO Group невозможна!"
 
 #. Template: AdminSupportDataCollector
 msgid "Enable Cloud Services"
@@ -7037,10 +7037,10 @@ msgstr "Включить облачный сервис"
 
 #. Template: AdminSupportDataCollector
 msgid ""
-"This data is sent to OTRS Group on a regular basis. To stop sending this "
+"This data is sent to LIGERO Group on a regular basis. To stop sending this "
 "data please update your system registration."
 msgstr ""
-"Эти данные отправляются в OTRS Group на регулярной основе. Чтобы прекратить "
+"Эти данные отправляются в LIGERO Group на регулярной основе. Чтобы прекратить "
 "отправку этих данных, обновите регистрацию вашей системы."
 
 #. Template: AdminSupportDataCollector
@@ -7102,9 +7102,9 @@ msgid "Sending"
 msgstr "Отправка"
 
 #. Template: AdminSupportDataCollector
-msgid "The support bundle will be sent to OTRS Group via email automatically."
+msgid "The support bundle will be sent to LIGERO Group via email automatically."
 msgstr ""
-"Пакет поддержки будет выслан в OTRS Group по электронной почте "
+"Пакет поддержки будет выслан в LIGERO Group по электронной почте "
 "автоматически."
 
 #. Template: AdminSupportDataCollector
@@ -7114,11 +7114,11 @@ msgstr "Загрузить файл."
 #. Template: AdminSupportDataCollector
 msgid ""
 "A file containing the support bundle will be downloaded to the local system."
-" Please save the file and send it to the OTRS Group, using an alternate "
+" Please save the file and send it to the LIGERO Group, using an alternate "
 "method."
 msgstr ""
 "Файл, содержащий пакет поддержки будет загружен в вашу локальную систему. "
-"Сохраните файл и отправьте его в OTRS Group, используя альтернативный "
+"Сохраните файл и отправьте его в LIGERO Group, используя альтернативный "
 "способ."
 
 #. Template: AdminSupportDataCollector
@@ -7222,10 +7222,10 @@ msgstr "Искать среди всех настроек..."
 #. Template: AdminSystemConfiguration
 msgid ""
 "There are currently no settings available. Please make sure to run "
-"'otrs.Console.pl Maint::Config::Rebuild' before using the software."
+"'ligero.Console.pl Maint::Config::Rebuild' before using the software."
 msgstr ""
 "Никакие настройки недоступны. Перед началом работы выполните скрипт  "
-"'otrs.Console.pl Maint::Config::Rebuild'."
+"'ligero.Console.pl Maint::Config::Rebuild'."
 
 #. Template: AdminSystemConfigurationDeployment
 msgid "Changes Deployment"
@@ -8057,46 +8057,46 @@ msgstr "Центр информации о клиентах"
 
 #. Template: AgentDaemonInfo
 msgid ""
-"The OTRS Daemon is a daemon process that performs asynchronous tasks, e.g. "
+"The LIGERO Daemon is a daemon process that performs asynchronous tasks, e.g. "
 "ticket escalation triggering, email sending, etc."
 msgstr ""
-"Планировщик OTRS это такой процесс, который выполняет асинхронные/фоновые "
+"Планировщик LIGERO это такой процесс, который выполняет асинхронные/фоновые "
 "задачи, например включение эскалации заявки, отправка почты и прочее."
 
 #. Template: AgentDaemonInfo
-msgid "A running OTRS Daemon is mandatory for correct system operation."
+msgid "A running LIGERO Daemon is mandatory for correct system operation."
 msgstr ""
-"Наличие запущенного Планировщика OTRS обязательно для корректной работы "
+"Наличие запущенного Планировщика LIGERO обязательно для корректной работы "
 "системы."
 
 #. Template: AgentDaemonInfo
-msgid "Starting the OTRS Daemon"
-msgstr "Запуск Планировщика OTRS"
+msgid "Starting the LIGERO Daemon"
+msgstr "Запуск Планировщика LIGERO"
 
 #. Template: AgentDaemonInfo
 msgid ""
 "Make sure that the file '%s' exists (without .dist extension). This cron job"
-" will check every 5 minutes if the OTRS Daemon is running and start it if "
+" will check every 5 minutes if the LIGERO Daemon is running and start it if "
 "needed."
 msgstr ""
 "Убедитесь, что файл  '%s' существует (без расширения .dist). Это задание "
-"cron будет каждые 5 минут проверять, что Планировщик OTRS запущен и "
+"cron будет каждые 5 минут проверять, что Планировщик LIGERO запущен и "
 "запускает его при необходимости."
 
 #. Template: AgentDaemonInfo
 msgid ""
-"Execute '%s start' to make sure the cron jobs of the 'otrs' user are active."
+"Execute '%s start' to make sure the cron jobs of the 'ligero' user are active."
 msgstr ""
 "Выполните команду  '%s start' чтобы убедиться, что cron от имени "
-"пользователя 'otrs' запущен."
+"пользователя 'ligero' запущен."
 
 #. Template: AgentDaemonInfo
 msgid ""
-"After 5 minutes, check that the OTRS Daemon is running in the system "
-"('bin/otrs.Daemon.pl status')."
+"After 5 minutes, check that the LIGERO Daemon is running in the system "
+"('bin/ligero.Daemon.pl status')."
 msgstr ""
-"По истечении 5 минут проверьте, что Планировщик OTRS работает "
-"('bin/otrs.Daemon.pl status')."
+"По истечении 5 минут проверьте, что Планировщик LIGERO работает "
+"('bin/ligero.Daemon.pl status')."
 
 #. Template: AgentDashboard
 msgid "Dashboard"
@@ -8366,13 +8366,13 @@ msgstr ""
 "Нет текущих связей. Нажмите 'Связать' выше чтобы связать этот элемент с "
 "другими объектами."
 
-#. Template: AgentOTRSBusinessBlockScreen
+#. Template: AgentLIGEROBusinessBlockScreen
 msgid "Unauthorized usage of %s detected"
 msgstr "Обнаружено несанкционированное использование  %s "
 
-#. Template: AgentOTRSBusinessBlockScreen
+#. Template: AgentLIGEROBusinessBlockScreen
 msgid ""
-"If you decide to downgrade to ((OTRS)) Community Edition, you will lose all "
+"If you decide to downgrade to ((LIGERO)) Community Edition, you will lose all "
 "database tables and data related to %s."
 msgstr ""
 
@@ -8467,8 +8467,8 @@ msgid "Save this setting"
 msgstr "Сохранить эту настройку"
 
 #. Template: AgentPreferences
-msgid "Did you know? You can help translating OTRS at %s."
-msgstr "А вы знаете? Вы можете помочь в локализации OTRS c помощью %s."
+msgid "Did you know? You can help translating LIGERO at %s."
+msgstr "А вы знаете? Вы можете помочь в локализации LIGERO c помощью %s."
 
 #. Template: SettingsList
 msgid "Reset to default"
@@ -8510,8 +8510,8 @@ msgid "Statistics Overview"
 msgstr "Перечень отчетов"
 
 #. Template: AgentStatisticsAdd
-msgid "Read more about statistics in OTRS"
-msgstr "Читайте еще об отчетах в OTRS"
+msgid "Read more about statistics in LIGERO"
+msgstr "Читайте еще об отчетах в LIGERO"
 
 #. Template: AgentStatisticsAdd
 msgid "Add Statistics"
@@ -9597,7 +9597,7 @@ msgid ""
 "In order to experience this software, you'll need to enable JavaScript in "
 "your browser."
 msgstr ""
-"Для работы с OTRS вам потребуется включить JavaScript в вашем браузере."
+"Для работы с LIGERO вам потребуется включить JavaScript в вашем браузере."
 
 #. Template: CustomerLogin
 msgid "Browser Warning"
@@ -9858,10 +9858,10 @@ msgstr "Динамические поля"
 #. Template: Error
 msgid ""
 "Really a bug? 5 out of 10 bug reports result from a wrong or incomplete "
-"installation of OTRS."
+"installation of LIGERO."
 msgstr ""
 "Вы уверены, что это ошибка? В 5 случаях из 10 ошибки возникают из-за "
-"некорректной или незавершенной установки OTRS."
+"некорректной или незавершенной установки LIGERO."
 
 #. Template: Error
 msgid ""
@@ -9924,8 +9924,8 @@ msgid "Notifications"
 msgstr "Уведомления"
 
 #. Template: Header
-msgid "Notifications (OTRS Business Solution™)"
-msgstr "Уведомления (OTRS Business Solution™)"
+msgid "Notifications (LIGERO Business Solution™)"
+msgstr "Уведомления (LIGERO Business Solution™)"
 
 #. Template: Header
 msgid "Personal preferences"
@@ -10120,12 +10120,12 @@ msgid "Install Type"
 msgstr "Тип установки"
 
 #. Template: InstallerDBStart
-msgid "Create a new database for OTRS"
-msgstr "Создать новую базу данных для OTRS"
+msgid "Create a new database for LIGERO"
+msgstr "Создать новую базу данных для LIGERO"
 
 #. Template: InstallerDBStart
-msgid "Use an existing database for OTRS"
-msgstr "Использовать существующую базу данных OTRS"
+msgid "Use an existing database for LIGERO"
+msgstr "Использовать существующую базу данных LIGERO"
 
 #. Template: InstallerDBmssql
 msgid ""
@@ -10161,10 +10161,10 @@ msgstr "Новое"
 
 #. Template: InstallerDBmssql
 msgid ""
-"A new database user with limited permissions will be created for this OTRS "
+"A new database user with limited permissions will be created for this LIGERO "
 "system."
 msgstr ""
-"Для этой системы OTRS будет создан новый пользователь базы данных с "
+"Для этой системы LIGERO будет создан новый пользователь базы данных с "
 "ограниченными правами."
 
 #. Template: InstallerDBmssql
@@ -10189,10 +10189,10 @@ msgstr "Порт"
 
 #. Template: InstallerFinish
 msgid ""
-"To be able to use OTRS you have to enter the following line in your command "
+"To be able to use LIGERO you have to enter the following line in your command "
 "line (Terminal/Shell) as root."
 msgstr ""
-"Чтобы использовать OTRS, выполните в командной строке под правами root "
+"Чтобы использовать LIGERO, выполните в командной строке под правами root "
 "следующую команду:"
 
 #. Template: InstallerFinish
@@ -10200,16 +10200,16 @@ msgid "Restart your webserver"
 msgstr "Перезапустите ваш веб-сервер"
 
 #. Template: InstallerFinish
-msgid "After doing so your OTRS is up and running."
-msgstr "После этих действий ваша система OTRS станет запущенной и работающей."
+msgid "After doing so your LIGERO is up and running."
+msgstr "После этих действий ваша система LIGERO станет запущенной и работающей."
 
 #. Template: InstallerFinish
 msgid "Start page"
 msgstr "Главная страница"
 
 #. Template: InstallerFinish
-msgid "Your OTRS Team"
-msgstr "Команда разработчиков OTRS"
+msgid "Your LIGERO Team"
+msgstr "Команда разработчиков LIGERO"
 
 #. Template: InstallerLicense
 msgid "Don't accept license"
@@ -10346,11 +10346,11 @@ msgstr "Эта возможность не доступна!"
 
 #. Template: MobileNotAvailableWidget
 msgid ""
-"Sorry, but this feature of OTRS is currently not available for mobile "
+"Sorry, but this feature of LIGERO is currently not available for mobile "
 "devices. If you'd like to use it, you can either switch to desktop mode or "
 "use your regular desktop device."
 msgstr ""
-"К сожалению, эта функция OTRS в настоящее время недоступна для мобильных "
+"К сожалению, эта функция LIGERO в настоящее время недоступна для мобильных "
 "устройств. Если вы желаете пользоваться ею, то необходимо или переключиться "
 "в режим ПК или воспользоваться стационарным компьютером."
 
@@ -10437,10 +10437,10 @@ msgstr "Добро пожаловать"
 
 #. Template: PublicDefault
 msgid ""
-"This is the default public interface of OTRS! There was no action parameter "
+"This is the default public interface of LIGERO! There was no action parameter "
 "given."
 msgstr ""
-"Это публичный/общедоступный интерфейс OTRS по умолчанию! Он не имеет "
+"Это публичный/общедоступный интерфейс LIGERO по умолчанию! Он не имеет "
 "дополнительных параметров действий."
 
 #. Template: PublicDefault
@@ -10872,7 +10872,7 @@ msgstr "Отменить правку текущих настроек."
 msgid "Navigation"
 msgstr "Навигация"
 
-#. Template: OTRSBusinessTeaser
+#. Template: LIGEROBusinessTeaser
 msgid ""
 "With %s, System Configuration supports versioning, rollback and user-"
 "specific configuration settings."
@@ -10881,8 +10881,8 @@ msgstr ""
 "пользовательские наборы настроек."
 
 #. Template: Test
-msgid "OTRS Test Page"
-msgstr "Тестовая страница OTRS"
+msgid "LIGERO Test Page"
+msgstr "Тестовая страница LIGERO"
 
 #. Template: Test
 msgid "Unlock"
@@ -11093,11 +11093,11 @@ msgstr ""
 
 #. Perl Module: Kernel/Modules/AdminACL.pm
 msgid ""
-"ACLs could not be Imported due to a unknown error, please check OTRS logs "
+"ACLs could not be Imported due to a unknown error, please check LIGERO logs "
 "for more information"
 msgstr ""
 "ACL не могут быть импортированы из-за неизвестной ошибки, проверьте, "
-"пожалуйста, логи OTRS для получения более детальной информации"
+"пожалуйста, логи LIGERO для получения более детальной информации"
 
 #. Perl Module: Kernel/Modules/AdminACL.pm
 msgid "The following ACLs have been added successfully: %s"
@@ -11282,10 +11282,10 @@ msgstr "Произошла ошибка при создании Уведомле
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid ""
 "Notifications could not be Imported due to a unknown error, please check "
-"OTRS logs for more information"
+"LIGERO logs for more information"
 msgstr ""
 "Уведомления не могут быть импортированы из-за неизвестной ошибки, проверьте,"
-" пожалуйста, логи OTRS для получения более детальной информации"
+" пожалуйста, логи LIGERO для получения более детальной информации"
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid "The following Notifications have been added successfully: %s"
@@ -12000,27 +12000,27 @@ msgstr "Требуется файл для импорта!"
 
 #. Perl Module: Kernel/Modules/AdminGenericInterfaceWebservice.pm
 msgid ""
-"The imported file has not valid YAML content! Please check OTRS log for "
+"The imported file has not valid YAML content! Please check LIGERO log for "
 "details"
 msgstr ""
 "импортированный файл имеет недопустимое для YAML содержимое! Пожалуйста, "
-"проверьте логи OTRS для подробностей"
+"проверьте логи LIGERO для подробностей"
 
 #. Perl Module: Kernel/Modules/AdminGenericInterfaceWebservice.pm
 msgid "Web service \"%s\" deleted!"
 msgstr "Web-сервис \"%s\" удален!"
 
 #. Perl Module: Kernel/Modules/AdminGenericInterfaceWebservice.pm
-msgid "OTRS as provider"
-msgstr "OTRS как провайдер"
+msgid "LIGERO as provider"
+msgstr "LIGERO как провайдер"
 
 #. Perl Module: Kernel/Modules/AdminGenericInterfaceWebservice.pm
 msgid "Operations"
 msgstr "Операции"
 
 #. Perl Module: Kernel/Modules/AdminGenericInterfaceWebservice.pm
-msgid "OTRS as requester"
-msgstr "OTRS как запрашивающий"
+msgid "LIGERO as requester"
+msgstr "LIGERO как запрашивающий"
 
 #. Perl Module: Kernel/Modules/AdminGenericInterfaceWebservice.pm
 msgid "Invokers"
@@ -12102,35 +12102,35 @@ msgstr "Все получатели первой заметки"
 msgid "All recipients of the last article"
 msgstr "Все получатели последней заметки"
 
-#. Perl Module: Kernel/Modules/AdminOTRSBusiness.pm
+#. Perl Module: Kernel/Modules/AdminLIGEROBusiness.pm
 msgid "Your system was successfully upgraded to %s."
 msgstr "Ваша система успешно обновлена до %s."
 
-#. Perl Module: Kernel/Modules/AdminOTRSBusiness.pm
+#. Perl Module: Kernel/Modules/AdminLIGEROBusiness.pm
 msgid "There was a problem during the upgrade to %s."
 msgstr "Обнаружены проблемы при обновлении до %s."
 
-#. Perl Module: Kernel/Modules/AdminOTRSBusiness.pm
+#. Perl Module: Kernel/Modules/AdminLIGEROBusiness.pm
 msgid "%s was correctly reinstalled."
 msgstr "%s была корректно переустановлена."
 
-#. Perl Module: Kernel/Modules/AdminOTRSBusiness.pm
+#. Perl Module: Kernel/Modules/AdminLIGEROBusiness.pm
 msgid "There was a problem reinstalling %s."
 msgstr "Обнаружены проблемы при переустановке %s."
 
-#. Perl Module: Kernel/Modules/AdminOTRSBusiness.pm
+#. Perl Module: Kernel/Modules/AdminLIGEROBusiness.pm
 msgid "Your %s was successfully updated."
 msgstr "Ваша %s была успешно обновлена."
 
-#. Perl Module: Kernel/Modules/AdminOTRSBusiness.pm
+#. Perl Module: Kernel/Modules/AdminLIGEROBusiness.pm
 msgid "There was a problem during the upgrade of %s."
 msgstr "Обнаружены проблемы при обновлении %s."
 
-#. Perl Module: Kernel/Modules/AdminOTRSBusiness.pm
+#. Perl Module: Kernel/Modules/AdminLIGEROBusiness.pm
 msgid "%s was correctly uninstalled."
 msgstr "%s была корректно деинсталлирована."
 
-#. Perl Module: Kernel/Modules/AdminOTRSBusiness.pm
+#. Perl Module: Kernel/Modules/AdminLIGEROBusiness.pm
 msgid "There was a problem uninstalling %s."
 msgstr "Обнаружены проблемы при деинсталляции %s. "
 
@@ -12154,12 +12154,12 @@ msgstr "Требуются параметры Ключа для скачиван
 msgid ""
 "Sorry, Apache::Reload is needed as PerlModule and PerlInitHandler in Apache "
 "config file. See also scripts/apache2-httpd.include.conf. Alternatively, you"
-" can use the command line tool bin/otrs.Console.pl to install packages!"
+" can use the command line tool bin/ligero.Console.pl to install packages!"
 msgstr ""
 "Извините! Требуется Apache::Reload для PerlModule и PerlInitHandler в "
 "конфигурационном файле Apache. Смотрите также "
 "scripts/apache2-httpd.include.conf. Можно, также, использовать утилиту "
-"bin/otrs.Console.pl в командной строки для установки пакетов! "
+"bin/ligero.Console.pl в командной строки для установки пакетов! "
 
 #. Perl Module: Kernel/Modules/AdminPackageManager.pm
 msgid "No such package!"
@@ -12187,10 +12187,10 @@ msgstr "Пакет содержит локально изменённые фай
 
 #. Perl Module: Kernel/Modules/AdminPackageManager.pm
 msgid ""
-"Package not verified by the OTRS Group! It is recommended not to use this "
+"Package not verified by the LIGERO Group! It is recommended not to use this "
 "package."
 msgstr ""
-"Пакет не верифицирован OTRS Group! Его использование не рекомендуется."
+"Пакет не верифицирован LIGERO Group! Его использование не рекомендуется."
 
 #. Perl Module: Kernel/Modules/AdminPackageManager.pm
 msgid "Not Started"
@@ -12266,16 +12266,16 @@ msgid ""
 msgstr "Пакет не проверен из-за неполадок со связью с сервером верификации!"
 
 #. Perl Module: Kernel/Modules/AdminPackageManager.pm
-msgid "Can't connect to OTRS Feature Add-on list server!"
-msgstr "Невозможно подключиться к серверу со списком  OTRS Feature Add-on!"
+msgid "Can't connect to LIGERO Feature Add-on list server!"
+msgstr "Невозможно подключиться к серверу со списком  LIGERO Feature Add-on!"
 
 #. Perl Module: Kernel/Modules/AdminPackageManager.pm
-msgid "Can't get OTRS Feature Add-on list from server!"
-msgstr "Невозможно получить список OTRS Feature Add-on с  сервера!"
+msgid "Can't get LIGERO Feature Add-on list from server!"
+msgstr "Невозможно получить список LIGERO Feature Add-on с  сервера!"
 
 #. Perl Module: Kernel/Modules/AdminPackageManager.pm
-msgid "Can't get OTRS Feature Add-on from server!"
-msgstr "Невозможно получить OTRS Feature Add-on с  сервера!"
+msgid "Can't get LIGERO Feature Add-on from server!"
+msgstr "Невозможно получить LIGERO Feature Add-on с  сервера!"
 
 #. Perl Module: Kernel/Modules/AdminPostMasterFilter.pm
 msgid "No such filter: %s"
@@ -12753,10 +12753,10 @@ msgstr "Импорт недопустим!"
 #. Perl Module: Kernel/Modules/AdminSystemConfiguration.pm
 msgid ""
 "System Configuration could not be imported due to an unknown error, please "
-"check OTRS logs for more information."
+"check LIGERO logs for more information."
 msgstr ""
 "Системная конфигурация не может быть импортирована из-за неизвестной ошибки."
-" Проверьте, пожалуйста, лог OTRS для детальной инофрмации"
+" Проверьте, пожалуйста, лог LIGERO для детальной инофрмации"
 
 #. Perl Module: Kernel/Modules/AdminSystemConfiguration.pm
 msgid "Category Search"
@@ -12765,11 +12765,11 @@ msgstr "Поиск категории"
 #. Perl Module: Kernel/Modules/AdminSystemConfigurationDeployment.pm
 msgid ""
 "Some imported settings are not present in the current state of the "
-"configuration or it was not possible to update them. Please check the OTRS "
+"configuration or it was not possible to update them. Please check the LIGERO "
 "log for more information."
 msgstr ""
 "Некоторые импортированные настройки отсутствуют в текущей конфигурации или "
-"их невозможно обновить. Для подробностей проверьте записи журнала OTRS."
+"их невозможно обновить. Для подробностей проверьте записи журнала LIGERO."
 
 #. Perl Module: Kernel/Modules/AdminSystemConfigurationGroup.pm
 msgid "You need to enable the setting before locking!"
@@ -14088,8 +14088,8 @@ msgid "Directory \"%s\" not found!"
 msgstr "Каталог \"%s\" не найден!"
 
 #. Perl Module: Kernel/Modules/Installer.pm
-msgid "Install OTRS"
-msgstr "Установите OTRS"
+msgid "Install LIGERO"
+msgstr "Установите LIGERO"
 
 #. Perl Module: Kernel/Modules/Installer.pm
 msgid "Intro"
@@ -14156,8 +14156,8 @@ msgid "Create Database"
 msgstr "Создать базу данных"
 
 #. Perl Module: Kernel/Modules/Installer.pm
-msgid "Install OTRS - Error"
-msgstr "Установка OTRS - Ошибка"
+msgid "Install LIGERO - Error"
+msgstr "Установка LIGERO - Ошибка"
 
 #. Perl Module: Kernel/Modules/Installer.pm
 msgid "File \"%s/%s.xml\" not found!"
@@ -14305,8 +14305,8 @@ msgid "Print this article"
 msgstr "Напечатать это сообщение"
 
 #. Perl Module: Kernel/Output/HTML/ArticleAction/GetHelpLink.pm
-msgid "Contact us at sales@otrs.com"
-msgstr "Свяжитесь с нами по sales@otrs.com"
+msgid "Contact us at sales@ligero.com"
+msgstr "Свяжитесь с нами по sales@ligero.com"
 
 #. Perl Module: Kernel/Output/HTML/ArticleAction/GetHelpLink.pm
 msgid "Get Help"
@@ -14321,8 +14321,8 @@ msgid "Unmark"
 msgstr "Снять пометку"
 
 #. Perl Module: Kernel/Output/HTML/ArticleAction/ReinstallPackageLink.pm
-msgid "Upgrade to OTRS Business Solution™"
-msgstr "Обновление до OTRS Business Solution™"
+msgid "Upgrade to LIGERO Business Solution™"
+msgstr "Обновление до LIGERO Business Solution™"
 
 #. Perl Module: Kernel/Output/HTML/ArticleAction/ReinstallPackageLink.pm
 msgid "Re-install Package"
@@ -14485,12 +14485,12 @@ msgid "The start time of a ticket has been set after the end time!"
 msgstr "Время начала для заявки установлено после времени окончания!"
 
 #. Perl Module: Kernel/Output/HTML/Dashboard/News.pm
-msgid "Can't connect to OTRS News server!"
-msgstr "Невозможно подключиться к серверу новостей OTRS!"
+msgid "Can't connect to LIGERO News server!"
+msgstr "Невозможно подключиться к серверу новостей LIGERO!"
 
 #. Perl Module: Kernel/Output/HTML/Dashboard/News.pm
-msgid "Can't get OTRS News from server!"
-msgstr "Невозможно получить новости с сервера новостей OTRS!"
+msgid "Can't get LIGERO News from server!"
+msgstr "Невозможно получить новости с сервера новостей LIGERO!"
 
 #. Perl Module: Kernel/Output/HTML/Dashboard/ProductNotify.pm
 msgid "Can't connect to Product News server!"
@@ -14498,7 +14498,7 @@ msgstr "Невозможно подключиться к серверу прод
 
 #. Perl Module: Kernel/Output/HTML/Dashboard/ProductNotify.pm
 msgid "Can't get Product News from server!"
-msgstr "Невозможно получить новости о продуктах с сервера OTRS!"
+msgstr "Невозможно получить новости о продуктах с сервера LIGERO!"
 
 #. Perl Module: Kernel/Output/HTML/Dashboard/RSS.pm
 msgid "Can't connect to %s!"
@@ -14665,19 +14665,19 @@ msgid "Archive search"
 msgstr "Поиск в архиве"
 
 #. Perl Module: Kernel/Output/HTML/Notification/AgentCloudServicesDisabled.pm
-msgid "Enable cloud services to unleash all OTRS features!"
+msgid "Enable cloud services to unleash all LIGERO features!"
 msgstr ""
-"Включите облачный сервис чтобы получить доступ ко всем возможностям OTRS! "
+"Включите облачный сервис чтобы получить доступ ко всем возможностям LIGERO! "
 
-#. Perl Module: Kernel/Output/HTML/Notification/AgentOTRSBusiness.pm
+#. Perl Module: Kernel/Output/HTML/Notification/AgentLIGEROBusiness.pm
 msgid "%s Upgrade to %s now! %s"
 msgstr "%s Обновление до %s сейчас! %s"
 
-#. Perl Module: Kernel/Output/HTML/Notification/AgentOTRSBusiness.pm
+#. Perl Module: Kernel/Output/HTML/Notification/AgentLIGEROBusiness.pm
 msgid "Please verify your license data!"
 msgstr "Проверьте , пожалуйста данные лицензии!"
 
-#. Perl Module: Kernel/Output/HTML/Notification/AgentOTRSBusiness.pm
+#. Perl Module: Kernel/Output/HTML/Notification/AgentLIGEROBusiness.pm
 msgid ""
 "The license for your %s is about to expire. Please make contact with %s to "
 "renew your contract!"
@@ -14685,7 +14685,7 @@ msgstr ""
 "Лицензия на ваш продукт %s истекает. Свяжитесь, пожалуйста с %s для "
 "обновления контракта!"
 
-#. Perl Module: Kernel/Output/HTML/Notification/AgentOTRSBusiness.pm
+#. Perl Module: Kernel/Output/HTML/Notification/AgentLIGEROBusiness.pm
 msgid ""
 "An update for your %s is available, but there is a conflict with your "
 "framework version! Please update your framework first!"
@@ -14725,8 +14725,8 @@ msgid ""
 msgstr "Период обслуживания системы: начало в %s, ожидаемое окончание %s"
 
 #. Perl Module: Kernel/Output/HTML/Notification/DaemonCheck.pm
-msgid "OTRS Daemon is not running."
-msgstr "Служба OTRS не запущена"
+msgid "LIGERO Daemon is not running."
+msgstr "Служба LIGERO не запущена"
 
 #. Perl Module: Kernel/Output/HTML/Notification/OutofOfficeCheck.pm
 msgid "You have Out of Office enabled, would you like to disable it?"
@@ -14735,11 +14735,11 @@ msgstr "Вы включали Отсутствие в офисе, хотите �
 #. Perl Module:
 #. Kernel/Output/HTML/Notification/PackageManagerCheckNotVerifiedPackages.pm
 msgid ""
-"The installation of packages which are not verified by the OTRS Group is "
+"The installation of packages which are not verified by the LIGERO Group is "
 "activated. These packages could threaten your whole system! It is "
 "recommended not to use unverified packages."
 msgstr ""
-"Активирована установка пакетов, которые не верифицированы OTRS Group. Эти "
+"Активирована установка пакетов, которые не верифицированы LIGERO Group. Эти "
 "пакеты могут влиять на работу вашей системе! Не рекомендуется использовать "
 "непроверенные пакеты."
 
@@ -14770,7 +14770,7 @@ msgid ""
 "Don't use the Superuser account to work with %s! Create new Agents and work "
 "with these accounts instead."
 msgstr ""
-"Не используйте учетную запись суперпользователя для работы с OTRS! Создайте "
+"Не используйте учетную запись суперпользователя для работы с LIGERO! Создайте "
 "новых агентов и работайте под их учетными записями."
 
 #. Perl Module: Kernel/Output/HTML/Preferences/AppointmentNotificationEvent.pm
@@ -15070,9 +15070,9 @@ msgstr ""
 
 #. Perl Module: Kernel/System/AuthSession.pm
 msgid ""
-"You have exceeded the number of concurrent agents - contact sales@otrs.com."
+"You have exceeded the number of concurrent agents - contact sales@ligero.com."
 msgstr ""
-"Превышено количество одновременных агентов - свяжитесь с sales@otrs.com"
+"Превышено количество одновременных агентов - свяжитесь с sales@ligero.com"
 
 #. Perl Module: Kernel/System/AuthSession.pm
 msgid "Please note that the session limit is almost reached."
@@ -15082,10 +15082,10 @@ msgstr ""
 #. Perl Module: Kernel/System/AuthSession.pm
 msgid ""
 "Login rejected! You have exceeded the maximum number of concurrent Agents! "
-"Contact sales@otrs.com immediately!"
+"Contact sales@ligero.com immediately!"
 msgstr ""
 "Вход отклонён! Превышено максимальное количество одновременных агентов! "
-"Срочно свяжитесь с sales@otrs.com!"
+"Срочно свяжитесь с sales@ligero.com!"
 
 #. Perl Module: Kernel/System/AuthSession.pm
 msgid "Session limit reached! Please try again later."
@@ -15252,21 +15252,21 @@ msgid ""
 "<p>If you continue to install this package, the following issues may "
 "occur:</p><ul><li>Security problems</li><li>Stability "
 "problems</li><li>Performance problems</li></ul><p>Please note that issues "
-"that are caused by working with this package are not covered by OTRS service"
+"that are caused by working with this package are not covered by LIGERO service"
 " contracts.</p>"
 msgstr ""
 "<p>Если вы продолжите установку этого пакета, могут возникнуть следующие "
 "проблемы:</p><ul><li>Проблемы "
 "безопасности</li><li>Стабильности</li><li>Производительности</li></ul><p>Помните,"
 " что возникшие при работе с таким пакетом проблемы не решаются в рамках "
-"сервисного контракта OTRS!</p>"
+"сервисного контракта LIGERO!</p>"
 
 #. Perl Module: Kernel/System/Package.pm
 msgid ""
-"<p>The installation of packages which are not verified by the OTRS Group is "
+"<p>The installation of packages which are not verified by the LIGERO Group is "
 "not possible by default.</p>"
 msgstr ""
-"<p>Установка пакетов, которые не верифицированы OTRS Group, невозможна по "
+"<p>Установка пакетов, которые не верифицированы LIGERO Group, невозможна по "
 "умолчанию"
 
 #. Perl Module: Kernel/System/Package.pm
@@ -15655,11 +15655,11 @@ msgstr "Неправильные значения по умолчанию"
 #. Kernel/System/SupportDataCollector/Plugin/Database/mysql/InvalidDefaultValues.pm
 msgid ""
 "Tables with invalid default values were found. In order to fix it "
-"automatically, please run: bin/otrs.Console.pl Maint::Database::Check "
+"automatically, please run: bin/ligero.Console.pl Maint::Database::Check "
 "--repair"
 msgstr ""
 "Найдены таблицы с неправильными значениями по умолчанию. Пожалуйста "
-"запустите bin/otrs.Console.pl Maint::Database::Check --repair, чтобы "
+"запустите bin/ligero.Console.pl Maint::Database::Check --repair, чтобы "
 "исправить это автоматически."
 
 #. Perl Module:
@@ -15786,21 +15786,21 @@ msgid "PostgreSQL 9.2 or higher is required."
 msgstr "PostgreSQL 9.2 или выше необходим."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OS/DiskPartitionOTRS.pm
-msgid "OTRS Disk Partition"
-msgstr " раздел диска для OTRS"
+#. Kernel/System/SupportDataCollector/Plugin/OS/DiskPartitionLIGERO.pm
+msgid "LIGERO Disk Partition"
+msgstr " раздел диска для LIGERO"
 
 #. Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskSpace.pm
 msgid "Disk Usage"
 msgstr "Использование дисковой памяти."
 
 #. Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskSpace.pm
-msgid "The partition where OTRS is located is almost full."
-msgstr "Раздел, в котором размещен OTRS уже заполнен."
+msgid "The partition where LIGERO is located is almost full."
+msgstr "Раздел, в котором размещен LIGERO уже заполнен."
 
 #. Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskSpace.pm
-msgid "The partition where OTRS is located has no disk space problems."
-msgstr "Раздел с OTRS не имеет проблем с дисковым пространством."
+msgid "The partition where LIGERO is located has no disk space problems."
+msgstr "Раздел с LIGERO не имеет проблем с дисковым пространством."
 
 #. Perl Module:
 #. Kernel/System/SupportDataCollector/Plugin/OS/DiskSpacePartitions.pm
@@ -15860,172 +15860,172 @@ msgid "There should be no more than 200 MB swap space used."
 msgstr "Нельзя использовать для подкачки более 200МВ"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/ArticleSearchIndexStatus.pm
-msgid "OTRS"
-msgstr "OTRS"
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/ArticleSearchIndexStatus.pm
+msgid "LIGERO"
+msgstr "LIGERO"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/ArticleSearchIndexStatus.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/ArticleSearchIndexStatus.pm
 msgid "Article Search Index Status"
 msgstr "Состояние Article Search Index"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/ArticleSearchIndexStatus.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/ArticleSearchIndexStatus.pm
 msgid "Indexed Articles"
 msgstr "Индексированные сообщения"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/ArticlesPerCommunicationChannel.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/ArticlesPerCommunicationChannel.pm
 msgid "Articles Per Communication Channel"
 msgstr ""
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLog.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLog.pm
 msgid "Incoming communications"
 msgstr "Входящие сообщения"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLog.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLog.pm
 msgid "Outgoing communications"
 msgstr "Исходящие сообщения"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLog.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLog.pm
 msgid "Failed communications"
 msgstr ""
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLog.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLog.pm
 msgid "Average processing time of communications (s)"
 msgstr "Среднее время сеанса (ов)"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLogAccountStatus.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLogAccountStatus.pm
 msgid "Communication Log Account Status (last 24 hours)"
 msgstr ""
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLogAccountStatus.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLogAccountStatus.pm
 msgid "No connections found."
 msgstr "Подключения не найдены."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLogAccountStatus.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLogAccountStatus.pm
 msgid "ok"
 msgstr "ok"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLogAccountStatus.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLogAccountStatus.pm
 msgid "permanent connection errors"
 msgstr "постоянные ошибки связи"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLogAccountStatus.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLogAccountStatus.pm
 msgid "intermittent connection errors"
 msgstr "Ошибки прерывания соединения"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/ConfigSettings.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/ConfigSettings.pm
 msgid "Config Settings"
 msgstr "Параметры конфигурации"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/ConfigSettings.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/ConfigSettings.pm
 msgid "Could not determine value."
 msgstr "Не удалось определить значение."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DaemonRunning.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DaemonRunning.pm
 msgid "Daemon"
 msgstr "Служба "
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DaemonRunning.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DaemonRunning.pm
 msgid "Daemon is running."
 msgstr "Демон работает."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DaemonRunning.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DaemonRunning.pm
 msgid "Daemon is not running."
 msgstr "Служба не запущена"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
 msgid "Database Records"
 msgstr "Записи базы данных"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
 msgid "Tickets"
 msgstr "Tickets/Заявки"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
 msgid "Ticket History Entries"
 msgstr "Записи истории заявки"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
 msgid "Articles"
 msgstr "Заметки/сообщения"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
 msgid "Attachments (DB, Without HTML)"
 msgstr "Вложения (DB, без HTML)"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
 msgid "Customers With At Least One Ticket"
 msgstr "Клиенты, имеющие хотя бы одну заявку"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
 msgid "Dynamic Field Values"
 msgstr "Значения динамического поля"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
 msgid "Invalid Dynamic Fields"
 msgstr "Неверные динамические поля"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
 msgid "Invalid Dynamic Field Values"
 msgstr "Неверные значения динамического поля"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
 msgid "GenericInterface Webservices"
 msgstr "Веб-сервисы GenericInterface "
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
 msgid "Process Tickets"
 msgstr "Процессные заявки"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
 msgid "Months Between First And Last Ticket"
 msgstr "Месяцев между первой и последней заявками"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
 msgid "Tickets Per Month (avg)"
 msgstr "Заявок в месяц (среднее)"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
 msgid "Open Tickets"
 msgstr "Открытые заявки"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultSOAPUser.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DefaultSOAPUser.pm
 msgid "Default SOAP Username And Password"
 msgstr "Логин и пароль для SOAP по умолчанию"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultSOAPUser.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/DefaultSOAPUser.pm
 msgid ""
 "Security risk: you use the default setting for SOAP::User and "
 "SOAP::Password. Please change it."
@@ -16033,11 +16033,11 @@ msgstr ""
 "Риск безопасности: вы используете установки по умолчанию для SOAP::User и "
 "SOAP::Password. Измените их."
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultUser.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DefaultUser.pm
 msgid "Default Admin Password"
 msgstr "Пароль администратора по умолчанию"
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultUser.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DefaultUser.pm
 msgid ""
 "Security risk: the agent account root@localhost still has the default "
 "password. Please change it or invalidate the account."
@@ -16045,132 +16045,132 @@ msgstr ""
 "Риск безопасности: учетная запись агента root@localhost имеет пароль по "
 "умолчанию. Измените его или сделайте учетную запись недействительной."
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/EmailQueue.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/EmailQueue.pm
 msgid "Email Sending Queue"
 msgstr "Очередь для отправки писем"
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/EmailQueue.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/EmailQueue.pm
 msgid "Emails queued for sending"
 msgstr "Очередь писем на отправку"
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/FQDN.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/FQDN.pm
 msgid "FQDN (domain name)"
 msgstr "FQDN (Имя домена)"
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/FQDN.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/FQDN.pm
 msgid "Please configure your FQDN setting."
 msgstr "Пожалуйста укажите ваш FQDN."
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/FQDN.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/FQDN.pm
 msgid "Domain Name"
 msgstr "Имя домена"
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/FQDN.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/FQDN.pm
 msgid "Your FQDN setting is invalid."
 msgstr "Значение для FQDN неверно."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/FileSystemWritable.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/FileSystemWritable.pm
 msgid "File System Writable"
 msgstr "Файловая система доступная для записи"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/FileSystemWritable.pm
-msgid "The file system on your OTRS partition is not writable."
-msgstr "Файловая система в разделе OTRS недоступна для записи."
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/FileSystemWritable.pm
+msgid "The file system on your LIGERO partition is not writable."
+msgstr "Файловая система в разделе LIGERO недоступна для записи."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/LegacyConfigBackups.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/LegacyConfigBackups.pm
 msgid "Legacy Configuration Backups"
 msgstr "Резервные копии устаревшей конфигурации"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/LegacyConfigBackups.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/LegacyConfigBackups.pm
 msgid "No legacy configuration backup files found."
 msgstr "Нет устаревших файлов резервного копирования конфигурации."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/LegacyConfigBackups.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/LegacyConfigBackups.pm
 msgid ""
 "Legacy configuration backup files found in %s, but they might still be "
 "required by some packages."
 msgstr ""
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/LegacyConfigBackups.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/LegacyConfigBackups.pm
 msgid ""
 "Legacy configuration backup files are no longer needed for the installed "
 "packages, please remove them from %s."
 msgstr ""
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/PackageDeployment.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageDeployment.pm
 msgid "Package Installation Status"
 msgstr "Состояние установки пакетов"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/PackageDeployment.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageDeployment.pm
 msgid "Some packages have locally modified files."
 msgstr "Некоторые пакеты содержат локально модифицированные файлы."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/PackageDeployment.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageDeployment.pm
 msgid "Some packages are not correctly installed."
 msgstr "Некоторые пакеты установлены некорректно."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/PackageDeployment.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageDeployment.pm
 msgid "Package Verification Status"
 msgstr "Состояние верификации пакетов"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/PackageDeployment.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageDeployment.pm
 msgid ""
-"Some packages are not verified by the OTRS Group! It is recommended not to "
+"Some packages are not verified by the LIGERO Group! It is recommended not to "
 "use this packages."
 msgstr ""
-"Некоторые пакеты не верифицированы OTRS Group! Их использование не "
+"Некоторые пакеты не верифицированы LIGERO Group! Их использование не "
 "рекомендуется."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/PackageDeployment.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageDeployment.pm
 msgid "Package Framework Version Status"
 msgstr ""
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/PackageDeployment.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageDeployment.pm
 msgid "Some packages are not allowed for the current framework version."
 msgstr "Некоторые пакеты не разрешены для текущей версии сервера."
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/PackageList.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageList.pm
 msgid "Package List"
 msgstr "Список пакетов"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/SessionConfigSettings.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/SessionConfigSettings.pm
 msgid "Session Config Settings"
 msgstr "Настройка параметров сеансов"
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SpoolMails.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SpoolMails.pm
 msgid "Spooled Emails"
 msgstr "Буферизованные почтовые сообщения"
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SpoolMails.pm
-msgid "There are emails in var/spool that OTRS could not process."
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SpoolMails.pm
+msgid "There are emails in var/spool that LIGERO could not process."
 msgstr ""
-"Имеются почтовые сообщения в var/spool, которые OTRS не смог обработать."
+"Имеются почтовые сообщения в var/spool, которые LIGERO не смог обработать."
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SystemID.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SystemID.pm
 msgid "Your SystemID setting is invalid, it should only contain digits."
 msgstr "Ваш SystemID неверен. Он должен состоять только из цифр."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/DefaultType.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/DefaultType.pm
 msgid "Default Ticket Type"
 msgstr "Тип заявки по умолчанию"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/DefaultType.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/DefaultType.pm
 msgid ""
 "The configured default ticket type is invalid or missing. Please change the "
 "setting Ticket::Type::Default and select a valid ticket type."
@@ -16179,12 +16179,12 @@ msgstr ""
 "настройки Ticket::Type::Default и укажите действительный тип заявки."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/IndexModule.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/IndexModule.pm
 msgid "Ticket Index Module"
 msgstr "Модуль индексирования заявок"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/IndexModule.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/IndexModule.pm
 msgid ""
 "You have more than 60,000 tickets and should use the StaticDB backend. See "
 "admin manual (Performance Tuning) for more information."
@@ -16194,27 +16194,27 @@ msgstr ""
 "более подробной информации."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/InvalidUsersWithLockedTickets.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/InvalidUsersWithLockedTickets.pm
 msgid "Invalid Users with Locked Tickets"
 msgstr "Недействительные агенты с заблокированными заявками"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/InvalidUsersWithLockedTickets.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/InvalidUsersWithLockedTickets.pm
 msgid "There are invalid users with locked tickets."
 msgstr "Есть недействительные агенты с заблокированными заявками."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/OpenTickets.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/OpenTickets.pm
 msgid "You should not have more than 8,000 open tickets in your system."
 msgstr "У вас не должно быть более 8000 открытых заявок в системе."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/SearchIndexModule.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/SearchIndexModule.pm
 msgid "Ticket Search Index Module"
 msgstr "Модуль индексирования заявок для поиска"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/SearchIndexModule.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/SearchIndexModule.pm
 msgid ""
 "The indexing process forces the storage of the original article text in the "
 "article search index, without executing filters or applying stop word lists."
@@ -16227,90 +16227,90 @@ msgstr ""
 "полнотекстовом режиме."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/StaticDBOrphanedRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/StaticDBOrphanedRecords.pm
 msgid "Orphaned Records In ticket_lock_index Table"
 msgstr "Потерянные записи в таблице ticket_lock_index "
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/StaticDBOrphanedRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/StaticDBOrphanedRecords.pm
 msgid ""
 "Table ticket_lock_index contains orphaned records. Please run "
-"bin/otrs.Console.pl \"Maint::Ticket::QueueIndexCleanup\" to clean the "
+"bin/ligero.Console.pl \"Maint::Ticket::QueueIndexCleanup\" to clean the "
 "StaticDB index."
 msgstr ""
 "Таблица ticket_lock_index содержит потерянные записи. Выполните скрипт "
-"bin/otrs.Console.pl \"Maint::Ticket::QueueIndexCleanup\" для очистки "
+"bin/ligero.Console.pl \"Maint::Ticket::QueueIndexCleanup\" для очистки "
 "индексов StaticDB."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/StaticDBOrphanedRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/StaticDBOrphanedRecords.pm
 msgid "Orphaned Records In ticket_index Table"
 msgstr "Потерянные записи в таблице ticket_index"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/StaticDBOrphanedRecords.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/StaticDBOrphanedRecords.pm
 msgid ""
-"Table ticket_index contains orphaned records. Please run bin/otrs.Console.pl"
+"Table ticket_index contains orphaned records. Please run bin/ligero.Console.pl"
 " \"Maint::Ticket::QueueIndexCleanup\" to clean the StaticDB index."
 msgstr ""
 "Таблица ticket_index содержит потерянные записи. Выполните скрипт "
-"bin/otrs.Console.pl \"Maint::Ticket::QueueIndexCleanup\" для очистки "
+"bin/ligero.Console.pl \"Maint::Ticket::QueueIndexCleanup\" для очистки "
 "индексов StaticDB."
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/TimeSettings.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/TimeSettings.pm
 msgid "Time Settings"
 msgstr "Параметры времени"
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/TimeSettings.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/TimeSettings.pm
 msgid "Server time zone"
 msgstr "Временная зона сервера"
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/TimeSettings.pm
-msgid "OTRS time zone"
-msgstr "Временная зона OTRS "
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/TimeSettings.pm
+msgid "LIGERO time zone"
+msgstr "Временная зона LIGERO "
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/TimeSettings.pm
-msgid "OTRS time zone is not set."
-msgstr "Временная зона OTRS не установлена."
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/TimeSettings.pm
+msgid "LIGERO time zone is not set."
+msgstr "Временная зона LIGERO не установлена."
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/TimeSettings.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/TimeSettings.pm
 msgid "User default time zone"
 msgstr "Временная зона пользователя по умолчанию"
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/TimeSettings.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/TimeSettings.pm
 msgid "User default time zone is not set."
 msgstr "Временная зона пользователя не установлена."
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/TimeSettings.pm
-msgid "OTRS time zone setting for calendar"
-msgstr "Параметр OTRS TimeZone для календаря "
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/TimeSettings.pm
+msgid "LIGERO time zone setting for calendar"
+msgstr "Параметр LIGERO TimeZone для календаря "
 
-#. Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/TimeSettings.pm
+#. Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/TimeSettings.pm
 msgid "Calendar time zone is not set."
 msgstr "Временная зона календаря не установлена."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/UI/AgentSkinUsage.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/AgentSkinUsage.pm
 msgid "UI - Agent Skin Usage"
 msgstr "UI - Использование скинов агента"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/UI/AgentThemeUsage.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/AgentThemeUsage.pm
 msgid "UI - Agent Theme Usage"
 msgstr "UI - использование тем агента"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/UI/SpecialStats.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/SpecialStats.pm
 msgid "UI - Special Statistics"
 msgstr ""
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/UI/SpecialStats.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/SpecialStats.pm
 msgid "Agents using custom main menu ordering"
 msgstr "Агенты, использующие пользовательские настройки главного меню"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/Plugin/OTRS/UI/SpecialStats.pm
+#. Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/SpecialStats.pm
 msgid "Agents using favourites for the admin overview"
 msgstr "Агенты, использующие избранное для панели администрирования"
 
@@ -16331,9 +16331,9 @@ msgstr "MPM model"
 
 #. Perl Module:
 #. Kernel/System/SupportDataCollector/Plugin/Webserver/Apache/MPMModel.pm
-msgid "OTRS requires apache to be run with the 'prefork' MPM model."
+msgid "LIGERO requires apache to be run with the 'prefork' MPM model."
 msgstr ""
-"Для OTRS необходимо, чтобы apache работал с опцией 'prefork' MPM model."
+"Для LIGERO необходимо, чтобы apache работал с опцией 'prefork' MPM model."
 
 #. Perl Module:
 #. Kernel/System/SupportDataCollector/Plugin/Webserver/Apache/Performance.pm
@@ -16431,12 +16431,12 @@ msgid "Could not determine webserver version."
 msgstr "Не удалось определить версию Веб - сервера."
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/PluginAsynchronous/OTRS/ConcurrentUsers.pm
+#. Kernel/System/SupportDataCollector/PluginAsynchronous/LIGERO/ConcurrentUsers.pm
 msgid "Concurrent Users Details"
 msgstr "Подробности о конкурирующих ползователях"
 
 #. Perl Module:
-#. Kernel/System/SupportDataCollector/PluginAsynchronous/OTRS/ConcurrentUsers.pm
+#. Kernel/System/SupportDataCollector/PluginAsynchronous/LIGERO/ConcurrentUsers.pm
 msgid "Concurrent Users"
 msgstr "Конкурентая лицензия"
 
@@ -16513,12 +16513,12 @@ msgid "Disabled"
 msgstr "Отключено"
 
 #. Perl Module: Kernel/System/SysConfig/ValueType/Date.pm
-msgid "System was not able to calculate user Date in OTRSTimeZone!"
-msgstr "Системе не удалось вычислить дату пользователя в OTRSTimeZone!"
+msgid "System was not able to calculate user Date in LIGEROTimeZone!"
+msgstr "Системе не удалось вычислить дату пользователя в LIGEROTimeZone!"
 
 #. Perl Module: Kernel/System/SysConfig/ValueType/DateTime.pm
-msgid "System was not able to calculate user DateTime in OTRSTimeZone!"
-msgstr "Системе не удалось вычислить DateTime пользователя в OTRSTimeZone!"
+msgid "System was not able to calculate user DateTime in LIGEROTimeZone!"
+msgstr "Системе не удалось вычислить DateTime пользователя в LIGEROTimeZone!"
 
 #. Perl Module: Kernel/System/SysConfig/ValueType/FrontendNavigation.pm
 msgid "Value is not correct! Please, consider updating this module."
@@ -16633,206 +16633,206 @@ msgstr ""
 msgid "Action \"%s\" not found!"
 msgstr "Действие  \"%s\" не найдено!"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "invalid-temporarily"
 msgstr "временно недействительный"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Group for default access."
 msgstr "Группа доступа по умолчанию."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Group of all administrators."
 msgstr "Группа для всех администраторов."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Group for statistics access."
 msgstr "Группа для доступа к отчетам."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "new"
 msgstr "новая"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All new state types (default: viewable)."
 msgstr "Все новые типы состояний (по умолчанию: для просмотра)."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "open"
 msgstr "открыта"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All open state types (default: viewable)."
 msgstr "Все типы состояний \"открыта\" (по умолчанию: для просмотра)."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "closed"
 msgstr "закрыта"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All closed state types (default: not viewable)."
 msgstr "Все типы состояний \"закрыта\" (по умолчанию: для просмотра)."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "pending reminder"
 msgstr "ожидает напоминания"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All 'pending reminder' state types (default: viewable)."
 msgstr "Все типы состояний \"ожидает напоминания\" (по умолчанию: для просмотра)."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "pending auto"
 msgstr "ожидает автозакрытия"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All 'pending auto *' state types (default: viewable)."
 msgstr "Все типы состояний \"ожидает авто*\" (по умолчанию: для просмотра)."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "removed"
 msgstr "удаленная"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All 'removed' state types (default: not viewable)."
 msgstr "Все типы состояний \"удалена\" (по умолчанию: для просмотра)."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "merged"
 msgstr "объединенные"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "State type for merged tickets (default: not viewable)."
 msgstr "Все типы состояний \"объединена\" (по умолчанию: для просмотра)."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "New ticket created by customer."
 msgstr "Новая заявка созданная клиентом"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "closed successful"
 msgstr "закрыта успешно"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket is closed successful."
 msgstr "Заявка закрыта успешно."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "closed unsuccessful"
 msgstr "закрыта неуспешно"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket is closed unsuccessful."
 msgstr "Заявка закрыта не успешно."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Open tickets."
 msgstr "Открытые заявки."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Customer removed ticket."
 msgstr "Заявка удаленная клиентом."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket is pending for agent reminder."
 msgstr "Заявка ожидает напоминания агенту."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "pending auto close+"
 msgstr "ожидает автозакрытия(+)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket is pending for automatic close."
 msgstr "Заявка ожидает автозакрытия."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "pending auto close-"
 msgstr "ожидает автозакрытия(-)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "State for merged tickets."
 msgstr "Состояние для объединённых заявок."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "system standard salutation (en)"
 msgstr "стандартное приветствие системы (ru)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Standard Salutation."
 msgstr "Стандартное приветствие."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "system standard signature (en)"
 msgstr "стандартная подпись системы (ru)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Standard Signature."
 msgstr "Стандартная подпись."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Standard Address."
 msgstr "Стандартный адрес."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "possible"
 msgstr "возможно"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Follow-ups for closed tickets are possible. Ticket will be reopened."
 msgstr "Дополнения к закрытым заявкам разрешены. Заявка будет открыта заново."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "reject"
 msgstr "отвергнуть"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "Follow-ups for closed tickets are not possible. No new ticket will be "
 "created."
 msgstr ""
 "Дополнения к закрытым заявкам запрещены. Не будет создана новая заявка."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "new ticket"
 msgstr "новая заявка"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "Follow-ups for closed tickets are not possible. A new ticket will be "
 "created."
 msgstr "Дополнения к закрытым заявкам запрещены. Будет создана новая заявка."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Postmaster queue."
 msgstr "Очередь PostMaster"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All default incoming tickets."
 msgstr "По умолчанию все входящие заявки."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All junk tickets."
 msgstr "Все \"мусорные\" заявки."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All misc tickets."
 msgstr "Все прочие заявки."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "auto reply"
 msgstr "авто-ответ"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "Automatic reply which will be sent out after a new ticket has been created."
 msgstr ""
 "Автоматический ответ, который будет выслан после создания новой заявки."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "auto reject"
 msgstr "авто-отказ"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "Automatic reject which will be sent out after a follow-up has been rejected "
 "(in case queue follow-up option is \"reject\")."
@@ -16840,11 +16840,11 @@ msgstr ""
 "Автоматический отказ, который будет выслан после того, как дополнение будет "
 "отвергнуто (если установлена опция для очереди \"отвергнуть\" дополнения)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "auto follow up"
 msgstr "авто-отклик"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "Automatic confirmation which is sent out after a follow-up has been received"
 " for a ticket (in case queue follow-up option is \"possible\")."
@@ -16852,11 +16852,11 @@ msgstr ""
 "Автоматическое подтверждение, которое высылается после получения дополнения "
 "к заявке (если для очереди установлена возможность получения дополнений)."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "auto reply/new ticket"
 msgstr "авто-ответ/новая заявка"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "Automatic response which will be sent out after a follow-up has been "
 "rejected and a new ticket has been created (in case queue follow-up option "
@@ -16866,30 +16866,30 @@ msgstr ""
 "отвергнуто и была создана новая заявка (в случае, когда для очереди "
 "установлено \"новая заявка\")."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "auto remove"
 msgstr "авто-удаление"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Auto remove will be sent out after a customer removed the request."
 msgstr ""
 "Сообщение об автоудалении будет выслано после того как клиент удалит запрос."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "default reply (after new ticket has been created)"
 msgstr "Стандартный ответ (после создания новой заявки)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "default reject (after follow-up and rejected of a closed ticket)"
 msgstr ""
 "стандартный отказ (после получения дополнения и отказа для закрытой заявки)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "default follow-up (after a ticket follow-up has been added)"
 msgstr ""
 "стандартное сообщение о дополнении (после добавления дополнения к заявке)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "default reject/new ticket created (after closed follow-up with new ticket "
 "creation)"
@@ -16897,59 +16897,59 @@ msgstr ""
 "Стандартное сообщение об отказе/создании новой заявки (после закрытия "
 "дополнения и создания новой заявки)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Unclassified"
 msgstr "Неклассифицировано"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "1 very low"
 msgstr "1 very low - очень низкая"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "2 low"
 msgstr "2 low - низкая"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "3 normal"
 msgstr "3 normal - нормальная"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "4 high"
 msgstr "4 high - высокая"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "5 very high"
 msgstr "5 very high - очень высокая"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "unlock"
 msgstr "разблокировано"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "lock"
 msgstr "заблокировано"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "tmp_lock"
 msgstr "tmp_lock"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "agent"
 msgstr "агент"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "system"
 msgstr "система"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "customer"
 msgstr "клиент"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket create notification"
 msgstr "Уведомление о создании заявки"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "You will receive a notification each time a new ticket is created in one of "
 "your \"My Queues\" or \"My Services\"."
@@ -16957,11 +16957,11 @@ msgstr ""
 "Вы будете получать уведомление всякий раз при создании новой заявки в \"Моих"
 " очередях\" или \"Моих Сервисах\"."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket follow-up notification (unlocked)"
 msgstr "Уведомление об ответе по заявке (для разблокированных)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "You will receive a notification if a customer sends a follow-up to an "
 "unlocked ticket which is in your \"My Queues\" or \"My Services\"."
@@ -16969,11 +16969,11 @@ msgstr ""
 "Вы будете получать уведомление всякий раз когда клиент посылает дополнение к"
 " разблокированной заявке в \"Моих очередях\" или \"Моих Сервисах\"."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket follow-up notification (locked)"
 msgstr "Уведомление об ответе по заявке (для заблокированных)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "You will receive a notification if a customer sends a follow-up to a locked "
 "ticket of which you are the ticket owner or responsible."
@@ -16982,11 +16982,11 @@ msgstr ""
 "заблокированной заявке для которой вы являетесь Владельцем или "
 "Ответственным."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket lock timeout notification"
 msgstr "Уведомление об истечении срока блокировки заявки системой"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "You will receive a notification as soon as a ticket owned by you is "
 "automatically unlocked."
@@ -16994,23 +16994,23 @@ msgstr ""
 "Вы будете получать уведомление как только заявка, владельцем которой вы "
 "являетесь - будет автоматически разблокирована."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket owner update notification"
 msgstr "Уведомление об изменении владельца заявки"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket responsible update notification"
 msgstr "Уведомление об изменении ответственного за заявку"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket new note notification"
 msgstr "Уведомление о новой заметке в заявке"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket queue update notification"
 msgstr "Уведомление об изменении очереди заявки"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "You will receive a notification if a ticket is moved into one of your \"My "
 "Queues\"."
@@ -17018,30 +17018,30 @@ msgstr ""
 "Вы можете получать уведомления, если заявка перенесена в одну из ваших "
 "очередей"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket pending reminder notification (locked)"
 msgstr ""
 "Уведомление об истечении времени напоминания по заявке (для заблокированных)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket pending reminder notification (unlocked)"
 msgstr ""
 "Уведомление об истечении времени напоминания по заявке (для "
 "разблокированных)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket escalation notification"
 msgstr "Уведомление об эскалации заявки"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket escalation warning notification"
 msgstr "Уведомление о предупреждении по эскалации заявки"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket service update notification"
 msgstr "Уведомление об изменении сервиса заявки"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "You will receive a notification if a ticket's service is changed to one of "
 "your \"My Services\"."
@@ -17049,11 +17049,11 @@ msgstr ""
 "Вы будете получать уведомление всякий раз, когда сервис заявки будет изменен"
 " на один из ваших \"Моих Сервисов\"."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Appointment reminder notification"
 msgstr "Уведомление о напоминании о мероприятии"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "You will receive a notification each time a reminder time is reached for one"
 " of your appointments."
@@ -17061,7 +17061,7 @@ msgstr ""
 "Вы получите такое уведомление всякий раз когда наступит срок напоминания по "
 "одному из ваших мероприятий."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket email delivery failure notification"
 msgstr "Уведомление об отказе доставки электронной почты заявки"
 
@@ -17301,9 +17301,9 @@ msgstr ""
 
 #. JS File: Core.Agent.Admin.PackageManager
 msgid ""
-"This option is currently disabled because the OTRS Daemon is not running."
+"This option is currently disabled because the LIGERO Daemon is not running."
 msgstr ""
-"Эта возможность в настоящее время отключена т.к. OTRS Daemon не запущен."
+"Эта возможность в настоящее время отключена т.к. LIGERO Daemon не запущен."
 
 #. JS File: Core.Agent.Admin.PackageManager
 msgid "Are you sure you want to update all installed packages?"
@@ -17685,8 +17685,8 @@ msgstr ""
 "поиска чего угодно."
 
 #. JS File: Core.Agent.Daemon
-msgid "Information about the OTRS Daemon"
-msgstr "Информация о Планировщике OTRS"
+msgid "Information about the LIGERO Daemon"
+msgstr "Информация о Планировщике LIGERO"
 
 #. JS File: Core.Agent.Dashboard
 msgid "Please check the fields marked as red for valid inputs."
@@ -18057,23 +18057,23 @@ msgstr "Это %s"
 msgid "Complex %s with %s arguments"
 msgstr ""
 
-#. JS File: OTRSLineChart
+#. JS File: LIGEROLineChart
 msgid "No Data Available."
 msgstr "Данные недоступны."
 
-#. JS File: OTRSMultiBarChart
+#. JS File: LIGEROMultiBarChart
 msgid "Grouped"
 msgstr "Сгруппированная"
 
-#. JS File: OTRSMultiBarChart
+#. JS File: LIGEROMultiBarChart
 msgid "Stacked"
 msgstr "С накоплением"
 
-#. JS File: OTRSStackedAreaChart
+#. JS File: LIGEROStackedAreaChart
 msgid "Stream"
 msgstr "Поток"
 
-#. JS File: OTRSStackedAreaChart
+#. JS File: LIGEROStackedAreaChart
 msgid "Expanded"
 msgstr "Развернутая"
 
@@ -18348,10 +18348,10 @@ msgstr "Добавлен веб-запрос от клиента."
 
 #. SysConfig
 msgid ""
-"Adds a suffix with the actual year and month to the OTRS log file. A logfile"
+"Adds a suffix with the actual year and month to the LIGERO log file. A logfile"
 " for every month will be created."
 msgstr ""
-"Добавляет суффикс с текущим годом и месяцем к имени лог файла OTRS. Лог-файл"
+"Добавляет суффикс с текущим годом и месяцем к имени лог файла LIGERO. Лог-файл"
 " создается для каждого месяца."
 
 #. SysConfig
@@ -18567,8 +18567,8 @@ msgid "All CustomerIDs of a customer user."
 msgstr "Все CustomerID пользователя."
 
 #. SysConfig
-msgid "All attachments (OTRS Business Solution™)"
-msgstr "Все вложения (OTRS Business Solution™)"
+msgid "All attachments (LIGERO Business Solution™)"
+msgstr "Все вложения (LIGERO Business Solution™)"
 
 #. SysConfig
 msgid "All customer users of a CustomerID"
@@ -19039,11 +19039,11 @@ msgstr "Основано на глобальной настройке RichText"
 
 #. SysConfig
 msgid ""
-"Basic fulltext index settings. Execute \"bin/otrs.Console.pl "
+"Basic fulltext index settings. Execute \"bin/ligero.Console.pl "
 "Maint::Ticket::FulltextIndexRebuild\" in order to generate a new index."
 msgstr ""
 "Базовые настройки индексирования для полнотекстового поиска. Выполните "
-"скрипт \"bin/otrs.Console.pl Maint::Ticket::FulltextIndexRebuild\" для "
+"скрипт \"bin/ligero.Console.pl Maint::Ticket::FulltextIndexRebuild\" для "
 "генерации новых индексов."
 
 #. SysConfig
@@ -19253,12 +19253,12 @@ msgstr ""
 "ups). Если выключено, SystemID будет изменен после использования системы."
 
 #. SysConfig
-msgid "Checks the availability of OTRS Business Solution™ for this system."
-msgstr "Проверьте доступность OTRS Business Solution™ для этой системы."
+msgid "Checks the availability of LIGERO Business Solution™ for this system."
+msgstr "Проверьте доступность LIGERO Business Solution™ для этой системы."
 
 #. SysConfig
-msgid "Checks the entitlement status of OTRS Business Solution™."
-msgstr "Проверить состояние прав доступа к OTRS Business Solution™."
+msgid "Checks the entitlement status of LIGERO Business Solution™."
+msgstr "Проверить состояние прав доступа к LIGERO Business Solution™."
 
 #. SysConfig
 msgid "Child"
@@ -19490,9 +19490,9 @@ msgstr ""
 "данных, которые желаете использовать."
 
 #. SysConfig
-msgid "Configure sending of support data to OTRS Group for improved support."
+msgid "Configure sending of support data to LIGERO Group for improved support."
 msgstr ""
-"Настройте отправку необходимых данных для поддержки в OTRS Group для "
+"Настройте отправку необходимых данных для поддержки в LIGERO Group для "
 "расширенной поддержки."
 
 #. SysConfig
@@ -19510,12 +19510,12 @@ msgid ""
 "Configures a default TicketDynamicField setting. \"Name\" defines the "
 "dynamic field which should be used, \"Value\" is the data that will be set, "
 "and \"Event\" defines the trigger event. Please check the developer manual "
-"(http://otrs.github.io/doc/), chapter \"Ticket Event Module\"."
+"(http://ligero.github.io/doc/), chapter \"Ticket Event Module\"."
 msgstr ""
 "Задает настройки TicketDynamicField по умолчанию. \"Name/Имя\" задает поле, "
 "которое будет использоваться, \"Value/Значение\" - данные которые будут "
 "заданы и \"Event/Событие\" определяет событие триггера. Подробнее, смотрите "
-"в руководстве разработчика (http://otrs.github.io/doc/), раздел \"Ticket "
+"в руководстве разработчика (http://ligero.github.io/doc/), раздел \"Ticket "
 "Event Module\"."
 
 #. SysConfig
@@ -19980,13 +19980,13 @@ msgstr ""
 msgid ""
 "Define a filter for html output to add links behind a defined string. The "
 "element Image allows two input kinds. At once the name of an image (e.g. "
-"faq.png). In this case the OTRS image path will be used. The second "
+"faq.png). In this case the LIGERO image path will be used. The second "
 "possiblity is to insert the link to the image."
 msgstr ""
 "Задать фильтр для вывода в HTML для добавления ссылки после определенной "
 "строки. Элемент Image может быть в двух вариантах. Первый - имя рисунка "
 "(напр. faq.png). В этом случае должен использоваться путь к файлам рисунков "
-"OTRS. Во втором вставить ссылку на рисунок."
+"LIGERO. Во втором вставить ссылку на рисунок."
 
 #. SysConfig
 msgid ""
@@ -20143,48 +20143,48 @@ msgstr ""
 msgid ""
 "Defines a filter for html output to add links behind CVE numbers. The "
 "element Image allows two input kinds. At once the name of an image (e.g. "
-"faq.png). In this case the OTRS image path will be used. The second "
+"faq.png). In this case the LIGERO image path will be used. The second "
 "possiblity is to insert the link to the image."
 msgstr ""
 "Задает фильтр для HTML для добавления ссылки после CVE numbers. Элемент "
 "Image может быть в двух вариантах. Первый - задать имя рисунка (напр. "
-"faq.png). В этом случае будет использоваться путь к файлам рисунков OTRS. "
+"faq.png). В этом случае будет использоваться путь к файлам рисунков LIGERO. "
 "Второй - вставить ссылку на рисунок."
 
 #. SysConfig
 msgid ""
 "Defines a filter for html output to add links behind MSBulletin numbers. The"
 " element Image allows two input kinds. At once the name of an image (e.g. "
-"faq.png). In this case the OTRS image path will be used. The second "
+"faq.png). In this case the LIGERO image path will be used. The second "
 "possiblity is to insert the link to the image."
 msgstr ""
 "Задает фильтр для HTML для добавления ссылки после MSBulletin numbers. "
 "Элемент Image может быть в двух вариантах. Первый - задать имя рисунка "
 "(напр. faq.png). В этом случае будет использоваться путь к файлам рисунков "
-"OTRS. Второй - вставить ссылку на рисунок."
+"LIGERO. Второй - вставить ссылку на рисунок."
 
 #. SysConfig
 msgid ""
 "Defines a filter for html output to add links behind a defined string. The "
 "element Image allows two input kinds. At once the name of an image (e.g. "
-"faq.png). In this case the OTRS image path will be used. The second "
+"faq.png). In this case the LIGERO image path will be used. The second "
 "possiblity is to insert the link to the image."
 msgstr ""
 "Задать фильтр для вывода в HTML для добавления ссылки после определенной "
 "строки. Элемент Image может быть в двух вариантах. Первый - имя рисунка "
 "(напр. faq.png). В этом случае будет использоваться путь к файлам рисунков "
-"OTRS. Второй - вставить ссылку на рисунок."
+"LIGERO. Второй - вставить ссылку на рисунок."
 
 #. SysConfig
 msgid ""
 "Defines a filter for html output to add links behind bugtraq numbers. The "
 "element Image allows two input kinds. At once the name of an image (e.g. "
-"faq.png). In this case the OTRS image path will be used. The second "
+"faq.png). In this case the LIGERO image path will be used. The second "
 "possiblity is to insert the link to the image."
 msgstr ""
 "Задает фильтр для HTML для добавления ссылки после bugtraq numbers. Элемент "
 "Image может быть в двух вариантах. Первый - задать имя рисунка (напр. "
-"faq.png). В этом случае будет использоваться путь к файлам рисунков OTRS. "
+"faq.png). В этом случае будет использоваться путь к файлам рисунков LIGERO. "
 "Второй - вставить ссылку на рисунок."
 
 #. SysConfig
@@ -20615,10 +20615,10 @@ msgstr ""
 
 #. SysConfig
 msgid ""
-"Defines if the communication between this system and OTRS Group servers that"
+"Defines if the communication between this system and LIGERO Group servers that"
 " provide cloud services is possible. If set to 'Disable cloud services', "
 "some functionality will be lost such as system registration, support data "
-"sending, upgrading to and use of OTRS Business Solution™, OTRS Verify™, OTRS"
+"sending, upgrading to and use of LIGERO Business Solution™, LIGERO Verify™, LIGERO"
 " News and product News dashboard widgets, among others."
 msgstr ""
 
@@ -20790,7 +20790,7 @@ msgstr ""
 #. SysConfig
 msgid ""
 "Defines the HTTP hostname for the support data collection with the public "
-"module 'PublicSupportDataCollector' (e.g. used from the OTRS Daemon)."
+"module 'PublicSupportDataCollector' (e.g. used from the LIGERO Daemon)."
 msgstr ""
 
 #. SysConfig
@@ -20986,12 +20986,12 @@ msgstr ""
 msgid ""
 "Defines the default front-end (HTML) theme to be used by the agents and "
 "customers. If you like, you can add your own theme. Please refer the "
-"administrator manual located at http://otrs.github.io/doc/."
+"administrator manual located at http://ligero.github.io/doc/."
 msgstr ""
 "Задает имя темы (HTML theme - имя папки для альтернативных модулей), которая"
 " будет использоваться в интерфейсах агентов и клиентов. По желанию, вы "
 "можете добавить свою собственную тему. Подробности в руководстве "
-"администратора http://otrs.github.io/doc/."
+"администратора http://ligero.github.io/doc/."
 
 #. SysConfig
 msgid ""
@@ -21659,11 +21659,11 @@ msgstr ""
 #. SysConfig
 msgid ""
 "Defines the fully qualified domain name of the system. This setting is used "
-"as a variable, OTRS_CONFIG_FQDN which is found in all forms of messaging "
+"as a variable, LIGERO_CONFIG_FQDN which is found in all forms of messaging "
 "used by the application, to build links to the tickets within your system."
 msgstr ""
 "Задает полный доменный адрес системы. ОН используется в качестве тэга "
-"OTRS_CONFIG_FQDN при написании текстов сообщений для ссылки на заявки. "
+"LIGERO_CONFIG_FQDN при написании текстов сообщений для ссылки на заявки. "
 
 #. SysConfig
 msgid ""
@@ -21968,12 +21968,12 @@ msgstr ""
 msgid ""
 "Defines the list of online repositories. Another installations can be used "
 "as repository, for example: "
-"Key=\"http://example.com/otrs/public.pl?Action=PublicRepository;File=\" and "
+"Key=\"http://example.com/ligero/public.pl?Action=PublicRepository;File=\" and "
 "Content=\"Some Name\"."
 msgstr ""
 "Задает список online репозиториев. Другие установленные системы могут быть "
 "использованы в качестве репозиториев, например: "
-"Ключ=\"http://example.com/otrs/public.pl?Action=PublicRepository;File=\" и "
+"Ключ=\"http://example.com/ligero/public.pl?Action=PublicRepository;File=\" и "
 "Содержание=\"Some Name\"."
 
 #. SysConfig
@@ -22016,12 +22016,12 @@ msgstr ""
 msgid ""
 "Defines the maximal size (in bytes) for file uploads via the browser. "
 "Warning: Setting this option to a value which is too low could cause many "
-"masks in your OTRS instance to stop working (probably any mask which takes "
+"masks in your LIGERO instance to stop working (probably any mask which takes "
 "input from the user)."
 msgstr ""
 "Задает максимальный размер в байтах для файлов загружаемых через браузер. "
 "Предупреждение: Не задавайте слишком малое значение этому параметру во "
-"избежание остановки работы OTRS"
+"избежание остановки работы LIGERO"
 
 #. SysConfig
 msgid "Defines the maximal valid time (in seconds) for a session id."
@@ -22114,18 +22114,18 @@ msgstr ""
 #. SysConfig
 msgid ""
 "Defines the module to display a notification in different interfaces on "
-"different occasions for OTRS Business Solution™."
+"different occasions for LIGERO Business Solution™."
 msgstr ""
 "Задает модуль, который показывает уведомление в различных интерфейсах, в "
-"различных случаях в OTRS Business Solution™."
+"различных случаях в LIGERO Business Solution™."
 
 #. SysConfig
 msgid ""
 "Defines the module to display a notification in the agent interface if the "
-"OTRS Daemon is not running."
+"LIGERO Daemon is not running."
 msgstr ""
 "Задает модуль который показывает уведомление в интерфейсе агента, если не "
-"запущен OTRS Daemon."
+"запущен LIGERO Daemon."
 
 #. SysConfig
 msgid ""
@@ -22266,8 +22266,8 @@ msgid "Defines the name of the key for customer sessions."
 msgstr "Задает имя ключа для сеансов клиента."
 
 #. SysConfig
-msgid "Defines the name of the session key. E.g. Session, SessionID or OTRS."
-msgstr "Задает имя ключа для сеанса. Т.е. Session, SessionID или OTRS."
+msgid "Defines the name of the session key. E.g. Session, SessionID or LIGERO."
+msgstr "Задает имя ключа для сеанса. Т.е. Session, SessionID или LIGERO."
 
 #. SysConfig
 msgid "Defines the name of the table where the user preferences are stored."
@@ -22648,7 +22648,7 @@ msgstr ""
 #. SysConfig
 msgid ""
 "Defines the shown links in the footer area of the customer and public "
-"interface of this OTRS system. The value in \"Key\" is the external URL, the"
+"interface of this LIGERO system. The value in \"Key\" is the external URL, the"
 " value in \"Content\" is the shown label."
 msgstr ""
 
@@ -22739,12 +22739,12 @@ msgid ""
 "Defines the system identifier. Every ticket number and http session string "
 "contains this ID. This ensures that only tickets which belong to your system"
 " will be processed as follow-ups (useful when communicating between two "
-"instances of OTRS)."
+"instances of LIGERO)."
 msgstr ""
 "Задает идентификатор системы. Каждый номер заявки и http-сеанса содержит "
 "его. Это дает уверенность в том, что заявки только вашей системы будут "
 "обработаны как ответы (дополнения) (может быть полезно при связи между двумя"
-" установками OTRS)."
+" установками LIGERO)."
 
 #. SysConfig
 msgid ""
@@ -22807,7 +22807,7 @@ msgstr ""
 msgid ""
 "Defines the timeout (in seconds, minimum is 20 seconds) for the support data"
 " collection with the public module 'PublicSupportDataCollector' (e.g. used "
-"from the OTRS Daemon)."
+"from the LIGERO Daemon)."
 msgstr ""
 
 #. SysConfig
@@ -22825,7 +22825,7 @@ msgid ""
 "be specified here. Since this has no affect on the web server's settings or "
 "behavior, it will not change the method of access to the application and, if"
 " it is wrong, it will not prevent you from logging into the application. "
-"This setting is only used as a variable, OTRS_CONFIG_HttpType which is found"
+"This setting is only used as a variable, LIGERO_CONFIG_HttpType which is found"
 " in all forms of messaging used by the application, to build links to the "
 "tickets within your system."
 msgstr ""
@@ -22833,7 +22833,7 @@ msgstr ""
 "https используется вместо простого http, он должен быть указан здесь. Этот "
 "параметр не влияет на настройки сервера/ов и не изменяет метода доступа к "
 "системе, и если указан неверно, не может закрыть возможность подключения к "
-"ней. Это значение используется лишь как переменная OTRS_CONFIG_HttpType "
+"ней. Это значение используется лишь как переменная LIGERO_CONFIG_HttpType "
 "используемая как тэг при построении сообщений/уведомлений, для построения "
 "ссылки на заявку."
 
@@ -22871,10 +22871,10 @@ msgstr "Задает действительные типы состояний д
 #. SysConfig
 msgid ""
 "Defines the valid states for unlocked tickets. To unlock tickets the script "
-"\"bin/otrs.Console.pl Maint::Ticket::UnlockTimeout\" can be used."
+"\"bin/ligero.Console.pl Maint::Ticket::UnlockTimeout\" can be used."
 msgstr ""
 "Задает действительные состояния для разблокированных заявок. Для "
-"разблокирования заявок используйте скрипт \"bin/otrs.Console.pl "
+"разблокирования заявок используйте скрипт \"bin/ligero.Console.pl "
 "Maint::Ticket::UnlockTimeout\"."
 
 #. SysConfig
@@ -23001,8 +23001,8 @@ msgstr ""
 "во фронтенде расширенную отладочную информацию."
 
 #. SysConfig
-msgid "Deploy and manage OTRS Business Solution™."
-msgstr "Развертывание и управление OTRS Business Solution™."
+msgid "Deploy and manage LIGERO Business Solution™."
+msgstr "Развертывание и управление LIGERO Business Solution™."
 
 #. SysConfig
 msgid "Detached"
@@ -23142,12 +23142,12 @@ msgstr ""
 
 #. SysConfig
 msgid ""
-"Disable HTTP header \"X-Frame-Options: SAMEORIGIN\" to allow OTRS to be "
+"Disable HTTP header \"X-Frame-Options: SAMEORIGIN\" to allow LIGERO to be "
 "included as an IFrame in other websites. Disabling this HTTP header can be a"
 " security issue! Only disable it, if you know what you are doing!"
 msgstr ""
 "Отключить HTTP-заголовок \"X-Frame-Options: SAMEORIGIN\", чтобы разрешить "
-"встраивать OTRS в IFrame на других сайтах. Отключение этого заголовка может "
+"встраивать LIGERO в IFrame на других сайтах. Отключение этого заголовка может "
 "вызвать проблемы с безопасностью! Отключайте только если уверены в своих "
 "действиях!"
 
@@ -23169,7 +23169,7 @@ msgstr ""
 
 #. SysConfig
 msgid ""
-"Disables the web installer (http://yourhost.example.com/otrs/installer.pl), "
+"Disables the web installer (http://yourhost.example.com/ligero/installer.pl), "
 "to prevent the system from being hijacked. If not enabled, the system can be"
 " reinstalled and the current basic configuration will be used to pre-"
 "populate the questions within the installer script. If enabled, it also "
@@ -23504,13 +23504,13 @@ msgstr "Доступные фильтры."
 #. SysConfig
 msgid ""
 "Enables PGP support. When PGP support is enabled for signing and encrypting "
-"mail, it is HIGHLY recommended that the web server runs as the OTRS user. "
+"mail, it is HIGHLY recommended that the web server runs as the LIGERO user. "
 "Otherwise, there will be problems with the privileges when accessing .gnupg "
 "folder."
 msgstr ""
 "Включает поддержку PGP, когда она включается для возможности подписи и "
 "дешифровки почты, настоятельно рекомендуется, чтобы веб-сервер запускался от"
-" имени пользователя OTRS. Иначе, возможны проблемы с привилегиями при "
+" имени пользователя LIGERO. Иначе, возможны проблемы с привилегиями при "
 "доступе к папке .gnupg."
 
 #. SysConfig
@@ -23744,7 +23744,7 @@ msgstr ""
 "для писем, не содержащих в Теме номер заявки."
 
 #. SysConfig
-msgid "Executes follow-up checks on OTRS Header 'X-OTRS-Bounce'."
+msgid "Executes follow-up checks on LIGERO Header 'X-LIGERO-Bounce'."
 msgstr ""
 
 #. SysConfig
@@ -23815,18 +23815,18 @@ msgstr ""
 #. SysConfig
 msgid ""
 "Filter for debugging ACLs. Note: More ticket attributes can be added in the "
-"format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>."
+"format <LIGERO_TICKET_Attribute> e.g. <LIGERO_TICKET_Priority>."
 msgstr ""
 "Фильтр для отладки ACL. Примечание: атрибуты могут быть добавлены в формате "
-"<OTRS_TICKET_Attribute> например, <OTRS_TICKET_Priority>."
+"<LIGERO_TICKET_Attribute> например, <LIGERO_TICKET_Priority>."
 
 #. SysConfig
 msgid ""
 "Filter for debugging Transitions. Note: More filters can be added in the "
-"format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>."
+"format <LIGERO_TICKET_Attribute> e.g. <LIGERO_TICKET_Priority>."
 msgstr ""
 "Фильтр для отладки Переходов. Примечание: можно добавить фильты в формате "
-"<OTRS_TICKET_Attribute> например, <OTRS_TICKET_Priority>. "
+"<LIGERO_TICKET_Attribute> например, <LIGERO_TICKET_Priority>. "
 
 #. SysConfig
 msgid "Filter incoming emails."
@@ -24144,7 +24144,7 @@ msgid ""
 "Helps to extend your articles full-text search (From, To, Cc, Subject and "
 "Body search). It will strip all articles and will build an index after "
 "article creation, increasing fulltext searches about 50%. To create an "
-"initial index use \"bin/otrs.Console.pl "
+"initial index use \"bin/ligero.Console.pl "
 "Maint::Ticket::FulltextIndexRebuild\"."
 msgstr ""
 
@@ -24364,12 +24364,12 @@ msgstr ""
 msgid ""
 "If \"LDAP\" was selected for Customer::Authmodule, you can check if the user"
 " is allowed to authenticate because he is in a posixGroup, e.g. user needs "
-"to be in a group xyz to use OTRS. Specify the group, who may access the "
+"to be in a group xyz to use LIGERO. Specify the group, who may access the "
 "system."
 msgstr ""
 "Если \"LDAP\" было выбрано для Customer::AuthModule, вы можете проверять "
 "позволено ли клиенту входить, т.к. он член posixGroup, например, "
-"пользователь должен быть в группе xyz длч работы в OTRS. Задайте группу, "
+"пользователь должен быть в группе xyz длч работы в LIGERO. Задайте группу, "
 "которая имеет доступ к системе."
 
 #. SysConfig
@@ -24518,18 +24518,18 @@ msgstr "Если включено, демон перенаправит стан�
 msgid ""
 "If enabled the daemon will use this directory to create its PID files. Note:"
 " Please stop the daemon before any change and use this setting only if "
-"<$OTRSHome>/var/run/ can not be used."
+"<$LIGEROHome>/var/run/ can not be used."
 msgstr ""
 
 #. SysConfig
-msgid "If enabled, OTRS will deliver all CSS files in minified form."
+msgid "If enabled, LIGERO will deliver all CSS files in minified form."
 msgstr ""
-"Если включено, OTRS будет предоставлять все CSS файлы в уменьшенной форме."
+"Если включено, LIGERO будет предоставлять все CSS файлы в уменьшенной форме."
 
 #. SysConfig
-msgid "If enabled, OTRS will deliver all JavaScript files in minified form."
+msgid "If enabled, LIGERO will deliver all JavaScript files in minified form."
 msgstr ""
-"Если включено, OTRS выполняет все JavaScript в минимизированной форме."
+"Если включено, LIGERO выполняет все JavaScript в минимизированной форме."
 
 #. SysConfig
 msgid "If enabled, TicketPhone and TicketEmail will be open in new windows."
@@ -24539,11 +24539,11 @@ msgstr ""
 
 #. SysConfig
 msgid ""
-"If enabled, the OTRS version tag will be removed from the Webinterface, the "
+"If enabled, the LIGERO version tag will be removed from the Webinterface, the "
 "HTTP headers and the X-Headers of outgoing mails. NOTE: If you change this "
 "option, please make sure to delete the cache."
 msgstr ""
-"Если включено, метка версии OTRS будет убрана из web интерфейса, HTTP "
+"Если включено, метка версии LIGERO будет убрана из web интерфейса, HTTP "
 "заголовков и Х-Заголовков исходящих писем. Примечание: если Вы изменили эту "
 "опцию, пожалуйста, убедитесь что кеш удален."
 
@@ -24583,12 +24583,12 @@ msgstr ""
 msgid ""
 "If enabled, users that haven't selected a time zone yet will be notified to "
 "do so. Note: Notification will not be shown if (1) user has not yet selected"
-" a time zone and (2) OTRSTimeZone and UserDefaultTimeZone do match and (3) "
+" a time zone and (2) LIGEROTimeZone and UserDefaultTimeZone do match and (3) "
 "are not set to UTC."
 msgstr ""
 "Если включено, пользователи, еще не выбравшие временную зону, будут "
 "уведомлены сделать это. Примечание: Уведомление будет показано если (1) "
-"пользователь еще не выбрал временную зону и (2) OTRSTimeZone совпадает с "
+"пользователь еще не выбрал временную зону и (2) LIGEROTimeZone совпадает с "
 "UserDefaultTimeZone и (3) они не установлены в UTC."
 
 #. SysConfig
@@ -24626,7 +24626,7 @@ msgstr "Если это регулярное выражение верно, ав
 #. SysConfig
 msgid ""
 "If this setting is enabled, it is possible to install packages which are not"
-" verified by OTRS Group. These packages could threaten your whole system!"
+" verified by LIGERO Group. These packages could threaten your whole system!"
 msgstr ""
 
 #. SysConfig
@@ -24681,7 +24681,7 @@ msgid ""
 "tickets in the system). \"StaticDB\" is the most powerful module, it uses an"
 " extra ticket-index table that works like a view (recommended if more than "
 "80.000 and 6.000 open tickets are stored in the system). Use the command "
-"\"bin/otrs.Console.pl Maint::Ticket::QueueIndexRebuild\" for initial index "
+"\"bin/ligero.Console.pl Maint::Ticket::QueueIndexRebuild\" for initial index "
 "creation."
 msgstr ""
 "IndexAccelerator: для выбора серверного TicketViewAccelerator модуля. "
@@ -24690,7 +24690,7 @@ msgstr ""
 "6.000 открытых). \"StaticDB\" - наиболее мощный модуль, он использует "
 "внешнюю таблицу индексов заявок (рекомендуется при объеме более 80.000 "
 "заявок при 6.000 открытых хранимых в системе). Используйте скрипт "
-"\"bin/otrs.Console.pl Maint::Ticket::QueueIndexRebuild\"  для первичного "
+"\"bin/ligero.Console.pl Maint::Ticket::QueueIndexRebuild\"  для первичного "
 "создания индексов."
 
 #. SysConfig
@@ -25088,8 +25088,8 @@ msgid "Malay"
 msgstr "Малайский"
 
 #. SysConfig
-msgid "Manage OTRS Group cloud services."
-msgstr "Управление облачными сервисами OTRS Group."
+msgid "Manage LIGERO Group cloud services."
+msgstr "Управление облачными сервисами LIGERO Group."
 
 #. SysConfig
 msgid "Manage PGP keys for email encryption."
@@ -25122,7 +25122,7 @@ msgstr "Управление данными для поддержки."
 
 #. SysConfig
 msgid "Manage system registration."
-msgstr "Регистрация системы на портале OTRS Group"
+msgstr "Регистрация системы на портале LIGERO Group"
 
 #. SysConfig
 msgid "Manage tasks triggered by event or time based execution."
@@ -25257,8 +25257,8 @@ msgid "Merged Ticket (%s/%s) to (%s/%s)."
 msgstr ""
 
 #. SysConfig
-msgid "Merged Ticket <OTRS_TICKET> to <OTRS_MERGE_TO_TICKET>."
-msgstr "Объединена заявка <OTRS_TICKET> с <OTRS_MERGE_TO_TICKET>."
+msgid "Merged Ticket <LIGERO_TICKET> to <LIGERO_MERGE_TO_TICKET>."
+msgstr "Объединена заявка <LIGERO_TICKET> с <LIGERO_MERGE_TO_TICKET>."
 
 #. SysConfig
 msgid "Minute"
@@ -25484,12 +25484,12 @@ msgid "New process ticket"
 msgstr "Новая процессная заявка"
 
 #. SysConfig
-msgid "News about OTRS releases!"
-msgstr "Новости о новых релизах OTRS!"
+msgid "News about LIGERO releases!"
+msgstr "Новости о новых релизах LIGERO!"
 
 #. SysConfig
-msgid "News about OTRS."
-msgstr "Новости о OTRS"
+msgid "News about LIGERO."
+msgstr "Новости о LIGERO"
 
 #. SysConfig
 msgid ""
@@ -25564,26 +25564,26 @@ msgid "Number of tickets to be displayed in each page."
 msgstr ""
 
 #. SysConfig
-msgid "OTRS Group Services"
+msgid "LIGERO Group Services"
 msgstr ""
 
 #. SysConfig
-msgid "OTRS News"
-msgstr "Новости OTRS"
+msgid "LIGERO News"
+msgstr "Новости LIGERO"
 
 #. SysConfig
 msgid ""
-"OTRS can use one or more readonly mirror databases for expensive operations "
+"LIGERO can use one or more readonly mirror databases for expensive operations "
 "like fulltext search or statistics generation. Here you can specify the DSN "
 "for the first mirror database."
 msgstr ""
-"OTRS может использовать одну или более зеркальных БД, в режиме только для "
+"LIGERO может использовать одну или более зеркальных БД, в режиме только для "
 "чтения, для ресурсоёмких операций, типа полнотекстового поиска или генерации"
 " отчетов. Здесь вы можете указать имя/DSN для первой зеркальной БД."
 
 #. SysConfig
 msgid ""
-"OTRS doesn't support recurring Appointments without end date or number of "
+"LIGERO doesn't support recurring Appointments without end date or number of "
 "iterations. During import process, it might happen that ICS file contains "
 "such Appointments. Instead, system creates all Appointments in the past, "
 "plus Appointments for the next N months (120 months/10 years by default)."
@@ -26507,8 +26507,8 @@ msgid "Reports"
 msgstr "Отчеты"
 
 #. SysConfig
-msgid "Reports (OTRS Business Solution™)"
-msgstr "Отчеты (OTRS Business Solution™)"
+msgid "Reports (LIGERO Business Solution™)"
+msgstr "Отчеты (LIGERO Business Solution™)"
 
 #. SysConfig
 msgid ""
@@ -26634,8 +26634,8 @@ msgstr ""
 "очередь."
 
 #. SysConfig
-msgid "Resource Overview (OTRS Business Solution™)"
-msgstr "Обзор ресурсов (OTRS Business Solution™)"
+msgid "Resource Overview (LIGERO Business Solution™)"
+msgstr "Обзор ресурсов (LIGERO Business Solution™)"
 
 #. SysConfig
 msgid "Responsible Tickets"
@@ -26729,7 +26729,7 @@ msgstr "Простейший пример результата выполнен�
 msgid ""
 "Saves the attachments of articles. \"DB\" stores all data in the database "
 "(not recommended for storing big attachments). \"FS\" stores the data on the"
-" filesystem; this is faster but the webserver should run under the OTRS "
+" filesystem; this is faster but the webserver should run under the LIGERO "
 "user. You can switch between the modules even on a system that is already in"
 " production without any loss of data. Note: Searching for attachment names "
 "is not supported when \"FS\" is used."
@@ -26737,7 +26737,7 @@ msgstr ""
 "Сохраняет вложения из сообщений/заметок. \"DB\" - сохраняет их в БД (не "
 "рекомендуется для больших вложений). \"FS\" - сохраняет данные в файловой "
 "системе; это быстрее, но веб-сервер должен запускаться от имени пользователя"
-" OTRS. Вы можете переключать это значение в процессе работы без потери "
+" LIGERO. Вы можете переключать это значение в процессе работы без потери "
 "данных. Примечание: Поиск по именам вложений не поддерживается при "
 "использовании \"FS\"."
 
@@ -26827,7 +26827,7 @@ msgid "Select your preferred layout for the software."
 msgstr "Выберите предпочитаемый вами стиль."
 
 #. SysConfig
-msgid "Select your preferred theme for OTRS."
+msgid "Select your preferred theme for LIGERO."
 msgstr ""
 
 #. SysConfig
@@ -26889,8 +26889,8 @@ msgid "Sends customer notifications just to the mapped customer."
 msgstr ""
 
 #. SysConfig
-msgid "Sends registration information to OTRS group."
-msgstr "Отправляет регистрационные данные в OTRS group."
+msgid "Sends registration information to LIGERO group."
+msgstr "Отправляет регистрационные данные в LIGERO group."
 
 #. SysConfig
 msgid ""
@@ -27411,12 +27411,12 @@ msgstr ""
 #. SysConfig
 msgid ""
 "Sets the prefix to the scripts folder on the server, as configured on the "
-"web server. This setting is used as a variable, OTRS_CONFIG_ScriptAlias "
+"web server. This setting is used as a variable, LIGERO_CONFIG_ScriptAlias "
 "which is found in all forms of messaging used by the application, to build "
 "links to the tickets within the system."
 msgstr ""
 "Задает префикс к имени папки скриптов на сервере, как установлено в веб-"
-"сервере. Этот параметр используется как переменная OTRS_CONFIG_ScriptAlias "
+"сервере. Этот параметр используется как переменная LIGERO_CONFIG_ScriptAlias "
 "для применения в сообщениях для построения ссылки на заявки."
 
 #. SysConfig
@@ -27719,7 +27719,7 @@ msgstr ""
 
 #. SysConfig
 msgid ""
-"Sets the time zone being used internally by OTRS to e. g. store dates and "
+"Sets the time zone being used internally by LIGERO to e. g. store dates and "
 "times in the database. WARNING: This setting must not be changed once set "
 "and tickets or any other data containing date/time have been created."
 msgstr ""
@@ -27728,7 +27728,7 @@ msgstr ""
 msgid ""
 "Sets the time zone that will be assigned to newly created users and will be "
 "used for users that haven't yet set a time zone. This is the time zone being"
-" used as default to convert date and time between the OTRS time zone and the"
+" used as default to convert date and time between the LIGERO time zone and the"
 " user's time zone."
 msgstr ""
 
@@ -28389,7 +28389,7 @@ msgstr ""
 
 #. SysConfig
 msgid ""
-"Shows a teaser link in the menu for the ticket attachment view of OTRS "
+"Shows a teaser link in the menu for the ticket attachment view of LIGERO "
 "Business Solution™."
 msgstr ""
 
@@ -28463,8 +28463,8 @@ msgid ""
 msgstr "Показывать список очередей Родитель/Потомок в виде списка или дерева."
 
 #. SysConfig
-msgid "Shows information on how to start OTRS Daemon"
-msgstr "Показывает информацию о том как запустить OTRS Daemon"
+msgid "Shows information on how to start LIGERO Daemon"
+msgstr "Показывает информацию о том как запустить LIGERO Daemon"
 
 #. SysConfig
 msgid ""
@@ -28778,14 +28778,14 @@ msgstr "Задает каталог для хранения частных SSL �
 msgid ""
 "Specifies the email address that should be used by the application when "
 "sending notifications. The email address is used to build the complete "
-"display name for the notification master (i.e. \"OTRS Notifications\" "
-"otrs@your.example.com). You can use the OTRS_CONFIG_FQDN variable as set in "
+"display name for the notification master (i.e. \"LIGERO Notifications\" "
+"ligero@your.example.com). You can use the LIGERO_CONFIG_FQDN variable as set in "
 "your configuation, or choose another email address."
 msgstr ""
 "Задает email address, который должен использоваться при отсылке уведомлений."
 " Он используется построения полного отображаемого имени для мастера "
-"уведомлений (например, \"OTRS Notifications\" otrs@your.example.com). Вы "
-"можете использовать переменную OTRS_CONFIG_FQDN заданную в конфигурации или "
+"уведомлений (например, \"LIGERO Notifications\" ligero@your.example.com). Вы "
+"можете использовать переменную LIGERO_CONFIG_FQDN заданную в конфигурации или "
 "выбрать другой адрес."
 
 #. SysConfig
@@ -28815,12 +28815,12 @@ msgstr ""
 msgid ""
 "Specifies the name that should be used by the application when sending "
 "notifications. The sender name is used to build the complete display name "
-"for the notification master (i.e. \"OTRS Notifications\" "
-"otrs@your.example.com)."
+"for the notification master (i.e. \"LIGERO Notifications\" "
+"ligero@your.example.com)."
 msgstr ""
 "Задает имя, которое будет использоваться при отсылке уведомлений. Оно "
 "используется для построения полного отображаемого имени для мастера "
-"уведомлений (например, \"OTRS Notifications\" otrs@your.example.com). "
+"уведомлений (например, \"LIGERO Notifications\" ligero@your.example.com). "
 
 #. SysConfig
 msgid ""
@@ -28912,12 +28912,12 @@ msgstr ""
 
 #. SysConfig
 msgid ""
-"Specify the channel to be used to fetch OTRS Business Solution™ updates. "
+"Specify the channel to be used to fetch LIGERO Business Solution™ updates. "
 "Warning: Development releases might not be complete, your system might "
 "experience unrecoverable errors and on extreme cases could become "
 "unresponsive!"
 msgstr ""
-"Задает канал для получения обновлений OTRS Business Solution™. "
+"Задает канал для получения обновлений LIGERO Business Solution™. "
 "Предупреждение: Development-релизы могут быть незавершенными, в вашей "
 "системе могут проявляться неисправимые ошибки и в экстремальных случаях она "
 "может перестать отвечать на запросы!"
@@ -29284,8 +29284,8 @@ msgstr ""
 "или отображать новости о новых приложениях."
 
 #. SysConfig
-msgid "This module is part of the admin area of OTRS."
-msgstr "Этот модуль является частью административного раздела OTRS."
+msgid "This module is part of the admin area of LIGERO."
+msgstr "Этот модуль является частью административного раздела LIGERO."
 
 #. SysConfig
 msgid ""
@@ -29337,8 +29337,8 @@ msgstr ""
 " сократить отображаемый список до необходимого минимума."
 
 #. SysConfig
-msgid "This setting is deprecated. Set OTRSTimeZone instead."
-msgstr "Этот параметр устарел. Вместо него используйте OTRSTimeZone."
+msgid "This setting is deprecated. Set LIGEROTimeZone instead."
+msgstr "Этот параметр устарел. Вместо него используйте LIGEROTimeZone."
 
 #. SysConfig
 msgid ""
@@ -29525,9 +29525,9 @@ msgid "To view HTML attachments."
 msgstr "Для просмотра HTML вложений."
 
 #. SysConfig
-msgid "Toggles display of OTRS FeatureAddons list in PackageManager."
+msgid "Toggles display of LIGERO FeatureAddons list in PackageManager."
 msgstr ""
-"Переключает отображение списка OTRS FeatureAddons в Управлении пакетами."
+"Переключает отображение списка LIGERO FeatureAddons в Управлении пакетами."
 
 #. SysConfig
 msgid ""
@@ -29608,13 +29608,13 @@ msgstr "Оптимизируйте систему по своему усмотр
 
 #. SysConfig
 msgid ""
-"Type of daemon log rotation to use: Choose 'OTRS' to let OTRS system to "
+"Type of daemon log rotation to use: Choose 'LIGERO' to let LIGERO system to "
 "handle the file rotation, or choose 'External' to use a 3rd party rotation "
 "mechanism (i.e. logrotate). Note: External rotation mechanism requires its "
 "own and independent configuration."
 msgstr ""
 "Какой тип обновления журнала залогированных событий использовать: Выберите "
-"'OTRS', чтобы позволить OTRS системе самой заботиться о ротации логов, или "
+"'LIGERO', чтобы позволить LIGERO системе самой заботиться о ротации логов, или "
 "выберите 'External', чтобы использовать сторонний механизм ротации (например"
 " logrotate). Примечание: сторонний механизм ротации логов требует "
 "собственной независимой настройки."
@@ -29830,20 +29830,20 @@ msgstr "Да, скрыть архивированные заявки"
 
 #. SysConfig
 msgid ""
-"Your email with ticket number \"<OTRS_TICKET>\" is bounced to "
-"\"<OTRS_BOUNCE_TO>\". Contact this address for further information."
+"Your email with ticket number \"<LIGERO_TICKET>\" is bounced to "
+"\"<LIGERO_BOUNCE_TO>\". Contact this address for further information."
 msgstr ""
-"Ваше письмо с номером заявки \"<OTRS_TICKET>\" переправлено адресату "
-"\"<OTRS_BOUNCE_TO>\". Контактируйте по этому адресу для получения дальнейшей"
+"Ваше письмо с номером заявки \"<LIGERO_TICKET>\" переправлено адресату "
+"\"<LIGERO_BOUNCE_TO>\". Контактируйте по этому адресу для получения дальнейшей"
 " информации."
 
 #. SysConfig
 msgid ""
-"Your email with ticket number \"<OTRS_TICKET>\" is merged to "
-"\"<OTRS_MERGE_TO_TICKET>\"."
+"Your email with ticket number \"<LIGERO_TICKET>\" is merged to "
+"\"<LIGERO_MERGE_TO_TICKET>\"."
 msgstr ""
-"Ваш email с номером заявки «<OTRS_TICKET>» объединен с "
-"\"<OTRS_MERGE_TO_TICKET>\"."
+"Ваш email с номером заявки «<LIGERO_TICKET>» объединен с "
+"\"<LIGERO_MERGE_TO_TICKET>\"."
 
 #. SysConfig
 msgid ""

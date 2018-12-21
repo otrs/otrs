@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -17,7 +17,7 @@ my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 # set time zone for data storage and calendars
 $ConfigObject->Set(
-    Key   => 'OTRSTimeZone',
+    Key   => 'LIGEROTimeZone',
     Value => 'Europe/Berlin',
 );
 $ConfigObject->Set(
@@ -727,7 +727,7 @@ $Self->Is(
 
 # set time zone for data storage
 $ConfigObject->Set(
-    Key   => 'OTRSTimeZone',
+    Key   => 'LIGEROTimeZone',
     Value => 'UTC',
 );
 my @Tests = (

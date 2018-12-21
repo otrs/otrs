@@ -1,6 +1,6 @@
 #!/bin/bash
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,26 +35,26 @@ MODIFY_MYSQL_CONFIG
     # Now create OTRS specific users and databases.
     cp -i $TRAVIS_BUILD_DIR/scripts/tools/travis/Config.mysql.pm $TRAVIS_BUILD_DIR/Kernel/Config.pm
 
-    mysql -uroot -e "CREATE DATABASE otrs CHARACTER SET utf8";
-    mysql -uroot -e "GRANT ALL PRIVILEGES ON otrs.* TO 'otrs'@'localhost' IDENTIFIED BY 'otrs'";
-    mysql -uroot -e "CREATE DATABASE otrstest CHARACTER SET utf8";
-    mysql -uroot -e "GRANT ALL PRIVILEGES ON otrstest.* TO 'otrstest'@'localhost' IDENTIFIED BY 'otrstest'";
+    mysql -uroot -e "CREATE DATABASE ligero CHARACTER SET utf8";
+    mysql -uroot -e "GRANT ALL PRIVILEGES ON ligero.* TO 'ligero'@'localhost' IDENTIFIED BY 'ligero'";
+    mysql -uroot -e "CREATE DATABASE ligerotest CHARACTER SET utf8";
+    mysql -uroot -e "GRANT ALL PRIVILEGES ON ligerotest.* TO 'ligerotest'@'localhost' IDENTIFIED BY 'ligerotest'";
     mysql -uroot -e "FLUSH PRIVILEGES";
-    mysql -uroot otrs < $TRAVIS_BUILD_DIR/scripts/database/otrs-schema.mysql.sql
-    mysql -uroot otrs < $TRAVIS_BUILD_DIR/scripts/database/otrs-initial_insert.mysql.sql
-    mysql -uroot otrs < $TRAVIS_BUILD_DIR/scripts/database/otrs-schema-post.mysql.sql
+    mysql -uroot ligero < $TRAVIS_BUILD_DIR/scripts/database/ligero-schema.mysql.sql
+    mysql -uroot ligero < $TRAVIS_BUILD_DIR/scripts/database/ligero-initial_insert.mysql.sql
+    mysql -uroot ligero < $TRAVIS_BUILD_DIR/scripts/database/ligero-schema-post.mysql.sql
 fi
 
 if [ $DB = 'postgresql' ]; then
     cp -i $TRAVIS_BUILD_DIR/scripts/tools/travis/Config.postgresql.pm $TRAVIS_BUILD_DIR/Kernel/Config.pm
 
-    psql -U postgres -c "CREATE ROLE otrs LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE"
-    psql -U postgres -c "CREATE DATABASE otrs OWNER otrs ENCODING 'UTF8'"
-    psql -U postgres -c "CREATE ROLE otrstest LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE"
-    psql -U postgres -c "CREATE DATABASE otrstest OWNER otrstest ENCODING 'UTF8'"
-    psql -U otrs otrs < $TRAVIS_BUILD_DIR/scripts/database/otrs-schema.postgresql.sql > /dev/null
-    psql -U otrs otrs < $TRAVIS_BUILD_DIR/scripts/database/otrs-initial_insert.postgresql.sql > /dev/null
-    psql -U otrs otrs < $TRAVIS_BUILD_DIR/scripts/database/otrs-schema-post.postgresql.sql > /dev/null
-    psql -U postgres -c "ALTER ROLE otrs PASSWORD 'otrs'"
-    psql -U postgres -c "ALTER ROLE otrstest PASSWORD 'otrstest'"
+    psql -U postgres -c "CREATE ROLE ligero LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE"
+    psql -U postgres -c "CREATE DATABASE ligero OWNER ligero ENCODING 'UTF8'"
+    psql -U postgres -c "CREATE ROLE ligerotest LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE"
+    psql -U postgres -c "CREATE DATABASE ligerotest OWNER ligerotest ENCODING 'UTF8'"
+    psql -U ligero ligero < $TRAVIS_BUILD_DIR/scripts/database/ligero-schema.postgresql.sql > /dev/null
+    psql -U ligero ligero < $TRAVIS_BUILD_DIR/scripts/database/ligero-initial_insert.postgresql.sql > /dev/null
+    psql -U ligero ligero < $TRAVIS_BUILD_DIR/scripts/database/ligero-schema-post.postgresql.sql > /dev/null
+    psql -U postgres -c "ALTER ROLE ligero PASSWORD 'ligero'"
+    psql -U postgres -c "ALTER ROLE ligerotest PASSWORD 'ligerotest'"
 fi

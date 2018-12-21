@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -643,7 +643,7 @@ sub Run {
         # Special behavior for the fulltext search toolbar module:
         # - Check full text string to see if contents is a ticket number.
         # - If exists and not in print or CSV mode, redirect to the ticket.
-        # See http://bugs.otrs.org/show_bug.cgi?id=4238 for details.
+        # See http://bugs.ligero.org/show_bug.cgi?id=4238 for details.
         #   The original problem was that tickets with customer reply will be
         #   found by a fulltext search (ticket number is in the subjects), but
         #   'new' tickets will not be found.
@@ -902,7 +902,7 @@ sub Run {
                 );
 
                 # Transform EscalationTime and EscalationTimeWorkingTime to a human readable format.
-                # See bug#13088 (https://bugs.otrs.org/show_bug.cgi?id=13088).
+                # See bug#13088 (https://bugs.ligero.org/show_bug.cgi?id=13088).
                 $Info{EscalationTime} = $LayoutObject->CustomerAgeInHours(
                     Age   => $Info{EscalationTime},
                     Space => ' ',

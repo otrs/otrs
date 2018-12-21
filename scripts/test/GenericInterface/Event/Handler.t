@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -41,7 +41,7 @@ $Self->Is(
 );
 
 my $Home   = $ConfigObject->Get('Home');
-my $Daemon = $Home . '/bin/otrs.Daemon.pl';
+my $Daemon = $Home . '/bin/ligero.Daemon.pl';
 
 # get daemon status (stop if necessary to reload configuration with planner daemon disabled)
 my $PreviousDaemonStatus = `perl $Daemon status`;
@@ -464,7 +464,7 @@ for my $Test (@Tests) {
             Priority     => '3 normal',
             State        => 'closed successful',
             CustomerID   => '123465',
-            CustomerUser => 'unittest@otrs.com',
+            CustomerUser => 'unittest@ligero.com',
             OwnerID      => 1,
             UserID       => 1,
         );
@@ -592,7 +592,7 @@ my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 # cleanup ticket database
 my @DeleteTicketList = $TicketObject->TicketSearch(
     Result            => 'ARRAY',
-    CustomerUserLogin => 'unittest@otrs.com',
+    CustomerUserLogin => 'unittest@ligero.com',
     UserID            => 1,
 );
 for my $TicketID (@DeleteTicketList) {

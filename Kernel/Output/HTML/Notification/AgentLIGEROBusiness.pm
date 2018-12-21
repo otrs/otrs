@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -83,7 +83,7 @@ sub Run {
         my $Text = $LayoutObject->{LanguageObject}->Translate(
             'This system uses the %s without a proper license! Please make contact with %s to renew or activate your contract!',
             $OTRSBusinessLabel,
-            'sales@otrs.com',
+            'sales@ligero.com',
         );
 
         # Redirect to error screen because of unauthorized usage.
@@ -109,7 +109,7 @@ if (!window.location.search.match(/^[?]Action=(AgentOTRSBusiness|Admin.*)/)) {
                 Translatable('Please verify your license data!')
             :
                 Translatable(
-                'Connection to cloud.otrs.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.otrs.com via port 443.'
+                'Connection to cloud.ligero.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.ligero.com via port 443.'
                 ),
             Priority => 'Error',
         );
@@ -136,7 +136,7 @@ if (!window.location.search.match(/^[?]Action=(AgentOTRSBusiness|Admin.*)/)) {
         my $Text = $LayoutObject->{LanguageObject}->Translate(
             'The license for your %s is about to expire. Please make contact with %s to renew your contract!',
             $OTRSBusinessLabel,
-            'sales@otrs.com',
+            'sales@ligero.com',
         );
         $Output .= $LayoutObject->Notify(
             Data     => $Text,

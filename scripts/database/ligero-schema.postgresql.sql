@@ -1395,9 +1395,9 @@ END IF;
 END$$;
 ;
 -- ----------------------------------------------------------
---  create table article_data_otrs_chat
+--  create table article_data_ligero_chat
 -- ----------------------------------------------------------
-CREATE TABLE article_data_otrs_chat (
+CREATE TABLE article_data_ligero_chat (
     id bigserial NOT NULL,
     article_id BIGINT NOT NULL,
     chat_participant_id VARCHAR (255) NOT NULL,
@@ -1413,9 +1413,9 @@ BEGIN
 IF NOT EXISTS (
     SELECT 1
     FROM pg_indexes
-    WHERE LOWER(indexname) = LOWER('article_data_otrs_chat_article_id')
+    WHERE LOWER(indexname) = LOWER('article_data_ligero_chat_article_id')
     ) THEN
-    CREATE INDEX article_data_otrs_chat_article_id ON article_data_otrs_chat (article_id);
+    CREATE INDEX article_data_ligero_chat_article_id ON article_data_ligero_chat (article_id);
 END IF;
 END$$;
 ;

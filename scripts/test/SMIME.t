@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -1109,12 +1109,12 @@ xqdO7PfndBF8qwrJ7S91
 
         # insert the common content
         $CertInfo{ 'SmimeTest_' . $Number }->{Subject} =
-            'C= MX ST= Jalisco L= Guadalajara O= OTRS OU= Research and Development CN= otrs.org emailAddress= smime@test.com';
+            'C= MX ST= Jalisco L= Guadalajara O= OTRS OU= Research and Development CN= ligero.org emailAddress= smime@test.com';
         $CertInfo{ 'SmimeTest_' . $Number }->{Hash}    = $CommonHash;
         $CertInfo{ 'SmimeTest_' . $Number }->{Private} = 'No';
         $CertInfo{ 'SmimeTest_' . $Number }->{Type}    = 'cert';
         $CertInfo{ 'SmimeTest_' . $Number }->{Issuer} =
-            'C= MX/ST= Jalisco/L= Guadalajara/O= OTRS/OU= Research and Development/CN= otrs.org/emailAddress= smime@test.com';
+            'C= MX/ST= Jalisco/L= Guadalajara/O= OTRS/OU= Research and Development/CN= ligero.org/emailAddress= smime@test.com';
         $CertInfo{ 'SmimeTest_' . $Number }->{Email} = 'smime@test.com';
 
         # add every SmimeTest_N certificate

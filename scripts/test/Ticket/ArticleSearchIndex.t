@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -225,7 +225,7 @@ Perl modules provide a range of features to help you avoid reinventing the wheel
     );
 
     # use full text search on ticket with Cyrillic characters
-    # see bug #11791 ( http://bugs.otrs.org/show_bug.cgi?id=11791 )
+    # see bug #11791 ( http://bugs.ligero.org/show_bug.cgi?id=11791 )
     $ArticleID = $ArticleBackendObject->ArticleCreate(
         TicketID             => $TicketID,
         SenderType           => 'agent',

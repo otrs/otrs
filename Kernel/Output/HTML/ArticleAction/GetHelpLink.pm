@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -61,9 +61,9 @@ sub GetConfig {
 
     my %MenuItem = (
         ItemType    => 'Link',
-        Description => Translatable('Contact us at sales@otrs.com'),
+        Description => Translatable('Contact us at sales@ligero.com'),
         Name        => Translatable('Get Help'),
-        Link        => 'mailto:sales@otrs.com',
+        Link        => 'mailto:sales@ligero.com',
     );
 
     return ( \%MenuItem );

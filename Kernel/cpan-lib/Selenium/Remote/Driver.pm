@@ -3667,7 +3667,7 @@ Luke Closs <lukec@users.noreply.github.com>
 
 =item *
 
-Martin Gruner <martin.gruner@otrs.com>
+Martin Gruner <martin.gruner@ligero.com>
 
 =item *
 

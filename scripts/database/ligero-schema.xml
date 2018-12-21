@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<database Name="otrs">
+<database Name="ligero">
 
 <!-- acl - all acls from the editor -->
 <Table Name="acl">
@@ -144,7 +144,7 @@
     <Column Name="group_id" Required="true" Type="INTEGER"/>
     <Column Name="permission_key" Required="true" Size="20" Type="VARCHAR"/>
     <!-- permission_value is currently unneeded (always 1), but there could be old entries from
-        OTRS 4 or earlier which have 0 set. -->
+        LIGERO 4 or earlier which have 0 set. -->
     <Column Name="permission_value" Required="true" Type="SMALLINT"/>
     <Column Name="create_time" Required="true" Type="DATE"/>
     <Column Name="create_by" Required="true" Type="INTEGER"/>
@@ -1156,7 +1156,7 @@
 </Table>
 
 <!-- article data for chat based backend -->
-<Table Name="article_data_otrs_chat">
+<Table Name="article_data_ligero_chat">
     <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
     <Column Name="article_id" Required="true" Type="BIGINT"/>
     <Column Name="chat_participant_id" Required="true" Size="255" Type="VARCHAR" />
@@ -1165,7 +1165,7 @@
     <Column Name="message_text" Required="false" Size="3800" Type="VARCHAR" />
     <Column Name="system_generated" Required="true" Type="SMALLINT" />
     <Column Name="create_time" Required="true" Type="DATE"/>
-    <Index Name="article_data_otrs_chat_article_id">
+    <Index Name="article_data_ligero_chat_article_id">
         <IndexColumn Name="article_id"/>
     </Index>
     <ForeignKey ForeignTable="article">

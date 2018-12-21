@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -669,7 +669,7 @@ else {
 }
 
 # test bug#[12761]
-# (https://bugs.otrs.org/show_bug.cgi?id=12761) - Cache values can be modified from the outside in function XMLParse().
+# (https://bugs.ligero.org/show_bug.cgi?id=12761) - Cache values can be modified from the outside in function XMLParse().
 #
 $XML = '<Test Name="test123" />';
 my @XMLARRAY = $XMLObject->XMLParse( String => $XML );

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -431,12 +431,12 @@ $ExportContent = $StatsObject->Export(
 
 # the following line are because of different spelling 'ISO-8859' or 'iso-8859'
 # but this is no solution for the problem if one string is iso and the other utf!
-$ImportContent =~ s/^<\?xml.*?>.*?<otrs_stats/<otrs_stats/ms;
+$ImportContent =~ s/^<\?xml.*?>.*?<ligero_stats/<ligero_stats/ms;
 
 # this line is for Windows check-out
 $ImportContent =~ s{\r\n}{\n}smxg;
 
-$ExportContent->{Content} =~ s/^<\?xml.*?>.*?<otrs_stats/<otrs_stats/ms;
+$ExportContent->{Content} =~ s/^<\?xml.*?>.*?<ligero_stats/<ligero_stats/ms;
 $Self->Is(
     $ImportContent,
     $ExportContent->{Content},
@@ -469,7 +469,7 @@ $Self->False(
     'Import() statistic with not existing object module must fail',
 );
 
-# try to use otrs.Console.pl Maint::Stats::Generate
+# try to use ligero.Console.pl Maint::Stats::Generate
 
 # check the imported stat
 my $Stat4 = $StatsObject->StatsGet( StatID => $StatID );

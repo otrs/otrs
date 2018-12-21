@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -405,7 +405,7 @@ $Selenium->RunTest(
             );
 
             # Verify there is button to delete link, even though TicketNumber is not in the first column.
-            # See bug#13703 (https://bugs.otrs.org/show_bug.cgi?id=13703).
+            # See bug#13703 (https://bugs.ligero.org/show_bug.cgi?id=13703).
             $Self->True(
                 $Selenium->execute_script("return \$('.InstantLinkDelete').length;"),
                 "Delete link button is present."
@@ -662,7 +662,7 @@ $Selenium->RunTest(
         sleep 2;
 
         # Verify column settings button is available for both Ticket and Appointment link object widget.
-        # See bug#13702 (https://bugs.otrs.org/show_bug.cgi?id=13702);
+        # See bug#13702 (https://bugs.ligero.org/show_bug.cgi?id=13702);
         for my $LinkObject (qw(Appointment Ticket)) {
             $Selenium->WaitFor(
                 JavaScript =>

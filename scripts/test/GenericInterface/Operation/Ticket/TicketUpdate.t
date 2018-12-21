@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -163,7 +163,7 @@ my $TicketID1 = $TicketObject->TicketCreate(
     Priority     => '3 normal',
     State        => 'new',
     CustomerID   => $CustomerUserLogin,
-    CustomerUser => 'unittest@otrs.com',
+    CustomerUser => 'unittest@ligero.com',
     OwnerID      => 1,
     UserID       => 1,
 );
@@ -294,7 +294,7 @@ my $WebserviceConfig = {
             Type   => 'HTTP::SOAP',
             Config => {
                 MaxLength => 10000000,
-                NameSpace => 'http://otrs.org/SoapTestInterface/',
+                NameSpace => 'http://ligero.org/SoapTestInterface/',
                 Endpoint  => $RemoteSystem,
             },
         },
@@ -311,7 +311,7 @@ my $WebserviceConfig = {
         Transport => {
             Type   => 'HTTP::SOAP',
             Config => {
-                NameSpace => 'http://otrs.org/SoapTestInterface/',
+                NameSpace => 'http://ligero.org/SoapTestInterface/',
                 Encoding  => 'UTF-8',
                 Endpoint  => $RemoteSystem,
                 Timeout   => 120,
@@ -695,7 +695,7 @@ my @Tests = (
                 IsVisibleForCustomer => 1,
                 CommunicationChannel => 'Email',
                 SenderType           => 'agent',
-                From                 => 'enjoy@otrs.com',
+                From                 => 'enjoy@ligero.com',
                 Charset              => 'utf8',
                 MimeType             => 'text/plain',
                 HistoryType          => 'NewTicket',
@@ -1120,7 +1120,7 @@ my $TicketIDNoOutOfOffice = $TicketObject->TicketCreate(
     Priority     => '3 normal',
     State        => 'new',
     CustomerID   => $CustomerUserLogin,
-    CustomerUser => 'unittest@otrs.com',
+    CustomerUser => 'unittest@ligero.com',
     OwnerID      => $UserIDNoOutOfOffice,
     UserID       => 1,
 );
@@ -1133,7 +1133,7 @@ my $TicketIDOutOfOffice = $TicketObject->TicketCreate(
     Priority     => '3 normal',
     State        => 'new',
     CustomerID   => $CustomerUserLogin,
-    CustomerUser => 'unittest@otrs.com',
+    CustomerUser => 'unittest@ligero.com',
     OwnerID      => $UserIDOutOfOffice,
     UserID       => 1,
 );

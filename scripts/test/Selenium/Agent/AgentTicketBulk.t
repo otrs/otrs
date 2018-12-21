@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -308,7 +308,7 @@ $Selenium->RunTest(
         }
 
         # Select both tickets and click on "bulk".
-        # Test case for the bug #11805 - http://bugs.otrs.org/show_bug.cgi?id=11805.
+        # Test case for the bug #11805 - http://bugs.ligero.org/show_bug.cgi?id=11805.
         $Selenium->find_element("//input[\@value='$Tickets[0]->{TicketID}']")->click();
         $Selenium->find_element("//input[\@value='$Tickets[1]->{TicketID}']")->click();
         $Selenium->find_element("//input[\@value='$Tickets[2]->{TicketID}']")->click();

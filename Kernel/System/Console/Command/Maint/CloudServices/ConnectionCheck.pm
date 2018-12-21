@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -92,7 +92,7 @@ sub Run {
     # send request
     my %Response = $Kernel::OM->Get('Kernel::System::WebUserAgent')->Request(
         Type => 'POST',
-        URL  => 'https://cloud.otrs.com/otrs/public.pl',
+        URL  => 'https://cloud.ligero.com/ligero/public.pl',
         Data => {
             Action      => 'PublicCloudService',
             RequestData => $RequestData,

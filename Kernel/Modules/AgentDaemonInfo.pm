@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -30,7 +30,7 @@ sub Run {
     my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
     my %Data = (
-        DaemonCron     => $Home . '/var/cron/otrs_daemon',
+        DaemonCron     => $Home . '/var/cron/ligero_daemon',
         CronExecutable => $Home . '/bin/Cron.sh',
     );
 

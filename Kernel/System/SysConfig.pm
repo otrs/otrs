@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -146,7 +146,7 @@ Returns:
         ChangeTime               => "2016-05-29 11:04:04",
         ChangeBy                 => 1,
         DefaultValue             => 'Old default value',
-        OverriddenFileName        => '/opt/otrs/Kernel/Config/Files/ZZZ.pm',
+        OverriddenFileName        => '/opt/ligero/Kernel/Config/Files/ZZZ.pm',
     );
 
 =cut
@@ -2512,8 +2512,8 @@ sub ConfigurationXML2DB {
             next FILE;
         }
 
-        # Check otrs_config Init attribute.
-        $$ConfigFile =~ m{<otrs_config.*?init="(.*?)"}gsmx;
+        # Check ligero_config Init attribute.
+        $$ConfigFile =~ m{<ligero_config.*?init="(.*?)"}gsmx;
         my $InitValue = $1;
 
         # Check if InitValue is Valid.
@@ -2521,7 +2521,7 @@ sub ConfigurationXML2DB {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message =>
-                    "Invalid otrs_config Init value ($InitValue)! Allowed values: Framework, Application, Config, Changes.",
+                    "Invalid ligero_config Init value ($InitValue)! Allowed values: Framework, Application, Config, Changes.",
             );
             next FILE;
         }
@@ -2830,7 +2830,7 @@ sub ConfigurationNavigationTree {
     );
 
     # For AgentPreference take into account which settings are Forbidden to update by user or disabled when counting
-    #   settings. See bug#13488 (https://bugs.otrs.org/show_bug.cgi?id=13488).
+    #   settings. See bug#13488 (https://bugs.ligero.org/show_bug.cgi?id=13488).
     if ( $Param{Action} && $Param{Action} eq 'AgentPreferences' ) {
 
         # Get List of all modified settings which are valid and forbidden to update by user.
@@ -6320,7 +6320,7 @@ sub _DefaultSettingAddBulk {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

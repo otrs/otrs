@@ -694,9 +694,9 @@ CREATE TABLE article_data_mime_send_error (
     INDEX article_data_mime_transmission_message_id (message_id)
 );
 # ----------------------------------------------------------
-#  create table article_data_otrs_chat
+#  create table article_data_ligero_chat
 # ----------------------------------------------------------
-CREATE TABLE article_data_otrs_chat (
+CREATE TABLE article_data_ligero_chat (
     id BIGINT NOT NULL AUTO_INCREMENT,
     article_id BIGINT NOT NULL,
     chat_participant_id VARCHAR (255) NOT NULL,
@@ -706,7 +706,7 @@ CREATE TABLE article_data_otrs_chat (
     system_generated SMALLINT NOT NULL,
     create_time DATETIME NOT NULL,
     PRIMARY KEY(id),
-    INDEX article_data_otrs_chat_article_id (article_id)
+    INDEX article_data_ligero_chat_article_id (article_id)
 );
 # ----------------------------------------------------------
 #  create table time_accounting

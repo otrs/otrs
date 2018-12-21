@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -665,7 +665,7 @@ $Selenium->RunTest(
         );
 
         # Change test user language and verify searchable Article Fields are translated.
-        # See bug#13913 (https://bugs.otrs.org/show_bug.cgi?id=13913).
+        # See bug#13913 (https://bugs.ligero.org/show_bug.cgi?id=13913).
 
         # Go to agent preferences screen.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentPreferences;Subaction=Group;Group=UserProfile");

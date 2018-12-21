@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -142,7 +142,7 @@ $Selenium->RunTest(
                     Priority      => 'Error',
                     Key           => 'Kernel::System::MailAccount::' . $MailAccounts{$MailAccountID}->{Type},
                     Value =>
-                        "Could not process message. Raw mail saved (report it on http://bugs.otrs.org/)!",
+                        "Could not process message. Raw mail saved (report it on http://bugs.ligero.org/)!",
                 );
 
                 $MessageStatus = 'Failed';
@@ -472,7 +472,7 @@ $Selenium->RunTest(
         );
 
         # Try to navigate to invalid Communication ID,
-        #   see bug#13523 (https://bugs.otrs.org/show_bug.cgi?id=13523).
+        #   see bug#13523 (https://bugs.ligero.org/show_bug.cgi?id=13523).
         my $RandomNumber = $Helper->GetRandomNumber();
         $Selenium->VerifiedGet(
             "${ScriptAlias}index.pl?Action=AdminCommunicationLog;Subaction=Zoom;CommunicationID=$RandomNumber"

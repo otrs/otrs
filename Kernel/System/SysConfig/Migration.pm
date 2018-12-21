@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -56,9 +56,9 @@ Migrate XML file content from OTRS 5 to OTRS 6.
     my $Result = $SysConfigMigrationObject->MigrateXMLStructure(
         Content => '
             <?xml version="1.0" encoding="utf-8" ?>
-            <otrs_config version="1.0" init="Framework">
+            <ligero_config version="1.0" init="Framework">
                 ...
-            </otrs_config>',
+            </ligero_config>',
         Name => 'Framework',
     );
 
@@ -66,9 +66,9 @@ Returns:
 
     $Result = '
         <?xml version="1.0" encoding="utf-8" ?>
-        <otrs_config version="2.0" init="Framework">
+        <ligero_config version="2.0" init="Framework">
             ...
-        </otrs_config>';
+        </ligero_config>';
 
 =cut
 
@@ -86,7 +86,7 @@ sub MigrateXMLStructure {
     }
 
     my $Init = "";
-    if ( $Param{Content} =~ m{<otrs_config.*?init="(.*?)"} ) {
+    if ( $Param{Content} =~ m{<ligero_config.*?init="(.*?)"} ) {
         $Init = $1;
     }
 
@@ -94,7 +94,7 @@ sub MigrateXMLStructure {
     return if !$Init;
 
     # Stop if its a configuration file is not from OTRS 5 or prior (OTRS 6 uses version 2.0).
-    return if !$Param{Content} =~ m{^<otrs_config.*?version="1.0"}gsmx;
+    return if !$Param{Content} =~ m{^<ligero_config.*?version="1.0"}gsmx;
 
     # Split settings - prevent deleting some settings due to greedy RegEx. Each array item contains
     #   only one setting.
@@ -115,10 +115,10 @@ sub MigrateXMLStructure {
     for my $Setting (@Settings) {
 
         # Stop the setting loop process if it's the ending tag.
-        last SETTING if $Setting =~ m/<\/otrs_config>/i;
+        last SETTING if $Setting =~ m/<\/ligero_config>/i;
 
         # Update version (from 1.0 to 2.0).
-        $Setting =~ s{^(<otrs_config.*?version)="1.0"}{$1="2.0"}gsmx;
+        $Setting =~ s{^(<ligero_config.*?version)="1.0"}{$1="2.0"}gsmx;
         $Setting .= "</ConfigItem>";
 
         # Update to preferences group
@@ -1538,7 +1538,7 @@ sub MigrateXMLStructure {
     $Result =~ s{>\n\n\s}{>\n }gsmx;
 
     # Remove white space at the end of the file
-    $Result =~ s{</otrs_config>.*}{</otrs_config>}gsmx;
+    $Result =~ s{</ligero_config>.*}{</ligero_config>}gsmx;
 
     # Add new line at the end
     $Result .= "\n";
@@ -2913,7 +2913,7 @@ sub _SettingUpdate {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

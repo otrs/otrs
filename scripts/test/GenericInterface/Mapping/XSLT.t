@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -133,8 +133,8 @@ my @MappingTests = (
             Template => qq{<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
- xmlns:otrs="http://otrs.org"
- extension-element-prefixes="otrs">
+ xmlns:ligero="http://ligero.org"
+ extension-element-prefixes="ligero">
 <xsl:import href="$Home/Kernel/GenericInterface/Mapping/OTRSFunctions.xsl" />
 <xsl:output method="xml" encoding="utf-8" indent="yes"/>
 <xsl:template match="/RootElement">
@@ -208,8 +208,8 @@ my @MappingTests = (
             Template => qq{<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
- xmlns:otrs="http://otrs.org"
- extension-element-prefixes="otrs">
+ xmlns:ligero="http://ligero.org"
+ extension-element-prefixes="ligero">
 <xsl:import href="$Home/Kernel/GenericInterface/Mapping/OTRSFunctions.xsl" />
 <xsl:output method="xml" encoding="utf-8" indent="yes"/>
 <xsl:template match="/RootElement">
@@ -223,11 +223,11 @@ my @MappingTests = (
     <NewStructure>
         <DateFromISO>
             <xsl:variable name="dateiso" select="/RootElement/DateISO" />
-            <xsl:value-of select="otrs:date-iso-to-xsd(\$dateiso)" />
+            <xsl:value-of select="ligero:date-iso-to-xsd(\$dateiso)" />
         </DateFromISO>
         <DateToISO>
             <xsl:variable name="datexsd" select="/RootElement/DateXSD" />
-            <xsl:value-of select="otrs:date-xsd-to-iso(\$datexsd)" />
+            <xsl:value-of select="ligero:date-xsd-to-iso(\$datexsd)" />
         </DateToISO>
         <NewKey1>
             <xsl:value-of select="/RootElement/Key1" />
@@ -279,8 +279,8 @@ my @MappingTests = (
             Template => qq{<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
- xmlns:otrs="http://otrs.org"
- extension-element-prefixes="otrs">
+ xmlns:ligero="http://ligero.org"
+ extension-element-prefixes="ligero">
 <xsl:import href="$Home/Kernel/GenericInterface/Mapping/OTRSFunctions.xsl" />
 <xsl:output method="xml" encoding="utf-8" indent="yes"/>
 <xsl:template match="/RootElement">

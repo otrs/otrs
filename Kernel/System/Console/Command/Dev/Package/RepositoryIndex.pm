@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -21,7 +21,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Generate an index file (otrs.xml) for an OTRS package repository.');
+    $Self->Description('Generate an index file (ligero.xml) for an OTRS package repository.');
     $Self->AddArgument(
         Name        => 'source-directory',
         Description => "Specify the directory containing the OTRS packages.",
@@ -47,7 +47,7 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     my $Result = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n";
-    $Result .= "<otrs_package_list version=\"1.0\">\n";
+    $Result .= "<ligero_package_list version=\"1.0\">\n";
     my $SourceDirectory = $Self->GetArgument('source-directory');
     my @List            = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
         Directory => $SourceDirectory,
@@ -79,7 +79,7 @@ sub Run {
         $Result .= "  <File>$RelativeFile</File>\n";
         $Result .= "</Package>\n";
     }
-    $Result .= "</otrs_package_list>\n";
+    $Result .= "</ligero_package_list>\n";
     $Self->Print($Result);
 
     return $Self->ExitCodeOk();

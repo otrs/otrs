@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -481,7 +481,7 @@ $Selenium->RunTest(
             "Default customer visibility is honored",
         );
 
-        # Test bug #11810 - http://bugs.otrs.org/show_bug.cgi?id=11810.
+        # Test bug #11810 - http://bugs.ligero.org/show_bug.cgi?id=11810.
         # Translate ticket data tags (e.g. <OTRS_TICKET_State> ) in standard template.
         $Kernel::OM->ObjectParamAdd(
             'Kernel::Language' => {
@@ -652,7 +652,7 @@ $Selenium->RunTest(
         sleep 2;
 
         # Check if Ticket number is shown correctly in text field.
-        # See bug#133995 https://bugs.otrs.org/show_bug.cgi?id=13995
+        # See bug#133995 https://bugs.ligero.org/show_bug.cgi?id=13995
         my $TicketNumber = $TicketObject->TicketNumberLookup(
             TicketID => $TicketID,
         );

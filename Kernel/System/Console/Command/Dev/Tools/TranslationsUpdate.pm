@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -63,13 +63,13 @@ sub Configure {
 
 Make sure that you have a clean system with a current configuration. No modules may be installed or linked into the system!
 
-    <green>otrs.Console.pl $Name --language ...</green>
+    <green>ligero.Console.pl $Name --language ...</green>
 
 <yellow>Translating Extension Modules</yellow>
 
 Make sure that you have a clean system with a current configuration. The module that needs to be translated has to be installed or linked into the system, but only this one!
 
-    <green>otrs.Console.pl $Name --language ... --module-directory ...</green>
+    <green>ligero.Console.pl $Name --language ... --module-directory ...</green>
 EOF
 
     return;
@@ -163,8 +163,8 @@ sub HandleLanguage {
     if ( !$Module ) {
         $LanguageFile  = "$Home/Kernel/Language/$Language.pm";
         $TargetFile    = "$Home/Kernel/Language/$Language.pm";
-        $TargetPOTFile = "$Home/i18n/otrs/otrs.pot";
-        $TargetPOFile  = "$Home/i18n/otrs/otrs.$TransifexLanguage.po";
+        $TargetPOTFile = "$Home/i18n/ligero/ligero.pot";
+        $TargetPOFile  = "$Home/i18n/ligero/ligero.$TransifexLanguage.po";
     }
     else {
         $IsSubTranslation = 1;
@@ -438,7 +438,7 @@ sub HandleLanguage {
         }
 
         # add translatable strings from DB XML
-        my @DBXMLFiles = "$Home/scripts/database/otrs-initial_insert.xml";
+        my @DBXMLFiles = "$Home/scripts/database/ligero-initial_insert.xml";
         if ($IsSubTranslation) {
             @DBXMLFiles = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
                 Directory => "$ModuleDirectory",
@@ -903,7 +903,7 @@ sub WritePerlLanguageFile {
 
         $NewOut = <<"EOF";
 $Separator
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 $Separator
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you

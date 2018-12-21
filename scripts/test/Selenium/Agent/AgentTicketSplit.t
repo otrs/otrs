@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -326,7 +326,7 @@ $Selenium->RunTest(
         }
 
         # Disable 'Frontend::Module###AgentTicketEmail' does not remove split target 'Email ticket'.
-        # See bug#13690 (https://bugs.otrs.org/show_bug.cgi?id=13690) for more information.
+        # See bug#13690 (https://bugs.ligero.org/show_bug.cgi?id=13690) for more information.
         $Helper->ConfigSettingChange(
             Valid => 0,
             Key   => "Frontend::Module###AgentTicketEmail",

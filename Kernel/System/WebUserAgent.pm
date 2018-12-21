@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -123,10 +123,10 @@ If you need to set credentials
         Type         => 'POST',
         Data         => [ Attribute => 'Value', Attribute => 'OtherValue' ],
         Credentials  => {
-            User     => 'otrs_user',
-            Password => 'otrs_password',
+            User     => 'ligero_user',
+            Password => 'ligero_password',
             Realm    => 'OTRS Unittests',
-            Location => 'ftp.otrs.org:80',
+            Location => 'ftp.ligero.org:80',
         },
         SkipSSLVerification => 1, # (optional)
         NoLog               => 1, # (optional)
@@ -251,7 +251,7 @@ sub Request {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

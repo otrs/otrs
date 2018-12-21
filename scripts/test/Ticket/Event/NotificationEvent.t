@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -310,8 +310,8 @@ my $ArticleID1 = $ArticleBackendObject->ArticleCreate(
     HistoryComment       => 'Some free text!',
     UserID               => 1,
     From                 => "$CustomerUserLogin\@localunittest.com",
-    To                   => 'test1@otrsexample.com',
-    Cc                   => 'test2@otrsexample.com',
+    To                   => 'test1@ligeroexample.com',
+    Cc                   => 'test2@ligeroexample.com',
 );
 
 $Self->True(
@@ -332,8 +332,8 @@ my $ArticleID2 = $ArticleBackendObject->ArticleCreate(
     HistoryComment       => 'Some free text!',
     UserID               => 1,
     From                 => "$CustomerUserLogin\@localunittest.com",
-    To                   => 'test3@otrsexample.com',
-    Cc                   => 'test4@otrsexample.com',
+    To                   => 'test3@ligeroexample.com',
+    Cc                   => 'test4@ligeroexample.com',
 );
 
 $Self->True(
@@ -372,8 +372,8 @@ my $CustomerArticleID1 = $ArticleBackendObject->ArticleCreate(
     HistoryComment       => 'Some free text!',
     UserID               => 1,
     From                 => "$CustomerUserLogin\@localunittest.com",
-    To                   => 'test1@otrsexample.com',
-    Cc                   => 'test2@otrsexample.com',
+    To                   => 'test1@ligeroexample.com',
+    Cc                   => 'test2@ligeroexample.com',
 );
 
 $Self->True(
@@ -958,7 +958,7 @@ my @Tests = (
         Data => {
             Events          => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
             RecipientAgents => [$UserID],
-            RecipientEmail  => ['test@otrsexample.com'],
+            RecipientEmail  => ['test@ligeroexample.com'],
         },
         Config => {
             Event => 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update',
@@ -974,7 +974,7 @@ my @Tests = (
                 Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
             {
-                ToArray => ['test@otrsexample.com'],
+                ToArray => ['test@ligeroexample.com'],
                 Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
@@ -1120,7 +1120,7 @@ my @Tests = (
         Name => 'RecipientEmail filter by unchecked dynamic field',
         Data => {
             Events         => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
-            RecipientEmail => ['test@otrsexample.com'],
+            RecipientEmail => ['test@ligeroexample.com'],
 
             # Filter by unchecked checbox dynamic field value. Note that the search value (-1) is
             #   different than the match value (0). See bug#12257 for more information.
@@ -1136,7 +1136,7 @@ my @Tests = (
         },
         ExpectedResults => [
             {
-                ToArray => ['test@otrsexample.com'],
+                ToArray => ['test@ligeroexample.com'],
                 Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
@@ -1168,7 +1168,7 @@ my @Tests = (
         Name => 'RecipientEmail additional recipient by dynamic field (first position)',
         Data => {
             Events         => [ 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update' ],
-            RecipientEmail => ["<OTRS_TICKET_DynamicField_DFT2${RandomID}>, test\@otrsexample.com"],
+            RecipientEmail => ["<OTRS_TICKET_DynamicField_DFT2${RandomID}>, test\@ligeroexample.com"],
         },
         Config => {
             Event => 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update',
@@ -1180,7 +1180,7 @@ my @Tests = (
         },
         ExpectedResults => [
             {
-                ToArray => [ 'foo@bar.com', 'test@otrsexample.com' ],
+                ToArray => [ 'foo@bar.com', 'test@ligeroexample.com' ],
                 Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
@@ -1190,7 +1190,7 @@ my @Tests = (
         Name => 'RecipientEmail additional recipient by dynamic field (last position)',
         Data => {
             Events         => [ 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update' ],
-            RecipientEmail => ["test\@otrsexample.com, <OTRS_TICKET_DynamicField_DFT2${RandomID}>"],
+            RecipientEmail => ["test\@ligeroexample.com, <OTRS_TICKET_DynamicField_DFT2${RandomID}>"],
         },
         Config => {
             Event => 'TicketDynamicFieldUpdate_DFT2' . $RandomID . 'Update',
@@ -1202,7 +1202,7 @@ my @Tests = (
         },
         ExpectedResults => [
             {
-                ToArray => [ 'test@otrsexample.com', 'foo@bar.com' ],
+                ToArray => [ 'test@ligeroexample.com', 'foo@bar.com' ],
                 Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
@@ -1249,7 +1249,7 @@ my @Tests = (
         ExpectedResults => [
             {
                 ToArray =>
-                    [ "$CustomerUserLogin\@localunittest.com", 'test1@otrsexample.com', 'test2@otrsexample.com' ],
+                    [ "$CustomerUserLogin\@localunittest.com", 'test1@ligeroexample.com', 'test2@ligeroexample.com' ],
                 Body => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
@@ -1272,7 +1272,7 @@ my @Tests = (
         ExpectedResults => [
             {
                 ToArray =>
-                    [ "$CustomerUserLogin\@localunittest.com", 'test3@otrsexample.com', 'test4@otrsexample.com' ],
+                    [ "$CustomerUserLogin\@localunittest.com", 'test3@ligeroexample.com', 'test4@ligeroexample.com' ],
                 Body => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
@@ -1295,7 +1295,7 @@ my @Tests = (
         ExpectedResults => [
             {
                 ToArray =>
-                    [ "$CustomerUserLogin\@localunittest.com", 'test1@otrsexample.com', 'test2@otrsexample.com' ],
+                    [ "$CustomerUserLogin\@localunittest.com", 'test1@ligeroexample.com', 'test2@ligeroexample.com' ],
                 Body => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
@@ -1318,7 +1318,7 @@ my @Tests = (
         ExpectedResults => [
             {
                 ToArray =>
-                    [ "$CustomerUserLogin\@localunittest.com", 'test3@otrsexample.com', 'test4@otrsexample.com' ],
+                    [ "$CustomerUserLogin\@localunittest.com", 'test3@ligeroexample.com', 'test4@ligeroexample.com' ],
                 Body => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
@@ -1341,11 +1341,11 @@ my @Tests = (
         ExpectedResults => [
             {
                 ToArray =>
-                    [ "$CustomerUserLogin\@localunittest.com", 'test1@otrsexample.com', 'test2@otrsexample.com' ],
+                    [ "$CustomerUserLogin\@localunittest.com", 'test1@ligeroexample.com', 'test2@ligeroexample.com' ],
                 Body => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
             {
-                ToArray => [ 'test3@otrsexample.com', 'test4@otrsexample.com' ],
+                ToArray => [ 'test3@ligeroexample.com', 'test4@ligeroexample.com' ],
                 Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],

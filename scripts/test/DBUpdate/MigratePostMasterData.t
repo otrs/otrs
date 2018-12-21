@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -42,7 +42,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -70,7 +70,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -112,7 +112,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -140,7 +140,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -181,7 +181,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -209,7 +209,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -251,7 +251,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -279,7 +279,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -320,7 +320,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -348,7 +348,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -390,7 +390,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -422,7 +422,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -467,7 +467,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -499,7 +499,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -544,7 +544,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [
@@ -576,7 +576,7 @@ my @Tests = (
                 },
                 {
                     Key   => 'To',
-                    Value => 'EMAILADDRESS:darthvader@otrs.org',
+                    Value => 'EMAILADDRESS:darthvader@ligero.org',
                 },
             ],
             Set => [

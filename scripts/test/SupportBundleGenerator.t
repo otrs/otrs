@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -82,7 +82,7 @@ else {
 }
 
 # create an ARCHIVE file on developer systems to continue working
-my $ArchiveGeneratorTool = $Home . '/bin/otrs.CheckSum.pl';
+my $ArchiveGeneratorTool = $Home . '/bin/ligero.CheckSum.pl';
 
 # if tool is not present we can't continue
 if ( !-e $ArchiveGeneratorTool ) {
@@ -142,11 +142,11 @@ $OTRSVersion =~ s{ (\d+ \. \d+) .+ }{$1}msx;
 $OTRSVersion .= '.x';
 
 my $TestPackage = '<?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.0">
+<ligero_package version="1.0">
   <Name>Test - ' . $RandomNumber . '</Name>
   <Version>0.0.1</Version>
   <Vendor>OTRS AG</Vendor>
-  <URL>https://otrs.com/</URL>
+  <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
   <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
@@ -157,7 +157,7 @@ my $TestPackage = '<?xml version="1.0" encoding="utf-8" ?>
     <File Location="TestSBG" Permission="644" Encode="Base64">aGVsbG8K</File>
     <File Location="var/TestSBG" Permission="644" Encode="Base64">aGVsbG8K</File>
   </Filelist>
-</otrs_package>
+</ligero_package>
 ';
 
 # tests for GenerateCustom Files Archive

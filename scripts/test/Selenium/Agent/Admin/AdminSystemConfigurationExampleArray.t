@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -83,7 +83,7 @@ my @Tests = (
                 Write => 'Customers',
             },
             {
-                # Remove first item (see https://bugs.otrs.org/show_bug.cgi?id=14137).
+                # Remove first item (see https://bugs.ligero.org/show_bug.cgi?id=14137).
                 Click => '.Setting > .Array > .ArrayItem:nth-of-type(1) > .RemoveButton',
             },
             {

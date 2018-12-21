@@ -1470,9 +1470,9 @@ BEGIN
 IF NOT EXISTS (
     SELECT 1
     FROM pg_constraint
-    WHERE LOWER(conname) = LOWER('FK_article_data_otrs_chat_article_id_id')
+    WHERE LOWER(conname) = LOWER('FK_article_data_ligero_chat_article_id_id')
     ) THEN
-    ALTER TABLE article_data_otrs_chat ADD CONSTRAINT FK_article_data_otrs_chat_article_id_id FOREIGN KEY (article_id) REFERENCES article (id);
+    ALTER TABLE article_data_ligero_chat ADD CONSTRAINT FK_article_data_ligero_chat_article_id_id FOREIGN KEY (article_id) REFERENCES article (id);
 END IF;
 END$$;
 ;

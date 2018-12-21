@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -32,7 +32,7 @@ my @Tests = (
     #             'TagLevel' => '2',
     #             'Minimum' => '5.0.10',
     #             'Content' => '5.0.x',
-    #             'TagLastLevel' => 'otrs_package',
+    #             'TagLastLevel' => 'ligero_package',
     #             'TagCount' => '24',
     #             'Tag' => 'Framework'
     #           }

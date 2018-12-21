@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -950,7 +950,7 @@ sub SQLProcessor {
 
         # make a deep copy in order to prevent modyfing the input data
         # see also Bug#12764 - Database function SQLProcessor() modifies given parameter data
-        # https://bugs.otrs.org/show_bug.cgi?id=12764
+        # https://bugs.ligero.org/show_bug.cgi?id=12764
         my @Database = @{
             $Kernel::OM->Get('Kernel::System::Storable')->Clone(
                 Data => $Param{Database},
@@ -1891,7 +1891,7 @@ sub DESTROY {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

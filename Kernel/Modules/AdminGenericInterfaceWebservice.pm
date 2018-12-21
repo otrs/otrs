@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -591,7 +591,7 @@ sub Run {
             }
         }
 
-        # Display any YAML error message as a normal otrs error message.
+        # Display any YAML error message as a normal ligero error message.
         if ( !IsHashRefWithData($ImportedConfig) ) {
             return $LayoutObject->ErrorScreen(
                 Message =>
@@ -1427,8 +1427,8 @@ sub _UpdateConfiguration {
 
     my $Configuration = $Param{Configuration};
 
-    # This function needs to be extended for further otrs versions
-    #   it could be that newer otrs versions has different configuration options
+    # This function needs to be extended for further ligero versions
+    #   it could be that newer ligero versions has different configuration options
     #   migration from previous version should be automatic and needs to be done here
     return $Configuration;
 }

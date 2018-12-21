@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -34,7 +34,7 @@ sub Run {
     my %ArticleTypeMapping = %{ $TaskConfig->{ArticleTypeMapping} };
 
     PFTABLE:
-    for my $Field (qw(X-OTRS-ArticleType X-OTRS-FollowUp-ArticleType)) {
+    for my $Field (qw(X-LIGERO-ArticleType X-LIGERO-FollowUp-ArticleType)) {
 
         next PFTABLE if !$DBObject->Prepare(
             SQL => 'SELECT f_name, f_key, f_value
@@ -45,11 +45,11 @@ sub Run {
         );
 
         my $NewKeyValue;
-        if ( $Field eq 'X-OTRS-ArticleType' ) {
-            $NewKeyValue = 'X-OTRS-IsVisibleForCustomer';
+        if ( $Field eq 'X-LIGERO-ArticleType' ) {
+            $NewKeyValue = 'X-LIGERO-IsVisibleForCustomer';
         }
         else {
-            $NewKeyValue = 'X-OTRS-FollowUp-IsVisibleForCustomer';
+            $NewKeyValue = 'X-LIGERO-FollowUp-IsVisibleForCustomer';
         }
 
         my @Data;
@@ -182,7 +182,7 @@ sub CheckPreviousRequirement {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

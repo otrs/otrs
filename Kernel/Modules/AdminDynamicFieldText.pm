@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -865,7 +865,7 @@ sub GetParamRegexList {
                 # cut last part of regex error
                 # 'Invalid regular expression (Unmatched [ in regex; marked by
                 # <-- HERE in m/aaa[ <-- HERE / at
-                # /opt/otrs/bin/cgi-bin/../../Kernel/Modules/AdminDynamicFieldText.pm line 452..
+                # /opt/ligero/bin/cgi-bin/../../Kernel/Modules/AdminDynamicFieldText.pm line 452..
                 my $ServerErrorMessage = $@;
                 $ServerErrorMessage =~ s{ (in \s regex); .*$ }{ $1 }xms;
                 $Errors->{ 'RegEx_' . $CurrentRegExEntryID . 'ServerErrorMessage' } = $ServerErrorMessage;

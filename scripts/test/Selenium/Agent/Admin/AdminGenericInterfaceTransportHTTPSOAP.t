@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -407,8 +407,8 @@ $Selenium->RunTest(
 
         # Input fields.
         my %RequesterInputData = (
-            Endpoint             => 'http://local.otrs.com:8000/Selenium/' . $RandomID,
-            NameSpace            => 'http://www.otrs.com/GenericInterface/' . $RandomID,
+            Endpoint             => 'http://local.ligero.com:8000/Selenium/' . $RandomID,
+            NameSpace            => 'http://www.ligero.com/GenericInterface/' . $RandomID,
             RequestNameFreeText  => 'RequestName' . $RandomID,
             ResponseNameFreeText => 'ResponseName' . $RandomID,
             Encoding             => 'utf-8',

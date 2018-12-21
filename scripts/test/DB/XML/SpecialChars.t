@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -54,7 +54,7 @@ for my $SQL (@SQL) {
 }
 
 my @SpecialCharacters = qw( - _ . : ; ' " \ [ ] { } ( ) < > ? ! $ % & / + * = ' ^ | ö ス);
-push @SpecialCharacters, ( ',', '#', 'otrs test', 'otrs_test' );
+push @SpecialCharacters, ( ',', '#', 'ligero test', 'ligero_test' );
 my $Counter = 0;
 
 for my $Character (@SpecialCharacters) {
@@ -163,7 +163,7 @@ for my $Character (@SpecialCharacters) {
 {
 
     # select like value (with space)
-    my $Character     = 'otrs test';
+    my $Character     = 'ligero test';
     my $CharacterLike = $DBObject->Quote( $Character, 'Like' );
     my $SQL           = "SELECT COUNT(name_b) FROM test_d WHERE name_b LIKE ?";
 
@@ -187,7 +187,7 @@ for my $Character (@SpecialCharacters) {
     );
 
     # select like value (with underscore)
-    $Character     = 'otrs_test';
+    $Character     = 'ligero_test';
     $CharacterLike = $DBObject->Quote( $Character, 'Like' );
 
     # proof of concept that oracle needs special treatment

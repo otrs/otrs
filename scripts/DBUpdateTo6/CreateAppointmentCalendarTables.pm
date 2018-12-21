@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -35,7 +35,7 @@ sub Run {
     # Get list of all installed packages.
     my @RepositoryList = $PackageObject->RepositoryList();
 
-    # Check if the appointment calendar tables already exist, by testing if OTRSAppointmentCalendar package is
+    # Check if the appointment calendar tables already exist, by testing if LIGEROAppointmentCalendar package is
     #   installed. Also check if version is lower than 5.0.2, in order to execute some database upgrade statements.
     my $PackageVersion;
     my $DBUpdateNeeded;
@@ -43,8 +43,8 @@ sub Run {
     PACKAGE:
     for my $Package (@RepositoryList) {
 
-        # Package is not the OTRSAppointmentCalendar package.
-        next PACKAGE if $Package->{Name}->{Content} ne 'OTRSAppointmentCalendar';
+        # Package is not the LIGEROAppointmentCalendar package.
+        next PACKAGE if $Package->{Name}->{Content} ne 'LIGEROAppointmentCalendar';
 
         $PackageVersion = $Package->{Version}->{Content};
 
@@ -59,7 +59,7 @@ sub Run {
 
     if ($PackageVersion) {
 
-        print "\n    Found package OTRSAppointmentCalendar $PackageVersion" if $Verbose;
+        print "\n    Found package LIGEROAppointmentCalendar $PackageVersion" if $Verbose;
 
         # Database upgrade is needed, because current version is not the latest.
         if ($DBUpdateNeeded) {
@@ -270,7 +270,7 @@ sub _CheckVersion {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

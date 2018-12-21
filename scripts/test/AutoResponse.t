@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -254,7 +254,7 @@ for my $TypeID ( sort keys %AutoResponseType ) {
             TicketID             => $TicketID,
             IsVisibleForCustomer => 0,
             SenderType           => 'agent',
-            From                 => 'Some Agent <otrs@example.com>',
+            From                 => 'Some Agent <ligero@example.com>',
             To                   => 'Suplier<suplier@example.com>',
             Subject              => 'Email for suplier',
             Body                 => 'the message text',
@@ -281,7 +281,7 @@ for my $TypeID ( sort keys %AutoResponseType ) {
             IsVisibleForCustomer => 0,
             SenderType           => 'customer',
             From                 => 'Suplier<suplier@example.com>',
-            To                   => 'Some Agent <otrs@example.com>',
+            To                   => 'Some Agent <ligero@example.com>',
             Subject              => 'some short description',
             Body                 => 'the message text',
             Charset              => 'utf8',
@@ -291,7 +291,7 @@ for my $TypeID ( sort keys %AutoResponseType ) {
             UserID               => 1,
             AutoResponseType     => 'auto reply',
             OrigHeader           => {
-                From    => 'Some Agent <otrs@example.com>',
+                From    => 'Some Agent <ligero@example.com>',
                 Subject => 'some short description',
             },
         );
@@ -315,7 +315,7 @@ for my $TypeID ( sort keys %AutoResponseType ) {
         $Self->IsDeeply(
             $MailQueueElement->{Recipient},
             [
-                'otrs@example.com'
+                'ligero@example.com'
             ],
             'Check AutoResponse recipients.'
         );

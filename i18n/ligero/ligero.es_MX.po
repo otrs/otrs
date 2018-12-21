@@ -5,25 +5,25 @@
 # Franco Victorio <victorio.franco@gmail.com>, 2018
 # Ivan Miron <ivan.miron@gmail.com>, 2018
 # Alvaro Molina <AlvaroMolinaCL@gmail.com>, 2018
-# Armando Rios <armando.rios@otrs.com>, 2018
+# Armando Rios <armando.rios@ligero.com>, 2018
 # Ignacio Torres Soto <ignacio.torres@oasys.com.mx>, 2018
 # Hugo Andres Gomez <sureno755@gmail.com>, 2018
-# Carlos Javier García Cárdenas <carlos.garcia@otrs.com>, 2018
-# FCRUZ <francisco.cruz@otrs.com>, 2018
-# Martin Gruner <martin.gruner@otrs.com>, 2018
+# Carlos Javier García Cárdenas <carlos.garcia@ligero.com>, 2018
+# FCRUZ <francisco.cruz@ligero.com>, 2018
+# Martin Gruner <martin.gruner@ligero.com>, 2018
 # Emir Nunes, 2018
 # Luis Armando Medina <lamedina@gmail.com>, 2018
 # Luis Medina <luis.medina@sacc.com.mx>, 2018
 # Carlos Vázquez <carlos.vazquez@oslc.com.mx>, 2018
-# Carlos Rodríguez <carlos.rodriguez@otrs.com>, 2018
+# Carlos Rodríguez <carlos.rodriguez@ligero.com>, 2018
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2018-12-06 17:43+0000\n"
 "PO-Revision-Date: 2018-09-20 13:03+0000\n"
-"Last-Translator: Carlos Rodríguez <carlos.rodriguez@otrs.com>, 2018\n"
-"Language-Team: Spanish (Mexico) (https://www.transifex.com/otrs/teams/23435/es_MX/)\n"
+"Last-Translator: Carlos Rodríguez <carlos.rodriguez@ligero.com>, 2018\n"
+"Language-Team: Spanish (Mexico) (https://www.transifex.com/ligero/teams/23435/es_MX/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -3499,8 +3499,8 @@ msgid "URI to indicate specific location for accessing a web service."
 msgstr ""
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
-msgid "e.g https://www.otrs.com:10745/api/v1.0 (without trailing backslash)"
-msgstr "ej. https://www.otrs.com:10745/api/v1.0 (sin la barra invertida)"
+msgid "e.g https://www.ligero.com:10745/api/v1.0 (without trailing backslash)"
+msgstr "ej. https://www.ligero.com:10745/api/v1.0 (sin la barra invertida)"
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
 msgid "Timeout"
@@ -3598,7 +3598,7 @@ msgid ""
 msgstr ""
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
-msgid "e.g. /opt/otrs/var/certificates/SOAP/certificate.pem"
+msgid "e.g. /opt/ligero/var/certificates/SOAP/certificate.pem"
 msgstr ""
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
@@ -3612,7 +3612,7 @@ msgid ""
 msgstr ""
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
-msgid "e.g. /opt/otrs/var/certificates/SOAP/key.pem"
+msgid "e.g. /opt/ligero/var/certificates/SOAP/key.pem"
 msgstr ""
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
@@ -3636,8 +3636,8 @@ msgstr ""
 "certificación que valida el certificado SSL."
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
-msgid "e.g. /opt/otrs/var/certificates/SOAP/CA/ca.pem"
-msgstr "ej.  /opt/otrs/var/certificates/SOAP/CA/ca.pem"
+msgid "e.g. /opt/ligero/var/certificates/SOAP/CA/ca.pem"
+msgstr "ej.  /opt/ligero/var/certificates/SOAP/CA/ca.pem"
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
 msgid "Certification Authority (CA) Directory"
@@ -3650,7 +3650,7 @@ msgid ""
 msgstr ""
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
-msgid "e.g. /opt/otrs/var/certificates/SOAP/CA"
+msgid "e.g. /opt/ligero/var/certificates/SOAP/CA"
 msgstr ""
 
 #. Template: AdminGenericInterfaceTransportHTTPREST
@@ -3685,7 +3685,7 @@ msgid "The default HTTP command to use for the requests."
 msgstr "El comando HTTP predeterminado para usar con las peticiones."
 
 #. Template: AdminGenericInterfaceTransportHTTPSOAP
-msgid "e.g. https://local.otrs.com:8000/Webservice/Example"
+msgid "e.g. https://local.ligero.com:8000/Webservice/Example"
 msgstr ""
 
 #. Template: AdminGenericInterfaceTransportHTTPSOAP
@@ -3756,8 +3756,8 @@ msgstr ""
 
 #. Template: AdminGenericInterfaceTransportHTTPSOAP
 msgid ""
-"e.g urn:otrs-com:soap:functions or "
-"http://www.otrs.com/GenericInterface/actions"
+"e.g urn:ligero-com:soap:functions or "
+"http://www.ligero.com/GenericInterface/actions"
 msgstr ""
 
 #. Template: AdminGenericInterfaceTransportHTTPSOAP
@@ -4414,7 +4414,7 @@ msgstr ""
 
 #. Template: AdminOTRSBusinessInstalled
 msgid ""
-"%s makes contact regularly with cloud.otrs.com to check on available updates"
+"%s makes contact regularly with cloud.ligero.com to check on available updates"
 " and the validity of the underlying contract."
 msgstr ""
 
@@ -4506,8 +4506,8 @@ msgstr ""
 
 #. Template: AdminOTRSBusinessNotInstalled
 msgid ""
-"Connection to cloud.otrs.com via HTTPS couldn't be established. Please make "
-"sure that your OTRS can connect to cloud.otrs.com via port 443."
+"Connection to cloud.ligero.com via HTTPS couldn't be established. Please make "
+"sure that your OTRS can connect to cloud.ligero.com via port 443."
 msgstr ""
 
 #. Template: AdminOTRSBusinessNotInstalled
@@ -6896,7 +6896,7 @@ msgstr ""
 #. Template: AdminSystemConfiguration
 msgid ""
 "There are currently no settings available. Please make sure to run "
-"'otrs.Console.pl Maint::Config::Rebuild' before using the software."
+"'ligero.Console.pl Maint::Config::Rebuild' before using the software."
 msgstr ""
 
 #. Template: AdminSystemConfigurationDeployment
@@ -7724,13 +7724,13 @@ msgstr ""
 
 #. Template: AgentDaemonInfo
 msgid ""
-"Execute '%s start' to make sure the cron jobs of the 'otrs' user are active."
+"Execute '%s start' to make sure the cron jobs of the 'ligero' user are active."
 msgstr ""
 
 #. Template: AgentDaemonInfo
 msgid ""
 "After 5 minutes, check that the OTRS Daemon is running in the system "
-"('bin/otrs.Daemon.pl status')."
+"('bin/ligero.Daemon.pl status')."
 msgstr ""
 
 #. Template: AgentDashboard
@@ -11699,7 +11699,7 @@ msgstr ""
 msgid ""
 "Sorry, Apache::Reload is needed as PerlModule and PerlInitHandler in Apache "
 "config file. See also scripts/apache2-httpd.include.conf. Alternatively, you"
-" can use the command line tool bin/otrs.Console.pl to install packages!"
+" can use the command line tool bin/ligero.Console.pl to install packages!"
 msgstr ""
 
 #. Perl Module: Kernel/Modules/AdminPackageManager.pm
@@ -13788,7 +13788,7 @@ msgid "Print this article"
 msgstr "Imprimir este artículo"
 
 #. Perl Module: Kernel/Output/HTML/ArticleAction/GetHelpLink.pm
-msgid "Contact us at sales@otrs.com"
+msgid "Contact us at sales@ligero.com"
 msgstr ""
 
 #. Perl Module: Kernel/Output/HTML/ArticleAction/GetHelpLink.pm
@@ -14523,7 +14523,7 @@ msgstr ""
 
 #. Perl Module: Kernel/System/AuthSession.pm
 msgid ""
-"You have exceeded the number of concurrent agents - contact sales@otrs.com."
+"You have exceeded the number of concurrent agents - contact sales@ligero.com."
 msgstr ""
 
 #. Perl Module: Kernel/System/AuthSession.pm
@@ -14533,7 +14533,7 @@ msgstr ""
 #. Perl Module: Kernel/System/AuthSession.pm
 msgid ""
 "Login rejected! You have exceeded the maximum number of concurrent Agents! "
-"Contact sales@otrs.com immediately!"
+"Contact sales@ligero.com immediately!"
 msgstr ""
 
 #. Perl Module: Kernel/System/AuthSession.pm
@@ -15091,7 +15091,7 @@ msgstr ""
 #. Kernel/System/SupportDataCollector/Plugin/Database/mysql/InvalidDefaultValues.pm
 msgid ""
 "Tables with invalid default values were found. In order to fix it "
-"automatically, please run: bin/otrs.Console.pl Maint::Database::Check "
+"automatically, please run: bin/ligero.Console.pl Maint::Database::Check "
 "--repair"
 msgstr ""
 
@@ -15656,7 +15656,7 @@ msgstr ""
 #. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/StaticDBOrphanedRecords.pm
 msgid ""
 "Table ticket_lock_index contains orphaned records. Please run "
-"bin/otrs.Console.pl \"Maint::Ticket::QueueIndexCleanup\" to clean the "
+"bin/ligero.Console.pl \"Maint::Ticket::QueueIndexCleanup\" to clean the "
 "StaticDB index."
 msgstr ""
 
@@ -15668,7 +15668,7 @@ msgstr ""
 #. Perl Module:
 #. Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/StaticDBOrphanedRecords.pm
 msgid ""
-"Table ticket_index contains orphaned records. Please run bin/otrs.Console.pl"
+"Table ticket_index contains orphaned records. Please run bin/ligero.Console.pl"
 " \"Maint::Ticket::QueueIndexCleanup\" to clean the StaticDB index."
 msgstr ""
 
@@ -16039,403 +16039,403 @@ msgstr ""
 msgid "Action \"%s\" not found!"
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "invalid-temporarily"
 msgstr "temporalmente-inválido"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Group for default access."
 msgstr "Grupo de acceso predeterminado."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Group of all administrators."
 msgstr "Grupo para todos los administradores."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Group for statistics access."
 msgstr "Grupo para acceder a las estadísticas."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "new"
 msgstr "nuevo"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All new state types (default: viewable)."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "open"
 msgstr "abierto"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All open state types (default: viewable)."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "closed"
 msgstr "cerrado"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All closed state types (default: not viewable)."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "pending reminder"
 msgstr "recordatorio pendiente"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All 'pending reminder' state types (default: viewable)."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "pending auto"
 msgstr "pendiente automático"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All 'pending auto *' state types (default: viewable)."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "removed"
 msgstr "eliminado"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All 'removed' state types (default: not viewable)."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "merged"
 msgstr "mezclado"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "State type for merged tickets (default: not viewable)."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "New ticket created by customer."
 msgstr "Nuevo ticket abierto por un cliente."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "closed successful"
 msgstr "cerrado exitosamente"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket is closed successful."
 msgstr "Ticket cerrado exitosamente."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "closed unsuccessful"
 msgstr "cerrado sin éxito"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket is closed unsuccessful."
 msgstr "Ticket cerrado sin éxito."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Open tickets."
 msgstr "Tickets abiertos."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Customer removed ticket."
 msgstr "El cliente eliminó el ticket."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket is pending for agent reminder."
 msgstr "Este ticket está pendiente para efectuar un recordatorio al agente."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "pending auto close+"
 msgstr "pendiente auto close+"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket is pending for automatic close."
 msgstr "Ticket está pendiente para cierre automático."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "pending auto close-"
 msgstr "pendiente auto close-"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "State for merged tickets."
 msgstr "Estado de los tickets mezclados."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "system standard salutation (en)"
 msgstr "saludo estándar del sistema (en)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Standard Salutation."
 msgstr "Saludo Estándar."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "system standard signature (en)"
 msgstr "firma estándar del sistema (en)"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Standard Signature."
 msgstr "Firma Estándar"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Standard Address."
 msgstr "Dirección Estandar."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "possible"
 msgstr "posible"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Follow-ups for closed tickets are possible. Ticket will be reopened."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "reject"
 msgstr "rechazar"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "Follow-ups for closed tickets are not possible. No new ticket will be "
 "created."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "new ticket"
 msgstr "nuevo ticket"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "Follow-ups for closed tickets are not possible. A new ticket will be "
 "created."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Postmaster queue."
 msgstr "Fila Postmaster."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All default incoming tickets."
 msgstr "Todo los tickers entrantes predeterminados."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All junk tickets."
 msgstr "Todo los tickets basura."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "All misc tickets."
 msgstr "Todos los tickets misceláneos."
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "auto reply"
 msgstr "auto responder"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "Automatic reply which will be sent out after a new ticket has been created."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "auto reject"
 msgstr "auto rechazar"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "Automatic reject which will be sent out after a follow-up has been rejected "
 "(in case queue follow-up option is \"reject\")."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "auto follow up"
 msgstr "auto seguimiento"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "Automatic confirmation which is sent out after a follow-up has been received"
 " for a ticket (in case queue follow-up option is \"possible\")."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "auto reply/new ticket"
 msgstr "auto responder/nuevo ticket"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "Automatic response which will be sent out after a follow-up has been "
 "rejected and a new ticket has been created (in case queue follow-up option "
 "is \"new ticket\")."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "auto remove"
 msgstr "auto eliminar"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Auto remove will be sent out after a customer removed the request."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "default reply (after new ticket has been created)"
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "default reject (after follow-up and rejected of a closed ticket)"
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "default follow-up (after a ticket follow-up has been added)"
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "default reject/new ticket created (after closed follow-up with new ticket "
 "creation)"
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Unclassified"
 msgstr "No clasificado"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "1 very low"
 msgstr "1 muy bajo"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "2 low"
 msgstr "2 bajo"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "3 normal"
 msgstr "3 normal"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "4 high"
 msgstr "4 alto"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "5 very high"
 msgstr "5 muy alto"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "unlock"
 msgstr "desbloquear"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "lock"
 msgstr "bloquear"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "tmp_lock"
 msgstr "tmp_lock"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "agent"
 msgstr "agente"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "system"
 msgstr "sistema"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "customer"
 msgstr "cliente"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket create notification"
 msgstr "Notificación de ticket creado"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "You will receive a notification each time a new ticket is created in one of "
 "your \"My Queues\" or \"My Services\"."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket follow-up notification (unlocked)"
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "You will receive a notification if a customer sends a follow-up to an "
 "unlocked ticket which is in your \"My Queues\" or \"My Services\"."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket follow-up notification (locked)"
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "You will receive a notification if a customer sends a follow-up to a locked "
 "ticket of which you are the ticket owner or responsible."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket lock timeout notification"
 msgstr "Notificación de bloqueo de tickets por tiempo"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "You will receive a notification as soon as a ticket owned by you is "
 "automatically unlocked."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket owner update notification"
 msgstr "Notificación para cambio del propietario del ticket"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket responsible update notification"
 msgstr "Notificación para cambio del responsable de ticket"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket new note notification"
 msgstr "Notificación para nueva nota de ticket"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket queue update notification"
 msgstr "Notificación de cambio en la fila de espera de ticket"
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "You will receive a notification if a ticket is moved into one of your \"My "
 "Queues\"."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket pending reminder notification (locked)"
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket pending reminder notification (unlocked)"
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket escalation notification"
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket escalation warning notification"
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket service update notification"
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "You will receive a notification if a ticket's service is changed to one of "
 "your \"My Services\"."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Appointment reminder notification"
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid ""
 "You will receive a notification each time a reminder time is reached for one"
 " of your appointments."
 msgstr ""
 
-#. Database XML Definition: scripts/database/otrs-initial_insert.xml
+#. Database XML Definition: scripts/database/ligero-initial_insert.xml
 msgid "Ticket email delivery failure notification"
 msgstr ""
 
@@ -18256,7 +18256,7 @@ msgstr ""
 
 #. SysConfig
 msgid ""
-"Basic fulltext index settings. Execute \"bin/otrs.Console.pl "
+"Basic fulltext index settings. Execute \"bin/ligero.Console.pl "
 "Maint::Ticket::FulltextIndexRebuild\" in order to generate a new index."
 msgstr ""
 
@@ -18678,7 +18678,7 @@ msgid ""
 "Configures a default TicketDynamicField setting. \"Name\" defines the "
 "dynamic field which should be used, \"Value\" is the data that will be set, "
 "and \"Event\" defines the trigger event. Please check the developer manual "
-"(http://otrs.github.io/doc/), chapter \"Ticket Event Module\"."
+"(http://ligero.github.io/doc/), chapter \"Ticket Event Module\"."
 msgstr ""
 
 #. SysConfig
@@ -20026,7 +20026,7 @@ msgstr ""
 msgid ""
 "Defines the default front-end (HTML) theme to be used by the agents and "
 "customers. If you like, you can add your own theme. Please refer the "
-"administrator manual located at http://otrs.github.io/doc/."
+"administrator manual located at http://ligero.github.io/doc/."
 msgstr ""
 
 #. SysConfig
@@ -20980,7 +20980,7 @@ msgstr ""
 msgid ""
 "Defines the list of online repositories. Another installations can be used "
 "as repository, for example: "
-"Key=\"http://example.com/otrs/public.pl?Action=PublicRepository;File=\" and "
+"Key=\"http://example.com/ligero/public.pl?Action=PublicRepository;File=\" and "
 "Content=\"Some Name\"."
 msgstr ""
 
@@ -21810,7 +21810,7 @@ msgstr "Define los tipos de estado válidos para un ticket."
 #. SysConfig
 msgid ""
 "Defines the valid states for unlocked tickets. To unlock tickets the script "
-"\"bin/otrs.Console.pl Maint::Ticket::UnlockTimeout\" can be used."
+"\"bin/ligero.Console.pl Maint::Ticket::UnlockTimeout\" can be used."
 msgstr ""
 
 #. SysConfig
@@ -22080,7 +22080,7 @@ msgstr ""
 
 #. SysConfig
 msgid ""
-"Disables the web installer (http://yourhost.example.com/otrs/installer.pl), "
+"Disables the web installer (http://yourhost.example.com/ligero/installer.pl), "
 "to prevent the system from being hijacked. If not enabled, the system can be"
 " reinstalled and the current basic configuration will be used to pre-"
 "populate the questions within the installer script. If enabled, it also "
@@ -22987,7 +22987,7 @@ msgid ""
 "Helps to extend your articles full-text search (From, To, Cc, Subject and "
 "Body search). It will strip all articles and will build an index after "
 "article creation, increasing fulltext searches about 50%. To create an "
-"initial index use \"bin/otrs.Console.pl "
+"initial index use \"bin/ligero.Console.pl "
 "Maint::Ticket::FulltextIndexRebuild\"."
 msgstr ""
 
@@ -23508,7 +23508,7 @@ msgid ""
 "tickets in the system). \"StaticDB\" is the most powerful module, it uses an"
 " extra ticket-index table that works like a view (recommended if more than "
 "80.000 and 6.000 open tickets are stored in the system). Use the command "
-"\"bin/otrs.Console.pl Maint::Ticket::QueueIndexRebuild\" for initial index "
+"\"bin/ligero.Console.pl Maint::Ticket::QueueIndexRebuild\" for initial index "
 "creation."
 msgstr ""
 
@@ -27298,7 +27298,7 @@ msgid ""
 "Specifies the email address that should be used by the application when "
 "sending notifications. The email address is used to build the complete "
 "display name for the notification master (i.e. \"OTRS Notifications\" "
-"otrs@your.example.com). You can use the OTRS_CONFIG_FQDN variable as set in "
+"ligero@your.example.com). You can use the OTRS_CONFIG_FQDN variable as set in "
 "your configuation, or choose another email address."
 msgstr ""
 
@@ -27325,7 +27325,7 @@ msgid ""
 "Specifies the name that should be used by the application when sending "
 "notifications. The sender name is used to build the complete display name "
 "for the notification master (i.e. \"OTRS Notifications\" "
-"otrs@your.example.com)."
+"ligero@your.example.com)."
 msgstr ""
 
 #. SysConfig

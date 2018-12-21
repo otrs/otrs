@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -25,9 +25,9 @@ my $SignatureObject = $Kernel::OM->Get('Kernel::System::Signature');
 
 # add signature
 my $SignatureName = $Helper->GetRandomID();
-my $SignatureText = "Your OTRS-Team
+my $SignatureText = "Your LIGERO-Team
 
-<OTRS_CURRENT_UserFirstname> <OTRS_CURRENT_UserLastname>
+<LIGERO_CURRENT_UserFirstname> <LIGERO_CURRENT_UserLastname>
 
 --
 Super Support Company Inc. - Waterford Business Park

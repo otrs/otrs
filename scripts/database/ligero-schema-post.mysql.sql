@@ -533,8 +533,8 @@ SET @FKExists := (SELECT COUNT(*) FROM information_schema.table_constraints WHER
 SET @FKSQLStatement := IF( @FKExists = 0, 'ALTER TABLE article_data_mime_send_error ADD CONSTRAINT FK_article_data_mime_send_error_article_id_id FOREIGN KEY (article_id) REFERENCES article (id)', 'SELECT ''INFO: Foreign key constraint FK_article_data_mime_send_error_article_id_id does already exist, skipping.''' );
 PREPARE FKStatement FROM @FKSQLStatement;
 EXECUTE FKStatement;
-SET @FKExists := (SELECT COUNT(*) FROM information_schema.table_constraints WHERE table_schema = DATABASE() AND table_name = 'article_data_otrs_chat' AND constraint_name = 'FK_article_data_otrs_chat_article_id_id');
-SET @FKSQLStatement := IF( @FKExists = 0, 'ALTER TABLE article_data_otrs_chat ADD CONSTRAINT FK_article_data_otrs_chat_article_id_id FOREIGN KEY (article_id) REFERENCES article (id)', 'SELECT ''INFO: Foreign key constraint FK_article_data_otrs_chat_article_id_id does already exist, skipping.''' );
+SET @FKExists := (SELECT COUNT(*) FROM information_schema.table_constraints WHERE table_schema = DATABASE() AND table_name = 'article_data_ligero_chat' AND constraint_name = 'FK_article_data_ligero_chat_article_id_id');
+SET @FKSQLStatement := IF( @FKExists = 0, 'ALTER TABLE article_data_ligero_chat ADD CONSTRAINT FK_article_data_ligero_chat_article_id_id FOREIGN KEY (article_id) REFERENCES article (id)', 'SELECT ''INFO: Foreign key constraint FK_article_data_ligero_chat_article_id_id does already exist, skipping.''' );
 PREPARE FKStatement FROM @FKSQLStatement;
 EXECUTE FKStatement;
 SET @FKExists := (SELECT COUNT(*) FROM information_schema.table_constraints WHERE table_schema = DATABASE() AND table_name = 'time_accounting' AND constraint_name = 'FK_time_accounting_article_id_id');

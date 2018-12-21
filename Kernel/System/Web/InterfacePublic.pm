@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -158,7 +158,7 @@ sub Run {
     # This must be done before creating the layout object,
     # because otherwise the action parameter is not passed and then
     # the loader can not load module specific JavaScript and CSS
-    # For details see bug: http://bugs.otrs.org/show_bug.cgi?id=6471
+    # For details see bug: http://bugs.ligero.org/show_bug.cgi?id=6471
     my %CommonObjectParam = %{ $ConfigObject->Get('PublicFrontend::CommonParam') };
     for my $Key ( sort keys %CommonObjectParam ) {
         $Param{$Key} = $ParamObject->GetParam( Param => $Key ) || $CommonObjectParam{$Key};
@@ -288,7 +288,7 @@ sub DESTROY {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

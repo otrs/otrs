@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -87,7 +87,7 @@ sub new {
             || die "Found no '$Option' option in configuration!";
     }
 
-    # should I use x-otrs headers?
+    # should I use x-ligero headers?
     $Self->{Trusted} = defined $Param{Trusted} ? $Param{Trusted} : 1;
 
     if ( $Self->{Trusted} ) {
@@ -576,8 +576,8 @@ sub GetEmailParams {
     HEADER:
     for my $Param ( @{ $Self->{'PostmasterX-Header'} } ) {
 
-        # do not scan x-otrs headers if mailbox is not marked as trusted
-        next HEADER if ( !$Self->{Trusted} && $Param =~ /^x-otrs/i );
+        # do not scan x-ligero headers if mailbox is not marked as trusted
+        next HEADER if ( !$Self->{Trusted} && $Param =~ /^x-ligero/i );
 
         $GetParam{$Param} = $Self->{ParserObject}->GetParam( WHAT => $Param );
 
@@ -672,7 +672,7 @@ sub GetEmailParams {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

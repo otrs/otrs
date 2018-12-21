@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -34,9 +34,9 @@ sub CheckPreviousRequirement {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # Check if configuration was already made.
-    my $OTRSTimeZone        = $ConfigObject->Get('OTRSTimeZone')        // '';
+    my $LIGEROTimeZone        = $ConfigObject->Get('LIGEROTimeZone')        // '';
     my $UserDefaultTimeZone = $ConfigObject->Get('UserDefaultTimeZone') // '';
-    if ( $OTRSTimeZone && $UserDefaultTimeZone ) {
+    if ( $LIGEROTimeZone && $UserDefaultTimeZone ) {
         return 1;
     }
 
@@ -53,7 +53,7 @@ sub CheckPreviousRequirement {
     # Get configured deprecated time zone offset.
     my $TimeOffset = int( $ConfigObject->Get('TimeZone') || 0 );
 
-    # Calculate complete time offset (server time zone + OTRS time offset).
+    # Calculate complete time offset (server time zone + LIGERO time offset).
     my $SuggestedTimeZone = $TimeOffset ? '' : $SystemTimeZone;
     $TimeOffset += $DateTimeObject->Format( Format => '%{offset}' ) / 60 / 60;
 
@@ -69,7 +69,7 @@ sub CheckPreviousRequirement {
     }
 
     #
-    # OTRSTimeZone
+    # LIGEROTimeZone
     #
 
     # Show suggestions for time zone
@@ -77,17 +77,17 @@ sub CheckPreviousRequirement {
     my $TimeZoneByOffset = $DateTimeObject->TimeZoneByOffsetList();
     if ( exists $TimeZoneByOffset->{$TimeOffset} ) {
         print
-            "\n\n        The currently configured time offset is $TimeOffset hours, these are the suggestions for a corresponding OTRS time zone: \n\n";
+            "\n\n        The currently configured time offset is $TimeOffset hours, these are the suggestions for a corresponding LIGERO time zone: \n\n";
 
         print "        " . join( "\n        ", sort @{ $TimeZoneByOffset->{$TimeOffset} } ) . "\n";
     }
 
     if ( $SuggestedTimeZone && $TimeZones{$SuggestedTimeZone} ) {
-        print "\n\n        It seems that $SuggestedTimeZone should be the correct time zone to set for your OTRS. \n";
+        print "\n\n        It seems that $SuggestedTimeZone should be the correct time zone to set for your LIGERO. \n";
     }
 
-    $Self->{TargetTimeZones}->{OTRSTimeZone} = $Self->_AskForTimeZone(
-        ConfigKey => 'OTRSTimeZone',
+    $Self->{TargetTimeZones}->{LIGEROTimeZone} = $Self->_AskForTimeZone(
+        ConfigKey => 'LIGEROTimeZone',
         TimeZones => \%TimeZones,
     );
 
@@ -146,7 +146,7 @@ sub Run {
             print
                 "\n        - Migration of time zone settings is being skipped because this script is being executed in non-interactive mode. \n"
                 . "        Please make sure to set the following SysConfig options after this script has been executed: \n"
-                . "        OTRSTimeZone \n"
+                . "        LIGEROTimeZone \n"
                 . "        UserDefaultTimeZone \n"
                 . "        TimeZone::Calendar1 to TimeZone::Calendar9 (depending on the calendars in use) \n\n";
         }
@@ -199,7 +199,7 @@ sub _AskForTimeZone {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

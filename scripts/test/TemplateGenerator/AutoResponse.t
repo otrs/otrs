@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -208,7 +208,7 @@ for my $Test (@Tests) {
     );
 }
 
-# Check replacing time attribute tags (see bug#13865 - https://bugs.otrs.org/show_bug.cgi?id=13865).
+# Check replacing time attribute tags (see bug#13865 - https://bugs.ligero.org/show_bug.cgi?id=13865).
 # Create datetime dynamic field.
 my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
 my $DynamicFieldName   = "DateTimeDF$RandomID";

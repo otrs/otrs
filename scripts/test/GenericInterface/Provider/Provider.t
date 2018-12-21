@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -292,7 +292,7 @@ for my $Test (@Tests) {
                 if ( $RequestMethod eq 'post' ) {
 
                     # prepare CGI environment variables
-                    $ENV{REQUEST_URI}    = "http://localhost/otrs/nph-genericinterface.pl/$WebserviceAccess";
+                    $ENV{REQUEST_URI}    = "http://localhost/ligero/nph-genericinterface.pl/$WebserviceAccess";
                     $ENV{REQUEST_METHOD} = 'POST';
                     $RequestData         = $CreateQueryString->(
                         Data   => $Test->{RequestData},
@@ -310,7 +310,7 @@ for my $Test (@Tests) {
 
                     # prepare CGI environment variables
                     $ENV{REQUEST_URI}
-                        = "http://localhost/otrs/nph-genericinterface.pl/$WebserviceAccess?" . $QueryString;
+                        = "http://localhost/ligero/nph-genericinterface.pl/$WebserviceAccess?" . $QueryString;
                     $ENV{QUERY_STRING}   = $QueryString;
                     $ENV{REQUEST_METHOD} = 'GET';
                 }

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -878,9 +878,9 @@ my @Tests = (
                             SOAPAction           => 'Yes',
                             SOAPActionSeparator  => '/',
                             SSL                  => {
-                                SSLCADir          => '/opt/otrs/scripts/test/sample/SSL/',
-                                SSLCAFile         => '/opt/otrs/scripts/test/sample/SSL/ca-certificate.pem',
-                                SSLP12Certificate => '/opt/otrs/scripts/test/sample/SSL/certificate.pem',
+                                SSLCADir          => '/opt/ligero/scripts/test/sample/SSL/',
+                                SSLCAFile         => '/opt/ligero/scripts/test/sample/SSL/ca-certificate.pem',
+                                SSLP12Certificate => '/opt/ligero/scripts/test/sample/SSL/certificate.pem',
                                 SSLP12Password    => 'certificate password',
                                 SSLProxy          => 'https://proxy-host:1234/',
                                 SSLProxyPassword  => 'proxy password',
@@ -930,9 +930,9 @@ my @Tests = (
                             SOAPActionScheme     => 'NameSpaceSeparatorOperation',
                             SOAPActionSeparator  => '/',
                             SSL                  => {
-                                SSLCADir       => '/opt/otrs/scripts/test/sample/SSL/',
-                                SSLCAFile      => '/opt/otrs/scripts/test/sample/SSL/ca-certificate.pem',
-                                SSLCertificate => '/opt/otrs/scripts/test/sample/SSL/certificate.pem',
+                                SSLCADir       => '/opt/ligero/scripts/test/sample/SSL/',
+                                SSLCAFile      => '/opt/ligero/scripts/test/sample/SSL/ca-certificate.pem',
+                                SSLCertificate => '/opt/ligero/scripts/test/sample/SSL/certificate.pem',
                                 SSLPassword    => 'certificate password',
                                 UseSSL         => 'Yes',
                             },
@@ -965,9 +965,9 @@ my @Tests = (
                             DefaultCommand => 'POST',
                             Host           => 'http://somehost/someuri',
                             X509           => {
-                                X509CAFile   => '/opt/otrs/scripts/test/sample/SSL/ca-certificate.pem',
-                                X509CertFile => '/opt/otrs/scripts/test/sample/SSL/certificate.pem',
-                                X509KeyFile  => '/opt/otrs/scripts/test/sample/SSL/certificate.key.pem',
+                                X509CAFile   => '/opt/ligero/scripts/test/sample/SSL/ca-certificate.pem',
+                                X509CertFile => '/opt/ligero/scripts/test/sample/SSL/certificate.pem',
+                                X509KeyFile  => '/opt/ligero/scripts/test/sample/SSL/certificate.key.pem',
                                 UseX509      => 'Yes',
                             },
                         },
@@ -1001,9 +1001,9 @@ my @Tests = (
                                 UseProxy => 'No',
                             },
                             SSL => {
-                                SSLCAFile      => '/opt/otrs/scripts/test/sample/SSL/ca-certificate.pem',
-                                SSLCertificate => '/opt/otrs/scripts/test/sample/SSL/certificate.pem',
-                                SSLKey         => '/opt/otrs/scripts/test/sample/SSL/certificate.key.pem',
+                                SSLCAFile      => '/opt/ligero/scripts/test/sample/SSL/ca-certificate.pem',
+                                SSLCertificate => '/opt/ligero/scripts/test/sample/SSL/certificate.pem',
+                                SSLKey         => '/opt/ligero/scripts/test/sample/SSL/certificate.key.pem',
                                 UseSSL         => 'Yes',
                             },
                             Timeout => 300,

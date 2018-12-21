@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -878,7 +878,7 @@ $Self->Is(
 );
 
 # Change CustomerUserListFields config and search for customer again.
-#   See bug#13394 (https://bugs.otrs.org/show_bug.cgi?id=13394).
+#   See bug#13394 (https://bugs.ligero.org/show_bug.cgi?id=13394).
 my $CustomerUser = $ConfigObject->Get('CustomerUser');
 $CustomerUser->{CustomerUserListFields} = [ 'login', 'first_name', 'last_name', 'customer_id', 'email' ];
 $ConfigObject->Set(

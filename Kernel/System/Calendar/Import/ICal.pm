@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -512,12 +512,12 @@ sub Import {
 
             # get team
             if (
-                IsArrayRefWithData( $Properties->{'x-otrs-team'} )
-                && ref $Properties->{'x-otrs-team'}->[0] eq 'Data::ICal::Property'
-                && $Properties->{'x-otrs-team'}->[0]->{'value'}
+                IsArrayRefWithData( $Properties->{'x-ligero-team'} )
+                && ref $Properties->{'x-ligero-team'}->[0] eq 'Data::ICal::Property'
+                && $Properties->{'x-ligero-team'}->[0]->{'value'}
                 )
             {
-                my @Teams = split( ",", $Properties->{'x-otrs-team'}->[0]->{'value'} );
+                my @Teams = split( ",", $Properties->{'x-ligero-team'}->[0]->{'value'} );
 
                 if (@Teams) {
                     my @TeamIDs;
@@ -536,12 +536,12 @@ sub Import {
 
             # get resource
             if (
-                IsArrayRefWithData( $Properties->{'x-otrs-resource'} )
-                && ref $Properties->{'x-otrs-resource'}->[0] eq 'Data::ICal::Property'
-                && $Properties->{'x-otrs-resource'}->[0]->{'value'}
+                IsArrayRefWithData( $Properties->{'x-ligero-resource'} )
+                && ref $Properties->{'x-ligero-resource'}->[0] eq 'Data::ICal::Property'
+                && $Properties->{'x-ligero-resource'}->[0]->{'value'}
                 )
             {
-                my @Resources = split( ",", $Properties->{'x-otrs-resource'}->[0]->{'value'} );
+                my @Resources = split( ",", $Properties->{'x-ligero-resource'}->[0]->{'value'} );
 
                 if (@Resources) {
                     my @Users;
@@ -561,8 +561,8 @@ sub Import {
         # get available plugin keys suitable for lowercase search
         my $PluginKeys = $PluginObject->PluginKeys();
 
-        # plugin fields (start with 'x-otrs-plugin-')
-        my @PluginFields = grep { $_ =~ /x-otrs-plugin-/i } keys %{$Properties};
+        # plugin fields (start with 'x-ligero-plugin-')
+        my @PluginFields = grep { $_ =~ /x-ligero-plugin-/i } keys %{$Properties};
 
         PLUGINFIELD:
         for my $PluginField (@PluginFields) {
@@ -573,7 +573,7 @@ sub Import {
                 )
             {
                 # extract lowercase plugin key
-                $PluginField =~ /x-otrs-plugin-(.*)$/;
+                $PluginField =~ /x-ligero-plugin-(.*)$/;
                 my $PluginKeyLC = $1;
 
                 # get proper plugin key
@@ -790,7 +790,7 @@ sub _FormatTime {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

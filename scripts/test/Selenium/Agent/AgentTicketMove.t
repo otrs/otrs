@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -253,7 +253,7 @@ $Selenium->RunTest(
         $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
-        # Test bug #11854 ( http://bugs.otrs.org/show_bug.cgi?id=11854 ).
+        # Test bug #11854 ( http://bugs.ligero.org/show_bug.cgi?id=11854 ).
         # ACL restriction on queue which is destination queue for 'Spam' menu in AgentTicketZoom.
         # Get error message.
         my $ErrorMessage

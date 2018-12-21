@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -18,16 +18,16 @@ sub Load {
     my $Self = shift;
 
     $Self->{DatabaseHost}     = '127.0.0.1';
-    $Self->{Database}         = 'otrs';
-    $Self->{DatabaseUser}     = 'otrs';
-    $Self->{DatabasePw}       = 'otrs';
+    $Self->{Database}         = 'ligero';
+    $Self->{DatabaseUser}     = 'ligero';
+    $Self->{DatabasePw}       = 'ligero';
     $Self->{DatabaseDSN}      = "DBI:mysql:database=$Self->{Database};host=$Self->{DatabaseHost};";
     $Self->{Home}             = dirname dirname __FILE__;
     $Self->{TestHTTPHostname} = 'localhost:5000';
     $Self->{TestDatabase}     = {
-        DatabaseDSN  => "DBI:mysql:database=otrstest;host=$Self->{DatabaseHost}",
-        DatabaseUser => 'otrstest',
-        DatabasePw   => 'otrstest',
+        DatabaseDSN  => "DBI:mysql:database=ligerotest;host=$Self->{DatabaseHost}",
+        DatabaseUser => 'ligerotest',
+        DatabasePw   => 'ligerotest',
     };
     return;
 }

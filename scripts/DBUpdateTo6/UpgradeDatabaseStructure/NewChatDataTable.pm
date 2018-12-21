@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -32,7 +32,7 @@ sub Run {
     my @XMLStrings = (
 
         # article data for Chat based backend
-        '<Table Name="article_data_otrs_chat">
+        '<Table Name="article_data_ligero_chat">
             <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
             <Column Name="article_id" Required="true" Type="BIGINT"/>
             <Column Name="chat_participant_id" Required="true" Size="255" Type="VARCHAR" />
@@ -41,7 +41,7 @@ sub Run {
             <Column Name="message_text" Required="false" Size="3800" Type="VARCHAR" />
             <Column Name="system_generated" Required="true" Type="SMALLINT" />
             <Column Name="create_time" Required="true" Type="DATE"/>
-            <Index Name="article_data_otrs_chat_article_id">
+            <Index Name="article_data_ligero_chat_article_id">
                 <IndexColumn Name="article_id"/>
             </Index>
             <ForeignKey ForeignTable="article">
@@ -61,7 +61,7 @@ sub Run {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

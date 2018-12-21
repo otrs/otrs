@@ -1,7 +1,7 @@
 # Documentation of OTRS JavaScript Namespaces
 
 This is the documentation of all JavaScript namespaces used in OTRS Helpdesk. The information
-is automatically extracted from the JavaScript source files of [the master branch](https://github.com/OTRS/otrs/tree/master).
+is automatically extracted from the JavaScript source files of [the master branch](https://github.com/OTRS/ligero/tree/master).
 
 If you find any error or inconsistency, please feel free to fix the issue and send us a pull request!
 

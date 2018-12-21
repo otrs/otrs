@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -553,7 +553,7 @@ use this method to handle any Selenium exceptions.
     $SeleniumObject->HandleError($@);
 
 It will create a failing test result and store a screen shot of the page
-for analysis (in folder /var/otrs-unittest if it exists, in $Home/var/httpd/htdocs otherwise).
+for analysis (in folder /var/ligero-unittest if it exists, in $Home/var/httpd/htdocs otherwise).
 
 =cut
 
@@ -593,9 +593,9 @@ sub HandleError {
     #
     # If a shared screenshot folder is present, then we also store the screenshot there for external use.
     #
-    if ( -d '/var/otrs-unittest/' ) {
+    if ( -d '/var/ligero-unittest/' ) {
 
-        my $SharedScreenshotDir = '/var/otrs-unittest/SeleniumScreenshots';
+        my $SharedScreenshotDir = '/var/ligero-unittest/SeleniumScreenshots';
         mkdir $SharedScreenshotDir || return $Self->False( 1, "Could not create $SharedScreenshotDir." );
 
         $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
@@ -780,7 +780,7 @@ sub InputFieldValueSet {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

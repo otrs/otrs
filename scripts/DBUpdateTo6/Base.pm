@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -633,7 +633,7 @@ sub SettingUpdate {
 
     my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
 
-    # Try to get the default setting from OTRS 6 for the new setting name.
+    # Try to get the default setting from LIGERO 6 for the new setting name.
     my %CurrentSetting = $SysConfigObject->SettingGet(
         Name  => $SettingName,
         NoLog => 1,
@@ -676,7 +676,7 @@ sub SettingUpdate {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

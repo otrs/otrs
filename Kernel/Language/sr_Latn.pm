@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # Copyright (C) 2010 Milorad Jovanovic <j.milorad at gmail.com>
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -297,25 +297,25 @@ sub Data {
         'Support data collector' => 'Sakupljač podataka podrške',
         'Hint' => 'Savet',
         'Currently support data is only shown in this system.' => 'Aktuelni podaci podrške se prikazuju samo na ovom sistemu.',
-        'It is highly recommended to send this data to OTRS Group in order to get better support.' =>
-            'Preporučuje se da ove podatke pošaljete OTRS grupi da bi ste dobili bolju podršku.',
+        'It is highly recommended to send this data to LIGERO Group in order to get better support.' =>
+            'Preporučuje se da ove podatke pošaljete LIGERO grupi da bi ste dobili bolju podršku.',
         'Configuration' => 'Konfiguracija',
         'Send support data' => 'Pošalji podatke za podršku',
-        'This will allow the system to send additional support data information to OTRS Group.' =>
-            'Ovo će omogućiti sistemu da pošalje dodatne informacije o podacima podrške OTRS grupi.',
+        'This will allow the system to send additional support data information to LIGERO Group.' =>
+            'Ovo će omogućiti sistemu da pošalje dodatne informacije o podacima podrške LIGERO grupi.',
         'Update' => 'Ažuriranje',
         'System Registration' => 'Registracija sistema',
-        'To enable data sending, please register your system with OTRS Group or update your system registration information (make sure to activate the \'send support data\' option.)' =>
-            'Da bi ste omogućili slanje podataka, molimo vas da registrujete vaš sistem u OTRS grupi ili da ažurirate informacije sistemske registracije (budite sigurni da ste aktivirali opciju "Pošalji podatke za podršku").',
+        'To enable data sending, please register your system with LIGERO Group or update your system registration information (make sure to activate the \'send support data\' option.)' =>
+            'Da bi ste omogućili slanje podataka, molimo vas da registrujete vaš sistem u LIGERO grupi ili da ažurirate informacije sistemske registracije (budite sigurni da ste aktivirali opciju "Pošalji podatke za podršku").',
         'Register this System' => 'Registruj ovaj sistem',
         'System Registration is disabled for your system. Please check your configuration.' =>
             'Sistemska registracije je deaktivirana za vaš sistem. Molimo da proverite vašu konfiguraciju.',
 
         # Template: AdminCloudServices
-        'System registration is a service of OTRS Group, which provides a lot of advantages!' =>
-            'Registracija sistema je usluga OTRS grupe, koja obezbeđuje mnoge prednosti!',
-        'Please note that the use of OTRS cloud services requires the system to be registered.' =>
-            'Napominjemo da korišćenje OTRS servisa u oblaku zahtevaju da sistem bude registrovan.',
+        'System registration is a service of LIGERO Group, which provides a lot of advantages!' =>
+            'Registracija sistema je usluga LIGERO grupe, koja obezbeđuje mnoge prednosti!',
+        'Please note that the use of LIGERO cloud services requires the system to be registered.' =>
+            'Napominjemo da korišćenje LIGERO servisa u oblaku zahtevaju da sistem bude registrovan.',
         'Register this system' => 'Registruj ovaj sistem',
         'Here you can configure available cloud services that communicate securely with %s.' =>
             'Ovde možete podesiti da dostupni servisi u oblaku koriste sigurnu komunikaciju preko %s.',
@@ -784,7 +784,7 @@ sub Data {
             'Naziv se može koristiti za pravljenje razlike između pojedinačnih konfiguracija za obradu greške.',
         'Please provide a unique name for this web service.' => 'Molimo da obezbedite jedinstveni naziv za ovaj veb servis.',
         'Error handling module backend' => 'Modul za obradu greške',
-        'This OTRS error handling backend module will be called internally to process the error handling mechanism.' =>
+        'This LIGERO error handling backend module will be called internally to process the error handling mechanism.' =>
             'Ovaj modul za otklanjanje grešaka će biti pozvan interno da obradi grešku.',
         'Processing options' => 'Podešavanja obrade',
         'Configure filters to control error handling module execution.' =>
@@ -876,23 +876,23 @@ sub Data {
         'The name is typically used to call up an operation of a remote web service.' =>
             'Naziv se obično koristi za pokretanje operacije udaljenog veb servisa.',
         'Invoker backend' => 'Modul pozivaoca',
-        'This OTRS invoker backend module will be called to prepare the data to be sent to the remote system, and to process its response data.' =>
+        'This LIGERO invoker backend module will be called to prepare the data to be sent to the remote system, and to process its response data.' =>
             'Ovaj modul pozivaoca biće pozvan da pripremi podatke za slanje na udaljeni sistem i da obradi podatke njegovog odgovora.',
         'Mapping for outgoing request data' => 'Mapiranje za izlazne podatke zahteva',
         'Configure' => 'Podesi',
-        'The data from the invoker of OTRS will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
-            'Podaci iz OTRS pozivaoca biće obrađeni ovim mapiranjem, da bi ih transformisali u tipove podataka koje udaljeni sistem očekuje.',
+        'The data from the invoker of LIGERO will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
+            'Podaci iz LIGERO pozivaoca biće obrađeni ovim mapiranjem, da bi ih transformisali u tipove podataka koje udaljeni sistem očekuje.',
         'Mapping for incoming response data' => 'Mapiranje za ulazne podatke odgovora',
-        'The response data will be processed by this mapping, to transform it to the kind of data the invoker of OTRS expects.' =>
-            'Podaci odgovora iz OTRS pozivaoca biće obrađeni ovim mapiranjem, da bi ih transformisali u tipove podataka koje udaljeni sistem očekuje..',
+        'The response data will be processed by this mapping, to transform it to the kind of data the invoker of LIGERO expects.' =>
+            'Podaci odgovora iz LIGERO pozivaoca biće obrađeni ovim mapiranjem, da bi ih transformisali u tipove podataka koje udaljeni sistem očekuje..',
         'Asynchronous' => 'Asinhroni',
         'Condition' => 'Uslov',
         'Edit this event' => 'Uredi ovaj događaj',
         'This invoker will be triggered by the configured events.' => 'Ovaj pozivaoc će biti aktiviran preko podešenih događaja.',
         'To add a new event select the event object and event name and click on the "+" button' =>
             'Za dodavanje novog događaja izaberite objekat i naziv događaja pa kliknite na "+" dugme',
-        'Asynchronous event triggers are handled by the OTRS Scheduler Daemon in background (recommended).' =>
-            'Asinhronim okidačima događaja upravlja planer OTRS sistemskog servisa u pozadini (preporučeno).',
+        'Asynchronous event triggers are handled by the LIGERO Scheduler Daemon in background (recommended).' =>
+            'Asinhronim okidačima događaja upravlja planer LIGERO sistemskog servisa u pozadini (preporučeno).',
         'Synchronous event triggers would be processed directly during the web request.' =>
             'Sinhroni okidači događaja biće obrađeni direktno tokom veb zahteva.',
 
@@ -996,11 +996,11 @@ sub Data {
         'The name is typically used to call up this web service operation from a remote system.' =>
             'Naziv se obično koristi za pozivanje operacije veb servisa iz udaljenog sistema.',
         'Operation backend' => 'Modul operacije',
-        'This OTRS operation backend module will be called internally to process the request, generating data for the response.' =>
+        'This LIGERO operation backend module will be called internally to process the request, generating data for the response.' =>
             'Ovaj modul operacije će biti interno pozvan da obradi zahtev, generisanjem podataka za odgovor.',
         'Mapping for incoming request data' => 'Mapiranje za dolazne podatke zahteva',
-        'The request data will be processed by this mapping, to transform it to the kind of data OTRS expects.' =>
-            'Podaci zahteva će biti obrađeni kroz mapiranje, radi transformacije u oblik koji OTRS očekuje.',
+        'The request data will be processed by this mapping, to transform it to the kind of data LIGERO expects.' =>
+            'Podaci zahteva će biti obrađeni kroz mapiranje, radi transformacije u oblik koji LIGERO očekuje.',
         'Mapping for outgoing response data' => 'Mapiranje za izlazne podatke odgovora',
         'The response data will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
             'Podaci odgovora će biti obrađeni kroz ovo mapiranje, radi transformacije u oblik koji udaljeni sistem očekuje.',
@@ -1018,8 +1018,8 @@ sub Data {
             'Ograniči ovu opreaciju na pojedine metode zahteva. Ako ni jedna metoda nije izabrana svi zahtevi će biti prihvaćeni.',
         'Maximum message length' => 'Najveća dužina poruke',
         'This field should be an integer number.' => 'Ovo polje treba da bude ceo broj.',
-        'Here you can specify the maximum size (in bytes) of REST messages that OTRS will process.' =>
-            'Ovde možete uneti maksimalnu veličinu (u bajtima) REST poruka koje će OTRS da obradi.',
+        'Here you can specify the maximum size (in bytes) of REST messages that LIGERO will process.' =>
+            'Ovde možete uneti maksimalnu veličinu (u bajtima) REST poruka koje će LIGERO da obradi.',
         'Send Keep-Alive' => 'Pošalji Keep-Alive',
         'This configuration defines if incoming connections should get closed or kept alive.' =>
             'Konfiguracija definiše da li dolazna konekcija treba da se zatvori i održava.',
@@ -1028,8 +1028,8 @@ sub Data {
         'Endpoint' => 'Krajnja tačka',
         'URI to indicate specific location for accessing a web service.' =>
             'URI za identifikaciju specifične lokacije za pristup servisu. ',
-        'e.g https://www.otrs.com:10745/api/v1.0 (without trailing backslash)' =>
-            'npr. https://www.otrs.com:10745/api/v1.0 (bez kose crte na kraju)',
+        'e.g https://www.ligero.com:10745/api/v1.0 (without trailing backslash)' =>
+            'npr. https://www.ligero.com:10745/api/v1.0 (bez kose crte na kraju)',
         'Timeout' => 'Vremensko ograničenje',
         'Timeout value for requests.' => 'Vremensko ograničenje za zahteve.',
         'Authentication' => 'Autentifikacija',
@@ -1055,22 +1055,22 @@ sub Data {
         'Client Certificate' => 'Klijentski sertifikat',
         'The full path and name of the SSL client certificate file (must be in PEM, DER or PKCS#12 format).' =>
             'Cela putanja i naziv za datoteku SSL sertifikata (mora biti u PEM, DER ili PKCS#12 formatu).',
-        'e.g. /opt/otrs/var/certificates/SOAP/certificate.pem' => 'npr. /opt/otrs/var/certificates/SOAP/certificate.pem',
+        'e.g. /opt/ligero/var/certificates/SOAP/certificate.pem' => 'npr. /opt/ligero/var/certificates/SOAP/certificate.pem',
         'Client Certificate Key' => 'Ključ klijentskog sertifikata',
         'The full path and name of the SSL client certificate key file (if not already included in certificate file).' =>
             'Cela putanja i naziv za datoteku ključa SSL sertifikata (ukoliko nije uključen u datoteku sertifikata).',
-        'e.g. /opt/otrs/var/certificates/SOAP/key.pem' => 'npr. /opt/otrs/var/certificates/SOAP/key.pem',
+        'e.g. /opt/ligero/var/certificates/SOAP/key.pem' => 'npr. /opt/ligero/var/certificates/SOAP/key.pem',
         'Client Certificate Key Password' => 'Lozinka ključa klijentskog sertifikata',
         'The password to open the SSL certificate if the key is encrypted.' =>
             'Lozinka za otvaranje SSL sertifikata ukoliko je ključ šifrovan.',
         'Certification Authority (CA) Certificate' => 'Sertifikat sertifikacionog tela (CA)',
         'The full path and name of the certification authority certificate file that validates SSL certificate.' =>
             'Cela putanja i naziv sertifikacionog tela koje provera ispravnost SSL sertifikata.',
-        'e.g. /opt/otrs/var/certificates/SOAP/CA/ca.pem' => 'npr. /opt/otrs/var/certificates/SOAP/CA/ca.pem',
+        'e.g. /opt/ligero/var/certificates/SOAP/CA/ca.pem' => 'npr. /opt/ligero/var/certificates/SOAP/CA/ca.pem',
         'Certification Authority (CA) Directory' => 'Direktorijum sertifikacionog tela (CA)',
         'The full path of the certification authority directory where the CA certificates are stored in the file system.' =>
             'Cela putanja direktorijuma sertifikacionog tela gde se skladište CA sertifikati u sistemu datoteka.',
-        'e.g. /opt/otrs/var/certificates/SOAP/CA' => 'npr. /opt/otrs/var/certificates/SOAP/CA',
+        'e.g. /opt/ligero/var/certificates/SOAP/CA' => 'npr. /opt/ligero/var/certificates/SOAP/CA',
         'Controller mapping for Invoker' => 'Mapiranje kontrolera za pozivaoca',
         'The controller that the invoker should send requests to. Variables marked by a \':\' will get replaced by the data value and passed along with the request. (e.g. /Ticket/:TicketID?UserLogin=:UserLogin&Password=:Password).' =>
             'Kontroler kome će pozivalac prosleđivati zahteve. Promenljive obeležene sa \':\' će biti zamenjene njihovim vrednostima i prosleđene zajedno sa zahtevom (npr. /Ticket/:TicketID?UserLogin=:UserLogin&Password=:Password).',
@@ -1081,7 +1081,7 @@ sub Data {
         'The default HTTP command to use for the requests.' => 'Podrazumevena HTTP komanda za zahteve.',
 
         # Template: AdminGenericInterfaceTransportHTTPSOAP
-        'e.g. https://local.otrs.com:8000/Webservice/Example' => 'npr. https://local.otrs.com:8000/Webservice/Example',
+        'e.g. https://local.ligero.com:8000/Webservice/Example' => 'npr. https://local.ligero.com:8000/Webservice/Example',
         'Set SOAPAction' => 'Definiši SOAPAction',
         'Set to "Yes" in order to send a filled SOAPAction header.' => 'Izaberi "Da" za slanje popunjenog SOAPAction zaglavlja.',
         'Set to "No" in order to send an empty SOAPAction header.' => 'Izaberi "Ne" za slanje praznog SOAPAction zaglavlja.',
@@ -1101,8 +1101,8 @@ sub Data {
         'Text to be used to as SOAPAction.' => 'Tekst koji će se koristiti kao SOAPAction.',
         'Namespace' => 'Vrsta zahteva',
         'URI to give SOAP methods a context, reducing ambiguities.' => 'URI koji daje kontekst SOAP metodama, smanjuje dvosmislenosti.',
-        'e.g urn:otrs-com:soap:functions or http://www.otrs.com/GenericInterface/actions' =>
-            'npr. urn:otrs-com:soap:functions ili http://www.otrs.com/GenericInterface/actions',
+        'e.g urn:ligero-com:soap:functions or http://www.ligero.com/GenericInterface/actions' =>
+            'npr. urn:ligero-com:soap:functions ili http://www.ligero.com/GenericInterface/actions',
         'Request name scheme' => 'Zahtev za šemu naziva',
         'Select how SOAP request function wrapper should be constructed.' =>
             'Izaberite kako će biti konstruisan omotač funkcije SOAP zahteva.',
@@ -1119,8 +1119,8 @@ sub Data {
         'Select how SOAP response function wrapper should be constructed.' =>
             'Izaberite kako će biti konstruisan omotač funkcije SOAP odgovora.',
         'Response name free text' => 'Slobodan tekst naziva odgovora',
-        'Here you can specify the maximum size (in bytes) of SOAP messages that OTRS will process.' =>
-            'Ovde možete uneti maksimalnu veličinu (u bajtima) SOAP poruka koje će OTRS da obradi.',
+        'Here you can specify the maximum size (in bytes) of SOAP messages that LIGERO will process.' =>
+            'Ovde možete uneti maksimalnu veličinu (u bajtima) SOAP poruka koje će LIGERO da obradi.',
         'Encoding' => 'Kodni raspored',
         'The character encoding for the SOAP message contents.' => 'Kodni raspored znakova za sadržaj SOAP poruke.',
         'e.g utf-8, latin1, iso-8859-1, cp1250, Etc.' => 'npr. utf-8, latin1, iso-8859-1, cp1250, ...',
@@ -1163,10 +1163,10 @@ sub Data {
         'Provider transport' => 'Transport provajdera',
         'Requester transport' => 'Transport potražioca',
         'Debug threshold' => 'Prag uklanjanja grešaka',
-        'In provider mode, OTRS offers web services which are used by remote systems.' =>
-            'U režimu provajdera, OTRS nudi veb servise koji se koriste od strane udaljenih sistema.',
-        'In requester mode, OTRS uses web services of remote systems.' =>
-            'U režimu naručioca, OTRS koristi veb servise udaljenih sistema.',
+        'In provider mode, LIGERO offers web services which are used by remote systems.' =>
+            'U režimu provajdera, LIGERO nudi veb servise koji se koriste od strane udaljenih sistema.',
+        'In requester mode, LIGERO uses web services of remote systems.' =>
+            'U režimu naručioca, LIGERO koristi veb servise udaljenih sistema.',
         'Network transport' => 'Mrežni transport',
         'Error Handling Modules' => 'Moduli za obradu greške',
         'Error handling modules are used to react in case of errors during the communication. Those modules are executed in a specific order, which can be changed by drag and drop.' =>
@@ -1226,8 +1226,8 @@ sub Data {
         'Filter for mail accounts' => 'Filter za imejl naloge',
         'All incoming emails with one account will be dispatched in the selected queue.' =>
             'Sve dolazne poruke sa jednog imejl naloga će biti usmerene u izabrani red.',
-        'If your account is marked as trusted, the X-OTRS headers already existing at arrival time (for priority etc.) will be kept and used, for example in PostMaster filters.' =>
-            'Ako je vaš nalog od poverenja, postojeća X-OTRS zaglavlja u trenutku prijema (za prioritet, itd.) će biti sačuvana korišćena, npr. u PostMaster filterima.',
+        'If your account is marked as trusted, the X-LIGERO headers already existing at arrival time (for priority etc.) will be kept and used, for example in PostMaster filters.' =>
+            'Ako je vaš nalog od poverenja, postojeća X-LIGERO zaglavlja u trenutku prijema (za prioritet, itd.) će biti sačuvana korišćena, npr. u PostMaster filterima.',
         'Outgoing email can be configured via the Sendmail* settings in %s.' =>
             'Podešavanja odlazećih imejl poruka mogu biti konfigurisana putem Sendmail* opcija u %s.',
         'System Configuration' => 'Konfiguracija sistema',
@@ -1299,15 +1299,15 @@ sub Data {
             'Prikazane vrednosti dinamičkih polja, korisno za padajuća i polja sa višestrukim izborom.',
 
         # Template: AdminNotificationEventTransportEmailSettings
-        'You can use OTRS-tags like <OTRS_TICKET_DynamicField_...> to insert values from the current ticket.' =>
-            'Možete koristiti OTRS tagove kao <OTRS_TICKET_DynamicField_...> za umetanje vrednosti iz trenutnog tiketa.',
+        'You can use LIGERO-tags like <LIGERO_TICKET_DynamicField_...> to insert values from the current ticket.' =>
+            'Možete koristiti LIGERO tagove kao <LIGERO_TICKET_DynamicField_...> za umetanje vrednosti iz trenutnog tiketa.',
 
-        # Template: AdminOTRSBusinessInstalled
+        # Template: AdminLIGEROBusinessInstalled
         'Manage %s' => 'Upravljaj sa %s',
-        'Downgrade to ((OTRS)) Community Edition' => 'Povratak na besplatno izdanje ((OTRS))',
+        'Downgrade to ((LIGERO)) Community Edition' => 'Povratak na besplatno izdanje ((LIGERO))',
         'Read documentation' => 'Pročitaj dokumentaciju',
-        '%s makes contact regularly with cloud.otrs.com to check on available updates and the validity of the underlying contract.' =>
-            '%s redovno se povezuje sa cloud.otrs.com za proveru dostupnih ažuriranja i ispravnosti internih ugovora.',
+        '%s makes contact regularly with cloud.ligero.com to check on available updates and the validity of the underlying contract.' =>
+            '%s redovno se povezuje sa cloud.ligero.com za proveru dostupnih ažuriranja i ispravnosti internih ugovora.',
         'Unauthorized Usage Detected' => 'Detektovana neovlaštena upotreba',
         'This system uses the %s without a proper license! Please make contact with %s to renew or activate your contract!' =>
             'Ovaj sistem koristi %s bez adekvatne licence! Molimo da kontaktirate %s za obnovu ili aktivaciju vašeg ugovora!',
@@ -1329,44 +1329,44 @@ sub Data {
         'Congratulations, your %s is correctly installed and up to date!' =>
             'Čestitamo, vaš %s je korektno instaliran i ažuran!',
 
-        # Template: AdminOTRSBusinessNotInstalled
-        'Go to the OTRS customer portal' => 'Idi na OTRS korisnički portal',
+        # Template: AdminLIGEROBusinessNotInstalled
+        'Go to the LIGERO customer portal' => 'Idi na LIGERO korisnički portal',
         '%s will be available soon. Please check again in a few days.' =>
             '%s će biti dostupna uskoro. Molimo, proverite ponovo za nekoliko dana.',
         'Please have a look at %s for more information.' => 'Molimo da pogledate  %s za više informacija.',
-        'Your ((OTRS)) Community Edition is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
-            'Vaše besplatno izdanje ((OTRS)) je osnova za sve buduće aktivnosti. Molimo vas da se registrujete pre nego što nastavite sa procesom ažuriranja na %s!',
+        'Your ((LIGERO)) Community Edition is the base for all future actions. Please register first before you continue with the upgrade process of %s!' =>
+            'Vaše besplatno izdanje ((LIGERO)) je osnova za sve buduće aktivnosti. Molimo vas da se registrujete pre nego što nastavite sa procesom ažuriranja na %s!',
         'Before you can benefit from %s, please contact %s to get your %s contract.' =>
             'Pre nego vam %s bude koristan, molimo da kontaktirate %s da biste dobili %s ugovor.',
-        'Connection to cloud.otrs.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.otrs.com via port 443.' =>
-            'Konekcija prema cloud.otrs.com preko HTTPS nije mogla biti uspostavljena. Molimo osigurajte da vaš OTRS može da se poveže sa cloud.otrs.com preko porta 443.',
-        'Package installation requires patch level update of OTRS.' => 'Instalacija paketa zahteva ažuriranu verziju OTRS.',
+        'Connection to cloud.ligero.com via HTTPS couldn\'t be established. Please make sure that your LIGERO can connect to cloud.ligero.com via port 443.' =>
+            'Konekcija prema cloud.ligero.com preko HTTPS nije mogla biti uspostavljena. Molimo osigurajte da vaš LIGERO može da se poveže sa cloud.ligero.com preko porta 443.',
+        'Package installation requires patch level update of LIGERO.' => 'Instalacija paketa zahteva ažuriranu verziju LIGERO.',
         'Please visit our customer portal and file a request.' => 'Molimo posetite naš korisnički portal i podnesite zahtev.',
         'Everything else will be done as part of your contract.' => 'Sve ostalo će biti urađeno pod vašim postojećim ugovorom.',
-        'Your installed OTRS version is %s.' => 'Instalirana OTRS verzija kod vas je %s.',
-        'To install this package, you need to update to OTRS %s or higher.' =>
-            'Da biste instalirali ovaj paket, neophodno je da ažurirate vaš OTRS na verziju %s ili više.',
-        'To install this package, the Maximum OTRS Version is %s.' => 'Za instalaciju ovog paketa, najviša podržana verzija OTRS je %s.',
+        'Your installed LIGERO version is %s.' => 'Instalirana LIGERO verzija kod vas je %s.',
+        'To install this package, you need to update to LIGERO %s or higher.' =>
+            'Da biste instalirali ovaj paket, neophodno je da ažurirate vaš LIGERO na verziju %s ili više.',
+        'To install this package, the Maximum LIGERO Version is %s.' => 'Za instalaciju ovog paketa, najviša podržana verzija LIGERO je %s.',
         'To install this package, the required Framework version is %s.' =>
-            'Za instalaciju ovog paketa neophodna verzija OTRS je %s.',
-        'Why should I keep OTRS up to date?' => 'Zašto bi trebalo da OTRS uvek bude ažuriran?',
+            'Za instalaciju ovog paketa neophodna verzija LIGERO je %s.',
+        'Why should I keep LIGERO up to date?' => 'Zašto bi trebalo da LIGERO uvek bude ažuriran?',
         'You will receive updates about relevant security issues.' => 'Dobićete ažuriranja odgovarajućih bezbednosnih izdanja.',
-        'You will receive updates for all other relevant OTRS issues' => 'Dobićete ažuriranja svih relevantnih OTRS izdanja.',
+        'You will receive updates for all other relevant LIGERO issues' => 'Dobićete ažuriranja svih relevantnih LIGERO izdanja.',
         'With your existing contract you can only use a small part of the %s.' =>
             'Sa vašim sadašnjim ugovorom možete koristiti samo mali deo od %s.',
         'If you would like to take full advantage of the %s get your contract upgraded now! Contact %s.' =>
             'Ako želite da iskoristite sve prednosti %s potrebno je da ažurirate vaš ugovor! Kontaktirajte %s.',
 
-        # Template: AdminOTRSBusinessUninstall
+        # Template: AdminLIGEROBusinessUninstall
         'Cancel downgrade and go back' => 'Poništi povratak na staru verziju i vrati se nazad',
-        'Go to OTRS Package Manager' => 'Idi na OTRS upravljanje paketima',
+        'Go to LIGERO Package Manager' => 'Idi na LIGERO upravljanje paketima',
         'Sorry, but currently you can\'t downgrade due to the following packages which depend on %s:' =>
             'Nažalost, trenutno ne možete da se vratite na staru verziju zbog sledećih paketa koji zavise od %s:',
         'Vendor' => 'Prodavac',
         'Please uninstall the packages first using the package manager and try again.' =>
             'Molimo vas da prvo deinstalirate pakete kroz upravljač paketima pa da pokušate ponovo. ',
-        'You are about to downgrade to ((OTRS)) Community Edition and will lose the following features and all data related to these:' =>
-            'Vraćanjem na besplatno izdanje ((OTRS)) izgubićete sledeća svojstva i podatke povezane sa:',
+        'You are about to downgrade to ((LIGERO)) Community Edition and will lose the following features and all data related to these:' =>
+            'Vraćanjem na besplatno izdanje ((LIGERO)) izgubićete sledeća svojstva i podatke povezane sa:',
         'Chat' => 'Ćaskanje',
         'Report Generator' => 'Generator izveštaja',
         'Timeline view in ticket zoom' => 'Detaljni prikaz tiketa na vremenskoj liniji',
@@ -1380,7 +1380,7 @@ sub Data {
         'PGP Management' => 'Upravljanje PGP ključevima',
         'Add PGP Key' => 'Dodaj PGP ključ',
         'PGP support is disabled' => 'PGP podrška je onemogućena',
-        'To be able to use PGP in OTRS, you have to enable it first.' => 'Da bi mogli da koristite PGP u OTRS, morate ga prvo omogućiti.',
+        'To be able to use PGP in LIGERO, you have to enable it first.' => 'Da bi mogli da koristite PGP u LIGERO, morate ga prvo omogućiti.',
         'Enable PGP support' => 'Omogući PGP podršku',
         'Faulty PGP configuration' => 'Neispravna PGP konfiguracija',
         'PGP support is enabled, but the relevant configuration contains errors. Please check the configuration using the button below.' =>
@@ -1407,21 +1407,21 @@ sub Data {
             'Da li stvarno želite da ponovo instalirate ovaj paket? Sve ručne promene će biti izgubljene.',
         'Go to updating instructions' => 'Idi na uputstvo za ažuriranje',
         'package information' => 'Informacije o paketu',
-        'Package installation requires a patch level update of OTRS.' => 'Instalacija paketa zahteva ažuriranu verziju OTRS.',
-        'Package update requires a patch level update of OTRS.' => 'Ažuriranje paketa zahteva ažuriranu verziju OTRS.',
-        'If you are a OTRS Business Solution™ customer, please visit our customer portal and file a request.' =>
-            'Ukoliko ste korisnik OTRS Business Solution™, molimo posetite naš korisnički portal i podnesite zahtev.',
-        'Please note that your installed OTRS version is %s.' => 'Trenutno instalirana OTRS verzija je %s.',
-        'To install this package, you need to update OTRS to version %s or newer.' =>
-            'Da biste instalirali ovaj paket, neophodno je da ažurirate vaš OTRS na verziju %s ili noviju.',
-        'This package can only be installed on OTRS version %s or older.' =>
-            'Ovaj paket se može instalirati samo na OTRS verziju%s ili stariju.',
-        'This package can only be installed on OTRS version %s or newer.' =>
-            'Ovaj paket se može instalirati samo na OTRS verziju%s ili noviju.',
-        'You will receive updates for all other relevant OTRS issues.' =>
-            'Dobićete ažuriranja svih drugih relevantnih OTRS izdanja.',
+        'Package installation requires a patch level update of LIGERO.' => 'Instalacija paketa zahteva ažuriranu verziju LIGERO.',
+        'Package update requires a patch level update of LIGERO.' => 'Ažuriranje paketa zahteva ažuriranu verziju LIGERO.',
+        'If you are a LIGERO Business Solution™ customer, please visit our customer portal and file a request.' =>
+            'Ukoliko ste korisnik LIGERO Business Solution™, molimo posetite naš korisnički portal i podnesite zahtev.',
+        'Please note that your installed LIGERO version is %s.' => 'Trenutno instalirana LIGERO verzija je %s.',
+        'To install this package, you need to update LIGERO to version %s or newer.' =>
+            'Da biste instalirali ovaj paket, neophodno je da ažurirate vaš LIGERO na verziju %s ili noviju.',
+        'This package can only be installed on LIGERO version %s or older.' =>
+            'Ovaj paket se može instalirati samo na LIGERO verziju%s ili stariju.',
+        'This package can only be installed on LIGERO version %s or newer.' =>
+            'Ovaj paket se može instalirati samo na LIGERO verziju%s ili noviju.',
+        'You will receive updates for all other relevant LIGERO issues.' =>
+            'Dobićete ažuriranja svih drugih relevantnih LIGERO izdanja.',
         'How can I do a patch level update if I don’t have a contract?' =>
-            'Kako mogu da ažuriram verziju OTRS ukoliko nemam ugovor?',
+            'Kako mogu da ažuriram verziju LIGERO ukoliko nemam ugovor?',
         'Please find all relevant information within the updating instructions at %s.' =>
             'Molimo pronađite sve relevantne informacije u okviru instrukcija za ažuriranje na %s.',
         'In case you would have further questions we would be glad to answer them.' =>
@@ -1434,14 +1434,14 @@ sub Data {
         'Install' => 'Instaliraj',
         'Update repository information' => 'Ažuriraj informacije o spremištu',
         'Cloud services are currently disabled.' => 'Servisi u oblaku su trenutno deaktivirani.',
-        'OTRS Verify™ can not continue!' => 'OTRS Verify™ ne može da nastavi!',
+        'LIGERO Verify™ can not continue!' => 'LIGERO Verify™ ne može da nastavi!',
         'Enable cloud services' => 'Aktiviraj servise u oblaku',
         'Update all installed packages' => 'Ažuriraj sve instalirane pakete',
         'Online Repository' => 'Mrežno spremište',
         'Action' => 'Akcija',
         'Module documentation' => 'Dokumentacija modula',
         'Local Repository' => 'Lokalno spremište',
-        'This package is verified by OTRSverify (tm)' => 'Ovaj paket je verifikovan od strane OTRSverify (tm)',
+        'This package is verified by LIGEROverify (tm)' => 'Ovaj paket je verifikovan od strane LIGEROverify (tm)',
         'Uninstall' => 'Deinstaliraj',
         'Package not correctly deployed! Please reinstall the package.' =>
             'Paket nije korektno instaliran! Instalirajte ga ponovo.',
@@ -1752,29 +1752,29 @@ sub Data {
         'Edit System Registration' => 'Uredi registraciju sistema',
         'System Registration Overview' => 'Pregled registracije sistema',
         'Register System' => 'Registruj sistem',
-        'Validate OTRS-ID' => 'Proveri važnost OTRS-ID',
+        'Validate LIGERO-ID' => 'Proveri važnost LIGERO-ID',
         'Deregister System' => 'Isključi sistem iz registra',
         'Edit details' => 'Uredi detalje',
         'Show transmitted data' => 'Pokaži poslate podatke',
         'Deregister system' => 'Odjavi sistem',
         'Overview of registered systems' => 'Pregled registrovanih sistema',
-        'This system is registered with OTRS Group.' => 'Ovaj sistem je registrovan u OTRS grupi.',
+        'This system is registered with LIGERO Group.' => 'Ovaj sistem je registrovan u LIGERO grupi.',
         'System type' => 'Tip sistema',
         'Unique ID' => 'Jedinstveni ID',
         'Last communication with registration server' => 'Poslednja komunikacija sa registracionim serverom',
         'System Registration not Possible' => 'Registracija sistema nije moguća',
-        'Please note that you can\'t register your system if OTRS Daemon is not running correctly!' =>
-            'Molimo da obratite pažnju da ne možete registrovati vaš sistem ako OTRS sistemski proces ne radi korektno!',
+        'Please note that you can\'t register your system if LIGERO Daemon is not running correctly!' =>
+            'Molimo da obratite pažnju da ne možete registrovati vaš sistem ako LIGERO sistemski proces ne radi korektno!',
         'Instructions' => 'Instrukcije',
         'System Deregistration not Possible' => 'Odjava sistema nije moguća',
         'Please note that you can\'t deregister your system if you\'re using the %s or having a valid service contract.' =>
             'Molimo da obratite pažnju da ne možete deregistrovati vaš sistem ako koristite %s ili imate važeći servisni ugovor.',
-        'OTRS-ID Login' => 'OTRS-ID prijava',
+        'LIGERO-ID Login' => 'LIGERO-ID prijava',
         'Read more' => 'Pročitaj više',
-        'You need to log in with your OTRS-ID to register your system.' =>
-            'Potrebno je da se prijavite sa vašim OTRS-ID da registrujete vaš sistem.',
-        'Your OTRS-ID is the email address you used to sign up on the OTRS.com webpage.' =>
-            'Vaš OTRS-ID je imejl adresa koju koristite za prijavu na veb stranu OTRS.com.',
+        'You need to log in with your LIGERO-ID to register your system.' =>
+            'Potrebno je da se prijavite sa vašim LIGERO-ID da registrujete vaš sistem.',
+        'Your LIGERO-ID is the email address you used to sign up on the LIGERO.com webpage.' =>
+            'Vaš LIGERO-ID je imejl adresa koju koristite za prijavu na veb stranu LIGERO.com.',
         'Data Protection' => 'Zaštita podataka',
         'What are the advantages of system registration?' => 'Koje su prednosti registracije sistema?',
         'You will receive updates about relevant security releases.' => 'Dobićete ažuriranja odgovarajućih bezbednosnih izdanja.',
@@ -1783,44 +1783,44 @@ sub Data {
         'This is only the beginning!' => 'Ovo je samo početak!',
         'We will inform you about our new services and offerings soon.' =>
             'Informisaćemo vas o našim novim uslugama i ponudama uskoro!',
-        'Can I use OTRS without being registered?' => 'Da li mogu da koristim OTRS ukoliko nisam registrovan?',
+        'Can I use LIGERO without being registered?' => 'Da li mogu da koristim LIGERO ukoliko nisam registrovan?',
         'System registration is optional.' => 'Registracija sistema je opcionalna.',
-        'You can download and use OTRS without being registered.' => 'Možete preuzeti OTRS i ukoliko niste registrovani.',
+        'You can download and use LIGERO without being registered.' => 'Možete preuzeti LIGERO i ukoliko niste registrovani.',
         'Is it possible to deregister?' => 'Da li je moguća odjava?',
         'You can deregister at any time.' => 'Možete se odjaviti u bilo koje doba.',
         'Which data is transfered when registering?' => 'Koji podaci se prenose prilikom registracije?',
-        'A registered system sends the following data to OTRS Group:' => 'Registrovani sistem šalje sledeće podatke OTRS grupi:',
-        'Fully Qualified Domain Name (FQDN), OTRS version, Database, Operating System and Perl version.' =>
-            'Puno kvalifikovano ime domena (FQDN), OTRS verzija, baza podataka, operativni sistem i Perl verzija.',
+        'A registered system sends the following data to LIGERO Group:' => 'Registrovani sistem šalje sledeće podatke LIGERO grupi:',
+        'Fully Qualified Domain Name (FQDN), LIGERO version, Database, Operating System and Perl version.' =>
+            'Puno kvalifikovano ime domena (FQDN), LIGERO verzija, baza podataka, operativni sistem i Perl verzija.',
         'Why do I have to provide a description for my system?' => 'Zašto moram da prosledim opis mog sistema?',
         'The description of the system is optional.' => 'Opis sistema je opcioni.',
         'The description and system type you specify help you to identify and manage the details of your registered systems.' =>
             'Navedeni opis i tip sistema pomažu vam da identifikujete i upravljate detaljima registrovanog sistema.',
-        'How often does my OTRS system send updates?' => 'Koliko često će moj OTRS sistem slati ažuriranja?',
+        'How often does my LIGERO system send updates?' => 'Koliko često će moj LIGERO sistem slati ažuriranja?',
         'Your system will send updates to the registration server at regular intervals.' =>
             'Vaš sistem će u redovnim vremenskim intervalima slati ažuriranja registracionom serveru.',
         'Typically this would be around once every three days.' => 'Obično je to jednom u svaka tri dana.',
         'If you deregister your system, you will lose these benefits:' =>
             'Ako deregistrujete vaš sistem, izgubićete sledeće olakšice:',
-        'You need to log in with your OTRS-ID to deregister your system.' =>
-            'Da bi ste ođavili vaš sistem, morate da se prijavite sa vašim OTRS-ID',
-        'OTRS-ID' => 'OTRS-ID',
-        'You don\'t have an OTRS-ID yet?' => 'Još uvek nemate OTRS-ID?',
+        'You need to log in with your LIGERO-ID to deregister your system.' =>
+            'Da bi ste ođavili vaš sistem, morate da se prijavite sa vašim LIGERO-ID',
+        'LIGERO-ID' => 'LIGERO-ID',
+        'You don\'t have an LIGERO-ID yet?' => 'Još uvek nemate LIGERO-ID?',
         'Sign up now' => 'Registrujte se sada',
         'Forgot your password?' => 'Zaboravili ste lozinku?',
         'Retrieve a new one' => 'Preuzmi novu',
         'Next' => 'Sledeće',
-        'This data will be frequently transferred to OTRS Group when you register this system.' =>
-            'Ovi podaci će biti poslati OTRS grupi kada registrujete ovaj sistem.',
+        'This data will be frequently transferred to LIGERO Group when you register this system.' =>
+            'Ovi podaci će biti poslati LIGERO grupi kada registrujete ovaj sistem.',
         'Attribute' => 'Atribut',
         'FQDN' => 'FQDN',
-        'OTRS Version' => 'OTRS verzija',
+        'LIGERO Version' => 'LIGERO verzija',
         'Operating System' => 'Operativni sistem',
         'Perl Version' => 'Perl verzija',
         'Optional description of this system.' => 'Opcioni opis ovog sistema.',
         'Register' => 'Registruj',
-        'Continuing with this step will deregister the system from OTRS Group.' =>
-            'Nastavljanje ovog koraka će odjaviti sistem iz OTRS grupe.',
+        'Continuing with this step will deregister the system from LIGERO Group.' =>
+            'Nastavljanje ovog koraka će odjaviti sistem iz LIGERO grupe.',
         'Deregister' => 'Isključi iz registra',
         'You can modify registration settings here.' => 'Ovde možete izmeniti registraciona podešavanja.',
         'Overview of Transmitted Data' => 'Pregled poslatih podataka',
@@ -1883,8 +1883,8 @@ sub Data {
         'Add Certificate' => 'Dodaj sertifikat',
         'Add Private Key' => 'Dodaj privatni ključ',
         'SMIME support is disabled' => 'SMIME podrška je onemogućena',
-        'To be able to use SMIME in OTRS, you have to enable it first.' =>
-            'Da bi mogli da koristite SMIME u OTRS, morate je prvo omogućiti.',
+        'To be able to use SMIME in LIGERO, you have to enable it first.' =>
+            'Da bi mogli da koristite SMIME u LIGERO, morate je prvo omogućiti.',
         'Enable SMIME support' => 'Omogući SMIME podršku',
         'Faulty SMIME configuration' => 'Neispravna SMIME konfiguracija',
         'SMIME support is enabled, but the relevant configuration contains errors. Please check the configuration using the button below.' =>
@@ -2002,10 +2002,10 @@ sub Data {
         'This state is used in the following config settings:' => 'Ovo stanje se koristi u sledećim sistemskim podešavanjima: ',
 
         # Template: AdminSupportDataCollector
-        'Sending support data to OTRS Group is not possible!' => 'Slanje podataka za podršku OTRS grupi nije moguće!',
+        'Sending support data to LIGERO Group is not possible!' => 'Slanje podataka za podršku LIGERO grupi nije moguće!',
         'Enable Cloud Services' => 'Aktiviraj servise u oblaku',
-        'This data is sent to OTRS Group on a regular basis. To stop sending this data please update your system registration.' =>
-            'Ovi podaci se šalju OTRS grupi u regularnom intervalu. Da zaustavite slanje ovih podataka molimo vas da ažurirate registraciju.',
+        'This data is sent to LIGERO Group on a regular basis. To stop sending this data please update your system registration.' =>
+            'Ovi podaci se šalju LIGERO grupi u regularnom intervalu. Da zaustavite slanje ovih podataka molimo vas da ažurirate registraciju.',
         'You can manually trigger the Support Data sending by pressing this button:' =>
             'Možete manuelno aktivirati slanje podržanih podataka pritiskanjem ovog dugmeta:',
         'Send Update' => 'Pošalji ažuriranje',
@@ -2021,11 +2021,11 @@ sub Data {
         'The email address for this user is invalid, this option has been disabled.' =>
             'Imejl adresa ovog korisnika je nevažeća, ova opcija je isključena.',
         'Sending' => 'Slanje',
-        'The support bundle will be sent to OTRS Group via email automatically.' =>
-            'Paket podrške će biti automatski poslat imejlom OTRS grupi.',
+        'The support bundle will be sent to LIGERO Group via email automatically.' =>
+            'Paket podrške će biti automatski poslat imejlom LIGERO grupi.',
         'Download File' => 'Preuzmi datoteku',
-        'A file containing the support bundle will be downloaded to the local system. Please save the file and send it to the OTRS Group, using an alternate method.' =>
-            'Datoteka koja sadrži paket za podršku će biti preuzeta na lokalni računar. Molimo vas da sačuvate datoteku i da je pošaljete na neki drugi način OTRS grupi.',
+        'A file containing the support bundle will be downloaded to the local system. Please save the file and send it to the LIGERO Group, using an alternate method.' =>
+            'Datoteka koja sadrži paket za podršku će biti preuzeta na lokalni računar. Molimo vas da sačuvate datoteku i da je pošaljete na neki drugi način LIGERO grupi.',
         'Error: Support data could not be collected (%s).' => 'Podržani podaci ne mogu biti prikupljeni (%s).',
         'Details' => 'Detalji',
 
@@ -2056,8 +2056,8 @@ sub Data {
         'Find out how to use the system configuration by reading the %s.' =>
             'Saznajte kako da koristite sistemsku konfiguraciju čitanjem %s.',
         'Search in all settings...' => 'Pretražite sva podešavanja...',
-        'There are currently no settings available. Please make sure to run \'otrs.Console.pl Maint::Config::Rebuild\' before using the software.' =>
-            'Trenutno nema dostupnih podešavanja. Molimo proverite da li ste pokrenuli skript \'otrs.Console.pl Maint::Config::Rebuild\' pre korišćenja aplikacije.',
+        'There are currently no settings available. Please make sure to run \'ligero.Console.pl Maint::Config::Rebuild\' before using the software.' =>
+            'Trenutno nema dostupnih podešavanja. Molimo proverite da li ste pokrenuli skript \'ligero.Console.pl Maint::Config::Rebuild\' pre korišćenja aplikacije.',
 
         # Template: AdminSystemConfigurationDeployment
         'Changes Deployment' => 'Raspored promena',
@@ -2318,17 +2318,17 @@ sub Data {
         'Customer User Information Center' => 'Klijent-korisnički informativni centar',
 
         # Template: AgentDaemonInfo
-        'The OTRS Daemon is a daemon process that performs asynchronous tasks, e.g. ticket escalation triggering, email sending, etc.' =>
-            'OTRS servis je sistemski proces koji izvršava asinhrone poslove, npr. okidanje eskalacija tiketa, slanje imejlova, itd.',
-        'A running OTRS Daemon is mandatory for correct system operation.' =>
-            'Pokrenut OTRS sistemski servis je neophodan za ispravno funkcionisanje sistema.',
-        'Starting the OTRS Daemon' => 'Pokretanje OTRS sistemskog servisa',
-        'Make sure that the file \'%s\' exists (without .dist extension). This cron job will check every 5 minutes if the OTRS Daemon is running and start it if needed.' =>
-            'Osigurava da datoteka \'%s\' postoji (bez .dist ekstenzije). Ovaj kron posao će proveravati svakih 5 minuta da li OTRS sistemski servis radi i pokreće ga ako je potrebno.',
-        'Execute \'%s start\' to make sure the cron jobs of the \'otrs\' user are active.' =>
-            'Izvršite \'%s start\' da bi bili sigurni da su kron poslovi za OTRS korisnika uvek aktivni.',
-        'After 5 minutes, check that the OTRS Daemon is running in the system (\'bin/otrs.Daemon.pl status\').' =>
-            'Posle 5 minuta, proverava da li OTRS sistemski servis funkcioniše u sistemu (\'bin/otrs.Daemon.pl status\').',
+        'The LIGERO Daemon is a daemon process that performs asynchronous tasks, e.g. ticket escalation triggering, email sending, etc.' =>
+            'LIGERO servis je sistemski proces koji izvršava asinhrone poslove, npr. okidanje eskalacija tiketa, slanje imejlova, itd.',
+        'A running LIGERO Daemon is mandatory for correct system operation.' =>
+            'Pokrenut LIGERO sistemski servis je neophodan za ispravno funkcionisanje sistema.',
+        'Starting the LIGERO Daemon' => 'Pokretanje LIGERO sistemskog servisa',
+        'Make sure that the file \'%s\' exists (without .dist extension). This cron job will check every 5 minutes if the LIGERO Daemon is running and start it if needed.' =>
+            'Osigurava da datoteka \'%s\' postoji (bez .dist ekstenzije). Ovaj kron posao će proveravati svakih 5 minuta da li LIGERO sistemski servis radi i pokreće ga ako je potrebno.',
+        'Execute \'%s start\' to make sure the cron jobs of the \'ligero\' user are active.' =>
+            'Izvršite \'%s start\' da bi bili sigurni da su kron poslovi za LIGERO korisnika uvek aktivni.',
+        'After 5 minutes, check that the LIGERO Daemon is running in the system (\'bin/ligero.Daemon.pl status\').' =>
+            'Posle 5 minuta, proverava da li LIGERO sistemski servis funkcioniše u sistemu (\'bin/ligero.Daemon.pl status\').',
 
         # Template: AgentDashboard
         'Dashboard' => 'Komandna tabla',
@@ -2432,10 +2432,10 @@ sub Data {
         'There are currently no links. Please click \'Create new Links\' on the top to link this item to other objects.' =>
             'Trenutno nema veza. Molimo kliknite na \'Dodaj nove veze\' pri vrhu da biste povezali ovaj objekat sa ostalim.',
 
-        # Template: AgentOTRSBusinessBlockScreen
+        # Template: AgentLIGEROBusinessBlockScreen
         'Unauthorized usage of %s detected' => 'Detektovana neovlaštena upotreba %s',
-        'If you decide to downgrade to ((OTRS)) Community Edition, you will lose all database tables and data related to %s.' =>
-            'Ako odlučite da se vratite na besplatno izdanje ((OTRS)), izgubićete sve tabele i podatke u bazi podataka povezane sa %s.',
+        'If you decide to downgrade to ((LIGERO)) Community Edition, you will lose all database tables and data related to %s.' =>
+            'Ako odlučite da se vratite na besplatno izdanje ((LIGERO)), izgubićete sve tabele i podatke u bazi podataka povezane sa %s.',
 
         # Template: AgentPreferences
         'Edit your preferences' => 'Uredi lične postavke',
@@ -2461,7 +2461,7 @@ sub Data {
         'This setting can currently not be saved.' => 'Ovo podešavanje trenutno ne može biti sačuvano.',
         'This setting can currently not be saved' => 'Ovo podešavanje trenutno ne može biti sačuvano',
         'Save this setting' => 'Sačuvaj ovo podešavanje',
-        'Did you know? You can help translating OTRS at %s.' => 'Da li ste znali? Možete da pomognete u prevođenju OTRS na %s.',
+        'Did you know? You can help translating LIGERO at %s.' => 'Da li ste znali? Možete da pomognete u prevođenju LIGERO na %s.',
 
         # Template: SettingsList
         'Reset to default' => 'Poništi na podrazumevanu vrednost',
@@ -2480,7 +2480,7 @@ sub Data {
 
         # Template: AgentStatisticsAdd
         'Statistics Overview' => 'Pregled statistika',
-        'Read more about statistics in OTRS' => 'Pročitajte više o statistikama u OTRS',
+        'Read more about statistics in LIGERO' => 'Pročitajte više o statistikama u LIGERO',
         'Add Statistics' => 'Dodaj statistiku',
         'Dynamic Matrix' => 'Dinamička matrica',
         'Each cell contains a singular data point.' => 'Svaka ćelija sadrži pojedinačni podatak.',
@@ -2926,8 +2926,8 @@ sub Data {
         'Dynamic fields' => 'Dinamička polja',
 
         # Template: Error
-        'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of OTRS.' =>
-            'Stvarno greška? 5 od 10 prijavljenih grešaka su posledica pogrešne ili nekompletne OTRS instalacije.',
+        'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of LIGERO.' =>
+            'Stvarno greška? 5 od 10 prijavljenih grešaka su posledica pogrešne ili nekompletne LIGERO instalacije.',
         'With %s, our experts take care of correct installation and cover your back with support and periodic security updates.' =>
             'Sa %s, naši eksperti će se pobrinuti za korektnu instalaciju i obezbediti podršku i povremena sigurnosna ažuriranja.',
         'Contact our service team now.' => 'Kontaktirajte naš servisnim tim sada.',
@@ -2952,7 +2952,7 @@ sub Data {
         # Template: Header
         'View notifications' => 'Pregled obaveštenja',
         'Notifications' => 'Obaveštenja',
-        'Notifications (OTRS Business Solution™)' => 'Obaveštenja (OTRS Business Solution™)',
+        'Notifications (LIGERO Business Solution™)' => 'Obaveštenja (LIGERO Business Solution™)',
         'Personal preferences' => 'Lična podešavanja',
         'Logout' => 'Odjava',
         'You are logged in as' => 'Prijavljeni ste kao',
@@ -3009,8 +3009,8 @@ sub Data {
 
         # Template: InstallerDBStart
         'Install Type' => 'Instaliraj tip',
-        'Create a new database for OTRS' => 'Kreiraj novu bazu podataka za OTRS',
-        'Use an existing database for OTRS' => 'Koristi postojeću bazu podataka za OTRS',
+        'Create a new database for LIGERO' => 'Kreiraj novu bazu podataka za LIGERO',
+        'Use an existing database for LIGERO' => 'Koristi postojeću bazu podataka za LIGERO',
 
         # Template: InstallerDBmssql
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty.' =>
@@ -3021,8 +3021,8 @@ sub Data {
         'Database check successful.' => 'Uspešna provera baze podataka.',
         'Database User' => 'Korisnik baze podataka',
         'New' => 'Novo',
-        'A new database user with limited permissions will be created for this OTRS system.' =>
-            'Novi korisnik baze sa ograničenim pravima će biti kreiran za ovaj OTRS sistem.',
+        'A new database user with limited permissions will be created for this LIGERO system.' =>
+            'Novi korisnik baze sa ograničenim pravima će biti kreiran za ovaj LIGERO sistem.',
         'Repeat Password' => 'Ponovi lozinku',
         'Generated password' => 'Generisana lozinka',
 
@@ -3034,12 +3034,12 @@ sub Data {
         'Port' => 'Port',
 
         # Template: InstallerFinish
-        'To be able to use OTRS you have to enter the following line in your command line (Terminal/Shell) as root.' =>
-            'Da bi ste koristili OTRS morate uneti sledeće u komandnu liniju (Terminal/Shell) kao root.',
+        'To be able to use LIGERO you have to enter the following line in your command line (Terminal/Shell) as root.' =>
+            'Da bi ste koristili LIGERO morate uneti sledeće u komandnu liniju (Terminal/Shell) kao root.',
         'Restart your webserver' => 'Ponovo pokrenite vaš veb server.',
-        'After doing so your OTRS is up and running.' => 'Posle ovoga vaš OTRS je uključen i radi.',
+        'After doing so your LIGERO is up and running.' => 'Posle ovoga vaš LIGERO je uključen i radi.',
         'Start page' => 'Početna strana',
-        'Your OTRS Team' => 'Vaš OTRS tim',
+        'Your LIGERO Team' => 'Vaš LIGERO tim',
 
         # Template: InstallerLicense
         'Don\'t accept license' => 'Ne prihvataj licencu',
@@ -3085,7 +3085,7 @@ sub Data {
 
         # Template: MobileNotAvailableWidget
         'Feature not Available' => 'Svojstvo nije dostupno',
-        'Sorry, but this feature of OTRS is currently not available for mobile devices. If you\'d like to use it, you can either switch to desktop mode or use your regular desktop device.' =>
+        'Sorry, but this feature of LIGERO is currently not available for mobile devices. If you\'d like to use it, you can either switch to desktop mode or use your regular desktop device.' =>
             'Na žalost, ovo svojstvo momentalno nije dostupno za mobilne uređaje. Ako želite da ga koristite, možete de vratiti na desktop mod ili koristiti standardni desktop uređaj.',
 
         # Template: Motd
@@ -3126,8 +3126,8 @@ sub Data {
 
         # Template: PublicDefault
         'Welcome' => 'Dobrodošli',
-        'This is the default public interface of OTRS! There was no action parameter given.' =>
-            'Ovo je podrazumevani javni interfejs za OTRS! Nema datih akcionih parametara.',
+        'This is the default public interface of LIGERO! There was no action parameter given.' =>
+            'Ovo je podrazumevani javni interfejs za LIGERO! Nema datih akcionih parametara.',
         'You could install a custom public module (via the package manager), for example the FAQ module, which has a public interface.' =>
             'Možete instalirati dodatni modul (vidite upravljanje paketima), npr. FAQ, koji ima javni interfejs.',
 
@@ -3268,12 +3268,12 @@ sub Data {
         # Template: Navigation
         'Navigation' => 'Navigacija',
 
-        # Template: OTRSBusinessTeaser
+        # Template: LIGEROBusinessTeaser
         'With %s, System Configuration supports versioning, rollback and user-specific configuration settings.' =>
             'Sa %s, sistemska konfiguracija podržava pregled promena, ponovno raspoređivanje i korisničke promene podešavanja.',
 
         # Template: Test
-        'OTRS Test Page' => 'OTRS test strana',
+        'LIGERO Test Page' => 'LIGERO test strana',
         'Unlock' => 'Otključaj',
         'Welcome %s %s' => 'Dobrodošli %s %s',
         'Counter' => 'Brojač',
@@ -3356,8 +3356,8 @@ sub Data {
         # Perl Module: Kernel/Modules/AdminACL.pm
         'ACL information from database is not in sync with the system configuration, please deploy all ACLs.' =>
             'ACL informacije iz baze podataka nisu sinhronizovane sa sistemskom konfiguracijom, molimo vas da primenite sve ACL liste.',
-        'ACLs could not be Imported due to a unknown error, please check OTRS logs for more information' =>
-            'ACL liste ne mogu da se uvezu zbog nepoznate greške, molimo da proverite OTRS logove za više informacija',
+        'ACLs could not be Imported due to a unknown error, please check LIGERO logs for more information' =>
+            'ACL liste ne mogu da se uvezu zbog nepoznate greške, molimo da proverite LIGERO logove za više informacija',
         'The following ACLs have been added successfully: %s' => 'Sledeće ACL liste su uspešno dodate: %s',
         'The following ACLs have been updated successfully: %s' => 'Sledeće ACL liste su uspešno ažurirane: %s',
         'There where errors adding/updating the following ACLs: %s. Please check the log file for more information.' =>
@@ -3410,8 +3410,8 @@ sub Data {
             'Došlo je do greške prilikom pribavljanja podataka za ID obaveštenja:%s!',
         'Unknown Notification %s!' => 'Nepoznato obaveštenje %s!',
         'There was an error creating the Notification' => 'Došlo je do greške prilikom kreiranja obaveštenja',
-        'Notifications could not be Imported due to a unknown error, please check OTRS logs for more information' =>
-            'Obaveštenja ne mogu da se uvezu zbog nepoznate greške, molimo da proverite OTRS logove za više informacija',
+        'Notifications could not be Imported due to a unknown error, please check LIGERO logs for more information' =>
+            'Obaveštenja ne mogu da se uvezu zbog nepoznate greške, molimo da proverite LIGERO logove za više informacija',
         'The following Notifications have been added successfully: %s' =>
             'Sledeća obaveštenja su uspešno dodata: %s',
         'The following Notifications have been updated successfully: %s' =>
@@ -3499,7 +3499,7 @@ sub Data {
         'Web service (%s)' => 'Veb servis (%s)',
         'Contact with data (%s)' => 'Kontakt sa podacima (%s)',
         'Could not reset Dynamic Field order properly, please check the error log for more details.' =>
-            'Nije moguće poništiti redosled dinamičkih polja, molimo da proverite OTRS logove za više informacija.',
+            'Nije moguće poništiti redosled dinamičkih polja, molimo da proverite LIGERO logove za više informacija.',
 
         # Perl Module: Kernel/Modules/AdminDynamicFieldCheckbox.pm
         'Undefined subaction.' => 'Nedefinisana subakcija.',
@@ -3637,12 +3637,12 @@ sub Data {
         'Need ExampleWebService!' => 'Neophodan ExampleWebService!',
         'Could not read %s!' => 'Nije moguće pročitati %s!',
         'Need a file to import!' => 'Neophodna datoteka za uvoz!',
-        'The imported file has not valid YAML content! Please check OTRS log for details' =>
-            'Uvezena datoteka nema ispravan YAML sadržaj! Molimo proverite OTRS log za detalje',
+        'The imported file has not valid YAML content! Please check LIGERO log for details' =>
+            'Uvezena datoteka nema ispravan YAML sadržaj! Molimo proverite LIGERO log za detalje',
         'Web service "%s" deleted!' => 'Veb servis "%s" je obrisan!',
-        'OTRS as provider' => 'OTRS kao pružalac usluga',
+        'LIGERO as provider' => 'LIGERO kao pružalac usluga',
         'Operations' => 'Operacije',
-        'OTRS as requester' => 'OTRS kao naručilac',
+        'LIGERO as requester' => 'LIGERO kao naručilac',
         'Invokers' => 'Pozivaoci',
 
         # Perl Module: Kernel/Modules/AdminGenericInterfaceWebserviceHistory.pm
@@ -3673,7 +3673,7 @@ sub Data {
         'All recipients of the first article' => 'Svi primaoci prvog članka',
         'All recipients of the last article' => 'Svi primaoci poslednjeg članka',
 
-        # Perl Module: Kernel/Modules/AdminOTRSBusiness.pm
+        # Perl Module: Kernel/Modules/AdminLIGEROBusiness.pm
         'Your system was successfully upgraded to %s.' => 'Vaš sistem je uspešno unapređen na %s.',
         'There was a problem during the upgrade to %s.' => 'Problem tokom unapređivanja na  %s.',
         '%s was correctly reinstalled.' => '%s je korektno reinstalirana.',
@@ -3691,16 +3691,16 @@ sub Data {
         'Need param Key to download!' => 'Neophodan parametar Key za preuzimanje!',
 
         # Perl Module: Kernel/Modules/AdminPackageManager.pm
-        'Sorry, Apache::Reload is needed as PerlModule and PerlInitHandler in Apache config file. See also scripts/apache2-httpd.include.conf. Alternatively, you can use the command line tool bin/otrs.Console.pl to install packages!' =>
-            'Žao nam je, ali Apache::Reload je neophodan kao PerlModule i PerlInitHandler u konfiguraciji Apache-a. Molimo pogledajte scripts/apache2-httpd.include.conf. Alternativno, možete koristiti konzolnu alatku bin/otrs.Console.pl za instalaciju paketa!',
+        'Sorry, Apache::Reload is needed as PerlModule and PerlInitHandler in Apache config file. See also scripts/apache2-httpd.include.conf. Alternatively, you can use the command line tool bin/ligero.Console.pl to install packages!' =>
+            'Žao nam je, ali Apache::Reload je neophodan kao PerlModule i PerlInitHandler u konfiguraciji Apache-a. Molimo pogledajte scripts/apache2-httpd.include.conf. Alternativno, možete koristiti konzolnu alatku bin/ligero.Console.pl za instalaciju paketa!',
         'No such package!' => 'Nema takvog paketa!',
         'No such file %s in package!' => 'Nema takve datoteke %s u paketu!',
         'No such file %s in local file system!' => 'Nema takve datoteke %s u lokalnom sistemu!',
         'Can\'t read %s!' => 'Nemoguće čitanje %s!',
         'File is OK' => 'Datoteka je u redu',
         'Package has locally modified files.' => 'Paket sadrži lokalno izmenjene datoteke.',
-        'Package not verified by the OTRS Group! It is recommended not to use this package.' =>
-            'Paket nije verifikovan od strane OTRS grupe! Preporučuje se da ne koristite ovaj paket.',
+        'Package not verified by the LIGERO Group! It is recommended not to use this package.' =>
+            'Paket nije verifikovan od strane LIGERO grupe! Preporučuje se da ne koristite ovaj paket.',
         'Not Started' => 'Nije pokrenuto',
         'Updated' => 'Ažurirano',
         'Already up-to-date' => 'Već ažurno',
@@ -3721,9 +3721,9 @@ sub Data {
             'U izabranom spremištu nema paketa ili nema novih paketa.',
         'Package not verified due a communication issue with verification server!' =>
             'Paket nije verifikovan zbog komunikacijskog problema sa verifikacionim serverom!',
-        'Can\'t connect to OTRS Feature Add-on list server!' => 'Nije moguće povezati se sa OTRS Feature Add-on serverom!',
-        'Can\'t get OTRS Feature Add-on list from server!' => 'Ne mogu pribaviti OTRS Feature Add-on listu sa servera!',
-        'Can\'t get OTRS Feature Add-on from server!' => 'Ne mogu pribaviti OTRS Feature Add-on sa servera!',
+        'Can\'t connect to LIGERO Feature Add-on list server!' => 'Nije moguće povezati se sa LIGERO Feature Add-on serverom!',
+        'Can\'t get LIGERO Feature Add-on list from server!' => 'Ne mogu pribaviti LIGERO Feature Add-on listu sa servera!',
+        'Can\'t get LIGERO Feature Add-on from server!' => 'Ne mogu pribaviti LIGERO Feature Add-on sa servera!',
 
         # Perl Module: Kernel/Modules/AdminPostMasterFilter.pm
         'No such filter: %s' => 'Nema takvog filtera: %s',
@@ -3896,13 +3896,13 @@ sub Data {
         'You currently don\'t have any favourite settings.' => 'Trenutno nemate nijedno omiljeno podešavanje.',
         'The following settings could not be found: %s' => 'Sledeća podešavanja nisu mogla biti pronađena: %s',
         'Import not allowed!' => 'Uvoz nije dozvoljen!',
-        'System Configuration could not be imported due to an unknown error, please check OTRS logs for more information.' =>
-            'Sistemska konfiguracija nije mogla biti uvežena zvog nepoznate greške, moliko proverite OTRS logove za više informacija.',
+        'System Configuration could not be imported due to an unknown error, please check LIGERO logs for more information.' =>
+            'Sistemska konfiguracija nije mogla biti uvežena zvog nepoznate greške, moliko proverite LIGERO logove za više informacija.',
         'Category Search' => 'Pretraga kategorija',
 
         # Perl Module: Kernel/Modules/AdminSystemConfigurationDeployment.pm
-        'Some imported settings are not present in the current state of the configuration or it was not possible to update them. Please check the OTRS log for more information.' =>
-            'Neka uvezena podešavanja nisu prisutna u trenutnoj konfiguraciji ili nije bilo moguće ažurirati ih. Molimo proverite OTRS log za više informacija.',
+        'Some imported settings are not present in the current state of the configuration or it was not possible to update them. Please check the LIGERO log for more information.' =>
+            'Neka uvezena podešavanja nisu prisutna u trenutnoj konfiguraciji ili nije bilo moguće ažurirati ih. Molimo proverite LIGERO log za više informacija.',
 
         # Perl Module: Kernel/Modules/AdminSystemConfigurationGroup.pm
         'You need to enable the setting before locking!' => 'Morate uključiti podešavanje pre zaključavanja!',
@@ -4346,7 +4346,7 @@ sub Data {
         'Configure "Home" in Kernel/Config.pm first!' => 'Prvo podesite "Home" u Kernel/Config.pm!',
         'File "%s/Kernel/Config.pm" not found!' => 'Datoteka "%s/Kernel/Config.pm" nije pronađena!',
         'Directory "%s" not found!' => 'Direktorijum "%s" nije pronađen!',
-        'Install OTRS' => 'Instaliraj OTRS',
+        'Install LIGERO' => 'Instaliraj LIGERO',
         'Intro' => 'Uvod',
         'Kernel/Config.pm isn\'t writable!' => 'Nemoguć upis u %s/Kernel/Config.pm!',
         'If you want to use the installer, set the Kernel/Config.pm writable for the webserver user!' =>
@@ -4363,7 +4363,7 @@ sub Data {
         'Unknown database type "%s".' => 'Nepoznat tip baze podataka "%s".',
         'Please go back.' => 'Molimo idite nazad.',
         'Create Database' => 'Kreiraj bazu podataka',
-        'Install OTRS - Error' => 'Instaliranje OTRS - greška',
+        'Install LIGERO - Error' => 'Instaliranje LIGERO - greška',
         'File "%s/%s.xml" not found!' => 'Datoteka "%s/%s.xml" nije pronađena!',
         'Contact your Admin!' => 'Kontaktirajte vašeg administratora!',
         'System Settings' => 'Sistemska podešavanja',
@@ -4423,7 +4423,7 @@ sub Data {
         'Print this article' => 'Odštampaj ovaj članak',
 
         # Perl Module: Kernel/Output/HTML/ArticleAction/GetHelpLink.pm
-        'Contact us at sales@otrs.com' => 'Kontaktirajte nas na sales@otrs.com',
+        'Contact us at sales@ligero.com' => 'Kontaktirajte nas na sales@ligero.com',
         'Get Help' => 'Traži pomoć',
 
         # Perl Module: Kernel/Output/HTML/ArticleAction/MarkAsImportant.pm
@@ -4431,7 +4431,7 @@ sub Data {
         'Unmark' => 'Neoznačeno',
 
         # Perl Module: Kernel/Output/HTML/ArticleAction/ReinstallPackageLink.pm
-        'Upgrade to OTRS Business Solution™' => 'Unapredite na OTRS Business Solution™',
+        'Upgrade to LIGERO Business Solution™' => 'Unapredite na LIGERO Business Solution™',
         'Re-install Package' => 'Instaliraj ponovo paket',
         'Upgrade' => 'Ažuriranje',
         'Re-install' => 'Instaliraj ponovo',
@@ -4495,8 +4495,8 @@ sub Data {
         'The start time of a ticket has been set after the end time!' => 'Vreme početka tiketa je podešeno posle vremena završetka!',
 
         # Perl Module: Kernel/Output/HTML/Dashboard/News.pm
-        'Can\'t connect to OTRS News server!' => 'Nije moguće povezati se sa OTRS News serverom!',
-        'Can\'t get OTRS News from server!' => 'Ne mogu pribaviti OTRS News sa servera!',
+        'Can\'t connect to LIGERO News server!' => 'Nije moguće povezati se sa LIGERO News serverom!',
+        'Can\'t get LIGERO News from server!' => 'Ne mogu pribaviti LIGERO News sa servera!',
 
         # Perl Module: Kernel/Output/HTML/Dashboard/ProductNotify.pm
         'Can\'t connect to Product News server!' => 'Nije moguće povezazi se sa Product News serverom!',
@@ -4562,9 +4562,9 @@ sub Data {
         'Archive search' => 'Pretraga arhive',
 
         # Perl Module: Kernel/Output/HTML/Notification/AgentCloudServicesDisabled.pm
-        'Enable cloud services to unleash all OTRS features!' => 'Aktivirajte servise u oblaku da bi omogućili sve OTRS funkcije!',
+        'Enable cloud services to unleash all LIGERO features!' => 'Aktivirajte servise u oblaku da bi omogućili sve LIGERO funkcije!',
 
-        # Perl Module: Kernel/Output/HTML/Notification/AgentOTRSBusiness.pm
+        # Perl Module: Kernel/Output/HTML/Notification/AgentLIGEROBusiness.pm
         '%s Upgrade to %s now! %s' => '%s Unapredite na %s sada! %s',
         'Please verify your license data!' => 'Molimo proverite podatke vaše licence!',
         'The license for your %s is about to expire. Please make contact with %s to renew your contract!' =>
@@ -4591,15 +4591,15 @@ sub Data {
             'Period održavanja sistema će otpočeti u: %s i očekivano je da se završi u: %s',
 
         # Perl Module: Kernel/Output/HTML/Notification/DaemonCheck.pm
-        'OTRS Daemon is not running.' => 'OTRS sistemski servis ne radi.',
+        'LIGERO Daemon is not running.' => 'LIGERO sistemski servis ne radi.',
 
         # Perl Module: Kernel/Output/HTML/Notification/OutofOfficeCheck.pm
         'You have Out of Office enabled, would you like to disable it?' =>
             'Aktivirana je opcija van kancelarije, želite li da je isključite?',
 
         # Perl Module: Kernel/Output/HTML/Notification/PackageManagerCheckNotVerifiedPackages.pm
-        'The installation of packages which are not verified by the OTRS Group is activated. These packages could threaten your whole system! It is recommended not to use unverified packages.' =>
-            'Mogućnost instalacije paketa koji nisu verifikovane od strane OTRS grupe je uključena. Ovi paketi mogu ugroziti vaš ceo sistem. Preporučujemo da ne koristite neverifikovane pakete.',
+        'The installation of packages which are not verified by the LIGERO Group is activated. These packages could threaten your whole system! It is recommended not to use unverified packages.' =>
+            'Mogućnost instalacije paketa koji nisu verifikovane od strane LIGERO grupe je uključena. Ovi paketi mogu ugroziti vaš ceo sistem. Preporučujemo da ne koristite neverifikovane pakete.',
 
         # Perl Module: Kernel/Output/HTML/Notification/SystemConfigurationInvalidCheck.pm
         'You have %s invalid setting(s) deployed. Click here to show invalid settings.' =>
@@ -4730,11 +4730,11 @@ sub Data {
             'Prijava trenutno nije moguća zbog planiranog održavanja sistema.',
 
         # Perl Module: Kernel/System/AuthSession.pm
-        'You have exceeded the number of concurrent agents - contact sales@otrs.com.' =>
-            'Prekoračili ste broj istovremeno prijavljenih operatera - kontaktirajte sales@otrs.com.',
+        'You have exceeded the number of concurrent agents - contact sales@ligero.com.' =>
+            'Prekoračili ste broj istovremeno prijavljenih operatera - kontaktirajte sales@ligero.com.',
         'Please note that the session limit is almost reached.' => 'Imajte u vidu da je ograničenje sesija skoro dostignuto.',
-        'Login rejected! You have exceeded the maximum number of concurrent Agents! Contact sales@otrs.com immediately!' =>
-            'Prijava odbijena! Prekoračili ste dozvoljeni broj istovremeno prijavljenih operatera! Pod hitno kontaktirajte sales@otrs.com!',
+        'Login rejected! You have exceeded the maximum number of concurrent Agents! Contact sales@ligero.com immediately!' =>
+            'Prijava odbijena! Prekoračili ste dozvoljeni broj istovremeno prijavljenih operatera! Pod hitno kontaktirajte sales@ligero.com!',
         'Session limit reached! Please try again later.' => 'Sesija je istekla! Molimo pokušajte kasnije!',
         'Session per user limit reached!' => 'Dostignuto ograničenje broja sesija po korisniku!',
 
@@ -4799,10 +4799,10 @@ sub Data {
         'File is not installed!' => 'Datoteka nije instalirana!',
         'File is different!' => 'Datoteka je različita!',
         'Can\'t read file!' => 'Nemoguće čitanje datoteke!',
-        '<p>If you continue to install this package, the following issues may occur:</p><ul><li>Security problems</li><li>Stability problems</li><li>Performance problems</li></ul><p>Please note that issues that are caused by working with this package are not covered by OTRS service contracts.</p>' =>
-            '<p>Ako nastavite sa instalacijom ovog paketa, mogu se javiti sledeći problemi:</p><ul><li>Bezbednosni problemi</li><li>Problemi stabilnosti</li><li>Problemi u performansama</li></ul><p>Napominjemo da problemi nastali usled rada sa ovim paketom nisu pokriveni OTRS servisnim ugovorom.</p>',
-        '<p>The installation of packages which are not verified by the OTRS Group is not possible by default.</p>' =>
-            '<p>Instalacija paketa koji nisu verifikovani od strane OTRS grupe nije podrazumevano omogućena.</p>',
+        '<p>If you continue to install this package, the following issues may occur:</p><ul><li>Security problems</li><li>Stability problems</li><li>Performance problems</li></ul><p>Please note that issues that are caused by working with this package are not covered by LIGERO service contracts.</p>' =>
+            '<p>Ako nastavite sa instalacijom ovog paketa, mogu se javiti sledeći problemi:</p><ul><li>Bezbednosni problemi</li><li>Problemi stabilnosti</li><li>Problemi u performansama</li></ul><p>Napominjemo da problemi nastali usled rada sa ovim paketom nisu pokriveni LIGERO servisnim ugovorom.</p>',
+        '<p>The installation of packages which are not verified by the LIGERO Group is not possible by default.</p>' =>
+            '<p>Instalacija paketa koji nisu verifikovani od strane LIGERO grupe nije podrazumevano omogućena.</p>',
         '<p>You can activate the installation of not verified packages in the <a href="%sAction=AdminSystemConfiguration;Subaction=View;Setting=Package%3A%3AAllowNotVerifiedPackages" target="_blank">System Configuration</a>.</p>' =>
             '<p>Možete aktivirati instalaciju neverifikovanih paketa u <a href="%sAction=AdminSystemConfiguration;Subaction=View;Setting=Package%3A%3AAllowNotVerifiedPackages" target="_blank">sistemskoj konfiguraciji</a>.</p>',
 
@@ -4936,8 +4936,8 @@ sub Data {
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Database/mysql/InvalidDefaultValues.pm
         'Invalid Default Values' => 'Neispravne podrazumevane vrednosti',
-        'Tables with invalid default values were found. In order to fix it automatically, please run: bin/otrs.Console.pl Maint::Database::Check --repair' =>
-            'Pronađene su tabele sa neispravnim podrazumevanim vrednostima. Da biste ih automatski ispravili, molimo pokrenite bin/otrs.Console.pl Maint::Database::Check --repair',
+        'Tables with invalid default values were found. In order to fix it automatically, please run: bin/ligero.Console.pl Maint::Database::Check --repair' =>
+            'Pronađene su tabele sa neispravnim podrazumevanim vrednostima. Da biste ih automatski ispravili, molimo pokrenite bin/ligero.Console.pl Maint::Database::Check --repair',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Database/mysql/MaxAllowedPacket.pm
         'Maximum Query Size' => 'Maksimalna veličina upita',
@@ -4987,14 +4987,14 @@ sub Data {
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Database/postgresql/Version.pm
         'PostgreSQL 9.2 or higher is required.' => 'Neophodan je PostgreSQL 9.2 ili više.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskPartitionOTRS.pm
-        'OTRS Disk Partition' => 'OTRS particija na disku',
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskPartitionLIGERO.pm
+        'LIGERO Disk Partition' => 'LIGERO particija na disku',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskSpace.pm
         'Disk Usage' => 'Korišćenje diska',
-        'The partition where OTRS is located is almost full.' => 'Particija na kojoj je smešten OTRS je skoro puna.',
-        'The partition where OTRS is located has no disk space problems.' =>
-            'Particija na kojoj je smešten OTRS nema probleme sa prostorom.',
+        'The partition where LIGERO is located is almost full.' => 'Particija na kojoj je smešten LIGERO je skoro puna.',
+        'The partition where LIGERO is located has no disk space problems.' =>
+            'Particija na kojoj je smešten LIGERO nema probleme sa prostorom.',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/OS/DiskSpacePartitions.pm
         'Disk Partitions Usage' => 'Korišćenje particije na disku',
@@ -5022,37 +5022,37 @@ sub Data {
         'There should be more than 60% free swap space.' => 'Mora postojati više od 60 % slobodnog swap prostora',
         'There should be no more than 200 MB swap space used.' => 'Ne treba da bude više od 200 MB upotrebljenog Swap prostora.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ArticleSearchIndexStatus.pm
-        'OTRS' => 'OTRS',
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ArticleSearchIndexStatus.pm
+        'LIGERO' => 'LIGERO',
         'Article Search Index Status' => 'Stanje indeksa pretrage članaka',
         'Indexed Articles' => 'Indeksiranih članaka',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ArticlesPerCommunicationChannel.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ArticlesPerCommunicationChannel.pm
         'Articles Per Communication Channel' => 'Članaka po komunikacionom kanalu',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLog.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLog.pm
         'Incoming communications' => 'Dolazne komunikacije',
         'Outgoing communications' => 'Odlazne komunikacije',
         'Failed communications' => 'Neuspele komunikacije',
         'Average processing time of communications (s)' => 'Prosečno vreme trajanja komunikacija (s)',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/CommunicationLogAccountStatus.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/CommunicationLogAccountStatus.pm
         'Communication Log Account Status (last 24 hours)' => 'Stanje naloga komunikacionog loga (poslednjih 24 sata)',
         'No connections found.' => 'Nisu pronađene konekcije.',
         'ok' => 'u redu',
         'permanent connection errors' => 'trajne greške u konekciji',
         'intermittent connection errors' => 'povremene greške u konekciji',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/ConfigSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/ConfigSettings.pm
         'Config Settings' => 'Podešavanja konfiguracije',
         'Could not determine value.' => 'Nije moguće utvrditi vrednost.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DaemonRunning.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DaemonRunning.pm
         'Daemon' => 'Sistemski servis',
         'Daemon is running.' => 'Servis radi.',
         'Daemon is not running.' => 'Servis ne radi.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DatabaseRecords.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DatabaseRecords.pm
         'Database Records' => 'Zapisi u bazi podataka',
         'Tickets' => 'Tiketi',
         'Ticket History Entries' => 'Istorija unosa tiketa',
@@ -5068,31 +5068,31 @@ sub Data {
         'Tickets Per Month (avg)' => 'Tiketi mesečno (prosečno)',
         'Open Tickets' => 'Otvoreni tiketi',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultSOAPUser.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DefaultSOAPUser.pm
         'Default SOAP Username And Password' => 'Podrazumevano SOAP korisničko ime i lozinka',
         'Security risk: you use the default setting for SOAP::User and SOAP::Password. Please change it.' =>
             'Sigurnosni rizik: koristite podrazumevana podešavanja za SOAP::User i SOAP::Password. Molimo promenite ga.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/DefaultUser.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/DefaultUser.pm
         'Default Admin Password' => 'Predefinisana lozinka administratora',
         'Security risk: the agent account root@localhost still has the default password. Please change it or invalidate the account.' =>
             'Sigurnosni rizik: agent nalog root@localhost još uvek ima predefinisanu lozinku. Molimo promenite je ili deaktivirajte nalog.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/EmailQueue.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/EmailQueue.pm
         'Email Sending Queue' => 'Red za slanje imejlova',
         'Emails queued for sending' => 'Broj imejlova zakazanih za slanje',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/FQDN.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/FQDN.pm
         'FQDN (domain name)' => 'FQDN (naziv domena)',
         'Please configure your FQDN setting.' => 'Molimo da konfigurišete FQDN podešavanje.',
         'Domain Name' => 'Naziv domena',
         'Your FQDN setting is invalid.' => 'Vaša FQDN podešavanja su nevažeća.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/FileSystemWritable.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/FileSystemWritable.pm
         'File System Writable' => 'Omogućeno pisanje u sistem datoteka.',
-        'The file system on your OTRS partition is not writable.' => 'Nije moguće pisanje u sistem datoteka na vašoj OTRS particiji.',
+        'The file system on your LIGERO partition is not writable.' => 'Nije moguće pisanje u sistem datoteka na vašoj LIGERO particiji.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/LegacyConfigBackups.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/LegacyConfigBackups.pm
         'Legacy Configuration Backups' => 'Rezervne kopije prošlih konfiguracija',
         'No legacy configuration backup files found.' => 'Nisu pronađene rezervne kopije prošlih konfiguracija.',
         'Legacy configuration backup files found in %s, but they might still be required by some packages.' =>
@@ -5100,79 +5100,79 @@ sub Data {
         'Legacy configuration backup files are no longer needed for the installed packages, please remove them from %s.' =>
             'Rezervne kopije prošlih konfiguracija više nisu neophodne za rad instaliranih paketa, molimo uklonite ih iz %s.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/PackageDeployment.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageDeployment.pm
         'Package Installation Status' => 'Status instalacije paketa',
         'Some packages have locally modified files.' => 'Neki paketi sadrže lokalno izmenjene datoteke.',
         'Some packages are not correctly installed.' => 'Neki paketi nisu ispravno instalirani.',
         'Package Verification Status' => 'Status verifikacije paketa',
-        'Some packages are not verified by the OTRS Group! It is recommended not to use this packages.' =>
-            'Neki paketi nisu verifikovani od strane OTRS grupe! Preporučuje se da ne koristite ove pakete.',
+        'Some packages are not verified by the LIGERO Group! It is recommended not to use this packages.' =>
+            'Neki paketi nisu verifikovani od strane LIGERO grupe! Preporučuje se da ne koristite ove pakete.',
         'Package Framework Version Status' => 'Status paketa za verziju sistema',
         'Some packages are not allowed for the current framework version.' =>
             'Neki paketi nisu dozvoljeni za verziju vašeg sistema. ',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/PackageList.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/PackageList.pm
         'Package List' => 'Lista paketa',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SessionConfigSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SessionConfigSettings.pm
         'Session Config Settings' => 'Podešavanja sesija',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SpoolMails.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SpoolMails.pm
         'Spooled Emails' => 'Imejlovi u redu čekanja',
-        'There are emails in var/spool that OTRS could not process.' => 'Postoje imejlovi u var/spool koje OTRS ne može da obradi.',
+        'There are emails in var/spool that LIGERO could not process.' => 'Postoje imejlovi u var/spool koje LIGERO ne može da obradi.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/SystemID.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/SystemID.pm
         'Your SystemID setting is invalid, it should only contain digits.' =>
             'Vaša podešavanje SystemID je nevažeće, treba da sadrži samo cifre.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/DefaultType.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/DefaultType.pm
         'Default Ticket Type' => 'Podrazumevani tip tiketa',
         'The configured default ticket type is invalid or missing. Please change the setting Ticket::Type::Default and select a valid ticket type.' =>
             'Podešeni podrazumevani tip tiketa je nevažeći ili nedostaje. Molimo promenite podešavanje Ticket::Type::Default i izaberite važeći tip tiketa.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/IndexModule.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/IndexModule.pm
         'Ticket Index Module' => 'Tiket indeks modul',
         'You have more than 60,000 tickets and should use the StaticDB backend. See admin manual (Performance Tuning) for more information.' =>
             'Imate više od 60.000 tiketa i treba da koristite StaticDB modul. Pogledajte administratorsko uputstvo (Podešavanje performansi) za više informacija.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/InvalidUsersWithLockedTickets.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/InvalidUsersWithLockedTickets.pm
         'Invalid Users with Locked Tickets' => 'Neispravni korisnici sa zaključanim tiketima',
         'There are invalid users with locked tickets.' => 'Postoje neispravni korisnici sa zaključanim tiketima.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/OpenTickets.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/OpenTickets.pm
         'You should not have more than 8,000 open tickets in your system.' =>
             'Ne bi trebalo da imate više od 8.000 otvorenih tiketa u sistemu.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/SearchIndexModule.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/SearchIndexModule.pm
         'Ticket Search Index Module' => 'Modul za indeksnu pretragu tiketa',
         'The indexing process forces the storage of the original article text in the article search index, without executing filters or applying stop word lists. This will increase the size of the search index and thus may slow down fulltext searches.' =>
             'Proces indeksiranja će uključiti spremanje originalnog teksta članka u indeksu pretrage, bez izvršavanja filtera ili uklanjanja zaustavnih reči. Ovo će uvećati veličinu indeksa pretrage i može usporiti tekstualnu pretragu.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/Ticket/StaticDBOrphanedRecords.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/Ticket/StaticDBOrphanedRecords.pm
         'Orphaned Records In ticket_lock_index Table' => 'Napušteni zapisi u ticket_lock_index tabeli',
-        'Table ticket_lock_index contains orphaned records. Please run bin/otrs.Console.pl "Maint::Ticket::QueueIndexCleanup" to clean the StaticDB index.' =>
-            'Tabela ticket_lock_index sadrži nepovezane zapise. Molimo da pokrenete bin/otrs.Console.pl Maint::Ticket::QueueIndexCleanup da bi očistili StaticDB indeks.',
+        'Table ticket_lock_index contains orphaned records. Please run bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup" to clean the StaticDB index.' =>
+            'Tabela ticket_lock_index sadrži nepovezane zapise. Molimo da pokrenete bin/ligero.Console.pl Maint::Ticket::QueueIndexCleanup da bi očistili StaticDB indeks.',
         'Orphaned Records In ticket_index Table' => 'Napušteni zapisi u ticket_index tabeli',
-        'Table ticket_index contains orphaned records. Please run bin/otrs.Console.pl "Maint::Ticket::QueueIndexCleanup" to clean the StaticDB index.' =>
-            'Tabela ticket_lindex sadrži nepovezane zapise. Molimo da pokrenete bin/otrs.Console.pl Maint::Ticket::QueueIndexCleanup da bi očistili StaticDB indeks.',
+        'Table ticket_index contains orphaned records. Please run bin/ligero.Console.pl "Maint::Ticket::QueueIndexCleanup" to clean the StaticDB index.' =>
+            'Tabela ticket_lindex sadrži nepovezane zapise. Molimo da pokrenete bin/ligero.Console.pl Maint::Ticket::QueueIndexCleanup da bi očistili StaticDB indeks.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/TimeSettings.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/TimeSettings.pm
         'Time Settings' => 'Podešavanja vremena',
         'Server time zone' => 'Vremenska zona servera',
-        'OTRS time zone' => 'OTRS vremenska zona',
-        'OTRS time zone is not set.' => 'OTRS vremenska zona nije podešena.',
+        'LIGERO time zone' => 'LIGERO vremenska zona',
+        'LIGERO time zone is not set.' => 'LIGERO vremenska zona nije podešena.',
         'User default time zone' => 'Podrazumevana vremenska zona korisnika',
         'User default time zone is not set.' => 'Podrazumevana vremenska zona korisnika nije podešena.',
-        'OTRS time zone setting for calendar' => 'OTRS vremenska zona kalendara',
+        'LIGERO time zone setting for calendar' => 'LIGERO vremenska zona kalendara',
         'Calendar time zone is not set.' => 'Vremenska zona kalendara nije podešena.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/AgentSkinUsage.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/AgentSkinUsage.pm
         'UI - Agent Skin Usage' => 'UI - izgledi interfejsa operatera u korišćenju',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/AgentThemeUsage.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/AgentThemeUsage.pm
         'UI - Agent Theme Usage' => 'UI - teme interfejsa operatera u korišćenju',
 
-        # Perl Module: Kernel/System/SupportDataCollector/Plugin/OTRS/UI/SpecialStats.pm
+        # Perl Module: Kernel/System/SupportDataCollector/Plugin/LIGERO/UI/SpecialStats.pm
         'UI - Special Statistics' => 'UI - posebne statistike',
         'Agents using custom main menu ordering' => 'Operateri sa prilagođenim redosledom glavnog menija',
         'Agents using favourites for the admin overview' => 'Operateri sa omiljenim stavkama za administratorski pregled',
@@ -5183,8 +5183,8 @@ sub Data {
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Webserver/Apache/MPMModel.pm
         'MPM model' => 'MPM model',
-        'OTRS requires apache to be run with the \'prefork\' MPM model.' =>
-            'OTRS zahteva da Apache bude pokrenut sa \'prefork\' MPM modelom.',
+        'LIGERO requires apache to be run with the \'prefork\' MPM model.' =>
+            'LIGERO zahteva da Apache bude pokrenut sa \'prefork\' MPM modelom.',
 
         # Perl Module: Kernel/System/SupportDataCollector/Plugin/Webserver/Apache/Performance.pm
         'CGI Accelerator Usage' => 'Upotreba CGI Accelerator',
@@ -5214,7 +5214,7 @@ sub Data {
         'Webserver Version' => 'Veb server verzija',
         'Could not determine webserver version.' => 'Ne može da prepozna veb server verziju.',
 
-        # Perl Module: Kernel/System/SupportDataCollector/PluginAsynchronous/OTRS/ConcurrentUsers.pm
+        # Perl Module: Kernel/System/SupportDataCollector/PluginAsynchronous/LIGERO/ConcurrentUsers.pm
         'Concurrent Users Details' => 'Detalji istovremenih korisnika',
         'Concurrent Users' => 'Istovremeni korisnici',
 
@@ -5245,11 +5245,11 @@ sub Data {
         'Disabled' => 'Onemogućen',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/Date.pm
-        'System was not able to calculate user Date in OTRSTimeZone!' => 'Sistem nije uspeo da izračuna korisnički Date u OTRSTimeZone!',
+        'System was not able to calculate user Date in LIGEROTimeZone!' => 'Sistem nije uspeo da izračuna korisnički Date u LIGEROTimeZone!',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/DateTime.pm
-        'System was not able to calculate user DateTime in OTRSTimeZone!' =>
-            'Sistem nije uspeo da izračuna korisnički DateTime u OTRSTimeZone!',
+        'System was not able to calculate user DateTime in LIGEROTimeZone!' =>
+            'Sistem nije uspeo da izračuna korisnički DateTime u LIGEROTimeZone!',
 
         # Perl Module: Kernel/System/SysConfig/ValueType/FrontendNavigation.pm
         'Value is not correct! Please, consider updating this module.' =>
@@ -5298,7 +5298,7 @@ sub Data {
         # Perl Module: Kernel/System/Web/InterfaceInstaller.pm
         'Action "%s" not found!' => 'Akcija "%s" nije pronađena!',
 
-        # Database XML Definition: scripts/database/otrs-initial_insert.xml
+        # Database XML Definition: scripts/database/ligero-initial_insert.xml
         'invalid-temporarily' => 'nevažeći-privremeno',
         'Group for default access.' => 'Grupa za podrazumevan pristup.',
         'Group of all administrators.' => 'Grupa svih administratora.',
@@ -5506,8 +5506,8 @@ sub Data {
         'Currently not possible' => 'Trenutno nije moguće',
         'This is currently disabled because of an ongoing package upgrade.' =>
             'Ova funkcija je trenutno isključena zbog ažuriranja paketa u toku.',
-        'This option is currently disabled because the OTRS Daemon is not running.' =>
-            'Ova funkcija je trenutno isključena zato što OTRS servis ne radi.',
+        'This option is currently disabled because the LIGERO Daemon is not running.' =>
+            'Ova funkcija je trenutno isključena zato što LIGERO servis ne radi.',
         'Are you sure you want to update all installed packages?' => 'Da li ste sigurni da želite da unapredite sve instalirane pakete?',
 
         # JS File: Core.Agent.Admin.PostMasterFilter
@@ -5633,7 +5633,7 @@ sub Data {
             'Molimo unesite barem jednu vrednost pretrage ili * da bi ste nešto pronašli.',
 
         # JS File: Core.Agent.Daemon
-        'Information about the OTRS Daemon' => 'Informacije o OTRS sistemskom servisu',
+        'Information about the LIGERO Daemon' => 'Informacije o LIGERO sistemskom servisu',
 
         # JS File: Core.Agent.Dashboard
         'Please check the fields marked as red for valid inputs.' => 'Molimo proverite polja označena crvenim za važeće unose.',
@@ -5790,14 +5790,14 @@ sub Data {
         'This is %s' => 'Ovo je %s',
         'Complex %s with %s arguments' => 'Kompleksan %s sa %s argumenata',
 
-        # JS File: OTRSLineChart
+        # JS File: LIGEROLineChart
         'No Data Available.' => 'Nema informacija.',
 
-        # JS File: OTRSMultiBarChart
+        # JS File: LIGEROMultiBarChart
         'Grouped' => 'Grupisano',
         'Stacked' => 'Naslagano',
 
-        # JS File: OTRSStackedAreaChart
+        # JS File: LIGEROStackedAreaChart
         'Stream' => 'Protok',
         'Expanded' => 'Prošireno',
 
@@ -5888,8 +5888,8 @@ Vaša tehnička podrška
         'Added subscription for user "%s".' => 'Pretplata za korisnika "%s" je uključena.',
         'Added system request (%s).' => 'Dodat sistemski zahtev (%s).',
         'Added web request from customer.' => 'Dodat veb zahtev od klijenta.',
-        'Adds a suffix with the actual year and month to the OTRS log file. A logfile for every month will be created.' =>
-            'Dodaje tekuću godinu i mesec kao sufiks u OTRS log datoteku. Biće kreirana log datoteka za svaki mesec.',
+        'Adds a suffix with the actual year and month to the LIGERO log file. A logfile for every month will be created.' =>
+            'Dodaje tekuću godinu i mesec kao sufiks u LIGERO log datoteku. Biće kreirana log datoteka za svaki mesec.',
         'Adds customers email addresses to recipients in the ticket compose screen of the agent interface. The customers email address won\'t be added if the article type is email-internal.' =>
             'Dodavanje imejl adresa klijenata, primaocima u tiketu na prikazu ekrana za otvaranje tiketa u interfejsu operatera. Imejl adrese klijenata neće biti dodate, ukoliko je tip artikla imejl-interni.',
         'Adds the one time vacation days for the indicated calendar.' => 'Jednokratno dodaje neradne dane za izabrani kalendar.',
@@ -5940,7 +5940,7 @@ Vaša tehnička podrška
         'Agents ↔ Groups' => 'Operateri ↔ grupe',
         'Agents ↔ Roles' => 'Operateri ↔ uloge',
         'All CustomerIDs of a customer user.' => 'Svi klijent ID klijent korisnika.',
-        'All attachments (OTRS Business Solution™)' => 'Svi prilozi (OTRS Business Solution™)',
+        'All attachments (LIGERO Business Solution™)' => 'Svi prilozi (LIGERO Business Solution™)',
         'All customer users of a CustomerID' => 'Svi klijenti korisnici za CustomerID',
         'All escalated tickets' => 'Svi eskalirani tiketi',
         'All new tickets, these tickets have not been worked on yet' => 'Svi novi tiketi, na njima još nije ništa rađeno',
@@ -6062,8 +6062,8 @@ Vaša tehnička podrška
         'Balanced white skin by Felix Niklas (slim version).' => 'Izbalansirani beli izgled, Feliks Niklas (tanka verzija).',
         'Balanced white skin by Felix Niklas.' => 'Izbalansirani beli izgled, Feliks Niklas.',
         'Based on global RichText setting' => 'Bazirano na globalnim RichText postavkama',
-        'Basic fulltext index settings. Execute "bin/otrs.Console.pl Maint::Ticket::FulltextIndexRebuild" in order to generate a new index.' =>
-            'Osnovn podešavanje indeksa celog teksta. Izvrši "bin/otrs.Console.pl Maint::Ticket::FulltextIndexRebuild" kako bi se generisao novi indeks.',
+        'Basic fulltext index settings. Execute "bin/ligero.Console.pl Maint::Ticket::FulltextIndexRebuild" in order to generate a new index.' =>
+            'Osnovn podešavanje indeksa celog teksta. Izvrši "bin/ligero.Console.pl Maint::Ticket::FulltextIndexRebuild" kako bi se generisao novi indeks.',
         'Blocks all the incoming emails that do not have a valid ticket number in subject with From: @example.com address.' =>
             'Blokira sve dolazne email-ove koji nemaju ispravan broj tiketa u predmetu sa Od: @example.com adrese.',
         'Bounced to "%s".' => 'Odbijeno na "%s".',
@@ -6118,9 +6118,9 @@ Vaša tehnička podrška
             'Proverava da li je imejl nastavljanje na postojeći tiket pretragom predmeta važećih brojeva tiketa.',
         'Checks the SystemID in ticket number detection for follow-ups. If not enabled, SystemID will be changed after using the system.' =>
             'Proverava SystemID u detekciji broja tiketa za nastavljanja. Ako je isključeno, SystemID će biti promenjen nakon korišćenja sistema.',
-        'Checks the availability of OTRS Business Solution™ for this system.' =>
-            'Proverava dostupnost OTRS Business Solution™ za ovaj sistem.',
-        'Checks the entitlement status of OTRS Business Solution™.' => 'Proverava status prava korišćenja OTRS Business Solution™.',
+        'Checks the availability of LIGERO Business Solution™ for this system.' =>
+            'Proverava dostupnost LIGERO Business Solution™ za ovaj sistem.',
+        'Checks the entitlement status of LIGERO Business Solution™.' => 'Proverava status prava korišćenja LIGERO Business Solution™.',
         'Child' => 'Child',
         'Chinese (Simplified)' => 'Kineski (uprošćeno)',
         'Chinese (Traditional)' => 'Kineski (tradicionalno)',
@@ -6173,13 +6173,13 @@ Vaša tehnička podrška
         'Configure and manage ACLs.' => 'Konfiguriši i upravljaj ACL listama.',
         'Configure any additional readonly mirror databases that you want to use.' =>
             'Konfiguriše bilo koju dodatnu preslikanu bazu podataka, koju želite da koristite, samo za čitanje.',
-        'Configure sending of support data to OTRS Group for improved support.' =>
-            'Podešavanje slanja podataka za podršku OTRS grupi radi unapređenja podrške.',
+        'Configure sending of support data to LIGERO Group for improved support.' =>
+            'Podešavanje slanja podataka za podršku LIGERO grupi radi unapređenja podrške.',
         'Configure which screen should be shown after a new ticket has been created.' =>
             'Konfiguriše koji ekran bi trebalo prikazati nakon kreiranja novog tiketa.',
         'Configure your own log text for PGP.' => 'Konfiguriši sopstveni log tekst za PGP.',
-        'Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".' =>
-            'Konfiguriše podrazumevana podešavanja dinamičkog polja tiketa. "Name" definiše dinamičko polje koje će biti korišćeno, "Value" je podatak koji će biti podešen, a "Event" definiše okidač događaja. Molimo konsultujte uputstvo za programere (http://otrs.github.io/doc/), poglavlje "Modul događaja tiketa".',
+        'Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://ligero.github.io/doc/), chapter "Ticket Event Module".' =>
+            'Konfiguriše podrazumevana podešavanja dinamičkog polja tiketa. "Name" definiše dinamičko polje koje će biti korišćeno, "Value" je podatak koji će biti podešen, a "Event" definiše okidač događaja. Molimo konsultujte uputstvo za programere (http://ligero.github.io/doc/), poglavlje "Modul događaja tiketa".',
         'Controls how to display the ticket history entries as readable values.' =>
             'Kontroliše način prikaza istorijskih unosa tiketa kao čitljivih vrednosti. ',
         'Controls if CustomerID is automatically copied from the sender address for unknown customers.' =>
@@ -6296,8 +6296,8 @@ Vaša tehnička podrška
         'Default value for NameX' => 'Podrazumevana vrednost za NameX',
         'Define Actions where a settings button is available in the linked objects widget (LinkObject::ViewMode = "complex"). Please note that these Actions must have registered the following JS and CSS files: Core.AllocationList.css, Core.UI.AllocationList.js, Core.UI.Table.Sort.js, Core.Agent.TableFilters.js.' =>
             'Definiše akcije na kojima je omogućen prikaz dugmeta za podešavanje u aplikativnom dodatku linkovanih objekata (LinkObject::ViewMode = "complex"). Napominjemo da ove akcije moraju imati registrovane sledeće JS i CSS datoteke: Core.AllocationList.css, Core.UI.AllocationList.js, Core.UI.Table.Sort.js, Core.Agent.TableFilters.js.',
-        'Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Definiši filter za html izlaz da bi dodali veze iza definisanog niza znakova. Element Image dozvoljava dva načina ulaza. U jednom naziv slike (npr. faq.png). U tom slučaju biće korišćena OTRS putanja slike. Drugi način je unošenje veze do slike.',
+        'Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Definiši filter za html izlaz da bi dodali veze iza definisanog niza znakova. Element Image dozvoljava dva načina ulaza. U jednom naziv slike (npr. faq.png). U tom slučaju biće korišćena LIGERO putanja slike. Drugi način je unošenje veze do slike.',
         'Define a mapping between variables of the customer user data (keys) and dynamic fields of a ticket (values). The purpose is to store customer user data in ticket dynamic fields. The dynamic fields must be present in the system and should be enabled for AgentTicketFreeText, so that they can be set/updated manually by the agent. They mustn\'t be enabled for AgentTicketPhone, AgentTicketEmail and AgentTicketCustomer. If they were, they would have precedence over the automatically set values. To use this mapping, you have to also activate the Ticket::EventModulePost###4100-DynamicFieldFromCustomerUser setting.' =>
             'Definisanje mapiranja između promenljivih podataka klijenta korisnika (ključevi) i dinamičkih polja tiketa (vrednosti). Cilj je da se sačuvaju podaci klijenta korisnika u dinamičkom polju tiketa. Dinamička polja moraju biti prisutna u sistemu i treba da budu omogućena za AgentTicketFreeText, tako da mogu da budu manuelno podešena/ažurirana od strane operatera. Ona ne smeju biti omogućena za AgentTicketPhone, AgentTicketEmail i AgentTicketCustomer. Da su bila, imala bi prednost nad automatski postavljenim vrednostima. Za korišćenje ovog mapiranja treba, takođe, da aktivirate podešavanje Ticket::EventModulePost###4100-DynamicFieldFromCustomerUser.',
         'Define dynamic field name for end time. This field has to be manually added to the system as Ticket: "Date / Time" and must be activated in ticket creation screens and/or in any other ticket action screens.' =>
@@ -6329,14 +6329,14 @@ Vaša tehnička podrška
             'Definiše stavku koja generiše Google ikonicu na kraju info bloka klijenta.',
         'Defines a customer item, which generates a google maps icon at the end of a customer info block.' =>
             'Definiše stavku koja generiše Google Maps ikonicu na kraju info bloka klijenta.',
-        'Defines a filter for html output to add links behind CVE numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Definiše filter za html izlaz da bi ste dodali veze iza CVE brojeva. Element Image dozvoljava dva načina ulaza. U jednom naziv slike (npr. faq.png). I tom slučaju biće korišćena OTRS putanja slike. Drugi način je unošenje veze do slike.',
-        'Defines a filter for html output to add links behind MSBulletin numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Definiše filter za html izlaz da bi ste dodali veze iza MSBulletin brojeva. Element Image dozvoljava dva načina ulaza. U jednom naziv slike (npr. faq.png). I tom slučaju biće korišćena OTRS putanja slike. Drugi način je unošenje veze do slike.',
-        'Defines a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Definiše filter za html izlaz da bi ste dodali veze iza definisanog niza znakova. Element Image dozvoljava dva načina ulaza. U jednom naziv slike (npr. faq.png). I tom slučaju biće korišćena OTRS putanja slike. Drugi način je unošenje veze do slike.',
-        'Defines a filter for html output to add links behind bugtraq numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
-            'Definiše filter za HTML izlaz da bi ste dodali veze iza bugtraq brojeva. Element Image dozvoljava dva načina ulaza. U jednom naziv slike (npr. faq.png). I tom slučaju biće korišćena OTRS putanja slike. Drugi način je unošenje putanje do slike.',
+        'Defines a filter for html output to add links behind CVE numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Definiše filter za html izlaz da bi ste dodali veze iza CVE brojeva. Element Image dozvoljava dva načina ulaza. U jednom naziv slike (npr. faq.png). I tom slučaju biće korišćena LIGERO putanja slike. Drugi način je unošenje veze do slike.',
+        'Defines a filter for html output to add links behind MSBulletin numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Definiše filter za html izlaz da bi ste dodali veze iza MSBulletin brojeva. Element Image dozvoljava dva načina ulaza. U jednom naziv slike (npr. faq.png). I tom slučaju biće korišćena LIGERO putanja slike. Drugi način je unošenje veze do slike.',
+        'Defines a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Definiše filter za html izlaz da bi ste dodali veze iza definisanog niza znakova. Element Image dozvoljava dva načina ulaza. U jednom naziv slike (npr. faq.png). I tom slučaju biće korišćena LIGERO putanja slike. Drugi način je unošenje veze do slike.',
+        'Defines a filter for html output to add links behind bugtraq numbers. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the LIGERO image path will be used. The second possiblity is to insert the link to the image.' =>
+            'Definiše filter za HTML izlaz da bi ste dodali veze iza bugtraq brojeva. Element Image dozvoljava dva načina ulaza. U jednom naziv slike (npr. faq.png). I tom slučaju biće korišćena LIGERO putanja slike. Drugi način je unošenje putanje do slike.',
         'Defines a filter to collect CVE numbers from article texts in AgentTicketZoom. The results will be displayed in a meta box next to the article. Fill in URLPreview if you would like to see a preview when moving your mouse cursor above the link element. This could be the same URL as in URL, but also an alternate one. Please note that some websites deny being displayed within an iframe (e.g. Google) and thus won\'t work with the preview mode.' =>
             'Definiše filter za prikupljanje CVE brojeva iz teksta članka u AgentTicketZoom. Rezultati će biti prikazani u prozorčetu pored članka. Podesite URLPreview ukoliko želite da vidite prikaz strane prilikom prelaska kursorom preko elementa veze. Ova adresa može biti ista kao i za URL, ali i drugačija. Napominjemo da neke lokacije odbijaju da budu prikazane u IFRAME (npr. Gugl) i zato prikaz neće raditi.',
         'Defines a filter to process the text in the articles, in order to highlight predefined keywords.' =>
@@ -6431,8 +6431,8 @@ Vaša tehnička podrška
             'Definiše da li će operaterima biti dozvoljena prijava na sistem ukoliko nemaju podešen deljeni tajni ključ i time ne koriste dvofaktorski modul za identifikaciju.',
         'Defines if customers should be allowed to login if they have no shared secret stored in their preferences and therefore are not using two-factor authentication.' =>
             'Definiše da li će klijentima biti dozvoljena prijava na sistem ukoliko nemaju podešen deljeni tajni ključ pa zbog toga ne koriste dvofaktorski modul za identifikaciju.',
-        'Defines if the communication between this system and OTRS Group servers that provide cloud services is possible. If set to \'Disable cloud services\', some functionality will be lost such as system registration, support data sending, upgrading to and use of OTRS Business Solution™, OTRS Verify™, OTRS News and product News dashboard widgets, among others.' =>
-            'Definiše da li je moguća komunikacija između ovog sistema i servera OTRS grupe koji obezbeđuju servise u oblaku. Ako je podešeno na \'Onemogući servise u oblaku\' neke funkcionalnosti neće raditi, a to su registracija sistema, slanje podataka podrške, unapređenje na OTRS Business Solution™, OTRS verifikacija, OTRS novosti i novosti o proizvodu u dodacima na kontrolnoj tabli, između ostalih.',
+        'Defines if the communication between this system and LIGERO Group servers that provide cloud services is possible. If set to \'Disable cloud services\', some functionality will be lost such as system registration, support data sending, upgrading to and use of LIGERO Business Solution™, LIGERO Verify™, LIGERO News and product News dashboard widgets, among others.' =>
+            'Definiše da li je moguća komunikacija između ovog sistema i servera LIGERO grupe koji obezbeđuju servise u oblaku. Ako je podešeno na \'Onemogući servise u oblaku\' neke funkcionalnosti neće raditi, a to su registracija sistema, slanje podataka podrške, unapređenje na LIGERO Business Solution™, LIGERO verifikacija, LIGERO novosti i novosti o proizvodu u dodacima na kontrolnoj tabli, između ostalih.',
         'Defines if the enhanced mode should be used (enables use of table, replace, subscript, superscript, paste from word, etc.) in customer interface.' =>
             'Definiše da li će se koristiti poboljšani režim (omogućava korišćenje tabela, zamene, indeksiranja, eksponiranja, umetanja iz Word-a, itd) u interfejsu klijenta.',
         'Defines if the enhanced mode should be used (enables use of table, replace, subscript, superscript, paste from word, etc.).' =>
@@ -6477,8 +6477,8 @@ Vaša tehnička podrška
         'Defines phone communication channel.' => 'Definiše komunikacioni kanal telefona.',
         'Defines queues that\'s tickets are used for displaying as calendar events.' =>
             'Definiše redove koje koriste tiketi za prikazivanje u vidu kalendarskih događaja.',
-        'Defines the HTTP hostname for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the OTRS Daemon).' =>
-            'Definiše HTTP host za slanje podataka podrške preko javnog module \'PublicSupportDataCollector\' (npr. od strane OTRS sistemskog servisa).',
+        'Defines the HTTP hostname for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the LIGERO Daemon).' =>
+            'Definiše HTTP host za slanje podataka podrške preko javnog module \'PublicSupportDataCollector\' (npr. od strane LIGERO sistemskog servisa).',
         'Defines the IP regular expression for accessing the local repository. You need to enable this to have access to your local repository and the package::RepositoryList is required on the remote host.' =>
             'Definiše regularni izraz za IP adresu za pristup lokalnom spremištu. Potrebno je da im omogućite pristup vašem lokalnom spremištu i pakovanju: :RepositoryList se zahteva na udaljenom host-u',
         'Defines the PostMaster header to be used on the filter for keeping the current state of the ticket.' =>
@@ -6527,8 +6527,8 @@ Vaša tehnička podrška
             'Definiše telo napomene na prikazu ekrana slobodnog teksta tiketa u interfejsu operatera.',
         'Defines the default filter fields in the customer user address book search (CustomerUser or CustomerCompany). For the CustomerCompany fields a prefix \'CustomerCompany_\' must be added.' =>
             'Definiše podrazumevana filter polja u pretrazi adresara klijent korisnika (CustomerUser ili CustomerCompany). Za CustomerCompany polja, morate dodati prefiks \'CustomerCompany_\'.',
-        'Defines the default front-end (HTML) theme to be used by the agents and customers. If you like, you can add your own theme. Please refer the administrator manual located at http://otrs.github.io/doc/.' =>
-            'Definiše podrazumevanu korisničku (HTML) temu za operatere i klijente. Ukoliko želite, možete dodati sopstvenu temu. Molimo konsultujte uputstvo za administratore na http://otrs.github.io/doc/.',
+        'Defines the default front-end (HTML) theme to be used by the agents and customers. If you like, you can add your own theme. Please refer the administrator manual located at http://ligero.github.io/doc/.' =>
+            'Definiše podrazumevanu korisničku (HTML) temu za operatere i klijente. Ukoliko želite, možete dodati sopstvenu temu. Molimo konsultujte uputstvo za administratore na http://ligero.github.io/doc/.',
         'Defines the default front-end language. All the possible values are determined by the available language files on the system (see the next setting).' =>
             'Definiše podrazumevani jezik glavnog korisničkog dela. Sve moguće vrednosti su određene u raspoloživim jezičkim datotekama u sistemu (pogledajte sledeća podešavanja).',
         'Defines the default history type in the customer interface.' => 'Određuje podrazumevani tip istorije u interfejsu klijenta.',
@@ -6689,8 +6689,8 @@ Vaša tehnička podrška
             'Definiše filter koji obrađuje tekst u člancima, da bi se istakle URL adrese.',
         'Defines the format of responses in the ticket compose screen of the agent interface ([% Data.OrigFrom | html %] is From 1:1, [% Data.OrigFromName | html %] is only realname of From).' =>
             'Definiše format odgovora u prikazu ekrana za kreiranje tiketa interfejsa operatera ([% Data.OrigFrom | html %]  je Od u originalnom obliku, [% Data.OrigFromName | html %] je samo pravo ime iz Od).',
-        'Defines the fully qualified domain name of the system. This setting is used as a variable, OTRS_CONFIG_FQDN which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
-            'Definiše potpuno kvalifikovano ime domena sistema. Ovo podešavanje se koristi kao promenljiva OTRS_CONFIG_FQDN, koja se nalazi u svim formama poruka i koristi od strane aplikacije, za građenje veza do tiketa unutar vašeg sistema.',
+        'Defines the fully qualified domain name of the system. This setting is used as a variable, LIGERO_CONFIG_FQDN which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
+            'Definiše potpuno kvalifikovano ime domena sistema. Ovo podešavanje se koristi kao promenljiva LIGERO_CONFIG_FQDN, koja se nalazi u svim formama poruka i koristi od strane aplikacije, za građenje veza do tiketa unutar vašeg sistema.',
         'Defines the groups every customer user will be in (if CustomerGroupSupport is enabled and you don\'t want to manage every customer user for these groups).' =>
             'Definiše podrazumevane grupe za klijent korisnike (ukoliko je CustomerGroupSupport uključen i ne želite da upravljate grupama pojedinačnih klijent korisnika).',
         'Defines the groups every customer will be in (if CustomerGroupSupport is enabled and you don\'t want to manage every customer for these groups).' =>
@@ -6764,8 +6764,8 @@ Vaša tehnička podrška
             'Definiše tip veze nadređeni-podređeni. Ako naziv izvora i naziv cilja sadrže iste vrednosti, dobijena veza se smatra neusmerenom; u suprotnom se kao rezultat dobija usmerena veza. ',
         'Defines the link type groups. The link types of the same group cancel one another. Example: If ticket A is linked per a \'Normal\' link with ticket B, then these tickets could not be additionally linked with link of a \'ParentChild\' relationship.' =>
             'Definiše tip veze grupa. Tipovi veze iste grupe poništavaju jedni druge. Primer: Ako je tiket A vezan preko \'Normal\' veze sa tiketom B, onda ovi tiketi ne mogu biti dodatno vezani vezom nadređeni-podređeni.',
-        'Defines the list of online repositories. Another installations can be used as repository, for example: Key="http://example.com/otrs/public.pl?Action=PublicRepository;File=" and Content="Some Name".' =>
-            'Definiše listu online spremišta. Još instalacija može da se koristi kao spremište, na primer: Key="http://example.com/otrs/public.pl?Action=PublicRepository;File=" i Content="Some Name".',
+        'Defines the list of online repositories. Another installations can be used as repository, for example: Key="http://example.com/ligero/public.pl?Action=PublicRepository;File=" and Content="Some Name".' =>
+            'Definiše listu online spremišta. Još instalacija može da se koristi kao spremište, na primer: Key="http://example.com/ligero/public.pl?Action=PublicRepository;File=" i Content="Some Name".',
         'Defines the list of params that can be passed to ticket search function.' =>
             'Definiše listu parametara koji mogu biti prosleđeni funkciji pretrage tiketa.',
         'Defines the list of possible next actions on an error screen, a full path is required, then is possible to add external links if needed.' =>
@@ -6775,8 +6775,8 @@ Vaša tehnička podrška
             'Definiše lokaciju za dobijanje spiska online spremišta za dodatne pakete. Prvi raspoloživi rezultat će biti korišćen.',
         'Defines the log module for the system. "File" writes all messages in a given logfile, "SysLog" uses the syslog daemon of the system, e.g. syslogd.' =>
             'Definiše log modul za sistem. "File" piše sve poruke u datoj log datoteci, "SysLog" koristi sistemski log servis, npr. syslogd.',
-        'Defines the maximal size (in bytes) for file uploads via the browser. Warning: Setting this option to a value which is too low could cause many masks in your OTRS instance to stop working (probably any mask which takes input from the user).' =>
-            'Definiše maksimalnu veličinu (u bajtovima) za slanje datoteke preko pretraživača. Upozorenje: Podešavanje ove opcije na suviše malu vrednost može uzrokovati da mnoge maske u vašoj OTRS instanci prestanu sa radom (verovatno svaka maska koja ima ulaz od korisnika).',
+        'Defines the maximal size (in bytes) for file uploads via the browser. Warning: Setting this option to a value which is too low could cause many masks in your LIGERO instance to stop working (probably any mask which takes input from the user).' =>
+            'Definiše maksimalnu veličinu (u bajtovima) za slanje datoteke preko pretraživača. Upozorenje: Podešavanje ove opcije na suviše malu vrednost može uzrokovati da mnoge maske u vašoj LIGERO instanci prestanu sa radom (verovatno svaka maska koja ima ulaz od korisnika).',
         'Defines the maximal valid time (in seconds) for a session id.' =>
             'Definiše maksimalno vreme važenja (u sekundama) za ID sesije.',
         'Defines the maximum number of affected tickets per job.' => 'Definiše maksimalni broj obuhvaćenih tiketa po poslu.',
@@ -6801,10 +6801,10 @@ Vaša tehnička podrška
         'Defines the module to authenticate customers.' => 'Određuje modul za autentifikaciju klijenata.',
         'Defines the module to display a notification if cloud services are disabled.' =>
             'Definiše modul za prikazivanje obaveštenja ako su servisi u oblaku onemogućeni.',
-        'Defines the module to display a notification in different interfaces on different occasions for OTRS Business Solution™.' =>
-            'Određuje modul za prikaz obaveštenja u raznim interfejsima u različitim prilikama za OTRS Business Solution™.',
-        'Defines the module to display a notification in the agent interface if the OTRS Daemon is not running.' =>
-            'Određuje modul za prikaz obaveštenja u interfejsu operatera ako OTRS sistemski servis ne radi.',
+        'Defines the module to display a notification in different interfaces on different occasions for LIGERO Business Solution™.' =>
+            'Određuje modul za prikaz obaveštenja u raznim interfejsima u različitim prilikama za LIGERO Business Solution™.',
+        'Defines the module to display a notification in the agent interface if the LIGERO Daemon is not running.' =>
+            'Određuje modul za prikaz obaveštenja u interfejsu operatera ako LIGERO sistemski servis ne radi.',
         'Defines the module to display a notification in the agent interface if the system configuration is out of sync.' =>
             'Definiše modul za prikazivanje obaveštenja u interfejsu operatera ako je sistemska konfiguracija nesinhronizovana.',
         'Defines the module to display a notification in the agent interface, if the agent has not yet selected a time zone.' =>
@@ -6841,8 +6841,8 @@ Vaša tehnička podrška
             'Definiše naziv kolone za skladištenje identifikacije korisnika u tabeli parametara.',
         'Defines the name of the indicated calendar.' => 'Definiše naziv naznačenog kalendara.',
         'Defines the name of the key for customer sessions.' => 'Određuje naziv ključa za klijentske sesije.',
-        'Defines the name of the session key. E.g. Session, SessionID or OTRS.' =>
-            'Definiše naziv ključa sesije. Npr. Session, SessionID ili OTRS”',
+        'Defines the name of the session key. E.g. Session, SessionID or LIGERO.' =>
+            'Definiše naziv ključa sesije. Npr. Session, SessionID ili LIGERO”',
         'Defines the name of the table where the user preferences are stored.' =>
             'Određuje naziv tabele gde se smeštaju podešavanja korisnika.',
         'Defines the next possible states after composing / answering a ticket in the ticket compose screen of the agent interface.' =>
@@ -6937,7 +6937,7 @@ Vaša tehnička podrška
             'Određuje separator između pravog imena operatera i email adrese dodeljene redu.',
         'Defines the shown columns and the position in the AgentCustomerUserAddressBook result screen.' =>
             'Definiše prikazane kolone i njihov redosled u ekranu rezultata pretrage adresara klijent korisnika.',
-        'Defines the shown links in the footer area of the customer and public interface of this OTRS system. The value in "Key" is the external URL, the value in "Content" is the shown label.' =>
+        'Defines the shown links in the footer area of the customer and public interface of this LIGERO system. The value in "Key" is the external URL, the value in "Content" is the shown label.' =>
             '',
         'Defines the standard permissions available for customers within the application. If more permissions are needed, you can enter them here. Permissions must be hard coded to be effective. Please ensure, when adding any of the afore mentioned permissions, that the "rw" permission remains the last entry.' =>
             'Određuje standardne dozvole raspoložive za korisnike u aplikaciji. Ukoliko je potrebno više dozvola, možete ih uneti ovde. Da bi bile efektivne, dozvole moraju biti nepromenljive. Molimo proverite kada dodajete bilo koju od gore navedenih dozvola, da "rw" dozvola ostane poslednja.',
@@ -6959,8 +6959,8 @@ Vaša tehnička podrška
         'Defines the subject for rejected emails.' => 'Definiše predmet za odbačene poruke.',
         'Defines the system administrator\'s email address. It will be displayed in the error screens of the application.' =>
             'Definiše imejl adresu sistem administratora. Ona će biti prikazana na ekranima za greške u aplikaciji.',
-        'Defines the system identifier. Every ticket number and http session string contains this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of OTRS).' =>
-            'Definiše identifikator sistema. Svaki broj tiketa i niz znakova „http” sesije sadrši ovaj ID. Ovo osigurava da će samo tiketi koji pripadaju vašem sistemu biti obrađeni kao operacije praćenja (korisno kada se odvija komunikacija između dve „OTRS” instance).',
+        'Defines the system identifier. Every ticket number and http session string contains this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of LIGERO).' =>
+            'Definiše identifikator sistema. Svaki broj tiketa i niz znakova „http” sesije sadrši ovaj ID. Ovo osigurava da će samo tiketi koji pripadaju vašem sistemu biti obrađeni kao operacije praćenja (korisno kada se odvija komunikacija između dve „LIGERO” instance).',
         'Defines the target attribute in the link to external customer database. E.g. \'AsPopup PopupType_TicketAction\'.' =>
             'Određuje ciljni atribut u vezi sa eksternom bazom podataka klijenta. Npr. \'AsPopup PopupType_TicketAction\'.',
         'Defines the target attribute in the link to external customer database. E.g. \'target="cdb"\'.' =>
@@ -6976,12 +6976,12 @@ Vaša tehnička podrška
         'Defines the ticket plugin for calendar appointments.' => 'Definiše dodatni modul tiketa za kalendarske termine.',
         'Defines the time zone of the indicated calendar, which can be assigned later to a specific queue.' =>
             'Definiše vremensku zonu naznačenog kalendara, koja kasnije može biti dodeljena određenom redu.',
-        'Defines the timeout (in seconds, minimum is 20 seconds) for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the OTRS Daemon).' =>
-            'Definiše predviđeno vreme (u sekundama, minimum je 20 sekundi) za prikupljanje podataka podrške putem modula javog interfejsa \'PublicSupportDataCollector\' (npr. kad se koristi putem OTRS sistemskog servisa).',
+        'Defines the timeout (in seconds, minimum is 20 seconds) for the support data collection with the public module \'PublicSupportDataCollector\' (e.g. used from the LIGERO Daemon).' =>
+            'Definiše predviđeno vreme (u sekundama, minimum je 20 sekundi) za prikupljanje podataka podrške putem modula javog interfejsa \'PublicSupportDataCollector\' (npr. kad se koristi putem LIGERO sistemskog servisa).',
         'Defines the two-factor module to authenticate agents.' => 'Određuje dvofaktorski modul za identifikaciju operatera.',
         'Defines the two-factor module to authenticate customers.' => 'Određuje dvofaktorski modul za identifikaciju klijenata.',
-        'Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, OTRS_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
-            'Definiše tip protokola korišćenog od strane veb servera, za potrebe aplikacije. Ako se koristi https protokol umesto plain http, mora biti ovde naznačeno. Pošto ovo nema uticaja na podešavanja ili ponašanje veb servera, neće promeniti način pristupa aplikaciji i, ako je to pogrešno, neće vas sprečiti da se prijavite u aplikaciju. Ovo podešavanje se koristi samo kao promenljiva, OTRS_CONFIG_HttpType koja se nalazi u svim oblicima poruka korišćenih od strane aplikacije, da izgrade veze sa tiketima u vašem sistemu.',
+        'Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, LIGERO_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
+            'Definiše tip protokola korišćenog od strane veb servera, za potrebe aplikacije. Ako se koristi https protokol umesto plain http, mora biti ovde naznačeno. Pošto ovo nema uticaja na podešavanja ili ponašanje veb servera, neće promeniti način pristupa aplikaciji i, ako je to pogrešno, neće vas sprečiti da se prijavite u aplikaciju. Ovo podešavanje se koristi samo kao promenljiva, LIGERO_CONFIG_HttpType koja se nalazi u svim oblicima poruka korišćenih od strane aplikacije, da izgrade veze sa tiketima u vašem sistemu.',
         'Defines the used character for plaintext email quotes in the ticket compose screen of the agent interface. If this is empty or inactive, original emails will not be quoted but appended to the response.' =>
             'Definiše korišćene karaktere za plaintext imejl navode u prikazu ekrana otvorenog tiketa interfejsa operatera. Ukoliko je ovo prazno ili neaktivno, originalni imejlovi neće biti navedeni, nego dodati odgovoru.',
         'Defines the user identifier for the customer panel.' => 'Određuje identifikator klijenta za klijentski panel.',
@@ -6990,8 +6990,8 @@ Vaša tehnička podrška
         'Defines the users avatar. Please note: setting \'Active\' to 0 will only prevent agents from editing settings of this group in their personal preferences, but will still allow administrators to edit the settings of another user\'s behalf. Use \'PreferenceGroup\' to control in which area these settings should be shown in the user interface.' =>
             'Definiše korisnikovu avatar sličicu. Napomena: podešavanje \'Active\' na 0 će samo onemogućiti operaterima da menjaju svoja lična podešavanja iz ove grupe, ali će administratori i dalje moći da ih menjaju u njihovo ime. Podesite \'PreferenceGroup\' da biste odredili u kom delu interfejsa ova podešavanja treba da budu prikazana.',
         'Defines the valid state types for a ticket.' => 'Definiše važeće tipove statusa za tiket.',
-        'Defines the valid states for unlocked tickets. To unlock tickets the script "bin/otrs.Console.pl Maint::Ticket::UnlockTimeout" can be used.' =>
-            'Određuje važeće statuse za otključane tikete. Za otključavanje tiketa može se koristiti skript "bin/otrs.Console.pl Maint::Ticket::UnlockTimeout".',
+        'Defines the valid states for unlocked tickets. To unlock tickets the script "bin/ligero.Console.pl Maint::Ticket::UnlockTimeout" can be used.' =>
+            'Određuje važeće statuse za otključane tikete. Za otključavanje tiketa može se koristiti skript "bin/ligero.Console.pl Maint::Ticket::UnlockTimeout".',
         'Defines the viewable locks of a ticket. NOTE: When you change this setting, make sure to delete the cache in order to use the new value. Default: unlock, tmp_lock.' =>
             'Definiše',
         'Defines the width for the rich text editor component for this screen. Enter number (pixels) or percent value (relative).' =>
@@ -7026,7 +7026,7 @@ Vaša tehnička podrška
         'Deletes requested sessions if they have timed out.' => 'Briše zahtevanu sesiju ako je isteklo vreme.',
         'Delivers extended debugging information in the frontend in case any AJAX errors occur, if enabled.' =>
             'Omogućava pribavljanje dodatnih informacija o greškama u interfejsu, u slučaju problema sa AJAX metodom.',
-        'Deploy and manage OTRS Business Solution™.' => 'Primeni i upravljaj OTRS Business Solution™.',
+        'Deploy and manage LIGERO Business Solution™.' => 'Primeni i upravljaj LIGERO Business Solution™.',
         'Detached' => 'Odvojeno',
         'Determines if a button to delete a link should be displayed next to each link in each zoom mask.' =>
             'Određuje da li se prikazuje dugme za brisanje pored svake veze u detaljnom pregledu tiketa.',
@@ -7062,15 +7062,15 @@ Vaša tehnička podrška
             'Određuje koji će redovi biti važeći za tikete primaoca u interfejsu klijenta.',
         'Disable HTTP header "Content-Security-Policy" to allow loading of external script contents. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
             'Onemogućava HTTP zaglavlje "Content-Security-Policy" radi učitavanja eksternih skriptova. Onemogućavanje ovog HTTP zaglavlja snosi sigurnosni rizik! Isključite ga samo ako znate šta radite!',
-        'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow OTRS to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
-            'Onemogućava HTTP zaglavlje "X-Frame-Options: SAMEORIGIN" radi učitavanja OTRS u okviru IFRAME na drugim stranama. Onemogućavanje ovog HTTP zaglavlja snosi sigurnosni rizik! Isključite ga samo ako znate šta radite!',
+        'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow LIGERO to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
+            'Onemogućava HTTP zaglavlje "X-Frame-Options: SAMEORIGIN" radi učitavanja LIGERO u okviru IFRAME na drugim stranama. Onemogućavanje ovog HTTP zaglavlja snosi sigurnosni rizik! Isključite ga samo ako znate šta radite!',
         'Disable cloud services' => 'Onemogući servise u oblaku',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be enabled).' =>
             'Onemogućuje slanje obaveštenja podsetnika odgovornom operateru tiketa (Ticket::Responsible mora biti uključeno).',
         'Disables the redirection to the last screen overview / dashboard after a ticket is closed.' =>
             'Onemogućuje preusmeravanje na poslednji ekran pregleda / kontrolnu tablu pošto je tiket zatvoren.',
-        'Disables the web installer (http://yourhost.example.com/otrs/installer.pl), to prevent the system from being hijacked. If not enabled, the system can be reinstalled and the current basic configuration will be used to pre-populate the questions within the installer script. If enabled, it also disables the GenericAgent, PackageManager and SQL Box.' =>
-            'Onemogućuje pristup instalacionom ekranu (http://yourhost.example.com/otrs/installer.pl) u svrhu zaštite sistema od nedozvoljenog preuzimanja. Ako je isključeno, sistem može biti ponovo instaliran i trenutna osnovna konfiguracija će biti korišćena da unapred popuni pitanja unutar instalacionog ekrana. Ukoliko nije uključeno, takođe se onemogućuju GenericAgent, PackageManager i SQL Box.',
+        'Disables the web installer (http://yourhost.example.com/ligero/installer.pl), to prevent the system from being hijacked. If not enabled, the system can be reinstalled and the current basic configuration will be used to pre-populate the questions within the installer script. If enabled, it also disables the GenericAgent, PackageManager and SQL Box.' =>
+            'Onemogućuje pristup instalacionom ekranu (http://yourhost.example.com/ligero/installer.pl) u svrhu zaštite sistema od nedozvoljenog preuzimanja. Ako je isključeno, sistem može biti ponovo instaliran i trenutna osnovna konfiguracija će biti korišćena da unapred popuni pitanja unutar instalacionog ekrana. Ukoliko nije uključeno, takođe se onemogućuju GenericAgent, PackageManager i SQL Box.',
         'Display a warning and prevent search when using stop words within fulltext search.' =>
             'Prikaži upozorenje i onemogući pretragu ako su upotrebljene zaustavne reči u pretrazi kompletnog teksta.',
         'Display communication log entries.' => 'Prikazuje stavke komunikacionih logova.',
@@ -7172,8 +7172,8 @@ Vaša tehnička podrška
         'Enable this if you trust in all your public and private pgp keys, even if they are not certified with a trusted signature.' =>
             'Uključite ovu opciju ako verujete u sve vaše javne i privatne PGP ključeve, čak i ako nisu potvrđeni pouzdanim potpisom.',
         'Enabled filters.' => 'Omogućeni filteri.',
-        'Enables PGP support. When PGP support is enabled for signing and encrypting mail, it is HIGHLY recommended that the web server runs as the OTRS user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
-            'Obezbeđuje „PGP” podršku. Kada je „PGP” podrška omogućena za potpisivanje i enkriprovanje mejla, strogo se preporučuje da veb server radi kao „OTRS” korisnik. U suprotnom, biće problema sa privilegijama prilikom pristupa „.gnupg” direktorijumu.',
+        'Enables PGP support. When PGP support is enabled for signing and encrypting mail, it is HIGHLY recommended that the web server runs as the LIGERO user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
+            'Obezbeđuje „PGP” podršku. Kada je „PGP” podrška omogućena za potpisivanje i enkriprovanje mejla, strogo se preporučuje da veb server radi kao „LIGERO” korisnik. U suprotnom, biće problema sa privilegijama prilikom pristupa „.gnupg” direktorijumu.',
         'Enables S/MIME support.' => 'Omogućava „S/MIME” podršku.',
         'Enables customers to create their own accounts.' => 'Omogućava klijentima da kreiraju sopstvene naloge.',
         'Enables fetch S/MIME from CustomerUser backend support.' => 'Omogućava podršku za pribavljanje „S/MIME” iz podrške pozadinskog sistema klijenta korisnika.',
@@ -7234,7 +7234,7 @@ Vaša tehnička podrška
             'Izvršava prilagođenu komandu ili modul. Napomena: ako je upotrebljen modul, funkcija je neophodna.',
         'Executes follow-up checks on In-Reply-To or References headers for mails that don\'t have a ticket number in the subject.' =>
             'Izvršava provere za nastavak tiketa na „In-Reply-To” ili „References” zaglavljima imejla koji nemaju broj tiketa u predmetu.',
-        'Executes follow-up checks on OTRS Header \'X-OTRS-Bounce\'.' => 'Izvršava provere nastavka na „OTRS” zaglavlju „X-OTRS-Bounce”.',
+        'Executes follow-up checks on LIGERO Header \'X-LIGERO-Bounce\'.' => 'Izvršava provere nastavka na „LIGERO” zaglavlju „X-LIGERO-Bounce”.',
         'Executes follow-up checks on attachment contents for mails that don\'t have a ticket number in the subject.' =>
             'Izvršava proveru nastavljanja u sadržaju priloga za imejlove koji nemaju broj tiketa u predmetu.',
         'Executes follow-up checks on email body for mails that don\'t have a ticket number in the subject.' =>
@@ -7252,10 +7252,10 @@ Vaša tehnička podrška
             'Preuzima pakete preko proxy servera. Preinačuje opciju "WebUserAgent::Proxy".',
         'File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Templates/Standard/AgentInfo.tt.' =>
             'Datoteka za prikaz u modulu Kernel::Modules::AgentInfo, ukoliko je snimljena pod Kernel/Output/HTML/Templates/Standard/AgentInfo.tt.',
-        'Filter for debugging ACLs. Note: More ticket attributes can be added in the format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>.' =>
-            'Filter za otklanjanje grešaka u ACL listama. Napomena: atributi tiketa mogu biti dodati u formatu <OTRS_TICKET_Attribute> npr. <OTRS_TICKET_Priority>.',
-        'Filter for debugging Transitions. Note: More filters can be added in the format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>.' =>
-            'Filter za otklanjanje grešaka kod tranzicija. Napomena: filteri mogu biti dodati u formatu <OTRS_TICKET_Attribute> npr. <OTRS_TICKET_Priority>.',
+        'Filter for debugging ACLs. Note: More ticket attributes can be added in the format <LIGERO_TICKET_Attribute> e.g. <LIGERO_TICKET_Priority>.' =>
+            'Filter za otklanjanje grešaka u ACL listama. Napomena: atributi tiketa mogu biti dodati u formatu <LIGERO_TICKET_Attribute> npr. <LIGERO_TICKET_Priority>.',
+        'Filter for debugging Transitions. Note: More filters can be added in the format <LIGERO_TICKET_Attribute> e.g. <LIGERO_TICKET_Priority>.' =>
+            'Filter za otklanjanje grešaka kod tranzicija. Napomena: filteri mogu biti dodati u formatu <LIGERO_TICKET_Attribute> npr. <LIGERO_TICKET_Priority>.',
         'Filter incoming emails.' => 'Filtriranje dolaznih poruka.',
         'Finnish' => 'Finski',
         'First Christmas Day' => 'Prvi dan Božića',
@@ -7339,8 +7339,8 @@ Vaša tehnička podrška
         'Graph: Stacked Area Chart' => 'Grafik: Naslagani prostorni grafikon',
         'Greek' => 'Grčki',
         'Hebrew' => 'Hebrejski',
-        'Helps to extend your articles full-text search (From, To, Cc, Subject and Body search). It will strip all articles and will build an index after article creation, increasing fulltext searches about 50%. To create an initial index use "bin/otrs.Console.pl Maint::Ticket::FulltextIndexRebuild".' =>
-            'Omogućuje proširenu tekstualnu pretragu vaših članaka (pretraga po poljima From, To, Cc, Subject i Body). Svi postojeći članci će biti reindeksirani, novi dodati u indeks pretrage po kreiranju, time ubrzavajući tekstualnu pretragu za oko 50%. Za kreiranje početnog indeksa koristite "bin/otrs.Console.pl Maint::Ticket::FulltextIndexRebuild".',
+        'Helps to extend your articles full-text search (From, To, Cc, Subject and Body search). It will strip all articles and will build an index after article creation, increasing fulltext searches about 50%. To create an initial index use "bin/ligero.Console.pl Maint::Ticket::FulltextIndexRebuild".' =>
+            'Omogućuje proširenu tekstualnu pretragu vaših članaka (pretraga po poljima From, To, Cc, Subject i Body). Svi postojeći članci će biti reindeksirani, novi dodati u indeks pretrage po kreiranju, time ubrzavajući tekstualnu pretragu za oko 50%. Za kreiranje početnog indeksa koristite "bin/ligero.Console.pl Maint::Ticket::FulltextIndexRebuild".',
         'High Contrast' => 'Visoki kontrast',
         'High contrast skin for visually impaired users.' => 'Visoko kontrastni izgled za osobe slabijeg vida.',
         'Hindi' => 'Hindi',
@@ -7389,8 +7389,8 @@ Vaša tehnička podrška
             'Ukoliko je podešen „LDAP” za „Customer::AuthModule”, ovde možete definisati pristupne parametre.',
         'If "LDAP" was selected for Customer::AuthModule, you can specify if the applications will stop if e. g. a connection to a server can\'t be established due to network problems.' =>
             'Ukoliko je podešen „LDAP” za „Customer::AuthModule”, možete definisati da li će aplikacija prestati sa radom ukoliko npr. konekcija sa serverom ne može biti ostvarena zbog problema sa mrežom.',
-        'If "LDAP" was selected for Customer::Authmodule, you can check if the user is allowed to authenticate because he is in a posixGroup, e.g. user needs to be in a group xyz to use OTRS. Specify the group, who may access the system.' =>
-            'Ukoliko je podešen „LDAP” za „Customer::AuthModule”, možete proveriti da li je korisniku omogućena autentikacija ako pripada „posixGroup”, npr. korisnik mora da pripada grupi xyz da bi mogao da koristi „OTRS”. Definišite grupu sa pristupom sistemu.',
+        'If "LDAP" was selected for Customer::Authmodule, you can check if the user is allowed to authenticate because he is in a posixGroup, e.g. user needs to be in a group xyz to use LIGERO. Specify the group, who may access the system.' =>
+            'Ukoliko je podešen „LDAP” za „Customer::AuthModule”, možete proveriti da li je korisniku omogućena autentikacija ako pripada „posixGroup”, npr. korisnik mora da pripada grupi xyz da bi mogao da koristi „LIGERO”. Definišite grupu sa pristupom sistemu.',
         'If "LDAP" was selected, you can add a filter to each LDAP query, e.g. (mail=*), (objectclass=user) or (!objectclass=computer).' =>
             'Ukoliko je podešen „LDAP” za „Customer::AuthModule”, možete dodati filter svakom „LDAP” zahtevu, npr. (mail=*), (objectclass=user) ili (!objectclass=computer).',
         'If "Radius" was selected for Customer::AuthModule, the password to authenticate to the radius host must be specified.' =>
@@ -7427,16 +7427,16 @@ Vaša tehnička podrška
             'Ako je aktivirano, servis će preusmeriti standardni tok greške u log datoteku.',
         'If enabled the daemon will redirect the standard output stream to a log file.' =>
             'Ako je aktivirano, servis će preusmeriti standardni izlazni tok u log datoteku.',
-        'If enabled the daemon will use this directory to create its PID files. Note: Please stop the daemon before any change and use this setting only if <$OTRSHome>/var/run/ can not be used.' =>
-            'Ukoliko je omogućeno, sistemski servis će koristiti ovaj direktorijum za snimanje procesnih (PID) datoteka. Napomena: molimo stopirajte sistemski servis pre izmene ovog podešavanja i koristite ga samo u slučaju kad je <$OTRSHome>/var/run/ nedostupan.',
-        'If enabled, OTRS will deliver all CSS files in minified form.' =>
-            'Ukoliko je uključeno, OTRS će isporučiti sve CSS datoteke u smanjenoj formi.',
-        'If enabled, OTRS will deliver all JavaScript files in minified form.' =>
-            'Ukoliko je uključeno, OTRS će isporučiti sve JavaScript datoteke u smanjenoj formi.',
+        'If enabled the daemon will use this directory to create its PID files. Note: Please stop the daemon before any change and use this setting only if <$LIGEROHome>/var/run/ can not be used.' =>
+            'Ukoliko je omogućeno, sistemski servis će koristiti ovaj direktorijum za snimanje procesnih (PID) datoteka. Napomena: molimo stopirajte sistemski servis pre izmene ovog podešavanja i koristite ga samo u slučaju kad je <$LIGEROHome>/var/run/ nedostupan.',
+        'If enabled, LIGERO will deliver all CSS files in minified form.' =>
+            'Ukoliko je uključeno, LIGERO će isporučiti sve CSS datoteke u smanjenoj formi.',
+        'If enabled, LIGERO will deliver all JavaScript files in minified form.' =>
+            'Ukoliko je uključeno, LIGERO će isporučiti sve JavaScript datoteke u smanjenoj formi.',
         'If enabled, TicketPhone and TicketEmail will be open in new windows.' =>
             'Ako je aktivirano, tiketi poziva i imejl tiketi će biti otvoreni u novom prozoru.',
-        'If enabled, the OTRS version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails. NOTE: If you change this option, please make sure to delete the cache.' =>
-            'Ako je aktivirano, oznaka OTRS verzije će biti uklonjena iz veb interfejsa, HTTP zaglavlja i X-Headers u odlaznim imejl porukama. NAPOMENA: ako menjate ovu opciju, molimo da osigurate brisanje keša.',
+        'If enabled, the LIGERO version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails. NOTE: If you change this option, please make sure to delete the cache.' =>
+            'Ako je aktivirano, oznaka LIGERO verzije će biti uklonjena iz veb interfejsa, HTTP zaglavlja i X-Headers u odlaznim imejl porukama. NAPOMENA: ako menjate ovu opciju, molimo da osigurate brisanje keša.',
         'If enabled, the cache data be held in memory.' => 'Ako je aktibirano, keširani podaci će se čuvati u memoriji.',
         'If enabled, the cache data will be stored in cache backend.' => 'Ako je aktivirano, keširani podaci će se čuvati u kešu sistema u pozadini.',
         'If enabled, the customer can search for tickets in all services (regardless what services are assigned to the customer).' =>
@@ -7445,8 +7445,8 @@ Vaša tehnička podrška
             'Ako je aktivirinao, različiti pregledi (kontrolna tabla, zaključavanje, redovi) će se automatski osvežiti posle zadatog vremena.',
         'If enabled, the first level of the main menu opens on mouse hover (instead of click only).' =>
             'Ako je aktivirano, prvi nivo glavnog menija se otvara na prelaz miša (umesto samo na klik).',
-        'If enabled, users that haven\'t selected a time zone yet will be notified to do so. Note: Notification will not be shown if (1) user has not yet selected a time zone and (2) OTRSTimeZone and UserDefaultTimeZone do match and (3) are not set to UTC.' =>
-            'Ukoliko je uključeno, korisnici koji još nisu odabrali vremensku zonu biće obavešteni o tome. Napomena: obaveštenje neće biti prikazano ukoliko (1) korisnik još nije odabrao vremensku zonu i (2) OTRSTimeZone i UserDefaultTimeZone se podudaraju i (3) nisu postavljena na UTC.',
+        'If enabled, users that haven\'t selected a time zone yet will be notified to do so. Note: Notification will not be shown if (1) user has not yet selected a time zone and (2) LIGEROTimeZone and UserDefaultTimeZone do match and (3) are not set to UTC.' =>
+            'Ukoliko je uključeno, korisnici koji još nisu odabrali vremensku zonu biće obavešteni o tome. Napomena: obaveštenje neće biti prikazano ukoliko (1) korisnik još nije odabrao vremensku zonu i (2) LIGEROTimeZone i UserDefaultTimeZone se podudaraju i (3) nisu postavljena na UTC.',
         'If no SendmailNotificationEnvelopeFrom is specified, this setting makes it possible to use the email\'s from address instead of an empty envelope sender (required in certain mail server configurations).' =>
             'Ako SendmailNotificationEnvelopeFrom nije naveden, ova postavka omogućava korišćenje aderese pošinjaoca imejlova  umesto praznog okvira zaglavlja (obavezno u postavkama nekih imejl servera).',
         'If set, this address is used as envelope sender header in outgoing notifications. If no address is specified, the envelope sender header is empty (unless SendmailNotificationEnvelopeFrom::FallbackToEmailFrom is set).' =>
@@ -7457,8 +7457,8 @@ Vaša tehnička podrška
             'Ukoliko je ova opcija uključena, tiketi kreirani preko veb interfejsa od strane klijenata ili operatera, će dobiti automatski odgovor ukoliko je podešen. Ako je ova opcija isključena, automatski odgovori neće biti slati.',
         'If this regex matches, no message will be send by the autoresponder.' =>
             'Ako se ovaj izraz poklapa, automatski odgovarač neće poslati nijednu poruku.',
-        'If this setting is enabled, it is possible to install packages which are not verified by OTRS Group. These packages could threaten your whole system!' =>
-            'Ukoliko je podešavanje omogućeno, moguća je instalacija paketa koji nisu verifikovani od strane OTRS grupe. Ovi paketi mogu ugroziti vaš ceo sistem!',
+        'If this setting is enabled, it is possible to install packages which are not verified by LIGERO Group. These packages could threaten your whole system!' =>
+            'Ukoliko je podešavanje omogućeno, moguća je instalacija paketa koji nisu verifikovani od strane LIGERO grupe. Ovi paketi mogu ugroziti vaš ceo sistem!',
         'If this setting is enabled, local modifications will not be highlighted as errors in the package manager and support data collector.' =>
             'Ukoliko je ovo podešavanje uključeno, lokalne izmene neće biti prikazane kao greške u upravljaču paketima i sakupljaču podataka podrške.',
         'If you\'re going to be out of office, you may wish to let other users know by setting the exact dates of your absence.' =>
@@ -7472,8 +7472,8 @@ Vaša tehnička podrška
         'Includes article create times in the ticket search of the agent interface.' =>
             'Uključuje vremena kreiranja tiketa u pretragu na operaterskom interfejsu.',
         'Incoming Phone Call.' => 'Dolazni poziv.',
-        'IndexAccelerator: to choose your backend TicketViewAccelerator module. "RuntimeDB" generates each queue view on the fly from ticket table (no performance problems up to approx. 60.000 tickets in total and 6.000 open tickets in the system). "StaticDB" is the most powerful module, it uses an extra ticket-index table that works like a view (recommended if more than 80.000 and 6.000 open tickets are stored in the system). Use the command "bin/otrs.Console.pl Maint::Ticket::QueueIndexRebuild" for initial index creation.' =>
-            'Ubrzivač indeksiranja: za odabir TicketViewAccelerator modula. "RuntimeDB" generiše svaki pregled reda u hodu iz tabele tiketa (nema uticaja na performanse do oko 60.000 tiketa ukupno i 6.000 otvorenih tiketa u sistemu). "StaticDB" je najmoćniji modul, koristi dodatnu tiket indeks tabelu koja radi kao pregled (preporučuje se za više od 80.000 i 6.000 otvorenih tiketa u sistemu). Korišćenjem komande "bin/otrs.Console.pl Maint::Ticket::QueueIndexRebuild" možete kreirati početni indeks.',
+        'IndexAccelerator: to choose your backend TicketViewAccelerator module. "RuntimeDB" generates each queue view on the fly from ticket table (no performance problems up to approx. 60.000 tickets in total and 6.000 open tickets in the system). "StaticDB" is the most powerful module, it uses an extra ticket-index table that works like a view (recommended if more than 80.000 and 6.000 open tickets are stored in the system). Use the command "bin/ligero.Console.pl Maint::Ticket::QueueIndexRebuild" for initial index creation.' =>
+            'Ubrzivač indeksiranja: za odabir TicketViewAccelerator modula. "RuntimeDB" generiše svaki pregled reda u hodu iz tabele tiketa (nema uticaja na performanse do oko 60.000 tiketa ukupno i 6.000 otvorenih tiketa u sistemu). "StaticDB" je najmoćniji modul, koristi dodatnu tiket indeks tabelu koja radi kao pregled (preporučuje se za više od 80.000 i 6.000 otvorenih tiketa u sistemu). Korišćenjem komande "bin/ligero.Console.pl Maint::Ticket::QueueIndexRebuild" možete kreirati početni indeks.',
         'Indicates if a bounce e-mail should always be treated as normal follow-up.' =>
             'Određuje da li će preusmereni imejl uvek biti tretiran kao običan nastavak.',
         'Indonesian' => 'Indonežanski',
@@ -7573,7 +7573,7 @@ Vaša tehnička podrška
         'Makes the session management use html cookies. If html cookies are disabled or if the client browser disabled html cookies, then the system will work as usual and append the session id to the links.' =>
             'Određuje da li sesije koriste HTML kolačiće. Ukoliko su kolačići isključeni ili klijentski pretraživač ih ne podržava, sistem će raditi uobičajeno i dodavaće ID sesije u svim vezama.',
         'Malay' => 'Malajski',
-        'Manage OTRS Group cloud services.' => 'Upravlja uslugama u oblaku OTRS grupe.',
+        'Manage LIGERO Group cloud services.' => 'Upravlja uslugama u oblaku LIGERO grupe.',
         'Manage PGP keys for email encryption.' => 'Upravlja PGP ključevima za imejl šifrovanje.',
         'Manage POP3 or IMAP accounts to fetch email from.' => 'Upravljanje POP3 ili IMAP nalozima za preuzimanje email-a od.',
         'Manage S/MIME certificates for email encryption.' => 'Upravljaj S/MIME sertifikatima za imej enkripciju.',
@@ -7617,7 +7617,7 @@ Vaša tehnička podrška
         'Medium' => 'Srednje',
         'Merge this ticket and all articles into another ticket' => 'Spoji ovaj tiket i sve članke u drugi tiket',
         'Merged Ticket (%s/%s) to (%s/%s).' => 'Spojen tiket (%s/%s) u (%s/%s)',
-        'Merged Ticket <OTRS_TICKET> to <OTRS_MERGE_TO_TICKET>.' => 'Tiket <OTRS_TICKET> spojen u <OTRS_MERGE_TO_TICKET>.',
+        'Merged Ticket <LIGERO_TICKET> to <LIGERO_MERGE_TO_TICKET>.' => 'Tiket <LIGERO_TICKET> spojen u <LIGERO_MERGE_TO_TICKET>.',
         'Minute' => 'Minut',
         'Miscellaneous' => 'Razno',
         'Module for To-selection in new ticket screen in the customer interface.' =>
@@ -7680,8 +7680,8 @@ Vaša tehnička podrška
         'New Year\'s Day' => 'Nova godina',
         'New Year\'s Eve' => 'Doček nove godine',
         'New process ticket' => 'Novi tiket procesa',
-        'News about OTRS releases!' => 'Vesti o OTRS izdanjima!',
-        'News about OTRS.' => 'Novosti o OTRS.',
+        'News about LIGERO releases!' => 'Vesti o LIGERO izdanjima!',
+        'News about LIGERO.' => 'Novosti o LIGERO.',
         'Next possible ticket states after adding a phone note in the ticket phone inbound screen of the agent interface.' =>
             'Sledeći mogući status tiketa nakon dodavanja poziva u ekranu dolaznih poziva tiketa u interfejsu operatera.',
         'Next possible ticket states after adding a phone note in the ticket phone outbound screen of the agent interface.' =>
@@ -7700,12 +7700,12 @@ Vaša tehnička podrška
         'Number of tickets to be displayed in each page of a search result in the customer interface.' =>
             'Broj tiketa koji će biti prikazani na svakoj strani rezultata pretrage u interfejsu klijenta.',
         'Number of tickets to be displayed in each page.' => 'Broj tiketa koji će biti prikazani na svakoj strani.',
-        'OTRS Group Services' => 'Servisi OTRS grupe',
-        'OTRS News' => 'OTRS novosti',
-        'OTRS can use one or more readonly mirror databases for expensive operations like fulltext search or statistics generation. Here you can specify the DSN for the first mirror database.' =>
-            '„OTRS” može da koristi jednu ili više preslikanih baza podataka za skupe operacije kao što su pretraga teksta ili generisanje statistika. Ovde možete definisati DSN za prvu preslikanu bazu podataka.',
-        'OTRS doesn\'t support recurring Appointments without end date or number of iterations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next N months (120 months/10 years by default).' =>
-            'OTRS ne podržava termine koji se ponavljaju bez krajnjeg datuma ili broja iteracija. Prilikom uvoza kalendara, može se dogoditi da ICS datoteka sadrži takve \'beskonačne\' termine. Umesto takvog ponašanja, sistem će kreirati sve termine iz prošlosti, kao i termine za sledeći n broj meseci (podrazumevano 120 meseci/10 godina).',
+        'LIGERO Group Services' => 'Servisi LIGERO grupe',
+        'LIGERO News' => 'LIGERO novosti',
+        'LIGERO can use one or more readonly mirror databases for expensive operations like fulltext search or statistics generation. Here you can specify the DSN for the first mirror database.' =>
+            '„LIGERO” može da koristi jednu ili više preslikanih baza podataka za skupe operacije kao što su pretraga teksta ili generisanje statistika. Ovde možete definisati DSN za prvu preslikanu bazu podataka.',
+        'LIGERO doesn\'t support recurring Appointments without end date or number of iterations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next N months (120 months/10 years by default).' =>
+            'LIGERO ne podržava termine koji se ponavljaju bez krajnjeg datuma ili broja iteracija. Prilikom uvoza kalendara, može se dogoditi da ICS datoteka sadrži takve \'beskonačne\' termine. Umesto takvog ponašanja, sistem će kreirati sve termine iz prošlosti, kao i termine za sledeći n broj meseci (podrazumevano 120 meseci/10 godina).',
         'Open Tickets / Need to be answered' => 'Otvoreni tiketi / Potrebno odgovoriti',
         'Open an external link!' => 'Otvori eksternu vezu!',
         'Open tickets (customer user)' => 'Otvoreni tiketi (klijent korisnik)',
@@ -7872,7 +7872,7 @@ Vaša tehnička podrška
         'Replaces the original sender with current customer\'s email address on compose answer in the ticket compose screen of the agent interface.' =>
             'Zamenjuje originalnog pošiljaoca sa imejl adresom aktuelnog klijenta pri kreiranju odgovora u prozoru za pisanje odgovora interfejsa operatera.',
         'Reports' => 'Izveštaji',
-        'Reports (OTRS Business Solution™)' => 'Izveštaji (OTRS Business Solution™)',
+        'Reports (LIGERO Business Solution™)' => 'Izveštaji (LIGERO Business Solution™)',
         'Reprocess mails from spool directory that could not be imported in the first place.' =>
             'Ponovo obradi imejlove iz direktorijuma reda čekanja koji prvi put nisu mogli biti uvezeni.',
         'Required permissions to change the customer of a ticket in the agent interface.' =>
@@ -7911,7 +7911,7 @@ Vaša tehnička podrška
         'Resent email to "%s".' => 'Ponovo poslat imejl na "%s".',
         'Resets and unlocks the owner of a ticket if it was moved to another queue.' =>
             'Resetuje i otključava vlasnika ako je tiketa premešten u drugi red.',
-        'Resource Overview (OTRS Business Solution™)' => 'Pregled resursa (OTRS Business Solution™)',
+        'Resource Overview (LIGERO Business Solution™)' => 'Pregled resursa (LIGERO Business Solution™)',
         'Responsible Tickets' => 'Odgovorni tiketi',
         'Responsible Tickets.' => 'Odgovorni tiketi.',
         'Restores a ticket from the archive (only if the event is a state change to any open available state).' =>
@@ -7935,8 +7935,8 @@ Vaša tehnička podrška
         'SMS (Short Message Service)' => 'SMS (servis kratkih poruka)',
         'Salutations' => 'Pozdravi',
         'Sample command output' => 'Primer komandnog izlaza',
-        'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the OTRS user. You can switch between the modules even on a system that is already in production without any loss of data. Note: Searching for attachment names is not supported when "FS" is used.' =>
-            'Čuva priloge u člancima. „DB” snima sve priloge u bazi podataka (nije preporučljivo za čuvanje velikih priloga). „FS” snima priloge u sistemu datoteka; ovo je brža opcija, ali veb server mora biti pokrenut pod „OTRS” sistemskim korisnikom. Dozvoljena je promena modula čak i na produkcijskim sistemima bez bilo kakvog gubitka podataka. Napomena: pretraga priloga po nazivu nije moguća kada je „FS” u funkciji.',
+        'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the LIGERO user. You can switch between the modules even on a system that is already in production without any loss of data. Note: Searching for attachment names is not supported when "FS" is used.' =>
+            'Čuva priloge u člancima. „DB” snima sve priloge u bazi podataka (nije preporučljivo za čuvanje velikih priloga). „FS” snima priloge u sistemu datoteka; ovo je brža opcija, ali veb server mora biti pokrenut pod „LIGERO” sistemskim korisnikom. Dozvoljena je promena modula čak i na produkcijskim sistemima bez bilo kakvog gubitka podataka. Napomena: pretraga priloga po nazivu nije moguća kada je „FS” u funkciji.',
         'Schedule a maintenance period.' => 'Planiranje perioda održavanja.',
         'Screen after new ticket' => 'Prikaz ekrana posle otvaranja novog tiketa',
         'Search Customer' => 'Traži klijenta',
@@ -7959,7 +7959,7 @@ Vaša tehnička podrška
         'Select your personal time zone. All times will be displayed relative to this time zone.' =>
             'Izaberite vašu ličnu vremensku zonu. Sva vremena će biti prikazana u njoj.',
         'Select your preferred layout for the software.' => 'Izaberite izgled aplikacije po vašoj želji.',
-        'Select your preferred theme for OTRS.' => 'Izaberite temu za OTRS po vašoj želji.',
+        'Select your preferred theme for LIGERO.' => 'Izaberite temu za LIGERO po vašoj želji.',
         'Selects the cache backend to use.' => 'Modul keša koji će koristiti sistem.',
         'Selects the module to handle uploads via the web interface. "DB" stores all uploads in the database, "FS" uses the file system.' =>
             'Bira modul za rukovanje prenešenim datotekama preko veb interfejsa. "DB" skladišti sve prenešene datoteke u bazu podataka, "FS" koristi sistem datoteka.',
@@ -7973,7 +7973,7 @@ Vaša tehnička podrška
         'Sends all outgoing email via bcc to the specified address. Please use this only for backup reasons.' =>
             'Šalje sve odlazne imejlove kao nevidljive kopije (bcc) na određenu adresu. Molimo da ovo koristite samo za rezervne kopije.',
         'Sends customer notifications just to the mapped customer.' => 'Šalje klijentska obaveštenja samo mapiranom klijentu.',
-        'Sends registration information to OTRS group.' => 'Šalje registracione informacije OTRS grupi.',
+        'Sends registration information to LIGERO group.' => 'Šalje registracione informacije LIGERO grupi.',
         'Sends reminder notifications of unlocked ticket after reaching the reminder date (only sent to ticket owner).' =>
             'Šalje obaveštenje za potsećanje o otključanom tiketu kad se dostigne datum podsetnika (šalje samo vlasniku tiketa).',
         'Sends the notifications which are configured in the admin interface under "Ticket Notifications".' =>
@@ -8109,8 +8109,8 @@ Vaša tehnička podrška
         'Sets the prefered time units (e.g. work units, hours, minutes).' =>
             'Podesi prioritetne vremenske jedinice (npr jedinice posla, sate, minute)',
         'Sets the preferred digest to be used for PGP binary.' => 'Definiše mod šifrovanja PGP aplikacije.',
-        'Sets the prefix to the scripts folder on the server, as configured on the web server. This setting is used as a variable, OTRS_CONFIG_ScriptAlias which is found in all forms of messaging used by the application, to build links to the tickets within the system.' =>
-            'Definiše putanju foldera sa skriptama na serveru, prema podešavanju veb servera. Ova opcija se koristi kao promenljiva OTRS_CONFIG_ScriptAlias u svim oblicima komunikacije širom sistema, radi generisanja veza ka tiketima.',
+        'Sets the prefix to the scripts folder on the server, as configured on the web server. This setting is used as a variable, LIGERO_CONFIG_ScriptAlias which is found in all forms of messaging used by the application, to build links to the tickets within the system.' =>
+            'Definiše putanju foldera sa skriptama na serveru, prema podešavanju veb servera. Ova opcija se koristi kao promenljiva LIGERO_CONFIG_ScriptAlias u svim oblicima komunikacije širom sistema, radi generisanja veza ka tiketima.',
         'Sets the queue in the ticket close screen of a zoomed ticket in the agent interface.' =>
             'Postavlja red na prozoru zatvaranja tiketa na detaljnom prikazu tiketa u interfejsu operatera.',
         'Sets the queue in the ticket free text screen of a zoomed ticket in the agent interface.' =>
@@ -8204,10 +8204,10 @@ Vaša tehnička podrška
             'Određuje tip tiketa na ekranu prioriteta tiketa u interfejsu operatera (Ticket::Type mora biti uključeno).',
         'Sets the ticket type in the ticket responsible screen of the agent interface (Ticket::Type needs to be enabled).' =>
             'Određuje tip tiketa na ekranu odgovornog tiketa u interfejsu operatera (Ticket::Type mora biti uključeno).',
-        'Sets the time zone being used internally by OTRS to e. g. store dates and times in the database. WARNING: This setting must not be changed once set and tickets or any other data containing date/time have been created.' =>
-            'Podešava internu vremensku zonu OTRS za npr. čuvanje datuma i vremena u bazi podataka. Upozorenje: ovo podešavanje ne smete menjati jednom kada ga podesite i ako su kreirani tiketi ili bilo koji drugi podaci sa vremenom.',
-        'Sets the time zone that will be assigned to newly created users and will be used for users that haven\'t yet set a time zone. This is the time zone being used as default to convert date and time between the OTRS time zone and the user\'s time zone.' =>
-            'Podešava vremensku zonu koja će biti dodeljena novo-kreiranim korisnicima i koja će biti korišćena za one koji još nisu podesili vremensku zonu. Ovo je podrazumevana vremenska zona za konverziju datuma i vremena između interne OTRS vremenske zone i vremenske zone korisnika.',
+        'Sets the time zone being used internally by LIGERO to e. g. store dates and times in the database. WARNING: This setting must not be changed once set and tickets or any other data containing date/time have been created.' =>
+            'Podešava internu vremensku zonu LIGERO za npr. čuvanje datuma i vremena u bazi podataka. Upozorenje: ovo podešavanje ne smete menjati jednom kada ga podesite i ako su kreirani tiketi ili bilo koji drugi podaci sa vremenom.',
+        'Sets the time zone that will be assigned to newly created users and will be used for users that haven\'t yet set a time zone. This is the time zone being used as default to convert date and time between the LIGERO time zone and the user\'s time zone.' =>
+            'Podešava vremensku zonu koja će biti dodeljena novo-kreiranim korisnicima i koja će biti korišćena za one koji još nisu podesili vremensku zonu. Ovo je podrazumevana vremenska zona za konverziju datuma i vremena između interne LIGERO vremenske zone i vremenske zone korisnika.',
         'Sets the timeout (in seconds) for http/ftp downloads.' => 'Postavlja vremensko odlaganje (u sekundama) za http/ftp preuzimanja.',
         'Sets the timeout (in seconds) for package downloads. Overwrites "WebUserAgent::Timeout".' =>
             'Definiše isticanje (u sekundama) za funkciju preuzimanja paketa. Preinačuje opciju "WebUserAgent::Timeout".',
@@ -8321,8 +8321,8 @@ Vaša tehnička podrška
             'Prikazuje listu svih mogućih operatera (svi operateri sa dozvolom za napomenu za red/tiket) radi utvrđivanja ko treba da bude informisan o ovoj napomeni, na ekranu odgovornosti za tiket u interfejsu operatera.',
         'Shows a preview of the ticket overview (CustomerInfo => 1 - shows also Customer-Info, CustomerInfoMaxSize max. size in characters of Customer-Info).' =>
             'Prikazuje pregleda tiketa (Info klijenta => 1 - pokazuje i podatke o klijentu, Maksimalna veličina prikaza podataka o klijentu u karakterima).',
-        'Shows a teaser link in the menu for the ticket attachment view of OTRS Business Solution™.' =>
-            'Prikazuje reklamnu vezu u meniju za pregled priloga tiketa iz OTRS Business Solution™.',
+        'Shows a teaser link in the menu for the ticket attachment view of LIGERO Business Solution™.' =>
+            'Prikazuje reklamnu vezu u meniju za pregled priloga tiketa iz LIGERO Business Solution™.',
         'Shows all both ro and rw queues in the queue view.' => 'Prikazuje sve, i ro i rw redove na pregledu redova.',
         'Shows all both ro and rw tickets in the service view.' => 'Prikazuje sve, i ro i rw tikete na pregledu usluga.',
         'Shows all open tickets (even if they are locked) in the escalation view of the agent interface.' =>
@@ -8343,7 +8343,7 @@ Vaša tehnička podrška
             'Prikazuje predmet zadnjeg klijentovog članka ili naslov tiketa u prekledu malog formata.',
         'Shows existing parent/child queue lists in the system in the form of a tree or a list.' =>
             'Prikazuje postojeće liste redova nadređeni-podređeni u sistemu u formi stabla ili liste.',
-        'Shows information on how to start OTRS Daemon' => 'Prikazuje informacije kako pokrenuti OTRS sistemski servis',
+        'Shows information on how to start LIGERO Daemon' => 'Prikazuje informacije kako pokrenuti LIGERO sistemski servis',
         'Shows link to external page in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2".' =>
             'Prikazuje vezu na eksternu stranu u detaljnom pregledu tiketa u interfejsu operatera. DOdatna kontrola prikaza ove veze može se postići korišćenjem ključa "Group" sa sadržajem "rw:group1;move_into:group2".',
         'Shows the articles sorted normally or in reverse, under ticket zoom in the agent interface.' =>
@@ -8427,16 +8427,16 @@ Vaša tehnička podrška
         'Specifies the directory where SSL certificates are stored.' => 'Određuje direktorijum gde se „SSL” sertifikati skladište.',
         'Specifies the directory where private SSL certificates are stored.' =>
             'Određuje direktorijum gde se privatni „SSL” sertifikati skladište.',
-        'Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "OTRS Notifications" otrs@your.example.com). You can use the OTRS_CONFIG_FQDN variable as set in your configuation, or choose another email address.' =>
-            'Definiše imejl adresu koju će aplikacija koristiti prilikom slanja obaveštenja. Imejl adresa se koristi u nazivu pošiljaoca obaveštenja (npr. "OTRS Notifications" otrs@your.example.com). Možete koristiti promenljivu OTRS_CONFIG_FQDN iz vaše konfiguracije, ili odredite drugu imejl adresu.',
+        'Specifies the email address that should be used by the application when sending notifications. The email address is used to build the complete display name for the notification master (i.e. "LIGERO Notifications" ligero@your.example.com). You can use the LIGERO_CONFIG_FQDN variable as set in your configuation, or choose another email address.' =>
+            'Definiše imejl adresu koju će aplikacija koristiti prilikom slanja obaveštenja. Imejl adresa se koristi u nazivu pošiljaoca obaveštenja (npr. "LIGERO Notifications" ligero@your.example.com). Možete koristiti promenljivu LIGERO_CONFIG_FQDN iz vaše konfiguracije, ili odredite drugu imejl adresu.',
         'Specifies the email addresses to get notification messages from scheduler tasks.' =>
             'Odredi imejl adresu koja će dobijati poruke obaveštenja od poslova planera.',
         'Specifies the group where the user needs rw permissions so that he can access the "SwitchToCustomer" feature.' =>
             'Određuje grupu gde su korisniku potrebne rw dozvole kako bi mogli pristupiti svojstvu "SwitchToCustomer".',
         'Specifies the group where the user needs rw permissions so that they can edit other users preferences.' =>
             'Određuje grupu gde su korisniku potrebne rw dozvole kako bi mogli da uređuju lična podešavanja drugih korisnika.',
-        'Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "OTRS Notifications" otrs@your.example.com).' =>
-            'Definiše naziv koje će aplikacija koristiti prilikom slanja obaveštenja. Naziv se koristi u nazivu pošiljaoca obaveštenja (npr. "OTRS Notifications" otrs@your.example.com).',
+        'Specifies the name that should be used by the application when sending notifications. The sender name is used to build the complete display name for the notification master (i.e. "LIGERO Notifications" ligero@your.example.com).' =>
+            'Definiše naziv koje će aplikacija koristiti prilikom slanja obaveštenja. Naziv se koristi u nazivu pošiljaoca obaveštenja (npr. "LIGERO Notifications" ligero@your.example.com).',
         'Specifies the order in which the firstname and the lastname of agents will be displayed.' =>
             'Određuje oblik u kome će biti prikazano ime i prezime operatera.',
         'Specifies the path of the file for the logo in the page header (gif|jpg|png, 700 x 100 pixel).' =>
@@ -8459,8 +8459,8 @@ Vaša tehnička podrška
             'Određuje da li će prilozi (MIMEBase) članaka biti indeksirani za pretragu.',
         'Specify how many sub directory levels to use when creating cache files. This should prevent too many cache files being in one directory.' =>
             'Navođenje koliko nivoa poddirektorijuma da koristi prilikom kreiranja keš datoteka. To bi trebalo da spreči previše keš datoteka u jednom direktorijumu.',
-        'Specify the channel to be used to fetch OTRS Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
-            'Definiše kanal za ažuriranje OTRS Business Solution™. Upozorenje: beta izdanja mogu biti nekompletna, vaš sistem može dobiti nepopravljive greške i, u ekstremnim slučajevima, prestati da reaguje.',
+        'Specify the channel to be used to fetch LIGERO Business Solution™ updates. Warning: Development releases might not be complete, your system might experience unrecoverable errors and on extreme cases could become unresponsive!' =>
+            'Definiše kanal za ažuriranje LIGERO Business Solution™. Upozorenje: beta izdanja mogu biti nekompletna, vaš sistem može dobiti nepopravljive greške i, u ekstremnim slučajevima, prestati da reaguje.',
         'Specify the password to authenticate for the first mirror database.' =>
             'Navedi lozinku za autorizaciju na prvu preslikanu bazu podataka.',
         'Specify the username to authenticate for the first mirror database.' =>
@@ -8557,7 +8557,7 @@ Vaša tehnička podrška
         'This is the default orange - black skin.' => 'Ovo je podrazumevani narandžasto-crni izgled.',
         'This module and its PreRun() function will be executed, if defined, for every request. This module is useful to check some user options or to display news about new applications.' =>
             'Ukoliko je uključen, ovaj modul i njegova PreRun() funkcija biće  izvršeni prilikom svakog zahteva. Koristi se za proveru opcija korisnika i prikaz vesti o aplikaciji.',
-        'This module is part of the admin area of OTRS.' => 'Ovaj modul je deo OTRS administrativnog prostora.',
+        'This module is part of the admin area of LIGERO.' => 'Ovaj modul je deo LIGERO administrativnog prostora.',
         'This option defines the dynamic field in which a Process Management activity entity id is stored.' =>
             'Ova opcija određuje dinamičko polje u koje se smešta ID entiteta aktivnosti upravljanja procesima.',
         'This option defines the dynamic field in which a Process Management process entity id is stored.' =>
@@ -8570,7 +8570,7 @@ Vaša tehnička podrška
             'Ova opcija će odbiti pristup tiketima klijentove firme, ako ih  nije  kreirao klijent korisnik .',
         'This setting allows you to override the built-in country list with your own list of countries. This is particularly handy if you just want to use a small select group of countries.' =>
             'Ova opcija vam dozvoljava da ugrađenu listu država zamenite svojom. Ovo je posbno korisno ako u selekciji želite da koristite samo mali broj država.',
-        'This setting is deprecated. Set OTRSTimeZone instead.' => 'Ovo podešavanje je zastarelo. Podesite OTRSTimeZone umesto njega.',
+        'This setting is deprecated. Set LIGEROTimeZone instead.' => 'Ovo podešavanje je zastarelo. Podesite LIGEROTimeZone umesto njega.',
         'This setting shows the sorting attributes in all overview screen, not only in queue view.' =>
             'Ovo podešavanje prikazuje atribute sortiranja u svim ekranima pregleda, ne samo u prikazu redova.',
         'This will allow the system to send text messages via SMS.' => 'Ovo će dozvoliti sistemu da šalje tekstualne poruke preko SMS.',
@@ -8618,7 +8618,7 @@ Vaša tehnička podrška
         'To accept login information, such as an EULA or license.' => 'Prihvatanje informacija prilikom prijavljivanja, npr. EULA izjava ili licenca.',
         'To download attachments.' => 'Za preuzimanje priloga.',
         'To view HTML attachments.' => 'Za pregled HTML priloga.',
-        'Toggles display of OTRS FeatureAddons list in PackageManager.' =>
+        'Toggles display of LIGERO FeatureAddons list in PackageManager.' =>
             'Isključuje/uključuje prikaz liste paketa za proširenje mogućnosti u ekranu za upravljanje paketima.',
         'Toolbar Item for a shortcut. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2".' =>
             'Stavka alatne linije za prečicu. Dodatna kontrola prikaza ove veze može se postići korišćenjem ključa "Group" sa sadržajem "rw:group1;move_into:group2".',
@@ -8638,8 +8638,8 @@ Vaša tehnička podrška
         'Turns on the remote ip address check. It should not be enabled if the application is used, for example, via a proxy farm or a dialup connection, because the remote ip address is mostly different for the requests.' =>
             'Uključuje proveru udaljene IP adrese. Treba biti isključeno ako se aplikacija koristi, na primer, preko proxy farme ili dialup konekcije, zato što je udaljena IP adresa uglavnom drugačija za svaki zahtev.',
         'Tweak the system as you wish.' => 'Prilagodite sistem svojim potrebama.',
-        'Type of daemon log rotation to use: Choose \'OTRS\' to let OTRS system to handle the file rotation, or choose \'External\' to use a 3rd party rotation mechanism (i.e. logrotate). Note: External rotation mechanism requires its own and independent configuration.' =>
-            'Vrsta rotacije servisnog loga: izaberite \'OTRS\' da dopustite OTRS sistemu da rotira logove, ili \'Eksterno\' za drugi mehanizam rotacije (npr. logrotate). Napomena: ekterni rotacioni mehanizmi zahtevaju sopstvenu i nezavisnu konfiguraciju.',
+        'Type of daemon log rotation to use: Choose \'LIGERO\' to let LIGERO system to handle the file rotation, or choose \'External\' to use a 3rd party rotation mechanism (i.e. logrotate). Note: External rotation mechanism requires its own and independent configuration.' =>
+            'Vrsta rotacije servisnog loga: izaberite \'LIGERO\' da dopustite LIGERO sistemu da rotira logove, ili \'Eksterno\' za drugi mehanizam rotacije (npr. logrotate). Napomena: ekterni rotacioni mehanizmi zahtevaju sopstvenu i nezavisnu konfiguraciju.',
         'Ukrainian' => 'Ukrajinski',
         'Unlock tickets that are past their unlock timeout.' => 'Otključaj tikete kojima je isteklo vreme odlaganja za otključavanje.',
         'Unlock tickets whenever a note is added and the owner is out of office.' =>
@@ -8692,10 +8692,10 @@ Vaša tehnička podrška
         'Whether to force redirect all requests from http to https protocol. Please check that your web server is configured correctly for https protocol before enable this option.' =>
             'Određuje da li će svi zahtevi sa http biti preusmereni na https protokol. Molimo proverite da li je vaš veb server pravilno podešen za https protokol pre uključivanja ove opcije.',
         'Yes, but hide archived tickets' => 'Da, ali skloni arhivirane tikete',
-        'Your email with ticket number "<OTRS_TICKET>" is bounced to "<OTRS_BOUNCE_TO>". Contact this address for further information.' =>
-            'Vaš imejl sa brojem tiketa "<OTRS_TICKET>" je preusmeren na tiket "<OTRS_BOUNCE_TO>"!',
-        'Your email with ticket number "<OTRS_TICKET>" is merged to "<OTRS_MERGE_TO_TICKET>".' =>
-            'Vaš imejl sa brojem tiketa "<OTRS_TICKET>" je pripojen tiketu "<OTRS_MERGE_TO_TICKET>"!',
+        'Your email with ticket number "<LIGERO_TICKET>" is bounced to "<LIGERO_BOUNCE_TO>". Contact this address for further information.' =>
+            'Vaš imejl sa brojem tiketa "<LIGERO_TICKET>" je preusmeren na tiket "<LIGERO_BOUNCE_TO>"!',
+        'Your email with ticket number "<LIGERO_TICKET>" is merged to "<LIGERO_MERGE_TO_TICKET>".' =>
+            'Vaš imejl sa brojem tiketa "<LIGERO_TICKET>" je pripojen tiketu "<LIGERO_MERGE_TO_TICKET>"!',
         'Your queue selection of your preferred queues. You also get notified about those queues via email if enabled.' =>
             'Izbor redova po vašoj želji. Ukoliko je uključeno, dobijaćete i obaveštenja o ovim redovima putem imejla.',
         'Your service selection of your preferred services. You also get notified about those services via email if enabled.' =>
@@ -8867,7 +8867,7 @@ Vaša tehnička podrška
         'Hide EntityIDs',
         'If you now leave this page, all open popup windows will be closed, too!',
         'Import web service',
-        'Information about the OTRS Daemon',
+        'Information about the LIGERO Daemon',
         'Invalid date (need a future date)!',
         'Invalid date (need a past date)!',
         'Invalid date!',
@@ -9040,7 +9040,7 @@ Vaša tehnička podrška
         'This is a repeating appointment',
         'This is currently disabled because of an ongoing package upgrade.',
         'This item still contains sub items. Are you sure you want to remove this item including its sub items?',
-        'This option is currently disabled because the OTRS Daemon is not running.',
+        'This option is currently disabled because the LIGERO Daemon is not running.',
         'This software runs with a huge lists of browsers, please upgrade to one of these.',
         'This window must be called from compose window.',
         'Thu',

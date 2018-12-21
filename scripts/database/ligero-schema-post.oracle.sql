@@ -2132,7 +2132,7 @@ END;
 --
 ;
 BEGIN
-    EXECUTE IMMEDIATE 'ALTER TABLE article_data_otrs_chat ADD CONSTRAINT FK_article_data_otrs_chat_arcf FOREIGN KEY (article_id) REFERENCES article (id)';
+    EXECUTE IMMEDIATE 'ALTER TABLE article_data_ligero_chat ADD CONSTRAINT FK_article_data_ligero_chat_arcf FOREIGN KEY (article_id) REFERENCES article (id)';
 EXCEPTION
   WHEN OTHERS THEN NULL;
 END;
@@ -2140,7 +2140,7 @@ END;
 --
 ;
 BEGIN
-    EXECUTE IMMEDIATE 'CREATE INDEX FK_article_data_otrs_chat_ar37 ON article_data_otrs_chat (article_id)';
+    EXECUTE IMMEDIATE 'CREATE INDEX FK_article_data_ligero_chat_ar37 ON article_data_ligero_chat (article_id)';
 EXCEPTION
   WHEN OTHERS THEN NULL;
 END;

@@ -1,1 +1,1 @@
-[% INCLUDE 'fedora25-otrs.spec.tt' -%]
+[% INCLUDE 'fedora25-ligero.spec.tt' -%]

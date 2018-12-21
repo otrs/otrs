@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -29,7 +29,7 @@ sub Run {
     my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
     my $Output;
-    open( my $FH, "-|", "perl $Home/bin/otrs.CheckModules.pl nocolors --all" );
+    open( my $FH, "-|", "perl $Home/bin/ligero.CheckModules.pl nocolors --all" );
 
     while (<$FH>) {
         $Output .= $_;

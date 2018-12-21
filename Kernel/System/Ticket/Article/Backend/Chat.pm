@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -153,7 +153,7 @@ sub ArticleCreate {
 
         my $Success = $DBObject->Do(
             SQL => '
-                INSERT INTO article_data_otrs_chat
+                INSERT INTO article_data_ligero_chat
                     (article_id, chat_participant_id, chat_participant_name, chat_participant_type,
                         message_text, system_generated, create_time)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -167,7 +167,7 @@ sub ArticleCreate {
         if ( !$Success ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "System was unable to store data in article_data_otrs_chat table (ArticleID = $ArticleID)!",
+                Message  => "System was unable to store data in article_data_ligero_chat table (ArticleID = $ArticleID)!",
             );
             return;
         }
@@ -347,7 +347,7 @@ sub ArticleGet {
     my $SQL = '
         SELECT id, chat_participant_id, chat_participant_name, chat_participant_type, message_text, system_generated,
             create_time
-        FROM article_data_otrs_chat
+        FROM article_data_ligero_chat
         WHERE article_id = ?
         ORDER BY id ASC
     ';
@@ -470,7 +470,7 @@ sub ArticleUpdate {
         # First, remove existing messages from storage.
         my $Success = $DBObject->Do(
             SQL => '
-                DELETE FROM article_data_otrs_chat
+                DELETE FROM article_data_ligero_chat
                 WHERE article_id = ?
             ',
             Bind => [ \$Param{ArticleID} ],
@@ -479,7 +479,7 @@ sub ArticleUpdate {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message =>
-                    "System was unable to remove data from article_data_otrs_chat table (ArticleID = $Param{ArticleID})!",
+                    "System was unable to remove data from article_data_ligero_chat table (ArticleID = $Param{ArticleID})!",
             );
             return;
         }
@@ -493,7 +493,7 @@ sub ArticleUpdate {
 
             my $Success = $DBObject->Do(
                 SQL => '
-                    INSERT INTO article_data_otrs_chat
+                    INSERT INTO article_data_ligero_chat
                         (article_id, chat_participant_id, chat_participant_name, chat_participant_type,
                             message_text, system_generated, create_time)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -509,7 +509,7 @@ sub ArticleUpdate {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
                     Message =>
-                        "System was unable to store data in article_data_otrs_chat table (ArticleID = $Param{ArticleID})!",
+                        "System was unable to store data in article_data_ligero_chat table (ArticleID = $Param{ArticleID})!",
                 );
                 return;
             }
@@ -570,7 +570,7 @@ sub ArticleDelete {    ## no critic;
     # Delete all records related to the article.
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL => '
-            DELETE FROM article_data_otrs_chat
+            DELETE FROM article_data_ligero_chat
             WHERE article_id = ?
         ',
         Bind => [ \$Param{ArticleID} ],
@@ -752,7 +752,7 @@ sub ArticleAttachmentIndex {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

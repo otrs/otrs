@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -49,7 +49,7 @@ $Self->IsDeeply(
 # create the SQL from the XMLArray
 # the function SQLProcessor MUST NOT modify the given array reference
 # see also Bug#12764 - Database function SQLProcessor() modifies given parameter data
-# https://bugs.otrs.org/show_bug.cgi?id=12764
+# https://bugs.ligero.org/show_bug.cgi?id=12764
 my @SQLARRAY = $DBObject->SQLProcessor( Database => \@XMLARRAY );
 $Self->True(
     $SQLARRAY[0],

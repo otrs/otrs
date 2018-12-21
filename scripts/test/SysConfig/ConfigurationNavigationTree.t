@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -193,11 +193,11 @@ $Kernel::OM->ObjectsDiscard(
 my $SysConfigDBObject = $Kernel::OM->Get('Kernel::System::SysConfig::DB');
 
 my $String = '<?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.0">
+<ligero_package version="1.0">
   <Name>TestPackage1</Name>
   <Version>0.0.1</Version>
   <Vendor>OTRS AG</Vendor>
-  <URL>https://otrs.com/</URL>
+  <URL>https://ligero.com/</URL>
   <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
   <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
@@ -206,7 +206,7 @@ my $String = '<?xml version="1.0" encoding="utf-8" ?>
   <Filelist>
     <File Location="Kernel/Config/Files/XML/TestPackage1.xml" Permission="644" Encode="Base64">PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiID8+DQo8b3Ryc19jb25maWcgdmVyc2lvbj0iMi4wIiBpbml0PSJBcHBsaWNhdGlvbiI+DQogICAgPFNldHRpbmcgTmFtZT0iVGVzdFBhY2thZ2UxOjpTZXR0aW5nMSIgUmVxdWlyZWQ9IjAiIFZhbGlkPSIxIj4NCiAgICAgICAgPERlc2NyaXB0aW9uIFRyYW5zbGF0YWJsZT0iMSI+VGVzdCBTZXR0aW5nLjwvRGVzY3JpcHRpb24+DQogICAgICAgIDxOYXZpZ2F0aW9uPkNvcmU6OlRlc3RQYWNrYWdlPC9OYXZpZ2F0aW9uPg0KICAgICAgICA8VmFsdWU+DQogICAgICAgICAgICA8SXRlbSBWYWx1ZVR5cGU9IlN0cmluZyI+PC9JdGVtPg0KICAgICAgICA8L1ZhbHVlPg0KICAgIDwvU2V0dGluZz4NCiAgICA8U2V0dGluZyBOYW1lPSJUZXN0UGFja2FnZTE6OlNldHRpbmcyIiBSZXF1aXJlZD0iMCIgVmFsaWQ9IjEiPg0KICAgICAgICA8RGVzY3JpcHRpb24gVHJhbnNsYXRhYmxlPSIxIj5UZXN0IFNldHRpbmcuPC9EZXNjcmlwdGlvbj4NCiAgICAgICAgPE5hdmlnYXRpb24+Q29yZTo6VGVzdFBhY2thZ2U6Ok90aGVyPC9OYXZpZ2F0aW9uPg0KICAgICAgICA8VmFsdWU+DQogICAgICAgICAgICA8SXRlbSBWYWx1ZVR5cGU9IlN0cmluZyI+PC9JdGVtPg0KICAgICAgICA8L1ZhbHVlPg0KICAgIDwvU2V0dGluZz4NCiAgICA8U2V0dGluZyBOYW1lPSJUZXN0UGFja2FnZTE6OlNldHRpbmczIiBSZXF1aXJlZD0iMSIgVmFsaWQ9IjAiPg0KICAgICAgICA8RGVzY3JpcHRpb24gVHJhbnNsYXRhYmxlPSIxIj5UZXN0IFNldHRpbmcuPC9EZXNjcmlwdGlvbj4NCiAgICAgICAgPE5hdmlnYXRpb24+Q29yZTo6VGVzdFBhY2thZ2U6Ok90aGVyPC9OYXZpZ2F0aW9uPg0KICAgICAgICA8VmFsdWU+DQogICAgICAgICAgICA8SXRlbSBWYWx1ZVR5cGU9IkVudGl0eSIgVmFsdWVFbnRpdHlUeXBlPSJUeXBlIiBUcmFuc2xhdGFibGU9IjEiPlVuY2xhc3NpZmllZDwvSXRlbT4NCiAgICAgICAgPC9WYWx1ZT4NCiAgICA8L1NldHRpbmc+DQo8L290cnNfY29uZmlnPg==</File>
   </Filelist>
-</otrs_package>
+</ligero_package>
 ';
 
 my $PackageObject = $Kernel::OM->Get('Kernel::System::Package');

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -18,8 +18,8 @@ my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
 my @DatabaseXMLFiles = (
-    "$Home/scripts/test/sample/DBUpdate/otrs5-schema.xml",
-    "$Home/scripts/test/sample/DBUpdate/otrs5-initial_insert.xml",
+    "$Home/scripts/test/sample/DBUpdate/ligero5-schema.xml",
+    "$Home/scripts/test/sample/DBUpdate/ligero5-initial_insert.xml",
 );
 
 my $Success = $Helper->ProvideTestDatabase(
@@ -66,7 +66,7 @@ for my $TableName (@NewTablesName) {
 
 my $XMLString = <<"EOF";
 <?xml version="1.0" encoding="utf-8" ?>
-<database Name="otrs">
+<database Name="ligero">
     <Insert Table="ticket">
         <Data Key="id">2</Data>
         <Data Key="tn" Type="Quote">2017050210100001</Data>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<otrs_config version="2.0" init="Application">
+<ligero_config version="2.0" init="Application">
     <Setting Name="Frontend::Module###AgentDaemonInfo" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration</Navigation>
@@ -53,8 +53,8 @@
         <Description Translatable="1">Type of daemon log rotation to use: Choose 'OTRS' to let OTRS system to handle the file rotation, or choose 'External' to use a 3rd party rotation mechanism (i.e. logrotate). Note: External rotation mechanism requires its own and independent configuration.</Description>
         <Navigation>Daemon::Log</Navigation>
         <Value>
-            <Item ValueType="Select" SelectedID="otrs"><!-- default OTRS -->
-                <Item ValueType="Option" Value="otrs" Translatable="1">OTRS</Item>
+            <Item ValueType="Select" SelectedID="ligero"><!-- default OTRS -->
+                <Item ValueType="Option" Value="ligero" Translatable="1">OTRS</Item>
                 <Item ValueType="Option" Value="external" Translatable="1">External</Item>
             </Item>
         </Value>
@@ -63,7 +63,7 @@
         <Description Translatable="1">If enabled the daemon will use this directory to create its PID files. Note: Please stop the daemon before any change and use this setting only if &lt;$OTRSHome&gt;/var/run/ can not be used.</Description>
         <Navigation>Daemon</Navigation>
         <Value>
-            <Item ValueRegex="" ValueType="Directory">/opt/otrs/var/run/</Item>
+            <Item ValueRegex="" ValueType="Directory">/opt/ligero/var/run/</Item>
         </Value>
     </Setting>
     <Setting Name="Daemon::Log::DaysToKeep" Required="0" Valid="0">
@@ -869,4 +869,4 @@
             </Hash>
         </Value>
     </Setting>
-</otrs_config>
+</ligero_config>

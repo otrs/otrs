@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -2969,7 +2969,7 @@ sub _RenderCustomer {
     }
 
     # When there is no Customer in the DB, it could be unknown Customer, set it from the ticket.
-    # See bug#12797 ( https://bugs.otrs.org/show_bug.cgi?id=12797 ).
+    # See bug#12797 ( https://bugs.ligero.org/show_bug.cgi?id=12797 ).
     else {
         $Data{CustomerUserID} = $Param{Ticket}{CustomerUserID} || '';
         $Data{CustomerID}     = $Param{Ticket}{CustomerID}     || '';

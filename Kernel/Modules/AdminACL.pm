@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -473,7 +473,7 @@ sub Run {
         else {
 
             # Get all IDs from valid table including invalid-temporarily status.
-            # See bug#13592 (https://bugs.otrs.org/show_bug.cgi?id=13592).
+            # See bug#13592 (https://bugs.ligero.org/show_bug.cgi?id=13592).
             my %ValidList    = $Kernel::OM->Get('Kernel::System::Valid')->ValidList();
             my @ValidListIDs = grep { $ValidList{$_} } sort keys %ValidList;
 

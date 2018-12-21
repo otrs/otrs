@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -165,7 +165,7 @@
                                 <p class="FieldExplanation">
                                     [% Translate("URI to indicate specific location for accessing a web service.") | html %]
                                     <br/>
-                                    [% Translate("e.g https://www.otrs.com:10745/api/v1.0 (without trailing backslash)") | html %]
+                                    [% Translate("e.g https://www.ligero.com:10745/api/v1.0 (without trailing backslash)") | html %]
                                 </p>
                             </div>
                             <div class="Clear"></div>
@@ -287,7 +287,7 @@
                                         <p class="FieldExplanation">
                                             [% Translate("The full path and name of the SSL client certificate file (must be in PEM, DER or PKCS#12 format).") | html %]
                                             <br/>
-                                            [% Translate("e.g. /opt/otrs/var/certificates/SOAP/certificate.pem") | html %]
+                                            [% Translate("e.g. /opt/ligero/var/certificates/SOAP/certificate.pem") | html %]
                                         </p>
                                     </div>
                                     <div class="Clear"></div>
@@ -299,7 +299,7 @@
                                         <p class="FieldExplanation">
                                             [% Translate("The full path and name of the SSL client certificate key file (if not already included in certificate file).") | html %]
                                             <br/>
-                                            [% Translate("e.g. /opt/otrs/var/certificates/SOAP/key.pem") | html %]
+                                            [% Translate("e.g. /opt/ligero/var/certificates/SOAP/key.pem") | html %]
                                         </p>
                                     </div>
                                     <div class="Clear"></div>
@@ -320,7 +320,7 @@
                                         <p class="FieldExplanation">
                                             [% Translate("The full path and name of the certification authority certificate file that validates SSL certificate.") | html %]
                                             <br/>
-                                            [% Translate("e.g. /opt/otrs/var/certificates/SOAP/CA/ca.pem") | html %]
+                                            [% Translate("e.g. /opt/ligero/var/certificates/SOAP/CA/ca.pem") | html %]
                                         </p>
                                     </div>
                                     <div class="Clear"></div>
@@ -332,7 +332,7 @@
                                         <p class="FieldExplanation">
                                             [% Translate("The full path of the certification authority directory where the CA certificates are stored in the file system.") | html %]
                                             <br/>
-                                            [% Translate("e.g. /opt/otrs/var/certificates/SOAP/CA") | html %]
+                                            [% Translate("e.g. /opt/ligero/var/certificates/SOAP/CA") | html %]
                                         </p>
                                     </div>
                                     <div class="Clear"></div>

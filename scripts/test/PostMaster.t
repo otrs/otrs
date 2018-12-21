@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -207,7 +207,7 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                         },
                         {
                             Key   => 'To',
-                            Value => 'EMAILADDRESS:darthvader@otrs.org',
+                            Value => 'EMAILADDRESS:darthvader@ligero.org',
                         },
                     ],
                     Not => [
@@ -245,7 +245,7 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                         },
                         {
                             Key   => 'To',
-                            Value => 'EMAILADDRESS:darthvader2@otrs.org',
+                            Value => 'EMAILADDRESS:darthvader2@ligero.org',
                         },
                     ],
                     Not => [
@@ -279,7 +279,7 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                         },
                         {
                             Key   => 'To',
-                            Value => 'otrs.org',
+                            Value => 'ligero.org',
                         },
                     ],
                     Not => [
@@ -313,7 +313,7 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                         },
                         {
                             Key   => 'To',
-                            Value => 'darthvader@otrs.org',
+                            Value => 'darthvader@ligero.org',
                         },
                     ],
                     Not => [

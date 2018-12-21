@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -60,7 +60,7 @@ my $ArchiveFileCreated;
 if ( !-e $Home . '/ARCHIVE' ) {
 
     # create an ARCHIVE file on developer systems to continue working
-    my $ArchiveGeneratorTool = $Home . '/bin/otrs.CheckSum.pl';
+    my $ArchiveGeneratorTool = $Home . '/bin/ligero.CheckSum.pl';
 
     # if tool is not present we can't continue
     if ( !-e $ArchiveGeneratorTool ) {
@@ -104,7 +104,7 @@ my $Success = $Kernel::OM->Get('Kernel::System::SysConfig::Migration')->MigrateC
 
 $Self->True(
     $Success,
-    "Config was successfully migrated from otrs5 to 6."
+    "Config was successfully migrated from ligero5 to 6."
 );
 
 # RebuildConfig
@@ -411,7 +411,7 @@ if ($ArchiveFileCreated) {
     );
 }
 
-# cleanup otrs 5 config file
+# cleanup ligero 5 config file
 unlink $OTRS5ConfigFile;
 
 $Self->False(

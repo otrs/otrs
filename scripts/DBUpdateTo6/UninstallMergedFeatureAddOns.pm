@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -45,11 +45,11 @@ sub Run {
 
     # Uninstall feature add-ons that were merged, keeping the DB structures intact.
     for my $PackageName (
-        qw( OTRSAppointmentCalendar
-        OTRSTicketNumberCounterDatabase
-        OTRSAdvancedTicketSplit
-        OTRSGenericInterfaceInvokerEventFilter
-        OTRSPostMasterKeepState )
+        qw( LIGEROAppointmentCalendar
+        LIGEROTicketNumberCounterDatabase
+        LIGEROAdvancedTicketSplit
+        LIGEROGenericInterfaceInvokerEventFilter
+        LIGEROPostMasterKeepState )
         )
     {
         my $Success = $PackageObject->_PackageUninstallMerged(
@@ -68,7 +68,7 @@ sub Run {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -42,12 +42,12 @@ sub Run {
     my @FrameworkVersionParts = split /\./, $ConfigObject->Get('Version');
     my $FrameworkVersion      = $FrameworkVersionParts[0];
 
-    my $CurrentITSMRepository = "http://ftp.otrs.org/pub/otrs/itsm/packages$FrameworkVersion/";
+    my $CurrentITSMRepository = "http://ftp.ligero.org/pub/ligero/itsm/packages$FrameworkVersion/";
 
     return 1 if $RepositoryList{$CurrentITSMRepository};
 
     # Make sure ITSM repository matches the current framework version.
-    my @Matches = grep { $_ =~ m{http://ftp\.otrs\.org/pub/otrs/itsm/packages\d+/}msxi } sort keys %RepositoryList;
+    my @Matches = grep { $_ =~ m{http://ftp\.ligero\.org/pub/ligero/itsm/packages\d+/}msxi } sort keys %RepositoryList;
 
     return 1 if !@Matches;
 
@@ -59,7 +59,7 @@ sub Run {
     }
 
     # Make sure that current ITSM repository is in the list
-    $RepositoryList{$CurrentITSMRepository} = "OTRS::ITSM $FrameworkVersion Master";
+    $RepositoryList{$CurrentITSMRepository} = "LIGERO::ITSM $FrameworkVersion Master";
 
     my $ContinueOnModified = $Param{ContinueOnModified} // 0;
 
@@ -76,7 +76,7 @@ sub Run {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

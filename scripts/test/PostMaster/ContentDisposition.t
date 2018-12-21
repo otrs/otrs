@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -36,7 +36,7 @@ my @Tests = (
             'ceeibejd.png' => {
                 Filename           => 'ceeibejd.png',
                 ContentType        => 'image/png; name="ceeibejd.png"',
-                ContentID          => '<part1.02040705.00020608@otrs.com>',
+                ContentID          => '<part1.02040705.00020608@ligero.com>',
                 ContentAlternative => '1',
                 Disposition        => 'inline',
             },
@@ -62,7 +62,7 @@ my @Tests = (
             'ceeibejd.png' => {
                 Filename           => 'ceeibejd.png',
                 ContentType        => 'image/png; name="ceeibejd.png"',
-                ContentID          => '<part1.02040705.00020608@otrs.com>',
+                ContentID          => '<part1.02040705.00020608@ligero.com>',
                 ContentAlternative => '1',
                 Disposition        => 'inline',
             },
@@ -88,7 +88,7 @@ my @Tests = (
             'ceeibejd.png' => {
                 Filename           => 'ceeibejd.png',
                 ContentType        => 'image/png; name="ceeibejd.png"',
-                ContentID          => '<part1.02040705.00020608@otrs.com>',
+                ContentID          => '<part1.02040705.00020608@ligero.com>',
                 ContentAlternative => '1',
                 Disposition        => 'inline',
             },
@@ -102,7 +102,7 @@ my @Tests = (
             'testing.pdf' => {
                 Filename           => 'testing.pdf',
                 ContentType        => 'application/pdf; name="testing.pdf"',
-                ContentID          => '<part1.02040705.0001234@otrs.com>',
+                ContentID          => '<part1.02040705.0001234@ligero.com>',
                 ContentAlternative => '',
                 Disposition        => 'attachment',
             },
@@ -114,7 +114,7 @@ my @Tests = (
             'ceeibejd.png' => {
                 Filename           => 'ceeibejd.png',
                 ContentType        => 'image/png; name="ceeibejd.png"',
-                ContentID          => '<part1.02040705.00020608@otrs.com>',
+                ContentID          => '<part1.02040705.00020608@ligero.com>',
                 ContentAlternative => '1',
                 Disposition        => 'attachment',
             },

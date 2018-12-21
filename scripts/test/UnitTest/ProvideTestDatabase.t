@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -39,8 +39,8 @@ $Self->Is(
 my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
 my @DatabaseXMLFiles = (
-    "$Home/scripts/database/otrs-schema.xml",
-    "$Home/scripts/database/otrs-initial_insert.xml",
+    "$Home/scripts/database/ligero-schema.xml",
+    "$Home/scripts/database/ligero-initial_insert.xml",
 );
 
 $Success = $Helper->ProvideTestDatabase(

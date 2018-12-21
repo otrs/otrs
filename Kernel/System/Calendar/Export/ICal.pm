@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -347,7 +347,7 @@ sub Export {
                 }
                 if (@Teams) {
                     $ICalEvent->add_properties(
-                        "x-otrs-team" => join( ',', @Teams ),
+                        "x-ligero-team" => join( ',', @Teams ),
                     );
                 }
             }
@@ -372,7 +372,7 @@ sub Export {
                 }
                 if (@Users) {
                     $ICalEvent->add_properties(
-                        "x-otrs-resource" => join( ',', @Users ),
+                        "x-ligero-resource" => join( ',', @Users ),
                     );
                 }
             }
@@ -393,7 +393,7 @@ sub Export {
 
             if (@LinkArray) {
                 $ICalEvent->add_properties(
-                    "x-otrs-plugin-$PluginKey" => join( ',', @LinkArray ),
+                    "x-ligero-plugin-$PluginKey" => join( ',', @LinkArray ),
                 );
             }
         }
@@ -436,7 +436,7 @@ sub Export {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

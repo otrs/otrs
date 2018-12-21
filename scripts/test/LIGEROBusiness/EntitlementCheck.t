@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -89,7 +89,7 @@ my @Tests = (
         AgentNotificationResultAdmin => '<!-- start Notify -->
 <div class="MessageBox Notice">
     <p>
-            The license for your <b>OTRS Business Solution</b>™ is about to expire. Please make contact with sales@otrs.com to renew your contract!
+            The license for your <b>OTRS Business Solution</b>™ is about to expire. Please make contact with sales@ligero.com to renew your contract!
     </p>
 </div>
 <!-- end Notify -->
@@ -112,7 +112,7 @@ my @Tests = (
         AgentNotificationResultAdmin => '<!-- start Notify -->
 <div class="MessageBox Error">
     <p>
-            Connection to cloud.otrs.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.otrs.com via port 443.
+            Connection to cloud.ligero.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.ligero.com via port 443.
     </p>
 </div>
 <!-- end Notify -->
@@ -134,7 +134,7 @@ my @Tests = (
         AgentNotificationResultAgent => '<!-- start Notify -->
 <div class="MessageBox Error">
     <p>
-            This system uses the <b>OTRS Business Solution</b>™ without a proper license! Please make contact with sales@otrs.com to renew or activate your contract!
+            This system uses the <b>OTRS Business Solution</b>™ without a proper license! Please make contact with sales@ligero.com to renew or activate your contract!
     </p>
 </div>
 <!-- end Notify -->
@@ -142,7 +142,7 @@ my @Tests = (
         AgentNotificationResultAdmin => '<!-- start Notify -->
 <div class="MessageBox Error">
     <p>
-            This system uses the <b>OTRS Business Solution</b>™ without a proper license! Please make contact with sales@otrs.com to renew or activate your contract!
+            This system uses the <b>OTRS Business Solution</b>™ without a proper license! Please make contact with sales@ligero.com to renew or activate your contract!
     </p>
 </div>
 <!-- end Notify -->
@@ -150,7 +150,7 @@ my @Tests = (
         CustomerNotificationResult => '<!-- start Notify -->
 <div class="MessageBox Error">
     <p>
-            This system uses the <b>OTRS Business Solution</b>™ without a proper license! Please make contact with sales@otrs.com to renew or activate your contract!
+            This system uses the <b>OTRS Business Solution</b>™ without a proper license! Please make contact with sales@ligero.com to renew or activate your contract!
     </p>
 </div>
 <!-- end Notify -->
@@ -171,7 +171,7 @@ my @Tests = (
         AgentNotificationResultAgent => '<!-- start Notify -->
 <div class="MessageBox Error">
     <p>
-            This system uses the <b>OTRS Business Solution</b>™ without a proper license! Please make contact with sales@otrs.com to renew or activate your contract!
+            This system uses the <b>OTRS Business Solution</b>™ without a proper license! Please make contact with sales@ligero.com to renew or activate your contract!
 <script>
 if (!window.location.search.match(/^[?]Action=(AgentOTRSBusiness|Admin.*)/)) {
     window.location.search = "Action=AgentOTRSBusiness;Subaction=BlockScreen";
@@ -184,7 +184,7 @@ if (!window.location.search.match(/^[?]Action=(AgentOTRSBusiness|Admin.*)/)) {
         AgentNotificationResultAdmin => '<!-- start Notify -->
 <div class="MessageBox Error">
     <p>
-            This system uses the <b>OTRS Business Solution</b>™ without a proper license! Please make contact with sales@otrs.com to renew or activate your contract!
+            This system uses the <b>OTRS Business Solution</b>™ without a proper license! Please make contact with sales@ligero.com to renew or activate your contract!
 <script>
 if (!window.location.search.match(/^[?]Action=(AgentOTRSBusiness|Admin.*)/)) {
     window.location.search = "Action=AgentOTRSBusiness;Subaction=BlockScreen";
@@ -197,7 +197,7 @@ if (!window.location.search.match(/^[?]Action=(AgentOTRSBusiness|Admin.*)/)) {
         CustomerNotificationResult => '<!-- start Notify -->
 <div class="MessageBox Error">
     <p>
-            This system uses the <b>OTRS Business Solution</b>™ without a proper license! Please make contact with sales@otrs.com to renew or activate your contract!
+            This system uses the <b>OTRS Business Solution</b>™ without a proper license! Please make contact with sales@ligero.com to renew or activate your contract!
     </p>
 </div>
 <!-- end Notify -->

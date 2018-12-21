@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -32,7 +32,7 @@ sub Run {
     # Get list of all installed packages.
     my @RepositoryList = $PackageObject->RepositoryList();
 
-    # Check if the ticket number counter tables already exist, by testing if OTRSTicketNumberCounterDatabase package is
+    # Check if the ticket number counter tables already exist, by testing if LIGEROTicketNumberCounterDatabase package is
     #   installed.
     my $PackageVersion;
     my $DBUpdateNeeded;
@@ -40,15 +40,15 @@ sub Run {
     PACKAGE:
     for my $Package (@RepositoryList) {
 
-        # Package is not the OTRSTicketNumberCounterDatabase package.
-        next PACKAGE if $Package->{Name}->{Content} ne 'OTRSTicketNumberCounterDatabase';
+        # Package is not the LIGEROTicketNumberCounterDatabase package.
+        next PACKAGE if $Package->{Name}->{Content} ne 'LIGEROTicketNumberCounterDatabase';
 
         $PackageVersion = $Package->{Version}->{Content};
     }
 
     if ($PackageVersion) {
         if ($Verbose) {
-            print "\n    Found package OTRSTicketNumberCounterDatabase $PackageVersion, skipping database upgrade...\n";
+            print "\n    Found package LIGEROTicketNumberCounterDatabase $PackageVersion, skipping database upgrade...\n";
         }
         return 1;
     }
@@ -79,8 +79,8 @@ sub Run {
         if ( $XMLString =~ /<TableCreate Name="([a-z_]+)">/ ) {
             my $TableName = $1;
 
-    # Get list of existing OTRS tables, in order to check if ticket number counter already exist. This is needed because
-    #   update script might be executed multiple times, and by then OTRSTicketNumberCounterDatabase package has already
+    # Get list of existing LIGERO tables, in order to check if ticket number counter already exist. This is needed because
+    #   update script might be executed multiple times, and by then LIGEROTicketNumberCounterDatabase package has already
     #   been merged so we cannot rely on its existence. Please see bug#12788 for more information.
             my $TableExists = $Self->TableExists(
                 Table => $TableName,
@@ -102,7 +102,7 @@ sub Run {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

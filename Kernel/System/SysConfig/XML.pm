@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -51,7 +51,7 @@ Parses XML files into a list of perl structures and meta data.
     my $PerlStructure = $SysConfigXMLObject->SettingListParse(
         XMLInput => '
             <?xml version="1.0" encoding="utf-8"?>
-            <otrs_config version="2.0" init="Application">
+            <ligero_config version="2.0" init="Application">
                 <Setting Name="Test1" Required="1" Valid="1">
                     <Description Translatable="1">Test 1.</Description>
                     <Navigation>Core::Ticket</Navigation>
@@ -66,7 +66,7 @@ Parses XML files into a list of perl structures and meta data.
                         <Item ValueType="File">/usr/bin/gpg</Item>
                     </Value>
                 </Setting>
-            </otrs_config>
+            </ligero_config>
         ',
         XMLFilename => 'Test.xml'
     );
@@ -136,7 +136,7 @@ sub SettingListParse {
     # Remove comments <!-- ... -->.
     $XMLContent =~ s{<!--.*?-->}{}gsm;
 
-    $XMLContent =~ m{otrs_config.*?version="(.*?)"};
+    $XMLContent =~ m{ligero_config.*?version="(.*?)"};
     my $ConfigVersion = $1;
 
     if ( $ConfigVersion ne '2.0' ) {
@@ -213,7 +213,7 @@ sub SettingListParse {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

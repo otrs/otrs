@@ -1,6 +1,6 @@
 <!--                                                                           -->
-<!--        OTRS: Copyright (C) 2001-2018 OTRS AG, https://otrs.com/.          -->
-<!--         Web: https://otrs.com/ - Lists: https://lists.otrs.org/           -->
+<!--        OTRS: Copyright (C) 2001-2018 OTRS AG, https://ligero.com/.          -->
+<!--         Web: https://ligero.com/ - Lists: https://lists.ligero.org/           -->
 <!--    GNU General Public License: https://www.gnu.org/licenses/gpl-3.0.txt   -->
 <!--                                                                           -->
 ## nofilter(TidyAll::Plugin::OTRS::Common::HeaderlineFilename)

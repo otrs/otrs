@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -129,44 +129,44 @@ my $RandomID = $Helper->GetRandomID();
 my %Packages = (
     'Package1' => << "EOF",
 <?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.1">
+<ligero_package version="1.1">
     <Name>Package1$RandomID</Name>
     <Version>1.0.1</Version>
     <Vendor>OTRS AG</Vendor>
-    <URL>https://otrs.com/</URL>
+    <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
-    <Description Lang="en">OTRS Business Solution. For more information, please have a look at the official documentation at http://otrs.github.io/doc/manual/otrs-business-solution/stable/en/html/.</Description>
+    <Description Lang="en">OTRS Business Solution. For more information, please have a look at the official documentation at http://ligero.github.io/doc/manual/ligero-business-solution/stable/en/html/.</Description>
     <Framework>$OTRSVersion</Framework>
     <PackageIsVisible>1</PackageIsVisible>
     <PackageIsDownloadable>1</PackageIsDownloadable>
     <PackageIsRemovable>1</PackageIsRemovable>
     <BuildDate>2016-03-04 18:02:26</BuildDate>
-    <BuildHost>otrs.master.mandalore.com</BuildHost>
+    <BuildHost>ligero.master.mandalore.com</BuildHost>
     <DatabaseInstall Type="post" IfNotPackage="Package2$RandomID">
         <TableCreate Type="post" Name="$RandomID">
             <Column AutoIncrement="true" Name="id" PrimaryKey="true" Required="true" Type="BIGINT"></Column>
             <Column Name="name" Required="true" Size="200" Type="VARCHAR"></Column>
         </TableCreate>
     </DatabaseInstall>
-</otrs_package>
+</ligero_package>
 EOF
 
     'Package2' => << "EOF",
 <?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.1">
+<ligero_package version="1.1">
     <Name>Package2$RandomID</Name>
     <Version>1.0.1</Version>
     <Vendor>OTRS AG</Vendor>
-    <URL>https://otrs.com/</URL>
+    <URL>https://ligero.com/</URL>
     <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
-    <Description Lang="en">OTRS Business Solution. For more information, please have a look at the official documentation at http://otrs.github.io/doc/manual/otrs-business-solution/stable/en/html/.</Description>
+    <Description Lang="en">OTRS Business Solution. For more information, please have a look at the official documentation at http://ligero.github.io/doc/manual/ligero-business-solution/stable/en/html/.</Description>
     <Framework>$OTRSVersion</Framework>
     <PackageIsVisible>1</PackageIsVisible>
     <PackageIsDownloadable>1</PackageIsDownloadable>
     <PackageIsRemovable>1</PackageIsRemovable>
     <BuildDate>2016-03-04 18:02:26</BuildDate>
-    <BuildHost>otrs.master.mandalore.com</BuildHost>
-</otrs_package>
+    <BuildHost>ligero.master.mandalore.com</BuildHost>
+</ligero_package>
 EOF
 );
 

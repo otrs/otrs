@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 LIGERO AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -73,8 +73,8 @@ sub CheckPreviousRequirement {
         return;
     }
 
-    if ( $ProductName ne 'OTRS' ) {
-        print "    Error:    No OTRS system found.\n";
+    if ( $ProductName ne 'LIGERO' ) {
+        print "    Error:    No LIGERO system found.\n";
         return;
     }
     if ( $Version !~ /^6\.0(.*)$/ ) {
@@ -90,7 +90,7 @@ sub CheckPreviousRequirement {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the LIGERO project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

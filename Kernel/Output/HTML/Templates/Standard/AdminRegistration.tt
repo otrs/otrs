@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -80,7 +80,7 @@
                     </li>
 [% RenderBlockEnd("ActionDeregister") %]
                     <li>
-                        <a href="https://portal.otrs.com/otrs/customer.pl?Action=CustomerOTRSSystems" target="_blank" class="CallForAction Fullsize Center">
+                        <a href="https://portal.ligero.com/ligero/customer.pl?Action=CustomerOTRSSystems" target="_blank" class="CallForAction Fullsize Center">
                             <span><i class="fa fa-external-link"></i> [% Translate("Overview of registered systems") | html %]</span>
                         </a>
                     </li>
@@ -254,12 +254,12 @@
 
                             <h1>Anspruch auf Information</h1>
                             <p>
-                                Sie haben jederzeit das Recht Einsicht in Daten die zu Ihrer Person gespeichert sind, deren Herkunft und Empfänger zu verlangen, sowie den Zweck der Datenverarbeitung zu erfahren. Sie können die über Sie gespeicherten Daten durch eine E-Mail an info@otrs.com anfordern.
+                                Sie haben jederzeit das Recht Einsicht in Daten die zu Ihrer Person gespeichert sind, deren Herkunft und Empfänger zu verlangen, sowie den Zweck der Datenverarbeitung zu erfahren. Sie können die über Sie gespeicherten Daten durch eine E-Mail an info@ligero.com anfordern.
                             </p>
 
                             <h1>Weitere Informationen</h1>
                             <p>
-                                Ihr Vertrauen ist uns sehr wichtig. Wir sind bereit, Sie über die Verarbeitung Ihrer personenbezogenen Daten jederzeit zu informieren. Wenn Sie weitere Fragen haben, die durch diese Datenschutzerklärung nicht beantwortet werden konnten oder wenn Sie nähere Informationen zu einem bestimmten Thema benötigen, wenden Sie sich an info@otrs.com.
+                                Ihr Vertrauen ist uns sehr wichtig. Wir sind bereit, Sie über die Verarbeitung Ihrer personenbezogenen Daten jederzeit zu informieren. Wenn Sie weitere Fragen haben, die durch diese Datenschutzerklärung nicht beantwortet werden konnten oder wenn Sie nähere Informationen zu einem bestimmten Thema benötigen, wenden Sie sich an info@ligero.com.
                             </p>
                         [% ELSE %]
                             <p>
@@ -299,13 +299,13 @@
                             <h1>Right to Information</h1>
                             <p>
                                 You have the right to demand information concerning the data saved about you, its origin and recipients, as well as the purpose of the data processing at any time.
-                                You can request information about the saved data by sending an e-mail to info@otrs.com.
+                                You can request information about the saved data by sending an e-mail to info@ligero.com.
                             </p>
 
                             <h1>Further Information</h1>
                             <p>
                                 Your trust is very important to us. We are willing to inform you about the processing of your personal details at any time.
-                                If you have any questions that have not been answered by this Data Protection Policy or if you require more detailed information about a specific topic, please contact info@otrs.com.
+                                If you have any questions that have not been answered by this Data Protection Policy or if you require more detailed information about a specific topic, please contact info@ligero.com.
                             </p>
                         [% END %]
                         </div>
@@ -360,13 +360,13 @@
                             </div>
                             <p class="FieldExplanation">
                                         [% Translate("You don't have an OTRS-ID yet?") | html %]
-                                <a href="https://portal.otrs.com/otrs/customer.pl#Signup" target="_blank">
+                                <a href="https://portal.ligero.com/ligero/customer.pl#Signup" target="_blank">
                                             [% Translate("Sign up now") | html %]
                                 </a>
                             </p>
                             <p class="FieldExplanation">
                                         [% Translate("Forgot your password?") | html %]
-                                <a href="https://portal.otrs.com/otrs/customer.pl#Reset" target="_blank">
+                                <a href="https://portal.ligero.com/ligero/customer.pl#Reset" target="_blank">
                                             [% Translate("Retrieve a new one") | html %]
                                 </a>
                             </p>
@@ -580,12 +580,12 @@
             <div class="Content">
 [% RenderBlockStart("SentDataOverviewNoData") %]
                 <p>
-                    [% Translate('There is no data regularly sent from your system to %s.', 'cloud.otrs.com') | html %]
+                    [% Translate('There is no data regularly sent from your system to %s.', 'cloud.ligero.com') | html %]
                 </p>
 [% RenderBlockEnd("SentDataOverviewNoData") %]
 [% RenderBlockStart("SentDataOverviewData") %]
                 <p>
-                    [% Translate('The following data is sent at minimum every 3 days from your system to %s.', 'cloud.otrs.com') | html %]
+                    [% Translate('The following data is sent at minimum every 3 days from your system to %s.', 'cloud.ligero.com') | html %]
                     [% Translate('The data will be transferred in JSON format via a secure https connection.') | html %]
                 </p>
                 <h3 class="SpacingTop SpacingBottom">[% Translate('System Registration Data') | html %]</h3>

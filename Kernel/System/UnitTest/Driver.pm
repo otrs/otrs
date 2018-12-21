@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -112,7 +112,7 @@ sub Run {
         ## nofilter(TidyAll::Plugin::OTRS::Perl::ObjectManagerCreation)
         local $Kernel::OM = Kernel::System::ObjectManager->new(
             'Kernel::System::Log' => {
-                LogPrefix => 'OTRS-otrs.UnitTest',
+                LogPrefix => 'OTRS-ligero.UnitTest',
             },
         );
 
@@ -565,7 +565,7 @@ sub _Color {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<https://otrs.org/>).
+This software is part of the OTRS project (L<https://ligero.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (GPL). If you

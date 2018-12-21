@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -216,7 +216,7 @@ $Selenium->RunTest(
         );
 
         # Select new customer and verify customer field value is not cleared after focus lost.
-        # See bug#13880 (https://bugs.otrs.org/show_bug.cgi?id=13880).
+        # See bug#13880 (https://bugs.ligero.org/show_bug.cgi?id=13880).
         $Selenium->find_element( "#CustomerAutoComplete", 'css' )->clear();
         $Selenium->find_element( "#CustomerAutoComplete", 'css' )->send_keys( $TestCustomers[0] );
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length' );

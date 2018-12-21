@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -58,7 +58,7 @@ $Selenium->RunTest(
             ObjectType => 'Ticket',
             Config     => {
                 Link        => $DynamicFieldLink,
-                LinkPreview => 'https://www.otrs.com',
+                LinkPreview => 'https://www.ligero.com',
             },
             ValidID => 1,
             UserID  => 1,

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2018 OTRS AG, https://ligero.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -37,8 +37,8 @@ my $CreateTestData = sub {
 
     my $MailQueueObject = $Kernel::OM->Get('Kernel::System::MailQueue');
     my %ElementData     = (
-        Sender    => 'mailqueue.test@otrs.com',
-        Recipient => 'mailqueue.test@otrs.com',
+        Sender    => 'mailqueue.test@ligero.com',
+        Recipient => 'mailqueue.test@ligero.com',
         Message   => {
             'Key1' => 'Value1',
             'Key2' => 'Value2',
@@ -195,10 +195,10 @@ $Test->(
 # Change the Recipient for more than one record
 $Test->(
     Data => {
-        Recipient => 'mailqueue.test3@otrs.com',
+        Recipient => 'mailqueue.test3@ligero.com',
     },
     Filters => {
-        Sender => 'mailqueue.test@otrs.com',
+        Sender => 'mailqueue.test@ligero.com',
     },
     NumberOfRowsToUpdate => scalar( keys %Elements ),
 );
@@ -206,10 +206,10 @@ $Test->(
 # Change the Recipient (arrayref) for more than one record
 $Test->(
     Data => {
-        Recipient => [ 'mailqueue.test3@otrs.com', 'mailqueue.test4@otrs.com' ],
+        Recipient => [ 'mailqueue.test3@ligero.com', 'mailqueue.test4@ligero.com' ],
     },
     Filters => {
-        Sender => 'mailqueue.test@otrs.com',
+        Sender => 'mailqueue.test@ligero.com',
     },
     NumberOfRowsToUpdate => scalar( keys %Elements ),
 );
