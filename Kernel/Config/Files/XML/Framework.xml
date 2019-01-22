@@ -952,7 +952,7 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Frontend::NotifyModule###8000-PackageManager-CheckNotVerifiedPackages" Required="1" Valid="1">
+    <Setting Name="Frontend::NotifyModule###8000-PackageManager-CheckNotVerifiedPackages" Required="0" Valid="1">
         <Description Translatable="1">Defines the module to display a notification in the agent interface, if the installation of not verified packages is activated (only shown to admins).</Description>
         <Navigation>Frontend::Agent::FrontendNotification</Navigation>
         <Value>
