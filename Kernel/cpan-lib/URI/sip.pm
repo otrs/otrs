@@ -1,3 +1,6 @@
+# Modified version of the work: Copyright (C) 2019 Ligero, https://www.complemento.net.br/
+# based on the original work of:
+# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
 #
 # Written by Ryan Kereliuk <ryker@ryker.org>.  This file may be
 # distributed under the same terms as Perl itself.

@@ -1,3 +1,6 @@
+# Modified version of the work: Copyright (C) 2019 Ligero, https://www.complemento.net.br/
+# based on the original work of:
+# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
 # $Header: /cvsroot/date-leapyear/lib/Date/Leapyear.pm,v 1.71 2002/08/30 00:00:25 rbowen Exp $
 package Date::Leapyear;
 use strict;

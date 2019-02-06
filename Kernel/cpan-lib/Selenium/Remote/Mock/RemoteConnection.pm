@@ -1,3 +1,6 @@
+# Modified version of the work: Copyright (C) 2019 Ligero, https://www.complemento.net.br/
+# based on the original work of:
+# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
 package Selenium::Remote::Mock::RemoteConnection;
 $Selenium::Remote::Mock::RemoteConnection::VERSION = '1.30';
 # ABSTRACT: utility class to mock the responses from Selenium server

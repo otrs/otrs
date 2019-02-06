@@ -1,3 +1,6 @@
+# Modified version of the work: Copyright (C) 2019 Ligero, https://www.complemento.net.br/
+# based on the original work of:
+# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
 # --
 # Copyright (C) 2006 Gabor Gancs /gg@magicnet.hu/
 # Copyright (C) 2006 Krisztian Gancs /krisz@gancs.hu/

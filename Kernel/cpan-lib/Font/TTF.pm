@@ -1,3 +1,6 @@
+# Modified version of the work: Copyright (C) 2019 Ligero, https://www.complemento.net.br/
+# based on the original work of:
+# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
 package Font::TTF;
 
 $VERSION = '1.06';   # RMH     02-Aug-2016      Bug fixes; updated OT tags;

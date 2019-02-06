@@ -1,3 +1,6 @@
+# Modified version of the work: Copyright (C) 2019 Ligero, https://www.complemento.net.br/
+# based on the original work of:
+# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
 # This is a version of Algorithm::Diff that uses only a comparison function,
 # like versions <= 0.59 used to.
 # $Revision: 1.3 $

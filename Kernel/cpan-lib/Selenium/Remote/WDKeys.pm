@@ -1,3 +1,6 @@
+# Modified version of the work: Copyright (C) 2019 Ligero, https://www.complemento.net.br/
+# based on the original work of:
+# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
 package Selenium::Remote::WDKeys;
 $Selenium::Remote::WDKeys::VERSION = '1.30';
 # ABSTRACT: Representation of keystrokes used by Selenium::Remote::WebDriver

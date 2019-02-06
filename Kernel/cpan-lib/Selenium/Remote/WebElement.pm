@@ -1,3 +1,6 @@
+# Modified version of the work: Copyright (C) 2019 Ligero, https://www.complemento.net.br/
+# based on the original work of:
+# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
 package Selenium::Remote::WebElement;
 $Selenium::Remote::WebElement::VERSION = '1.30';
 # ABSTRACT: Representation of an HTML Element used by Selenium Remote Driver

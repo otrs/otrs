@@ -1,3 +1,6 @@
+# Modified version of the work: Copyright (C) 2019 Ligero, https://www.complemento.net.br/
+# based on the original work of:
+# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
 # this is a back compatibility wrapper around File::Temp. DO NOT
 # use this package outside of CGI, i won't provide any help if
 # you use it directly and your code breaks horribly.

@@ -1,3 +1,6 @@
+# Modified version of the work: Copyright (C) 2019 Ligero, https://www.complemento.net.br/
+# based on the original work of:
+# Copyright (C) 2001-2018 OTRS AG, https://otrs.com/
 package PDF::API2::Resource::XObject::Form::Hybrid;
 
 use base qw(PDF::API2::Content PDF::API2::Resource::XObject::Form);
