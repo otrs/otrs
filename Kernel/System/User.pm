@@ -100,7 +100,7 @@ sub GetUserData {
     if ( !$Param{User} && !$Param{UserID} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Need User or UserID!',
+            Message  => 'Need User or UserID!'
         );
         return;
     }
@@ -585,12 +585,52 @@ sub UserUpdate {
         Value  => $Param{UserEmail}
     );
 
-    # set email address
+    # set user mobile
     $Self->SetPreferences(
         UserID => $Param{UserID},
         Key    => 'UserMobile',
         Value  => $Param{UserMobile} || '',
     );
+
+    # update preferences
+    my %NonPreference = (
+        UserID        => 1,
+        UserLogin     => 1,
+        UserPw        => 1,
+        UserFirstname => 1,
+        UserLastname  => 1,
+        UserFullname  => 1,
+        UserTitle     => 1,
+        ChangeTime    => 1,
+        CreateTime    => 1,
+        ValidID       => 1,
+        ChangeUserID  => 1, # the only difference from the %Blacklisted hash in the SetPreferences sub
+    );
+
+    for my $Key ( sort keys %Param ) {
+        # detect non-preferences keys
+        #TODO: this check is done in sub SetPreferences since 57cda14db8fdbcbfb8cabb32d85fbc89fde48c62,
+        #   so i'm not sure if it is still relevant.
+        if ( $NonPreference{$Key} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                  Priority => 'debug',
+                  Message  => 'non-preference value detected: ' . $Key,
+            );
+        }
+        else {
+            # set Preferences
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'debug',
+                Message  => 'preference value detected: ' . $Key
+                            . '. Value is: ' . $Param{$Key},
+            );
+            $Self->SetPreferences(
+                UserID => $Param{UserID},
+                Key    => $Key,
+                Value  => $Param{$Key}
+            );
+        }
+    }
 
     # update search profiles if the UserLogin changed
     if ( lc $OldUserLogin ne lc $Param{UserLogin} ) {
