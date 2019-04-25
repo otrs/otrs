@@ -11,7 +11,7 @@ package Kernel::System::Email::SMTPS;
 use strict;
 use warnings;
 
-use Net::SSLGlue::SMTP;
+use Net::SMTP;
 
 use parent qw(Kernel::System::Email::SMTP);
 
