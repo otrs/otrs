@@ -70,7 +70,6 @@ sub Run {
         # lookup ticket id
         my $TicketID = $Kernel::OM->Get('Kernel::System::Ticket')->TicketIDLookup(
             TicketNumber => $TicketNumber,
-            UserID       => 1,
         );
 
         # error handling
