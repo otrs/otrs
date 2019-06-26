@@ -399,28 +399,6 @@ sub DynamicFieldUpdate {
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    # check if Name already exists
-    return if !$DBObject->Prepare(
-        SQL => "SELECT id FROM dynamic_field "
-            . "WHERE $Self->{Lower}(name) = $Self->{Lower}(?) "
-            . "AND id != ?",
-        Bind  => [ \$Param{Name}, \$Param{ID} ],
-        LIMIT => 1,
-    );
-
-    my $NameExists;
-    while ( my @Data = $DBObject->FetchrowArray() ) {
-        $NameExists = 1;
-    }
-
-    if ($NameExists) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "A dynamic field with the name '$Param{Name}' already exists.",
-        );
-        return;
-    }
-
     if ( $Param{FieldOrder} !~ m{ \A [\d]+ \z }xms ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
@@ -433,6 +411,14 @@ sub DynamicFieldUpdate {
     my $OldDynamicField = $Self->DynamicFieldGet(
         ID => $Param{ID},
     );
+
+    # check if Field exists 
+	if( !$OldDynamicField ){
+		$Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "A dynamic field with the ID '$Param{ID}' does not exists!",
+        );
+	}
 
     # check if FieldOrder is changed
     my $ChangedOrder;
