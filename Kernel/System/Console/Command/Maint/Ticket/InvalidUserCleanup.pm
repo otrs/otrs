@@ -205,7 +205,7 @@ sub _CleanupFlags {
 
         return if !$DBObject->Prepare(
             SQL => "
-                SELECT DISTINCT(article.id)
+                SELECT DISTINCT(article.id), article.ticket_id
                 FROM article
                     INNER JOIN ticket ON ticket.id = article.ticket_id
                     INNER JOIN article_flag ON article.id = article_flag.article_id
@@ -216,13 +216,14 @@ sub _CleanupFlags {
 
         my @ArticleIDs;
         while ( my @Row = $DBObject->FetchrowArray() ) {
-            push @ArticleIDs, $Row[0];
+            push @ArticleIDs, [ $Row[0], $Row[1] ];
         }
 
         $Count = 0;
         for my $ArticleID (@ArticleIDs) {
             $ArticleObject->ArticleFlagDelete(
-                ArticleID => $ArticleID,
+                ArticleID => $ArticleID->[0],
+                TicketID  => $ArticleID->[1],
                 Key       => 'Seen',
                 UserID    => $User->{UserID},
             );
