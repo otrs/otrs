@@ -209,14 +209,18 @@ Core.Agent.TicketAction = (function (TargetNS) {
                 BccCustomer = $('#BccCustomer').val() || '',
                 // only for AgentTicketPhone
                 FromCustomer = $('#FromCustomer').val() || '';
-
-            if (ToCustomer.length || CcCustomer.length || BccCustomer.length || FromCustomer.length) {
-                window.setTimeout(function () {
-                    $('#submitRichText').trigger('click');
-                }, 100);
-                Event.preventDefault();
-                Event.stopPropagation();
-                return false;
+            
+            if (ToCustomer.length) {
+                $('#ToCustomer').trigger('change');
+            }
+            if (CcCustomer.length) {
+                $('#CcCustomer').trigger('change');
+            }
+            if (BccCustomer.length) {
+                $('#BccCustomer').trigger('change');
+            }
+            if (ToCustomer.length) {
+                $('#FromCustomer').trigger('change');
             }
         });
 
