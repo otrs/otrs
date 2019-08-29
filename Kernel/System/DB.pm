@@ -886,6 +886,49 @@ sub SelectAll {
     return \@Records;
 }
 
+=head2 SelectSingleRow()
+
+returns single row from a SELECT statement.
+In essence, this calls Prepare() and FetchrowArray() to get single record.
+
+    my $ResultAsArrayRef = $DBObject->SelectSingleRow(
+        SQL  => 'SELECT id, name FROM table WHERE name = ?',
+        Bind => [ \$ItemName ],
+    );
+
+You can pass the same arguments as to the Prepare() method.
+
+Returns undef (if query failed), or an array ref (if query was successful):
+
+    my $ResultAsArrayRef = [ 4, 'ItemFour' ];
+
+Method has extra checks - only one row should be returned.
+
+=cut
+
+sub SelectSingleRow {
+    my ( $Self, %Param ) = @_;
+
+    return if !$Self->Prepare(%Param);
+
+    my @Record;
+    my $RowCount = 0;
+    while ( my @Row = $Self->FetchrowArray() ) {
+        $RowCount++;
+
+        @Record = @Row if $RowCount == 1;
+    }
+
+    if ( $RowCount > 1 ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'Error',
+            Message  => "Returned $RowCount rows instead of 1! SQL: $Param{SQL}",
+        );
+        return;
+    }
+    return \@Record;
+}
+
 =head2 GetDatabaseFunction()
 
 to get database functions like
