@@ -142,26 +142,16 @@ sub Run {
 
     my %Results;
     for my $StateOrderID ( sort { $a <=> $b } keys %ConfiguredStates ) {
-
-        # Run ticket search for all Queues and appropriate available State.
-        my @StateOrderTicketIDs = $TicketObject->TicketSearch(
-            UserID   => $Self->{UserID},
-            Result   => 'ARRAY',
-            QueueIDs => \@QueueIDs,
-            States   => [ $ConfiguredStates{$StateOrderID} ],
-            Limit    => 100_000,
-        );
-
-        # Count of tickets per QueueID.
-        my $TicketCountByQueueID = $TicketObject->TicketCountByAttribute(
-            Attribute => 'QueueID',
-            TicketIDs => \@StateOrderTicketIDs,
-        );
-
         # Gather ticket count for corresponding Queue <-> State.
         for my $QueueID (@QueueIDs) {
-            push @{ $Results{ $Queues{$QueueID} } },
-                $TicketCountByQueueID->{$QueueID} ? $TicketCountByQueueID->{$QueueID} : 0;
+            my $StateQueueTicketCount = $TicketObject->TicketSearch(
+                UserID   => $Self->{UserID},
+                Result   => 'COUNT',
+                QueueIDs => [ $QueueID ],
+                States   => [ $ConfiguredStates{$StateOrderID} ],
+            );
+
+            push @{ $Results{ $Queues{$QueueID} } }, $StateQueueTicketCount;
         }
     }
 
