@@ -985,7 +985,6 @@ sub _SendRecipientNotification {
         # get ticket history
         my @HistoryLines = $TicketObject->HistoryGet(
             TicketID => $Param{TicketID},
-            UserID   => $Param{UserID},
         );
 
         # get last notification sent ticket history entry for this transport and this user
