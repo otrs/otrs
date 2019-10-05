@@ -123,7 +123,6 @@ sub Run {
         );
         my @Lines = $Self->{TicketObject}->HistoryGet(
             TicketID => $Ticket{TicketID},
-            UserID   => 1,
         );
         my $Sent = 0;
         for my $Line (@Lines) {
