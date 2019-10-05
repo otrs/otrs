@@ -78,7 +78,6 @@ sub Run {
 
     my @Lines = $Self->{TicketObject}->HistoryGet(
         TicketID => $Self->{TicketID},
-        UserID   => $Self->{UserID},
     );
     my $Tn = $Self->{TicketObject}->TicketNumberLookup( TicketID => $Self->{TicketID} );
 
