@@ -128,7 +128,6 @@ sub Run {
         );
         my @Lines = $TicketObject->HistoryGet(
             TicketID => $Ticket{TicketID},
-            UserID   => 1,
         );
 
         my $Sent = 0;

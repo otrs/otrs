@@ -214,7 +214,6 @@ for my $TicketID (@TicketIDs) {
         # get ticket history
         my @Lines = $TicketObject->HistoryGet(
             TicketID => $Ticket{TicketID},
-            UserID   => 1,
         );
 
         my $Sent = 0;
