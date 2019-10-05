@@ -108,7 +108,7 @@ sub Run {
 
     my $UserObject = $Kernel::OM->Get('Kernel::System::User');
 
-    my $Time;
+    my $Time = 0;
 
     for my $Data (@Lines) {
         $Data->{Class} = '';
@@ -123,7 +123,7 @@ sub Run {
         my $IsNewWidget;
 
         # Create a new widget if article create time difference is more then 5 sec.
-        if ( !$Time || abs( $Time - $HistoryArticleTime ) > 5 ) {
+        if ( abs( $Time - $HistoryArticleTime ) > 5 ) {
 
             $LayoutObject->Block(
                 Name => 'HistoryWidget',
