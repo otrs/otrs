@@ -188,7 +188,6 @@ sub Run {
 
         my @LinesRaw = $TicketObject->HistoryGet(
             TicketID => $TicketID,
-            UserID   => $UserID,
         );
 
         my @Lines;

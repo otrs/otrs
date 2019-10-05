@@ -121,7 +121,6 @@ sub Run {
         # needed for deciding whether events should be triggered
         my @HistoryLines = $TicketObject->HistoryGet(
             TicketID => $TicketID,
-            UserID   => 1,
         );
 
         # check if it's a escalation of escalation notification

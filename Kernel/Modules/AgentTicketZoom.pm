@@ -2345,7 +2345,6 @@ sub _ArticleTree {
         # get ticket history
         my @HistoryLines = $TicketObject->HistoryGet(
             TicketID => $Self->{TicketID},
-            UserID   => $Self->{UserID},
         );
 
         # get articles for later use

@@ -176,7 +176,6 @@ Get the complete ticket history
 
     my @HistoryLines = $TicketObject->HistoryGet(
         TicketID => $TicketID,
-        UserID   => 1,
     );
 
 Get current ticket attributes
@@ -342,7 +341,6 @@ sub TicketCheckNumber {
         # get ticket history
         my @Lines = $Self->HistoryGet(
             TicketID => $TicketID,
-            UserID   => 1,
         );
 
         HISTORYLINE:
@@ -5647,7 +5645,6 @@ OwnerID, PriorityID, StateID, HistoryTypeID and TypeID)
 
     my @HistoryLines = $TicketObject->HistoryGet(
         TicketID => 123,
-        UserID   => 123,
     );
 
 =cut
@@ -5658,14 +5655,12 @@ sub HistoryGet {
     my @Lines;
 
     # check needed stuff
-    for my $Needed (qw(TicketID UserID)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
+    if ( !$Param{TicketID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need TicketID!"
+        );
+        return;
     }
 
     # get database object

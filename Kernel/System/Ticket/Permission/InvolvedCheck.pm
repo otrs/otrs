@@ -92,7 +92,6 @@ sub Run {
     # get the history of the ticket
     my @TicketHistory = $TicketObject->HistoryGet(
         TicketID => $Param{TicketID},
-        UserID   => 1,
     );
 
     ROW:
