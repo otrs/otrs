@@ -235,7 +235,6 @@ if (@PendingReminderStateIDs) {
             # get ticket history
             my @Lines = $CommonObject{TicketObject}->HistoryGet(
                 TicketID => $Ticket{TicketID},
-                UserID   => 1,
             );
 
             my $Sent = 0;

@@ -54,7 +54,7 @@ sub Run {
 
     # get ticket data
     my %Ticket       = $Self->{TicketObject}->TicketGet(%Param);
-    my @HistoryLines = $Self->{TicketObject}->HistoryGet( %Param, UserID => 1 );
+    my @HistoryLines = $Self->{TicketObject}->HistoryGet(%Param);
 
     # find latest auto priority update
     for my $History (@HistoryLines) {
