@@ -259,7 +259,6 @@ sub TicketCheckNumber {
     # get ticket history
     my @Lines = $Self->HistoryGet(
         TicketID => $Ticket{TicketID},
-        UserID   => 1,
     );
 
     for my $Data ( reverse @Lines ) {
@@ -6304,7 +6303,6 @@ get ticket history as array with hashes
 
     my @HistoryLines = $TicketObject->HistoryGet(
         TicketID => 123,
-        UserID   => 123,
     );
 
 =cut
@@ -6315,11 +6313,9 @@ sub HistoryGet {
     my @Lines;
 
     # check needed stuff
-    for (qw(TicketID UserID)) {
-        if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
-            return;
-        }
+    if ( !$Param{TicketID} ) {
+        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need TicketID!' );
+        return;
     }
 
     return if !$Self->{DBObject}->Prepare(
