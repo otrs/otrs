@@ -295,6 +295,7 @@ sub Run {
     for my $TicketID (@TicketIDs) {
 
         my $Access = $Self->CheckAccessPermissions(
+            Type     => 'ro',
             TicketID => $TicketID,
             UserID   => $UserID,
             UserType => $UserType,

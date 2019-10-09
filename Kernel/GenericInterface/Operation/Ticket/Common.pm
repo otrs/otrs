@@ -1355,6 +1355,7 @@ sub CheckCreatePermissions {
 Tests if the user have access permissions over a ticket
 
     my $Result = $CommonObject->CheckAccessPermissions(
+        Type       => 'ro'                      # or 'rw'|'note'|...
         TicketID   => 123,
         UserID     => 123,                      # or 'CustomerLogin'
         UserType   => 'Agent',                  # or 'Customer'
@@ -1369,7 +1370,7 @@ sub CheckAccessPermissions {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(TicketID UserID UserType)) {
+    for my $Needed (qw(Type TicketID UserID UserType)) {
         if ( !$Param{$Needed} ) {
             return;
         }
@@ -1381,7 +1382,7 @@ sub CheckAccessPermissions {
     }
 
     my $Access = $Kernel::OM->Get('Kernel::System::Ticket')->$TicketPermissionFunction(
-        Type     => 'ro',
+        Type     => $Param{Type},
         TicketID => $Param{TicketID},
         UserID   => $Param{UserID},
     );
