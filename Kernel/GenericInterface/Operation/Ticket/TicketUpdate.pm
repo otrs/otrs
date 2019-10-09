@@ -404,6 +404,7 @@ sub Run {
 
     # check basic needed permissions
     my $Access = $Self->CheckAccessPermissions(
+        Type     => 'ro',
         TicketID => $TicketID,
         UserID   => $PermissionUserID,
         UserType => $UserType,
@@ -1313,6 +1314,7 @@ check if user has permissions to update ticket attributes.
         DynamicField => $Ticket,                  # all dynamic field parameters
         Attachment   => $Ticket,                  # all attachment parameters
         UserID       => 123,
+        UserType     => 'agent',                  # or 'customer'
     );
 
     returns:
@@ -1343,10 +1345,11 @@ sub _CheckUpdatePermissions {
 
     # check Article permissions
     if ( IsHashRefWithData($Article) ) {
-        my $Access = $TicketObject->TicketPermission(
-            Type     => 'note',
-            TicketID => $TicketID,
-            UserID   => $Param{UserID},
+        my $Access = $Self->CheckAccessPermissions(
+            Type       => 'note',
+            TicketID   => $TicketID,
+            UserID     => $Param{UserID},
+            UserType   => $Param{UserType},
         );
         if ( !$Access ) {
             return {
@@ -1358,10 +1361,11 @@ sub _CheckUpdatePermissions {
 
     # check dynamic field permissions
     if ( IsArrayRefWithData($DynamicFieldList) ) {
-        my $Access = $TicketObject->TicketPermission(
-            Type     => 'rw',
-            TicketID => $TicketID,
-            UserID   => $Param{UserID},
+        my $Access = $Self->CheckAccessPermissions(
+            Type       => 'rw',
+            TicketID   => $TicketID,
+            UserID     => $Param{UserID},
+            UserType   => $Param{UserType},
         );
         if ( !$Access ) {
             return {
@@ -1373,10 +1377,11 @@ sub _CheckUpdatePermissions {
 
     # check queue permissions
     if ( $Ticket->{Queue} || $Ticket->{QueueID} ) {
-        my $Access = $TicketObject->TicketPermission(
-            Type     => 'move',
-            TicketID => $TicketID,
-            UserID   => $Param{UserID},
+        my $Access = $Self->CheckAccessPermissions(
+            Type       => 'move',
+            TicketID   => $TicketID,
+            UserID     => $Param{UserID},
+            UserType   => $Param{UserType},
         );
         if ( !$Access ) {
             return {
@@ -1388,10 +1393,11 @@ sub _CheckUpdatePermissions {
 
     # check owner permissions
     if ( $Ticket->{Owner} || $Ticket->{OwnerID} ) {
-        my $Access = $TicketObject->TicketPermission(
-            Type     => 'owner',
-            TicketID => $TicketID,
-            UserID   => $Param{UserID},
+        my $Access = $Self->CheckAccessPermissions(
+            Type       => 'owner',
+            TicketID   => $TicketID,
+            UserID     => $Param{UserID},
+            UserType   => $Param{UserType},
         );
         if ( !$Access ) {
             return {
@@ -1403,10 +1409,11 @@ sub _CheckUpdatePermissions {
 
     # check responsible permissions
     if ( $Ticket->{Responsible} || $Ticket->{ResponsibleID} ) {
-        my $Access = $TicketObject->TicketPermission(
-            Type     => 'responsible',
-            TicketID => $TicketID,
-            UserID   => $Param{UserID},
+        my $Access = $Self->CheckAccessPermissions(
+            Type       => 'responsible',
+            TicketID   => $TicketID,
+            UserID     => $Param{UserID},
+            UserType   => $Param{UserType},
         );
         if ( !$Access ) {
             return {
@@ -1418,10 +1425,11 @@ sub _CheckUpdatePermissions {
 
     # check priority permissions
     if ( $Ticket->{Priority} || $Ticket->{PriorityID} ) {
-        my $Access = $TicketObject->TicketPermission(
-            Type     => 'priority',
-            TicketID => $TicketID,
-            UserID   => $Param{UserID},
+        my $Access = $Self->CheckAccessPermissions(
+            Type       => 'priority',
+            TicketID   => $TicketID,
+            UserID     => $Param{UserID},
+            UserType   => $Param{UserType},
         );
         if ( !$Access ) {
             return {
@@ -1457,19 +1465,21 @@ sub _CheckUpdatePermissions {
         my $Access = 1;
 
         if ( $StateData{TypeName} =~ /^close/i ) {
-            $Access = $TicketObject->TicketPermission(
-                Type     => 'close',
-                TicketID => $TicketID,
-                UserID   => $Param{UserID},
+            $Access = $Self->CheckAccessPermissions(
+                Type       => 'close',
+                TicketID   => $TicketID,
+                UserID     => $Param{UserID},
+                UserType   => $Param{UserType},
             );
         }
 
         # set pending time
         elsif ( $StateData{TypeName} =~ /^pending/i ) {
-            $Access = $TicketObject->TicketPermission(
-                Type     => 'close',
-                TicketID => $TicketID,
-                UserID   => $Param{UserID},
+            $Access = $Self->CheckAccessPermissions(
+                Type       => 'close',
+                TicketID   => $TicketID,
+                UserID     => $Param{UserID},
+                UserType   => $Param{UserType},
             );
         }
         if ( !$Access ) {
