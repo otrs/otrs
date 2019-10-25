@@ -55,7 +55,7 @@ if id $OTRSUSER >/dev/null 2>&1; then
     [% '#' %] update home dir
     usermod -d /opt/otrs $OTRSUSER
 else
-    useradd $OTRSUSER -d /opt/otrs/ -s /bin/bash -g www -c 'OTRS System User' && echo "$OTRSUSER added."
+    useradd -d /opt/otrs/ -s /bin/bash -g www -c 'OTRS System User' $OTRSUSER && echo "$OTRSUSER added."
 fi
 echo "Enable apache module mod_perl..."
 a2enmod perl
