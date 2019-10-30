@@ -660,6 +660,7 @@ sub Run {
         DynamicFieldList => \@DynamicFieldList,
         AttachmentList   => \@AttachmentList,
         UserID           => $UserID,
+        PermissionUserID => $PermissionUserID,
         UserType         => $UserType,
     );
 }
@@ -1308,13 +1309,14 @@ sub _CheckAttachment {
 check if user has permissions to update ticket attributes.
 
     my $Response = $OperationObject->_CheckUpdatePermissions(
-        TicketID     => 123
-        Ticket       => $Ticket,                  # all ticket parameters
-        Article      => $Ticket,                  # all attachment parameters
-        DynamicField => $Ticket,                  # all dynamic field parameters
-        Attachment   => $Ticket,                  # all attachment parameters
-        UserID       => 123,
-        UserType     => 'agent',                  # or 'customer'
+        TicketID         => 123
+        Ticket           => $Ticket,              # all ticket parameters
+        Article          => $Ticket,              # all attachment parameters
+        DynamicField     => $Ticket,              # all dynamic field parameters
+        Attachment       => $Ticket,              # all attachment parameters
+        UserID           => 123,
+        PermissionUserID => 123,
+        UserType         => 'agent',              # or 'customer'
     );
 
     returns:
@@ -1348,7 +1350,7 @@ sub _CheckUpdatePermissions {
         my $Access = $Self->CheckAccessPermissions(
             Type       => 'note',
             TicketID   => $TicketID,
-            UserID     => $Param{UserID},
+            UserID     => $Param{PermissionUserID},
             UserType   => $Param{UserType},
         );
         if ( !$Access ) {
@@ -1364,7 +1366,7 @@ sub _CheckUpdatePermissions {
         my $Access = $Self->CheckAccessPermissions(
             Type       => 'rw',
             TicketID   => $TicketID,
-            UserID     => $Param{UserID},
+            UserID     => $Param{PermissionUserID},
             UserType   => $Param{UserType},
         );
         if ( !$Access ) {
@@ -1380,7 +1382,7 @@ sub _CheckUpdatePermissions {
         my $Access = $Self->CheckAccessPermissions(
             Type       => 'move',
             TicketID   => $TicketID,
-            UserID     => $Param{UserID},
+            UserID     => $Param{PermissionUserID},
             UserType   => $Param{UserType},
         );
         if ( !$Access ) {
@@ -1396,7 +1398,7 @@ sub _CheckUpdatePermissions {
         my $Access = $Self->CheckAccessPermissions(
             Type       => 'owner',
             TicketID   => $TicketID,
-            UserID     => $Param{UserID},
+            UserID     => $Param{PermissionUserID},
             UserType   => $Param{UserType},
         );
         if ( !$Access ) {
@@ -1412,7 +1414,7 @@ sub _CheckUpdatePermissions {
         my $Access = $Self->CheckAccessPermissions(
             Type       => 'responsible',
             TicketID   => $TicketID,
-            UserID     => $Param{UserID},
+            UserID     => $Param{PermissionUserID},
             UserType   => $Param{UserType},
         );
         if ( !$Access ) {
@@ -1428,7 +1430,7 @@ sub _CheckUpdatePermissions {
         my $Access = $Self->CheckAccessPermissions(
             Type       => 'priority',
             TicketID   => $TicketID,
-            UserID     => $Param{UserID},
+            UserID     => $Param{PermissionUserID},
             UserType   => $Param{UserType},
         );
         if ( !$Access ) {
@@ -1468,7 +1470,7 @@ sub _CheckUpdatePermissions {
             $Access = $Self->CheckAccessPermissions(
                 Type       => 'close',
                 TicketID   => $TicketID,
-                UserID     => $Param{UserID},
+                UserID     => $Param{PermissionUserID},
                 UserType   => $Param{UserType},
             );
         }
@@ -1478,7 +1480,7 @@ sub _CheckUpdatePermissions {
             $Access = $Self->CheckAccessPermissions(
                 Type       => 'close',
                 TicketID   => $TicketID,
-                UserID     => $Param{UserID},
+                UserID     => $Param{PermissionUserID},
                 UserType   => $Param{UserType},
             );
         }
@@ -1500,13 +1502,14 @@ sub _CheckUpdatePermissions {
 updates a ticket and creates an article and sets dynamic fields and attachments if specified.
 
     my $Response = $OperationObject->_TicketUpdate(
-        TicketID     => 123
-        Ticket       => $Ticket,                  # all ticket parameters
-        Article      => $Article,                 # all attachment parameters
-        DynamicField => $DynamicField,            # all dynamic field parameters
-        Attachment   => $Attachment,              # all attachment parameters
-        UserID       => 123,
-        UserType     => 'Agent'                   # || 'Customer
+        TicketID         => 123
+        Ticket           => $Ticket,              # all ticket parameters
+        Article          => $Article,             # all attachment parameters
+        DynamicField     => $DynamicField,        # all dynamic field parameters
+        Attachment       => $Attachment,          # all attachment parameters
+        UserID           => 123,
+        PermissionUserID => 123,
+        UserType         => 'User'                # or 'Customer'
     );
 
     returns:
