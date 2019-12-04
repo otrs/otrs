@@ -450,7 +450,7 @@ sub CustomerSearch {
 
     my @CustomerUserData;
     while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
-        push @CustomerUserData, [@Row];
+        push @CustomerUserData, \@Row;
     }
 
     CUSTOMERUSERDATA:
