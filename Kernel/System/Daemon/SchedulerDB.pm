@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Daemon::SchedulerDB;
@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use MIME::Base64;
+use Time::HiRes;
 
 use Kernel::System::VariableCheck qw(:all);
 
@@ -23,6 +24,7 @@ our @ObjectDependencies = (
     'Kernel::System::DB',
     'Kernel::System::Encode',
     'Kernel::System::GenericAgent',
+    'Kernel::System::Main',
     'Kernel::System::Log',
     'Kernel::System::Storable',
 );
@@ -109,7 +111,7 @@ sub TaskAdd {
         }
 
         # compare the number of task with the maximum parallel limit
-        return -1 if scalar @FilteredList >= $Param{MaximumParallelInstances}
+        return -1 if scalar @FilteredList >= $Param{MaximumParallelInstances};
     }
 
     # set default of attempts parameter
@@ -132,7 +134,7 @@ sub TaskAdd {
     for my $Try ( 1 .. 10 ) {
 
         # calculate a task identifier
-        $Identifier = $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch() . int rand 1000000;
+        $Identifier = $Self->_GetIdentifier();
 
         # insert the task (initially locked with lock_key = 1 so it will not be taken by any worker
         #   at this moment)
@@ -415,7 +417,7 @@ sub TaskListUnlocked {
     # fetch the result
     my @List;
     while ( my @Row = $DBObject->FetchrowArray() ) {
-        push @List, $Row[0]
+        push @List, $Row[0];
     }
 
     # set cache
@@ -934,7 +936,7 @@ sub FutureTaskAdd {
         }
 
         # compare the number of task with the maximum parallel limit
-        return -1 if scalar @FilteredList >= $Param{MaximumParallelInstances}
+        return -1 if scalar @FilteredList >= $Param{MaximumParallelInstances};
     }
 
     # set default of attempts parameter
@@ -957,7 +959,7 @@ sub FutureTaskAdd {
     for my $Try ( 1 .. 10 ) {
 
         # calculate a task identifier
-        $Identifier = $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch() . int rand 1000000;
+        $Identifier = $Self->_GetIdentifier();
 
         # insert the future task (initially locked with lock_key = 1 so it will not be taken by any
         #    moved into worker task list at this moment)
@@ -1397,6 +1399,8 @@ sub CronTaskToExecute {
     # get needed objects
     my $CronEventObject = $Kernel::OM->Get('Kernel::System::CronEvent');
 
+    my %UsedTaskNames;
+
     CRONJOBKEY:
     for my $CronjobKey ( sort keys %{$Config} ) {
 
@@ -1407,20 +1411,22 @@ sub CronTaskToExecute {
 
         next CRONJOBKEY if !IsHashRefWithData($JobConfig);
 
-        if ( !$JobConfig->{Module} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Config option Daemon::SchedulerCronTaskManager::Task###$CronjobKey is invalid."
-                    . " Need 'Module' parameter!",
-            );
-            next CRONJOBKEY;
+        for my $Needed (qw(Module TaskName Function)) {
+            if ( !$JobConfig->{$Needed} ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Config option Daemon::SchedulerCronTaskManager::Task###$CronjobKey is invalid."
+                        . " Need '$Needed' parameter!",
+                );
+                next CRONJOBKEY;
+            }
         }
 
-        if ( $JobConfig->{Module} && !$JobConfig->{Function} ) {
+        if ( $UsedTaskNames{ $JobConfig->{TaskName} } ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Config option Daemon::SchedulerCronTaskManager::Task###$CronjobKey is invalid."
-                    . " Need 'Function' parameter!",
+                    . " TaskName parameter '$JobConfig->{TaskName}' is already used by another task!",
             );
             next CRONJOBKEY;
         }
@@ -1446,6 +1452,7 @@ sub CronTaskToExecute {
                 Params   => $JobConfig->{Params}   || '',
             },
         );
+        $UsedTaskNames{ $JobConfig->{TaskName} } = 1;
     }
 
     return 1;
@@ -2013,7 +2020,6 @@ sub RecurrentTaskExecute {
         }
     }
 
-    # get cache object
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
     my $CacheKey = "$Param{TaskName}::$Param{TaskType}";
@@ -2336,7 +2342,7 @@ sub RecurrentTaskWorkerInfoSet {
         return;
     }
 
-    my $LastWorkerStatus = $Param{LastWorkerStatus} ? 1 : 0;
+    my $LastWorkerStatus      = $Param{LastWorkerStatus} ? 1 : 0;
     my $LastWorkerRunningTime = $Param{LastWorkerRunningTime} // 0;
 
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
@@ -2434,6 +2440,52 @@ sub RecurrentTaskUnlockExpired {
     return 1;
 }
 
+=head1 PRIVATE INTERFACE
+
+=head2 _Seconds2String()
+
+convert an amount of seconds to a more human readable format, e.g. < 1 Second, 5 Minutes
+
+    my $String = $SchedulerDBObject->_Seconds2String(.2);
+
+returns
+
+    $String = '< 1 Second';
+
+or
+
+    my $String = $SchedulerDBObject->_Seconds2String(8);
+
+returns
+
+    $String = '8 Second(s)';
+
+or
+
+    my $String = $SchedulerDBObject->_Seconds2String(62);
+
+returns
+
+    $String = '1 Minute(s)';
+
+or
+
+    my $String = $SchedulerDBObject->_Seconds2String(3610);
+
+returns
+
+    $String = '1 Hour(s)';
+
+or
+
+    my $String = $SchedulerDBObject->_Seconds2String(86_640);
+
+returns
+
+    $String = '1 Day(s)';
+
+=cut
+
 sub _Seconds2String {
     my ( $Self, $Seconds ) = @_;
 
@@ -2453,14 +2505,44 @@ sub _Seconds2String {
     }
 }
 
+=head2 _GetIdentifier()
+
+calculate a task identifier.
+
+    my $Identifier = $SchedulerDBObject->_GetIdentifier();
+
+returns
+
+    $Identifier = 1234456789;
+
+=cut
+
+sub _GetIdentifier {
+    my ( $Self, %Param ) = @_;
+
+    my ( $Seconds, $Microseconds ) = Time::HiRes::gettimeofday();
+    my $ProcessID = $$;
+
+    my $Identifier = $ProcessID . $Microseconds;
+
+    my $RandomString = $Kernel::OM->Get('Kernel::System::Main')->GenerateRandomString(
+        Length     => 18 - length $Identifier,
+        Dictionary => [ 0 .. 9 ],                # numeric
+    );
+
+    $Identifier .= $RandomString;
+
+    return $Identifier;
+}
+
 1;
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

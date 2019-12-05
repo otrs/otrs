@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -27,7 +27,14 @@ $Selenium->RunTest(
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Frontend::RichText',
-            Value => 1
+            Value => 1,
+        );
+
+        # do not check RichText enhanced mode
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'Frontend::RichText::EnhancedMode',
+            Value => 0,
         );
 
         my $Language      = 'de';
@@ -72,13 +79,10 @@ $Selenium->RunTest(
         # navigate to AgentDashboard screen
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketPhone");
 
-        # wait until jquery is ready
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function'" );
-
         # wait for the CKE to load
         $Selenium->WaitFor(
             JavaScript =>
-                "return \$('body.cke_editable', \$('.cke_wysiwyg_frame').contents()).length == 1"
+                "return typeof(\$) === 'function' && \$('body.cke_editable', \$('.cke_wysiwyg_frame').contents()).length == 1"
         );
 
        # send some text to the CKE's textarea (we cant do it with Selenium directly because the textarea is not visible)
@@ -98,13 +102,38 @@ $Selenium->RunTest(
             "Successfully sent data to the CKE instance."
         );
 
+        # Wait until CKEditor content is updated.
+        $Selenium->WaitFor(
+            JavaScript => "return CKEDITOR.instances.RichText.getData() === \"This is a test text\";",
+        );
+
+        $Self->Is(
+            $Selenium->execute_script('return CKEDITOR.instances.RichText.getData();'),
+            'This is a test text',
+            'Check plain text content.'
+        );
+
         # now go through the test cases
-        for my $TestCase ( sort @TestCasesBasic ) {
+        for my $TestCase (@TestCasesBasic) {
+
+            # wait for the CKE to load
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return typeof(\$) === 'function' && \$('body.cke_editable', \$('.cke_wysiwyg_frame').contents()).length == 1"
+            );
 
             $Selenium->execute_script( 'CKEDITOR.instances.RichText.setData("' . $TestCase->{Input} . '");' );
 
-            # we wait a second to make sure the content has been set correctly
-            sleep 1;
+            my $EscapedText = $TestCase->{Expected};
+
+            # Escape some chars for JS usage.
+            $EscapedText =~ s{\n}{\\n}g;
+            $EscapedText =~ s{"}{\\"}g;
+
+            # Wait until CKEditor content is updated.
+            $Selenium->WaitFor(
+                JavaScript => "return CKEDITOR.instances.RichText.getData() === \"$EscapedText\";",
+            );
 
             $Self->Is(
                 $Selenium->execute_script('return CKEDITOR.instances.RichText.getData();'),

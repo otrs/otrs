@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::TicketZoom::Agent::MIMEBase;
@@ -93,10 +93,27 @@ sub ArticleRender {
         || $LayoutObject->{BrowserRichText}
         || 0;
 
+    # Show HTML if RichText is enabled and HTML attachment isn't missing.
+    my $ShowHTML         = $RichTextEnabled;
+    my $HTMLBodyAttachID = $Kernel::OM->Get('Kernel::Output::HTML::Article::MIMEBase')->HTMLBodyAttachmentIDGet(
+        %Param,
+    );
+    if ( $ShowHTML && !$HTMLBodyAttachID ) {
+        $ShowHTML = 0;
+    }
+
+    # Strip plain text attachments by default.
+    my $ExcludePlainText = 1;
+
+    # Do not strip plain text attachments if no plain text article body was found.
+    if ( $Article{Body} && $Article{Body} eq '- no text message => see attachment -' ) {
+        $ExcludePlainText = 0;
+    }
+
     # Get attachment index (excluding body attachments).
     my %AtmIndex = $ArticleBackendObject->ArticleAttachmentIndex(
         ArticleID        => $Param{ArticleID},
-        ExcludePlainText => 1,
+        ExcludePlainText => $ExcludePlainText,
         ExcludeHTMLBody  => $RichTextEnabled,
         ExcludeInline    => $RichTextEnabled,
     );
@@ -105,7 +122,6 @@ sub ArticleRender {
 
     # Add block for attachments.
     if (%AtmIndex) {
-
         my $Config = $ConfigObject->Get('Ticket::Frontend::ArticleAttachmentModule');
 
         ATTACHMENT:
@@ -168,16 +184,6 @@ sub ArticleRender {
             }
             push @ArticleAttachments, $Attachment;
         }
-    }
-
-    # Check if HTML should be displayed.
-    my $ShowHTML = $ConfigObject->Get('Ticket::Frontend::ZoomRichTextForce')
-        || $LayoutObject->{BrowserRichText}
-        || 0;
-
-    # Check if HTML attachment is missing.
-    if ( $ShowHTML && !$Kernel::OM->Get('Kernel::Output::HTML::Article::MIMEBase')->HTMLBodyAttachmentIDGet(%Param) ) {
-        $ShowHTML = 0;
     }
 
     my $ArticleContent;

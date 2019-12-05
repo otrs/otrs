@@ -1,8 +1,10 @@
-/**
- * @project     OTRS (http://www.otrs.org) - Customer Frontend
- * @copyright   OTRS AG
- * @license     AGPL (http://www.gnu.org/licenses/agpl.txt)
- */
+/*
+Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+
+This software comes with ABSOLUTELY NO WARRANTY. For details, see
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
+*/
 
 /**
  * @package     OTRS Framework - Skin "Default"
@@ -217,6 +219,10 @@ fieldset p {
     color: #AAA;
 }
 
+.AsteriskExplanationCustomer{
+    margin-left: 235px;
+}
+
 .RTL fieldset p {
     margin: 1px 140px 0 0;
 }
@@ -382,11 +388,26 @@ div.TooltipErrorMessage {
 
 .AJAXLoader {
     display: inline-block;
-    width: 16px;
-    height: 16px;
-    margin: 2px;
-    background: url("../img/loader.gif") no-repeat right center;
+    width: 14px;
+    height: 14px;
+    margin: 4px;
+    position: relative;
     vertical-align: bottom;
+}
+
+.AJAXLoader:after {
+    -webkit-animation: fa-spin 2s infinite linear;
+    animation: fa-spin 2s infinite linear;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    line-height: 14px;
+    content: "\f1ce";
+    font-family: FontAwesome;
+    font-size: 14px;
+    color: #777;
 }
 
 /**
@@ -438,7 +459,7 @@ fieldset .ShowTreeSelection {
     width: 92%;
 }
 
-#JSTree {
+.JSTreeField {
     background-color: #FFFFFF;
     border: 1px solid #ccc;
     height: 72%;
@@ -450,26 +471,26 @@ fieldset .ShowTreeSelection {
     padding: 0px 10px 10px 10px;
 }
 
-#JSTree.InOverlay {
+.JSTreeField.InOverlay {
     margin: 5px 5px 5px 0px;
     width: 85%;
     float: left;
 }
 
-#JSTree .Disabled > a {
+.JSTreeField .Disabled > a {
     color: #aaa;
     font-style: italic;
 }
 
-#JSTree .jstree-search {
+.JSTreeField .jstree-search {
     color: #E07006;
 }
 
-#JSTree .jstree-search.jstree-clicked {
+.JSTreeField .jstree-search.jstree-clicked {
     color: #000;
 }
 
-#JSTree .jstree-clicked {
+.JSTreeField .jstree-clicked {
     background: #f3960d;
     background: -moz-linear-gradient(top,  #ffe7bd 0%, #fbba49 20%, #f6ad3e 51%, #f3960d 51%, #e98207 95%, #e07006 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffe7bd), color-stop(20%,#fbba49), color-stop(51%,#f6ad3e), color-stop(51%,#f3960d), color-stop(95%,#e98207), color-stop(100%,#e07006));
@@ -481,12 +502,12 @@ fieldset .ShowTreeSelection {
     padding: 0px 3px;
 }
 
-#JSTree .jstree-hovered {
+.JSTreeField .jstree-hovered {
     background-color: #eee;
     border-color: #ddd;
 }
 
-#JSTree a:focus {
+.JSTreeField a:focus {
     background-color: #eee;
     border-color: #ddd;
 }
@@ -548,6 +569,11 @@ div.DnDUpload {
     box-sizing: border-box;
 }
 
+input.AjaxDnDUpload.Error + div.DnDUpload {
+    color: #ff505e;
+    border-color: #ff505e;
+}
+
 div.DnDUpload.DragOver {
     border-style: dashed;
     background: #eee;
@@ -587,12 +613,12 @@ div.DnDUpload.Uploading .UploadRunning {
     display: block;
 }
 
-#AttachmentListContainer {
+.AttachmentListContainer {
     position: relative;
     max-width: 622px;
 }
 
-#AttachmentListContainer .Busy {
+.AttachmentListContainer .Busy {
     position: absolute;
     left: 0px;
     width: 100%;
@@ -604,7 +630,7 @@ div.DnDUpload.Uploading .UploadRunning {
     display: none;
 }
 
-#AttachmentListContainer .Busy i {
+.AttachmentListContainer .Busy i {
     vertical-align: middle;
     line-height: 100%;
     position: absolute;

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -36,12 +36,20 @@ $Selenium->RunTest(
         # go to customer preferences
         $Selenium->VerifiedGet("${ScriptAlias}customer.pl?Action=CustomerPreferences");
 
+        my $Language = 'de';
+
         # change test user language preference to Deutsch
-        $Selenium->execute_script("\$('#UserLanguage').val('de').trigger('redraw.InputField').trigger('change');");
-        $Selenium->find_element( "#UserLanguage option[value='de']", 'css' )->VerifiedSubmit();
+        $Selenium->InputFieldValueSet(
+            Element => '#UserLanguage',
+            Value   => $Language,
+        );
+        $Selenium->find_element( "#UserLanguageUpdate", 'css' )->VerifiedClick();
 
         # check for update preference message on screen
-        my $UpdateMessage = "Benutzereinstellungen erfolgreich aktualisiert!";
+        my $LanguageObject = Kernel::Language->new(
+            UserLanguage => $Language,
+        );
+        my $UpdateMessage = $LanguageObject->Translate('Preferences updated successfully!');
         $Self->True(
             index( $Selenium->get_page_source(), $UpdateMessage ) > -1,
             'Customer preference language - updated'

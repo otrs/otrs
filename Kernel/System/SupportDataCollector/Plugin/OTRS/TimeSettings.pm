@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::SupportDataCollector::Plugin::OTRS::TimeSettings;
@@ -83,16 +83,20 @@ sub Run {
         if ( defined $CalendarTimeZone ) {
             $Self->AddResultOk(
                 Identifier => "OTRSTimeZone::Calendar$Counter",
-                Label      => Translatable('OTRS time zone setting for calendar') . " $Counter",
-                Value      => $CalendarTimeZone,
+
+             # Use of $LanguageObject->Translate() is not possible to avoid translated strings to be sent to OTRS Group.
+                Label => "OTRS time zone setting for calendar $Counter",
+                Value => $CalendarTimeZone,
             );
         }
         else {
             $Self->AddResultInformation(
                 Identifier => "OTRSTimeZone::Calendar$Counter",
-                Label      => Translatable('OTRS time zone setting for calendar') . " $Counter",
-                Value      => '',
-                Message    => Translatable('Calendar time zone is not set.'),
+
+             # Use of $LanguageObject->Translate() is not possible to avoid translated strings to be sent to OTRS Group.
+                Label   => "OTRS time zone setting for calendar $Counter",
+                Value   => '',
+                Message => Translatable('Calendar time zone is not set.'),
             );
         }
     }

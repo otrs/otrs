@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Calendar::Event::Transport::Email;
@@ -179,14 +179,30 @@ sub GetTransportRecipients {
     # get recipients by RecipientEmail
     if ( $Param{Notification}->{Data}->{RecipientEmail} ) {
         if ( $Param{Notification}->{Data}->{RecipientEmail}->[0] ) {
-            my %Recipient;
-            $Recipient{Realname}  = '';
-            $Recipient{Type}      = 'Customer';
-            $Recipient{UserEmail} = $Param{Notification}->{Data}->{RecipientEmail}->[0];
+            my $RecipientEmail = $Param{Notification}->{Data}->{RecipientEmail}->[0];
 
-            # check recipients
-            if ( $Recipient{UserEmail} && $Recipient{UserEmail} =~ /@/ ) {
-                push @Recipients, \%Recipient;
+            my @RecipientEmails;
+
+            if ( !IsArrayRefWithData($RecipientEmail) ) {
+
+                # Split multiple recipients on known delimiters: comma and semi-colon.
+                #   Do this after the OTRS tags were replaced.
+                @RecipientEmails = split /[;,\s]+/, $RecipientEmail;
+            }
+            else {
+                @RecipientEmails = @{$RecipientEmail};
+            }
+
+            # Include only valid email recipients.
+            for my $Recipient ( sort @RecipientEmails ) {
+                if ( $Recipient && $Recipient =~ /@/ ) {
+                    push @Recipients, {
+                        Realname             => '',
+                        Type                 => 'Customer',
+                        UserEmail            => $Recipient,
+                        IsVisibleForCustomer => $Param{Notification}->{Data}->{IsVisibleForCustomer},
+                    };
+                }
             }
         }
     }
@@ -259,7 +275,7 @@ sub TransportSettingsDisplayGet {
 
     # set security settings enabled
     $Param{EmailSecuritySettings} = ( $Param{Data}->{EmailSecuritySettings} ? 'checked="checked"' : '' );
-    $Param{SecurityDisabled} = 0;
+    $Param{SecurityDisabled}      = 0;
 
     if ( $Param{EmailSecuritySettings} eq '' ) {
         $Param{SecurityDisabled} = 1;
@@ -348,7 +364,7 @@ sub TransportParamSettingsGet {
 
     PARAMETER:
     for my $Parameter (
-        qw(RecipientEmail NotificationArticleTypeID TransportEmailTemplate
+        qw(RecipientEmail TransportEmailTemplate
         EmailSigningCrypting EmailMissingSigningKeys EmailMissingCryptingKeys
         EmailSecuritySettings)
         )
@@ -450,10 +466,12 @@ sub SecurityOptionsGet {
 
         @SignKeys = $Kernel::OM->Get('Kernel::System::Crypt::SMIME')->PrivateSearch(
             Search => $NotificationSenderEmail,
+            Valid  => 1,
         );
 
         @EncryptKeys = $Kernel::OM->Get('Kernel::System::Crypt::SMIME')->CertificateSearch(
             Search => $Param{Recipient}->{UserEmail},
+            Valid  => 1,
         );
 
         $SecurityOptions{Backend} = 'SMIME';
@@ -579,10 +597,10 @@ sub SecurityOptionsGet {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

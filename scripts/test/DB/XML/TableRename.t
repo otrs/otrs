@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -97,7 +97,7 @@ $XML = '
 </TableAlter>';
 
 @XMLARRAY = $XMLObject->XMLParse( String => $XML );
-@SQL = $DBObject->SQLProcessor( Database => \@XMLARRAY );
+@SQL      = $DBObject->SQLProcessor( Database => \@XMLARRAY );
 $Self->True(
     $SQL[0],
     'SQLProcessor() ALTER TABLE',
@@ -133,7 +133,7 @@ $XML = '
 </TableAlter>';
 
 @XMLARRAY = $XMLObject->XMLParse( String => $XML );
-@SQL = $DBObject->SQLProcessor( Database => \@XMLARRAY );
+@SQL      = $DBObject->SQLProcessor( Database => \@XMLARRAY );
 $Self->True(
     $SQL[0],
     'SQLProcessor() ALTER TABLE',
@@ -155,6 +155,10 @@ $Self->True(
     $SQL,
 );
 
+# Prepare a second ID container to be able to compare
+# old and new ID
+my $NewLastID;
+
 # get the id from the third entry in the renamed table
 $SQL = "SELECT id FROM test_b WHERE name = 'Test3'";
 $Self->True(
@@ -166,12 +170,17 @@ $Self->True(
 );
 
 while ( my @Row = $DBObject->FetchrowArray() ) {
-    $LastID = $Row[0];
+    $NewLastID = $Row[0];
 }
 
 $Self->True(
-    $LastID,
-    "Check that the last entry could be added (ID: $LastID)",
+    $NewLastID,
+    "Check that the last entry could be added (ID: $NewLastID)",
+);
+
+$Self->True(
+    ( $NewLastID > $LastID ? 1 : 0 ),
+    "Last entry ID should be higher than previous one, it means sequence is still the same for the re-named table (ID: $LastID - NewID: $NewLastID )",
 );
 
 # create a new table with the same name than before the renaming
@@ -225,7 +234,13 @@ while ( my @Row = $DBObject->FetchrowArray() ) {
 
 $Self->True(
     $LastID,
-    "Check that the last entry could be added (ID: $LastID)",
+    "Check that the last entry on NEW TABLE could be added (ID: $LastID)",
+);
+
+$Self->IsNot(
+    $LastID,
+    $NewLastID + 1,
+    "First entry for new table shouldn't be on the same sequence as renamed table. (New table ID: $LastID - Renamed table last ID: $NewLastID )",
 );
 
 # add another value to the renamed table
@@ -257,6 +272,12 @@ $Self->True(
     "Check that the last entry could be added (ID: $LastID)",
 );
 
+$Self->Is(
+    $LastID,
+    $NewLastID + 1,
+    "After inserting a new record on re-named table, sequence still on the same road. (Current last ID: $LastID - Previous last ID: $NewLastID )",
+);
+
 # add another value to new table
 $SQL = "INSERT INTO test_a (name) VALUES ('Test2')";
 $Self->True(
@@ -286,6 +307,86 @@ $Self->True(
     "Check that the last entry could be added (ID: $LastID)",
 );
 
+# Check if sequence for both tables exist with the correct name,
+# that means we have not duplicated names on sequences
+
+# helper function to check sequence
+my $SequenceCheck = sub {
+    my %Param = @_;
+
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # Get the database type.
+    my $DBType = $DBObject->GetDatabaseFunction('Type');
+
+    # Sequence check works just for some DBs.
+    my @CheckAllowed = qw(oracle postgresql);
+
+    if ( !grep {m/$DBType/} @CheckAllowed ) {
+        return 1;
+    }
+
+    my $TableName = $Param{TableName} || '';
+    my $SequenceExists;
+
+    if ( $DBType eq 'oracle' ) {
+
+        my $Sequence = $DBObject->{Backend}->_SequenceName(
+            TableName => $TableName,
+        );
+
+        # verify if the sequence exists
+        return if !$DBObject->Prepare(
+            SQL => '
+                SELECT COUNT(*)
+                FROM user_sequences
+                WHERE LOWER(sequence_name) = LOWER(?)',
+            Bind  => [ \$Sequence ],
+            Limit => 1,
+        );
+
+        while ( my @Row = $DBObject->FetchrowArray() ) {
+            $SequenceExists = $Row[0];
+        }
+    }
+    elsif ( $DBType eq 'postgresql' ) {
+
+        my $Sequence = $DBObject->{Backend}->_SequenceName(
+            TableName => $TableName,
+        );
+
+        # check if sequence exists
+        return if !$DBObject->Prepare(
+            SQL => "
+                SELECT 1
+                FROM pg_class c
+                WHERE c.relkind = 'S'
+                AND LOWER(c.relname) = LOWER('$Sequence')",
+            Limit => 1,
+        );
+
+        while ( my @Row = $DBObject->FetchrowArray() ) {
+            $SequenceExists = $Row[0];
+        }
+    }
+
+    return $SequenceExists;
+};
+
+for my $TablePostfix (qw(a b)) {
+
+    my $TableName = 'test_' . $TablePostfix;
+
+    my $SequenceCheckResult = $SequenceCheck->(
+        TableName => $TableName,
+    );
+
+    $Self->True(
+        $SequenceCheckResult,
+        "Correct sequence name for table $TableName.",
+    );
+}
+
 # drop all tables
 my @TableDropStatements = (
     '<TableDrop Name="test_a"/>',
@@ -294,7 +395,7 @@ my @TableDropStatements = (
 for my $XML (@TableDropStatements) {
 
     @XMLARRAY = $XMLObject->XMLParse( String => $XML );
-    @SQL = $DBObject->SQLProcessor( Database => \@XMLARRAY );
+    @SQL      = $DBObject->SQLProcessor( Database => \@XMLARRAY );
     $Self->True(
         $SQL[0],
         'SQLProcessor() DROP TABLE',

@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-##nofilter(TidyAll::Plugin::OTRS::Perl::NoExitInConsoleCommands)
+## nofilter(TidyAll::Plugin::OTRS::Perl::NoExitInConsoleCommands)
 
 package Kernel::System::Console::Command::Maint::Ticket::FulltextIndexRebuildWorker;
 
@@ -21,6 +21,7 @@ use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::PID',
     'Kernel::System::Ticket',
@@ -30,17 +31,17 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Rebuilds the article search index for needed articles.');
+    $Self->Description('Rebuild the article search index for needed articles.');
     $Self->AddOption(
         Name        => 'children',
-        Description => "Specify the number of child processes to be used for indexing (Default: 4, Maximum: 20).",
+        Description => "Specify the number of child processes to be used for indexing (default: 4, maximum: 20).",
         Required    => 0,
         HasValue    => 1,
         ValueRegex  => qr/^\d+$/smx,
     );
     $Self->AddOption(
         Name        => 'limit',
-        Description => "Maximum number of ArticleIDs to process (Default: 20000).",
+        Description => "Maximum number of ArticleIDs to process (default: 20000).",
         Required    => 0,
         HasValue    => 1,
         ValueRegex  => qr/^\d+$/smx,
@@ -118,6 +119,8 @@ sub ArticleIndexRebuild {
     my ( $Self, %Param ) = @_;
 
     my @ArticleIDs = keys %{ $Param{ArticleTicketIDs} };
+
+    $Kernel::OM->Get('Kernel::System::DB')->Disconnect();
 
     # Destroy objects for the child processes.
     $Kernel::OM->ObjectsDiscard(

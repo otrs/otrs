@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::ProcessManagement::TransitionAction::TicketStateSet;
@@ -102,6 +102,7 @@ sub Run {
 
     # use ticket attributes if needed
     $Self->_ReplaceTicketAttributes(%Param);
+    $Self->_ReplaceAdditionalAttributes(%Param);
 
     if ( !$Param{Config}->{StateID} && !$Param{Config}->{State} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -114,80 +115,68 @@ sub Run {
     $Success = 0;
     my %StateData;
 
-    # If Ticket's StateID is already the same as the Value we
-    # should set it to, we got nothing to do and return success
-    if (
-        defined $Param{Config}->{StateID}
-        && $Param{Config}->{StateID} eq $Param{Ticket}->{StateID}
-        )
-    {
-        return 1;
-    }
+    if ( defined $Param{Config}->{StateID} ) {
 
-    # If Ticket's StateID is not the same as the Value we
-    # should set it to, set the StateID
-    elsif (
-        defined $Param{Config}->{StateID}
-        && $Param{Config}->{StateID} ne $Param{Ticket}->{StateID}
-        )
-    {
         %StateData = $Kernel::OM->Get('Kernel::System::State')->StateGet(
             ID => $Param{Config}->{StateID},
         );
-        $Success = $Kernel::OM->Get('Kernel::System::Ticket')->TicketStateSet(
-            TicketID => $Param{Ticket}->{TicketID},
-            StateID  => $Param{Config}->{StateID},
-            UserID   => $Param{UserID},
-        );
 
-        if ( !$Success ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => $CommonMessage
-                    . 'Ticket StateID '
-                    . $Param{Config}->{StateID}
-                    . ' could not be updated for Ticket: '
-                    . $Param{Ticket}->{TicketID} . '!',
+        if ( $Param{Config}->{StateID} ne $Param{Ticket}->{StateID} ) {
+
+            $Success = $Kernel::OM->Get('Kernel::System::Ticket')->TicketStateSet(
+                TicketID => $Param{Ticket}->{TicketID},
+                StateID  => $Param{Config}->{StateID},
+                UserID   => $Param{UserID},
             );
+
+            if ( !$Success ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => $CommonMessage
+                        . 'Ticket StateID '
+                        . $Param{Config}->{StateID}
+                        . ' could not be updated for Ticket: '
+                        . $Param{Ticket}->{TicketID} . '!',
+                );
+            }
         }
-    }
+        else {
 
-    # If Ticket's State is already the same as the Value we
-    # should set it to, we got nothing to do and return success
-    elsif (
-        defined $Param{Config}->{State}
-        && $Param{Config}->{State} eq $Param{Ticket}->{State}
-        )
-    {
-        return 1;
-    }
+            # Data is the same as in ticket nothing to do.
+            $Success = 1;
+        }
 
-    # If Ticket's State is not the same as the Value we
-    # should set it to, set the State
-    elsif (
-        defined $Param{Config}->{State}
-        && $Param{Config}->{State} ne $Param{Ticket}->{State}
-        )
-    {
+    }
+    elsif ( $Param{Config}->{State} ) {
+
         %StateData = $Kernel::OM->Get('Kernel::System::State')->StateGet(
             Name => $Param{Config}->{State},
         );
-        $Success = $Kernel::OM->Get('Kernel::System::Ticket')->TicketStateSet(
-            TicketID => $Param{Ticket}->{TicketID},
-            State    => $Param{Config}->{State},
-            UserID   => $Param{UserID},
-        );
+        if ( $Param{Config}->{State} ne $Param{Ticket}->{State} ) {
 
-        if ( !$Success ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => $CommonMessage
-                    . 'Ticket State '
-                    . $Param{Config}->{State}
-                    . ' could not be updated for Ticket: '
-                    . $Param{Ticket}->{TicketID} . '!',
+            $Success = $Kernel::OM->Get('Kernel::System::Ticket')->TicketStateSet(
+                TicketID => $Param{Ticket}->{TicketID},
+                State    => $Param{Config}->{State},
+                UserID   => $Param{UserID},
             );
+
+            if ( !$Success ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => $CommonMessage
+                        . 'Ticket State '
+                        . $Param{Config}->{State}
+                        . ' could not be updated for Ticket: '
+                        . $Param{Ticket}->{TicketID} . '!',
+                );
+            }
         }
+        else {
+
+            # Data is the same as in ticket nothing to do.
+            $Success = 1;
+        }
+
     }
     else {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -200,8 +189,7 @@ sub Run {
 
     # set pending time
     if (
-        $Success
-        && IsHashRefWithData( \%StateData )
+        IsHashRefWithData( \%StateData )
         && $StateData{TypeName} =~ m{\A pending}msxi
         && IsNumber( $Param{Config}->{PendingTimeDiff} )
         )
@@ -226,10 +214,10 @@ sub Run {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

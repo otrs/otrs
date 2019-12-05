@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -12,17 +12,45 @@ use utf8;
 
 use vars (qw($Self));
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
+
+my $Hex2RGB = sub {
+    my ( $Color, $Alpha ) = @_;
+
+    return if $Color !~ /#[A-F0-9]{3,6}/i;
+
+    # Get RGB values.
+    my @Channels;
+    my $RGBHex = substr( $Color, 1 );
+
+    # Six character hexadecimal string (eg. #FFFFFF).
+    if ( length $RGBHex == 6 ) {
+        $Channels[0] = hex substr( $RGBHex, 0, 2 );
+        $Channels[1] = hex substr( $RGBHex, 2, 2 );
+        $Channels[2] = hex substr( $RGBHex, 4, 2 );
+    }
+
+    # Three character hexadecimal string (eg. #FFF).
+    elsif ( length $RGBHex == 3 ) {
+        $Channels[0] = hex( substr( $RGBHex, 0, 1 ) . substr( $RGBHex, 0, 1 ) );
+        $Channels[1] = hex( substr( $RGBHex, 1, 1 ) . substr( $RGBHex, 1, 1 ) );
+        $Channels[2] = hex( substr( $RGBHex, 2, 1 ) . substr( $RGBHex, 1, 1 ) );
+    }
+
+    else { return; }
+
+    return sprintf( 'rgba(%s, %s, %s, %s)', @Channels, $Alpha ) if defined $Alpha;
+
+    return sprintf( 'rgb(%s, %s, %s)', @Channels );
+};
 
 $Selenium->RunTest(
     sub {
-
-        # get helper object
-        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $Helper       = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
         # Overload CustomerUser => Map setting defined in the Defaults.pm.
-        my $DefaultCustomerUser = $Kernel::OM->Get('Kernel::Config')->Get("CustomerUser");
+        my $DefaultCustomerUser = $ConfigObject->Get("CustomerUser");
         $DefaultCustomerUser->{Map}->[5] = [
             'UserEmail',
             'Email',
@@ -40,7 +68,7 @@ $Selenium->RunTest(
             Value => $DefaultCustomerUser,
         );
 
-        # make sure we start with RuntimeDB search
+        # Make sure we start with RuntimeDB search.
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Ticket::Hook',
@@ -52,12 +80,40 @@ $Selenium->RunTest(
             Value => '::',
         );
 
-        # create and login test user
+        # Enable NewArticleIgnoreSystemSender config.
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'Ticket::NewArticleIgnoreSystemSender',
+            Value => 1,
+        );
+
+        my $RandomID = $Helper->GetRandomID();
+
+        # Create and login test user.
         my $Language      = 'de';
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups   => [ 'admin', 'users' ],
             Language => $Language,
         ) || die "Did not get test user";
+
+        my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+
+        # Get UserID for later manipulation of preferences.
+        my $UserID = $UserObject->UserLookup(
+            UserLogin => $TestUserLogin,
+        );
+
+        # Set High Contrast skin.
+        # See for more information bug#14370.
+        my $Success = $UserObject->SetPreferences(
+            Key    => 'UserSkin',
+            Value  => 'highcontrast',
+            UserID => $UserID,
+        );
+        $Self->True(
+            $Success,
+            "High Contrast skin is set.",
+        );
 
         $Selenium->Login(
             Type     => 'Agent',
@@ -65,24 +121,23 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        # Get language object.
         my $LanguageObject = Kernel::Language->new(
             UserLanguage => $Language,
         );
 
-        # create test customer
+        # Create test customer.
         my $TestCustomerUser = $Helper->TestCustomerUserCreate(
         ) || die "Did not get test customer user";
 
-        # get test customer user ID
+        # Get test customer user ID.
         my %TestCustomerUserID = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
             User => $TestCustomerUser,
         );
 
         my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-        # create test ticket
-        my $TitleRandom  = "Title" . $Helper->GetRandomID();
+        # Create test ticket.
+        my $TitleRandom  = "Title$RandomID";
         my $TicketNumber = $TicketObject->TicketCreateNumber();
         my $TicketID     = $TicketObject->TicketCreate(
             TN           => $TicketNumber,
@@ -105,20 +160,49 @@ $Selenium->RunTest(
             ChannelName => 'Phone',
         );
 
-        # create two ticket articles
+        # Get image attachment.
+        my $AttachmentName = "StdAttachment-Test1.png";
+        my $Location       = $ConfigObject->Get('Home')
+            . "/scripts/test/sample/StdAttachment/$AttachmentName";
+        my $ContentRef = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
+            Location => $Location,
+            Mode     => 'binmode',
+        );
+        my $Content   = ${$ContentRef};
+        my $ContentID = 'inline173020.131906379.1472199795.695365.264540139@localhost';
+
+        # Create two ticket articles.
         my @ArticleIDs;
         for my $ArticleCreate ( 1 .. 2 ) {
+            my $SenderType = 'agent';
+            if ( $ArticleCreate == 2 ) {
+                $SenderType = 'system';
+            }
             my $ArticleID = $ArticleBackendObject->ArticleCreate(
                 TicketID             => $TicketID,
                 IsVisibleForCustomer => 1,
-                SenderType           => 'agent',
+                SenderType           => $SenderType,
                 Subject              => 'Selenium subject test',
-                Body                 => "Article $ArticleCreate",
-                ContentType          => 'text/plain; charset=ISO-8859-15',
-                HistoryType          => 'OwnerUpdate',
-                HistoryComment       => 'Some free text!',
-                UserID               => 1,
-                NoAgentNotify        => 1,
+                Body                 => $ArticleCreate == 1
+                ? "<!DOCTYPE html><html><body>Article $ArticleCreate<br><img src=\"cid:$ContentID\" /></body></html>"
+                : "Article $ArticleCreate",
+                ContentType => $ArticleCreate == 1
+                ? 'text/html; charset="utf8"'
+                : 'text/plain; charset=ISO-8859-15',
+                HistoryType    => 'OwnerUpdate',
+                HistoryComment => 'Some free text!',
+                UserID         => 1,
+                Attachment     => [
+                    {
+                        Content     => $Content,
+                        ContentID   => $ContentID,
+                        ContentType => 'image/png; name="' . $AttachmentName . '"',
+                        Disposition => 'inline',
+                        FileID      => 1,
+                        Filename    => $AttachmentName,
+                    },
+                ],
+                NoAgentNotify => 1,
             );
             $Self->True(
                 $ArticleID,
@@ -127,23 +211,54 @@ $Selenium->RunTest(
             push @ArticleIDs, $ArticleID;
         }
 
-        # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # navigate to AgentTicketZoom for test created ticket
+        # Navigate to AgentTicketZoom for test created ticket.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID");
 
-        $Self->True(
-            $Selenium->execute_script("return \$('h1:contains(TestTicket#::)')"),
-            "Ticket::Hook and Ticket::HookDivider found",
+        my @Test = (
+            {
+                Name     => 'Header color',
+                Color    => '#fff',
+                Selector => '.UseArticleColors #ArticleTable thead a',
+            },
+            {
+                Name     => "Article color",
+                Color    => '#000',
+                Selector => '.UseArticleColors #ArticleTable tbody a',
+            }
+
         );
 
-        $Self->True(
-            $Selenium->execute_script("return \$('h1:contains($TitleRandom)')"),
-            "Ticket $TitleRandom found",
+        # Check color of data in article table High Contrast skin.
+        # See for more information bug#14370.
+        for my $Item (@Test) {
+            my $Element = $Selenium->find_element( $Item->{Selector}, 'css' );
+
+            my $Color = $Item->{Color};
+            if ( $Selenium->{browser_name} eq 'chrome' ) {
+                $Self->Is(
+                    $Element->get_css_attribute('color') // '',
+                    $Hex2RGB->( $Color, 1 ),
+                    "$Item->{Name} is correct - $Item->{Color}"
+                );
+            }
+            else {
+                $Self->Is(
+                    $Element->get_css_attribute('color') // '',
+                    $Hex2RGB->($Color),
+                    "$Item->{Name} is correct - $Item->{Color}"
+                );
+            }
+        }
+
+        $Self->Is(
+            $Selenium->execute_script("return \$('.Headline h1').text().trim();"),
+            "TestTicket#::$TicketNumber — $TitleRandom",
+            "Ticket::Hook and Ticket::HookDivider found, check ticket title headline",
         );
 
-        # check page
+        # Check page.
         for my $Action (
             qw( AgentTicketLock AgentTicketHistory AgentTicketPrint AgentTicketPriority
             AgentTicketFreeText AgentLinkObject AgentTicketOwner AgentTicketCustomer AgentTicketNote
@@ -172,7 +287,7 @@ $Selenium->RunTest(
             );
         }
 
-        # verify article order in zoom screen
+        # Verify article order in zoom screen.
         $Self->Is(
             $Selenium->execute_script(
                 "return \$(\$('table tbody tr')[0]).attr('id')"
@@ -186,6 +301,21 @@ $Selenium->RunTest(
             ),
             'Row1',
             "Second Article in table is first created article",
+        );
+
+        # Verify selected article. Config 'NewArticleIgnoreSystemSender' is enable.
+        #   Non system sender type article should be selected ( first created article ).
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('#ArticleItems').find('[name=\"Article$ArticleIDs[0]\"]').length"
+            ),
+            "First 'agent' sender type article is selected"
+        );
+        $Self->False(
+            $Selenium->execute_script(
+                "return \$('#ArticleItems').find('[name=\"Article$ArticleIDs[1]\"]').length"
+            ),
+            "Second 'system' sender type article is not selected"
         );
 
         # click to sort by article number
@@ -212,30 +342,75 @@ $Selenium->RunTest(
             JavaScript =>
                 'return typeof($) === "function" && $(".SidebarColumn div:nth-of-type(2) a.AsPopup").length'
         );
-        $Selenium->find_element( ".SidebarColumn div:nth-of-type(2) a.AsPopup", "css" )->VerifiedClick();
+        $Selenium->find_element( ".SidebarColumn div:nth-of-type(2) a.AsPopup", "css" )->click();
 
         # Wait for popup and switch.
         $Selenium->WaitFor( WindowCount => 2 );
         my $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
-        # wait until page has loaded, if necessary
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("a.UndoClosePopup").length' );
+        # Wait until page has loaded, if necessary.
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete'
+        );
 
         # close note pop-up window
         $Selenium->close();
 
-        # clean up test data from the DB
-        my $Success = $TicketObject->TicketDelete(
+        $Selenium->switch_to_window( $Handles->[0] );
+
+        # Check if the IFRAME element DOES NOT contain the session ID parameter.
+        my $IframeElement = $Selenium->find_element('//iframe[not(contains(@id, "AttachmentWindow"))]');
+        my $SessionName   = $Selenium->execute_script('return Core.Config.Get("SessionName");');
+
+        $Self->False(
+            ( $IframeElement->get_attribute('src') =~ m{$SessionName=} ) // 0,
+            'Session ID not present in the IFRAME source URL'
+        );
+
+        # Switch off usage of session cookies.
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'SessionUseCookie',
+            Value => 0,
+        );
+
+        # Get current session ID.
+        my $SessionID = $Selenium->execute_script('return Core.Config.Get("SessionID");');
+
+        # Reload the ticket zoom screen, but make sure to append the session ID parameter, as now the cookies will not
+        #   be used.
+        $Selenium->VerifiedGet(
+            "${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID;ArticleID=$ArticleIDs[0];$SessionName=$SessionID"
+        );
+
+        # Check if the IFRAME element now DOES contain the session ID parameter.
+        $IframeElement = $Selenium->find_element('//iframe[not(contains(@id, "AttachmentWindow"))]');
+        $Self->True(
+            ( $IframeElement->get_attribute('src') =~ m{$SessionName=} ) // 0,
+            'Session ID present in the IFRAME source URL'
+        );
+
+        # Clean up test data from the DB.
+        $Success = $TicketObject->TicketDelete(
             TicketID => $TicketID,
             UserID   => 1,
         );
+
+        # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+        if ( !$Success ) {
+            sleep 3;
+            $Success = $TicketObject->TicketDelete(
+                TicketID => $TicketID,
+                UserID   => 1,
+            );
+        }
         $Self->True(
             $Success,
             "Ticket is deleted - ID $TicketID"
         );
 
-        # make sure the cache is correct
+        # Make sure the cache is correct.
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'Ticket' );
 
     }

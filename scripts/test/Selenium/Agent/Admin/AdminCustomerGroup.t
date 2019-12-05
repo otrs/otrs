@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -128,7 +128,7 @@ $Selenium->RunTest(
         # test Customer search
         $Selenium->find_element( "#CustomerSearch", 'css' )->clear();
         $Selenium->find_element( "#CustomerSearch", 'css' )->send_keys($CustomerRandomID);
-        $Selenium->find_element( "#CustomerSearch", 'css' )->VerifiedSubmit();
+        $Selenium->find_element("//button[\@type='submit']")->VerifiedClick();
 
         $Self->True(
             index( $Selenium->get_page_source(), $CustomerRandomID ) > -1,
@@ -137,7 +137,7 @@ $Selenium->RunTest(
 
         # clear CustomerUser filter
         $Selenium->find_element( "#CustomerSearch", 'css' )->clear();
-        $Selenium->find_element( "#CustomerSearch", 'css' )->VerifiedSubmit();
+        $Selenium->find_element("//button[\@type='submit']")->VerifiedClick();
 
         # test Filter for Groups
         $Selenium->find_element( "#FilterGroups", 'css' )->send_keys($GroupRandomID);

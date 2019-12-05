@@ -1,7 +1,7 @@
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -26,10 +26,7 @@ my $ModuleName = 'TicketStateSet';
 my $RandomID   = $Helper->GetRandomID();
 
 # set user details
-my $TestUserLogin = $Helper->TestUserCreate();
-my $TestUserID    = $UserObject->UserLookup(
-    UserLogin => $TestUserLogin,
-);
+my ( $TestUserLogin, $TestUserID ) = $Helper->TestUserCreate();
 
 #
 # Create a test ticket
@@ -220,7 +217,7 @@ my @Tests = (
         Success => 1,
     },
     {
-        Name   => 'Correct Ticket->NotExisting',
+        Name   => 'Wrong Ticket->NotExisting',
         Config => {
             UserID => $UserID,
             Ticket => \%Ticket,
@@ -236,8 +233,32 @@ my @Tests = (
             UserID => $UserID,
             Ticket => \%Ticket,
             Config => {
-                State  => 'open',
+                State  => 'new',
                 UserID => $TestUserID,
+            },
+        },
+        Success => 1,
+    },
+    {
+        Name   => 'Correct Using same State (bug#14720)',
+        Config => {
+            UserID => $UserID,
+            Ticket => \%Ticket,
+            Config => {
+                State  => 'new',
+                UserID => $TestUserID,
+            },
+        },
+        Success => 1,
+    },
+    {
+        Name   => 'Correct Using same StateID (bug#14720)',
+        Config => {
+            UserID => $UserID,
+            Ticket => \%Ticket,
+            Config => {
+                StateID => 1,
+                UserID  => $TestUserID,
             },
         },
         Success => 1,

@@ -181,7 +181,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::NumberGenerator::CheckSystemID" Required="1" Valid="1">
-        <Description Translatable="1">Checks the SystemID in ticket number detection for follow-ups (use "No" if SystemID has been changed after using the system).</Description>
+        <Description Translatable="1">Checks the SystemID in ticket number detection for follow-ups. If not enabled, SystemID will be changed after using the system.</Description>
         <Navigation>Core::Ticket</Navigation>
         <Value>
             <Item ValueType="Checkbox">1</Item>
@@ -317,7 +317,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::EventModulePost###7000-NotificationEvent" Required="0" Valid="1">
-        <Description Translatable="1">Sends the notifications which are configured in the admin interface under "Notfication (Event)".</Description>
+        <Description Translatable="1">Sends the notifications which are configured in the admin interface under "Ticket Notifications".</Description>
         <Navigation>Core::Event::Ticket</Navigation>
         <Value>
             <Hash>
@@ -327,7 +327,7 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Ticket::EventModulePost###6000-EscalationIndex" Required="0" Valid="1">
+    <Setting Name="Ticket::EventModulePost###9990-EscalationIndex" Required="0" Valid="1">
         <Description Translatable="1">Updates the ticket escalation index after a ticket attribute got updated.</Description>
         <Navigation>Core::Event::Ticket</Navigation>
         <Value>
@@ -392,7 +392,7 @@
         </Value>
     </Setting>
     <Setting Name="DynamicFieldFromCustomerUser::Mapping" Required="0" Valid="0">
-        <Description Translatable="1">Define a mapping between variables of the customer user data (keys) and dynamic fields of a ticket (values). The purpose is to store customer user data in ticket dynamic fields. The dynamic fields must be present in the system and should be enabled for AgentTicketFreeText, so that they can be set/updated manually by the agent. They mustn't be enabled for AgentTicketPhone, AgentTicketEmail and AgentTicketCustomer. If they were, they would have precedence over the automatically set values. To use this mapping, you have to also activate the next setting below.</Description>
+        <Description Translatable="1">Define a mapping between variables of the customer user data (keys) and dynamic fields of a ticket (values). The purpose is to store customer user data in ticket dynamic fields. The dynamic fields must be present in the system and should be enabled for AgentTicketFreeText, so that they can be set/updated manually by the agent. They mustn't be enabled for AgentTicketPhone, AgentTicketEmail and AgentTicketCustomer. If they were, they would have precedence over the automatically set values. To use this mapping, you have to also activate the Ticket::EventModulePost###4100-DynamicFieldFromCustomerUser setting.</Description>
         <Navigation>Core::Ticket</Navigation>
         <Value>
             <Hash>
@@ -401,7 +401,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::EventModulePost###4100-DynamicFieldFromCustomerUser" Required="0" Valid="0">
-        <Description Translatable="1">This event module stores attributes from CustomerUser as DynamicFields tickets. Please see the setting above for how to configure the mapping.</Description>
+        <Description Translatable="1">This event module stores attributes from CustomerUser as DynamicFields tickets. Please see DynamicFieldFromCustomerUser::Mapping setting for how to configure the mapping.</Description>
         <Navigation>Core::Event::Ticket</Navigation>
         <Value>
             <Hash>
@@ -418,7 +418,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::SearchIndexModule" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Helps to extend your articles full-text search (From, To, Cc, Subject and Body search). Runtime will do full-text searches on live data (it works fine for up to 50.000 tickets). StaticDB will strip all articles and will build an index after article creation, increasing fulltext searches about 50%. To create an initial index use "bin/otrs.Console.pl Maint::Ticket::FulltextIndexRebuild".</Description>
+        <Description Translatable="1">Helps to extend your articles full-text search (From, To, Cc, Subject and Body search). It will strip all articles and will build an index after article creation, increasing fulltext searches about 50%. To create an initial index use "bin/otrs.Console.pl Maint::Ticket::FulltextIndex --rebuild".</Description>
         <Navigation>Core::Ticket::FulltextSearch</Navigation>
         <Value>
             <Item ValueType="PerlModule" ValueFilter="Kernel/System/Ticket/ArticleSearchIndex/*.pm">Kernel::System::Ticket::ArticleSearchIndex::DB</Item>
@@ -431,11 +431,11 @@
             <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
-    <Setting Name="Ticket::SearchIndex::FilterStopWords" Required="1" Valid="1">
-        <Description Translatable="1">Filter stop words from article search index, turned on by default. If turned off, search index will store unfiltered text.</Description>
+    <Setting Name="Ticket::SearchIndex::ForceUnfilteredStorage" Required="1" Valid="1">
+        <Description Translatable="1">Force the storage of the original article text in the article search index, without executing filters or applying stop word lists. This will increase the size of the search index and thus may slow down fulltext searches.</Description>
         <Navigation>Core::Ticket::FulltextSearch</Navigation>
         <Value>
-            <Item ValueType="Checkbox">1</Item>
+            <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::SearchIndex::WarnOnStopWordUsage" Required="1" Valid="1">
@@ -446,7 +446,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::SearchIndex::Attribute" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Basic fulltext index settings. Execute "bin/otrs.Console.pl Maint::Ticket::FulltextIndexRebuild" in order to generate a new index.</Description>
+        <Description Translatable="1">Basic fulltext index settings. Execute "bin/otrs.Console.pl Maint::Ticket::FulltextIndex --rebuild" in order to generate a new index.</Description>
         <Navigation>Core::Ticket::FulltextSearch</Navigation>
         <Value>
             <Hash>
@@ -1408,16 +1408,6 @@
             </Array>
         </Value>
     </Setting>
-    <Setting Name="Ticket::EventModulePost###2000-ArticleSearchIndex" Required="0" Valid="1">
-        <Description Translatable="1">Marks articles for index rebuild right after the article's update.</Description>
-        <Navigation>Core::Event::Ticket</Navigation>
-        <Value>
-            <Hash>
-                <Item Key="Module">Kernel::System::Ticket::Event::ArticleSearchIndex</Item>
-                <Item Key="Event">(ArticleUpdate)</Item>
-            </Hash>
-        </Value>
-    </Setting>
     <Setting Name="Ticket::Frontend::Overview###Small" Required="0" Valid="1">
         <Description Translatable="1">Allows having a small format ticket overview (CustomerInfo =&gt; 1 - shows also the customer information).</Description>
         <Navigation>Frontend::Agent::TicketOverview</Navigation>
@@ -1562,8 +1552,8 @@
             <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
-    <Setting Name="Ticket::Frontend::ZoomExpand" Required="1" Valid="1">
-        <Description Translatable="1">Shows all the articles of the ticket (expanded) in the zoom view.</Description>
+    <Setting Name="Ticket::Frontend::AgentZoomExpand" Required="1" Valid="1">
+        <Description Translatable="1">Shows all the articles of the ticket (expanded) in the agent zoom view.</Description>
         <Navigation>Frontend::Agent::View::TicketZoom</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -1579,8 +1569,15 @@
             </Item>
         </Value>
     </Setting>
+    <Setting Name="Ticket::Frontend::ArticleHeadVisibleDefault" Required="1" Valid="1">
+        <Description Translatable="1">Shows the article head information in the agent zoom view.</Description>
+        <Navigation>Frontend::Agent::View::TicketZoom</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">0</Item>
+        </Value>
+    </Setting>
     <Setting Name="Ticket::ZoomAttachmentDisplayCount" Required="1" Valid="1">
-        <Description Translatable="1">Shows a count of icons in the ticket zoom, if the article has attachments.</Description>
+        <Description Translatable="1">Shows a count of attachments in the ticket zoom, if the article has attachments.</Description>
         <Navigation>Frontend::Agent::View::TicketZoom</Navigation>
         <Value>
             <Item ValueType="Select" SelectedID="20">
@@ -1617,13 +1614,6 @@
         <Navigation>Frontend::Agent::View::TicketZoom</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
-        </Value>
-    </Setting>
-    <Setting Name="Ticket::UseArticleColors" UserPreferencesGroup="Advanced" UserModificationPossible="1" Required="1" Valid="1">
-        <Description Translatable="1">Shows colors for different article types in the article table.</Description>
-        <Navigation>Frontend::Agent::View::TicketZoom</Navigation>
-        <Value>
-            <Item ValueType="Checkbox">1</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::TicketArticleFilter" UserPreferencesGroup="Advanced" UserModificationPossible="1" Required="1" Valid="1">
@@ -1753,6 +1743,13 @@
             </Item>
         </Value>
     </Setting>
+    <Setting Name="Ticket::Frontend::BlockLoadingRemoteContent" Required="1" Valid="1">
+        <Description Translatable="1">Makes the application block external content loading.</Description>
+        <Navigation>Frontend::Base</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">0</Item>
+        </Value>
+    </Setting>
     <Setting Name="Ticket::Frontend::CustomerInfoCompose" Required="1" Valid="1">
         <Description Translatable="1">Shows the customer user information (phone and email) in the compose screen.</Description>
         <Navigation>Frontend::Agent</Navigation>
@@ -1765,13 +1762,6 @@
         <Navigation>Frontend::Agent</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex="^[0-9]{1,3}$">22</Item>
-        </Value>
-    </Setting>
-    <Setting Name="Ticket::Frontend::CustomerInfoZoom" Required="1" Valid="1">
-        <Description Translatable="1">Shows the customer user's info in the ticket zoom view.</Description>
-        <Navigation>Frontend::Agent</Navigation>
-        <Value>
-            <Item ValueType="Checkbox">1</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::CustomerInfoZoomMaxSize" Required="1" Valid="1">
@@ -2025,7 +2015,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::NeedAccountedTime" Required="1" Valid="1">
-        <Description Translatable="1">Defines if time accounting is mandatory in the agent interface. If activated, a note must be entered for all ticket actions (no matter if the note itself is configured as active or is originally mandatory for the individual ticket action screen).</Description>
+        <Description Translatable="1">Defines if time accounting is mandatory in the agent interface. If enabled, a note must be entered for all ticket actions (no matter if the note itself is configured as active or is originally mandatory for the individual ticket action screen).</Description>
         <Navigation>Frontend::Agent</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -2039,7 +2029,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketStatusView###ViewableTicketsPage" Required="1" Valid="1">
-        <Description Translatable="1">Shows all open tickets (even if they are locked) in the status view of the agent interface.</Description>
+        <Description Translatable="1">Number of tickets to be displayed in each page.</Description>
         <Navigation>Frontend::Agent::View::TicketStatus</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex="^\d+$">50</Item>
@@ -2228,35 +2218,35 @@
             <Item ValueType="String"></Item>
         </Value>
     </Setting>
-    <Setting Name="Ticket::Frontend::AgentTicketSearch###Defaults###From" UserPreferencesGroup="Advanced" UserModificationActive="1" UserModificationPossible="1" Required="0" Valid="0">
+    <Setting Name="Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_From" UserPreferencesGroup="Advanced" UserModificationActive="1" UserModificationPossible="1" Required="0" Valid="0">
         <Description Translatable="1">Defines the default shown ticket search attribute for ticket search screen.</Description>
         <Navigation>Frontend::Agent::View::TicketSearch</Navigation>
         <Value>
             <Item ValueType="String"></Item>
         </Value>
     </Setting>
-    <Setting Name="Ticket::Frontend::AgentTicketSearch###Defaults###To" UserPreferencesGroup="Advanced" UserModificationActive="1" UserModificationPossible="1" Required="0" Valid="0">
+    <Setting Name="Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_To" UserPreferencesGroup="Advanced" UserModificationActive="1" UserModificationPossible="1" Required="0" Valid="0">
         <Description Translatable="1">Defines the default shown ticket search attribute for ticket search screen.</Description>
         <Navigation>Frontend::Agent::View::TicketSearch</Navigation>
         <Value>
             <Item ValueType="String"></Item>
         </Value>
     </Setting>
-    <Setting Name="Ticket::Frontend::AgentTicketSearch###Defaults###Cc" UserPreferencesGroup="Advanced" UserModificationActive="1" UserModificationPossible="1" Required="0" Valid="0">
+    <Setting Name="Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Cc" UserPreferencesGroup="Advanced" UserModificationActive="1" UserModificationPossible="1" Required="0" Valid="0">
         <Description Translatable="1">Defines the default shown ticket search attribute for ticket search screen.</Description>
         <Navigation>Frontend::Agent::View::TicketSearch</Navigation>
         <Value>
             <Item ValueType="String"></Item>
         </Value>
     </Setting>
-    <Setting Name="Ticket::Frontend::AgentTicketSearch###Defaults###Subject" UserPreferencesGroup="Advanced" UserModificationActive="1" UserModificationPossible="1" Required="0" Valid="0">
+    <Setting Name="Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Subject" UserPreferencesGroup="Advanced" UserModificationActive="1" UserModificationPossible="1" Required="0" Valid="0">
         <Description Translatable="1">Defines the default shown ticket search attribute for ticket search screen.</Description>
         <Navigation>Frontend::Agent::View::TicketSearch</Navigation>
         <Value>
             <Item ValueType="String"></Item>
         </Value>
     </Setting>
-    <Setting Name="Ticket::Frontend::AgentTicketSearch###Defaults###Body" UserPreferencesGroup="Advanced" UserModificationActive="1" UserModificationPossible="1" Required="0" Valid="0">
+    <Setting Name="Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Body" UserPreferencesGroup="Advanced" UserModificationActive="1" UserModificationPossible="1" Required="0" Valid="0">
         <Description Translatable="1">Defines the default shown ticket search attribute for ticket search screen.</Description>
         <Navigation>Frontend::Agent::View::TicketSearch</Navigation>
         <Value>
@@ -2478,14 +2468,14 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketFreeText###TicketType" UserPreferencesGroup="Advanced" UserModificationPossible="1" Required="0" Valid="1">
-        <Description Translatable="1">Sets the ticket type in the ticket free text screen of the agent interface (Ticket::Type needs to be activated).</Description>
+        <Description Translatable="1">Sets the ticket type in the ticket free text screen of the agent interface (Ticket::Type needs to be enabled).</Description>
         <Navigation>Frontend::Agent::View::TicketFreeText</Navigation>
         <Value>
             <Item ValueType="Checkbox">1</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketFreeText###Service" UserPreferencesGroup="Advanced" UserModificationPossible="1" Required="0" Valid="1">
-        <Description Translatable="1">Sets the service in the ticket free text screen of the agent interface (Ticket::Service needs to be activated).</Description>
+        <Description Translatable="1">Sets the service in the ticket free text screen of the agent interface (Ticket::Service needs to be enabled).</Description>
         <Navigation>Frontend::Agent::View::TicketFreeText</Navigation>
         <Value>
             <Item ValueType="Checkbox">1</Item>
@@ -3086,14 +3076,14 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketClose###TicketType" UserPreferencesGroup="Advanced" UserModificationPossible="1" Required="0" Valid="1">
-        <Description Translatable="1">Sets the ticket type in the close ticket screen of the agent interface (Ticket::Type needs to be activated).</Description>
+        <Description Translatable="1">Sets the ticket type in the close ticket screen of the agent interface (Ticket::Type needs to be enabled).</Description>
         <Navigation>Frontend::Agent::View::TicketClose</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketClose###Service" UserPreferencesGroup="Advanced" UserModificationPossible="1" Required="0" Valid="1">
-        <Description Translatable="1">Sets the service in the close ticket screen of the agent interface (Ticket::Service needs to be activated).</Description>
+        <Description Translatable="1">Sets the service in the close ticket screen of the agent interface (Ticket::Service needs to be enabled).</Description>
         <Navigation>Frontend::Agent::View::TicketClose</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -3249,7 +3239,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketClose###Title" UserPreferencesGroup="Advanced" UserModificationPossible="1" Required="0" Valid="1">
-        <Description Translatable="1">Shows the title fields in the close ticket screen of the agent interface.</Description>
+        <Description Translatable="1">Shows the title field in the close ticket screen of the agent interface.</Description>
         <Navigation>Frontend::Agent::View::TicketClose</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -3291,14 +3281,14 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketNote###TicketType" UserPreferencesGroup="Advanced" UserModificationPossible="1" Required="0" Valid="1">
-        <Description Translatable="1">Sets the ticket type in the ticket note screen of the agent interface (Ticket::Type needs to be activated).</Description>
+        <Description Translatable="1">Sets the ticket type in the ticket note screen of the agent interface (Ticket::Type needs to be enabled).</Description>
         <Navigation>Frontend::Agent::View::TicketNote</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketNote###Service" UserPreferencesGroup="Advanced" UserModificationPossible="1" Required="0" Valid="1">
-        <Description Translatable="1">Sets the service in the ticket note screen of the agent interface (Ticket::Service needs to be activated).</Description>
+        <Description Translatable="1">Sets the service in the ticket note screen of the agent interface (Ticket::Service needs to be enabled).</Description>
         <Navigation>Frontend::Agent::View::TicketNote</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -3457,7 +3447,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketNote###Title" UserPreferencesGroup="Advanced" UserModificationPossible="1" Required="0" Valid="1">
-        <Description Translatable="1">Shows the title fields in the ticket note screen of the agent interface.</Description>
+        <Description Translatable="1">Shows the title field in the ticket note screen of the agent interface.</Description>
         <Navigation>Frontend::Agent::View::TicketNote</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -3499,14 +3489,14 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketOwner###TicketType" Required="0" Valid="1">
-        <Description Translatable="1">Sets the ticket type in the ticket owner screen of a zoomed ticket in the agent interface (Ticket::Type needs to be activated).</Description>
+        <Description Translatable="1">Sets the ticket type in the ticket owner screen of a zoomed ticket in the agent interface (Ticket::Type needs to be enabled).</Description>
         <Navigation>Frontend::Agent::View::TicketOwner</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketOwner###Service" Required="0" Valid="1">
-        <Description Translatable="1">Sets the service in the ticket owner screen of a zoomed ticket in the agent interface (Ticket::Service needs to be activated).</Description>
+        <Description Translatable="1">Sets the service in the ticket owner screen of a zoomed ticket in the agent interface (Ticket::Service needs to be enabled).</Description>
         <Navigation>Frontend::Agent::View::TicketOwner</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -3664,7 +3654,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketOwner###Title" Required="0" Valid="1">
-        <Description Translatable="1">Shows the title fields in the ticket owner screen of a zoomed ticket in the agent interface.</Description>
+        <Description Translatable="1">Shows the title field in the ticket owner screen of a zoomed ticket in the agent interface.</Description>
         <Navigation>Frontend::Agent::View::TicketOwner</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -3706,14 +3696,14 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketPending###TicketType" Required="0" Valid="1">
-        <Description Translatable="1">Sets the ticket type in the ticket pending screen of a zoomed ticket in the agent interface (Ticket::Type needs to be activated).</Description>
+        <Description Translatable="1">Sets the ticket type in the ticket pending screen of a zoomed ticket in the agent interface (Ticket::Type needs to be enabled).</Description>
         <Navigation>Frontend::Agent::View::TicketPending</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketPending###Service" Required="0" Valid="1">
-        <Description Translatable="1">Sets the service in the ticket pending screen of a zoomed ticket in the agent interface (Ticket::Service needs to be activated).</Description>
+        <Description Translatable="1">Sets the service in the ticket pending screen of a zoomed ticket in the agent interface (Ticket::Service needs to be enabled).</Description>
         <Navigation>Frontend::Agent::View::TicketPending</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -3870,7 +3860,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketPending###Title" Required="0" Valid="1">
-        <Description Translatable="1">Shows the title fields in the ticket pending screen of a zoomed ticket in the agent interface.</Description>
+        <Description Translatable="1">Shows the title field in the ticket pending screen of a zoomed ticket in the agent interface.</Description>
         <Navigation>Frontend::Agent::View::TicketPending</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -3912,14 +3902,14 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketPriority###TicketType" Required="0" Valid="1">
-        <Description Translatable="1">Sets the ticket type in the ticket priority screen of a zoomed ticket in the agent interface (Ticket::Type needs to be activated).</Description>
+        <Description Translatable="1">Sets the ticket type in the ticket priority screen of a zoomed ticket in the agent interface (Ticket::Type needs to be enabled).</Description>
         <Navigation>Frontend::Agent::View::TicketPriority</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketPriority###Service" Required="0" Valid="1">
-        <Description Translatable="1">Sets the service in the ticket priority screen of a zoomed ticket in the agent interface (Ticket::Service needs to be activated).</Description>
+        <Description Translatable="1">Sets the service in the ticket priority screen of a zoomed ticket in the agent interface (Ticket::Service needs to be enabled).</Description>
         <Navigation>Frontend::Agent::View::TicketPriority</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -4077,7 +4067,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketPriority###Title" Required="0" Valid="1">
-        <Description Translatable="1">Shows the title fields in the ticket priority screen of a zoomed ticket in the agent interface.</Description>
+        <Description Translatable="1">Shows the title field in the ticket priority screen of a zoomed ticket in the agent interface.</Description>
         <Navigation>Frontend::Agent::View::TicketPriority</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -4119,14 +4109,14 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketResponsible###TicketType" Required="0" Valid="1">
-        <Description Translatable="1">Sets the ticket type in the ticket responsible screen of the agent interface (Ticket::Type needs to be activated).</Description>
+        <Description Translatable="1">Sets the ticket type in the ticket responsible screen of the agent interface (Ticket::Type needs to be enabled).</Description>
         <Navigation>Frontend::Agent::View::TicketResponsible</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketResponsible###Service" Required="0" Valid="1">
-        <Description Translatable="1">Sets the service in the ticket responsible screen of the agent interface (Ticket::Service needs to be activated).</Description>
+        <Description Translatable="1">Sets the service in the ticket responsible screen of the agent interface (Ticket::Service needs to be enabled).</Description>
         <Navigation>Frontend::Agent::View::TicketResponsible</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -4284,7 +4274,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketResponsible###Title" Required="0" Valid="1">
-        <Description Translatable="1">Shows the title fields in the ticket responsible screen of the agent interface.</Description>
+        <Description Translatable="1">Shows the title field in the ticket responsible screen of the agent interface.</Description>
         <Navigation>Frontend::Agent::View::TicketResponsible</Navigation>
         <Value>
             <Item ValueType="Checkbox">1</Item>
@@ -4347,7 +4337,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketBulk###StateType" Required="1" Valid="1">
-        <Description Translatable="1">Defines the next state of a ticket after adding a note, in the ticket bulk screen of the agent interface.</Description>
+        <Description Translatable="1">Defines the next state of a ticket, in the ticket bulk screen of the agent interface.</Description>
         <Navigation>Frontend::Agent::View::TicketBulk</Navigation>
         <Value>
             <Array>
@@ -4359,7 +4349,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketBulk###StateDefault" UserPreferencesGroup="Advanced" UserModificationPossible="1" Required="0" Valid="0">
-        <Description Translatable="1">Defines the default next state of a ticket after adding a note, in the ticket bulk screen of the agent interface.</Description>
+        <Description Translatable="1">Defines the default next state of a ticket, in the ticket bulk screen of the agent interface.</Description>
         <Navigation>Frontend::Agent::View::TicketBulk</Navigation>
         <Value>
             <Item ValueType="Entity" ValueEntityType="State" ValueRegex="">open</Item>
@@ -4679,7 +4669,7 @@
         <Description Translatable="1">Defines if the message in the email outbound screen of the agent interface is visible for the customer by default.</Description>
         <Navigation>Frontend::Agent::View::TicketEmailOutbound</Navigation>
         <Value>
-            <Item ValueType="Checkbox">1</Item>
+            <Item ValueType="Checkbox">0</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::AgentTicketEmailResend###Permission" Required="1" Valid="1">
@@ -4786,7 +4776,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::ViewableStateType" Required="1" Valid="1">
-        <Description Translatable="1">Defines the valid state types for a ticket.</Description>
+        <Description Translatable="1">Defines the valid state types for a ticket. If a ticket is in a state which have any state type from this setting, this ticket will be considered as open, otherwise as closed.</Description>
         <Navigation>Core::Ticket</Navigation>
         <Value>
             <Array>
@@ -4815,7 +4805,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::PendingNotificationNotToResponsible" Required="1" Valid="1">
-        <Description Translatable="1">Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be activated).</Description>
+        <Description Translatable="1">Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be enabled).</Description>
         <Navigation>Core::Ticket</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
@@ -4899,7 +4889,7 @@
                 <Item Key="Name" Translatable="1">Status view</Item>
                 <Item Key="Link">Action=AgentTicketStatusView</Item>
                 <Item Key="Action">AgentTicketStatusView</Item>
-                <Item Key="AccessKey">S</Item>
+                <Item Key="AccessKey"></Item>
                 <Item Key="CssClass">StatusView</Item>
                 <Item Key="Icon">fa fa-list-ol</Item>
                 <Item Key="Priority">1010020</Item>
@@ -4965,7 +4955,7 @@
                 <Item Key="Action">AgentTicketProcess</Item>
                 <Item Key="AccessKey"></Item>
                 <Item Key="CssClass">ProcessTicket</Item>
-                <Item Key="Icon">fa fa-th-large</Item>
+                <Item Key="Icon">fa fa-sitemap</Item>
                 <Item Key="Priority">1020030</Item>
             </Hash>
         </Value>
@@ -5339,7 +5329,7 @@
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::TicketMenu::TeaserAttachmentView</Item>
-                <Item Key="Name">All attachments (OTRS Business Solution™)</Item>
+                <Item Key="Name" Translatable="1">All attachments (OTRS Business Solution™)</Item>
                 <Item Key="Description" Translatable="1">View all attachments of the current ticket</Item>
                 <Item Key="Action">AgentTicketZoom</Item>
                 <Item Key="Link">Action=AgentTicketZoom;TicketID=[% Data.TicketID | html %]</Item>
@@ -5421,7 +5411,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::MenuModule###400-Owner" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to see the owner of a ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.</Description>
+        <Description Translatable="1">Shows a link in the menu to change the owner of a ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.</Description>
         <Navigation>Frontend::Agent::View::TicketZoom::MenuModule</Navigation>
         <Value>
             <Hash>
@@ -5438,7 +5428,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::MenuModule###410-Responsible" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to see the responsible agent of a ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.</Description>
+        <Description Translatable="1">Shows a link in the menu to change the responsible agent of a ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.</Description>
         <Navigation>Frontend::Agent::View::TicketZoom::MenuModule</Navigation>
         <Value>
             <Hash>
@@ -5455,7 +5445,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::MenuModule###420-Customer" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to see the customer who requested the ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.</Description>
+        <Description Translatable="1">Shows a link in the menu to change the customer who requested the ticket in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.</Description>
         <Navigation>Frontend::Agent::View::TicketZoom::MenuModule</Navigation>
         <Value>
             <Hash>
@@ -5489,7 +5479,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::MenuModule###425-Phone Call Outbound" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to add a note in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.</Description>
+        <Description Translatable="1">Shows a link in the menu to add a phone call outbound in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.</Description>
         <Navigation>Frontend::Agent::View::TicketZoom::MenuModule</Navigation>
         <Value>
             <Hash>
@@ -5506,7 +5496,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::MenuModule###426-Phone Call Inbound" Required="0" Valid="1">
-        <Description Translatable="1">Shows a link in the menu to add a note in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.</Description>
+        <Description Translatable="1">Shows a link in the menu to add a phone call inbound in the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.</Description>
         <Navigation>Frontend::Agent::View::TicketZoom::MenuModule</Navigation>
         <Value>
             <Hash>
@@ -5658,7 +5648,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::OverviewMenuModule###001-Sort" Required="0" Valid="1">
-        <Description Translatable="1">Shows a select of ticket attributes to order the queue view ticket list. The possible selections can be configured via 'TicketOverviewMenuSort###SortAttributes'.</Description>
+        <Description Translatable="1">This setting shows the sorting attributes in all overview screen, not only in queue view.</Description>
         <Navigation>Frontend::Agent::TicketOverview::MenuModule</Navigation>
         <Value>
             <Hash>
@@ -6240,7 +6230,7 @@
                 <Item Key="Group"></Item>
                 <Item Key="Default">1</Item>
                 <Item Key="Sort">SortBy=Age;OrderBy=Up</Item>
-                <Item Key="CacheTTLLocal">0.5</Item>
+                <Item Key="CacheTTLLocal">2</Item>
                 <Item Key="States">
                     <Hash>
                         <Item Key="1">new</Item>
@@ -6325,7 +6315,7 @@
         </Value>
     </Setting>
     <Setting Name="OnlyValuesOnTicket" Required="1" Valid="1">
-        <Description Translatable="1">Defines if the values for filters should be retrieved from all available tickets. If set to "Yes", only values which are actually used in any ticket will be available for filtering. Please note: The list of customers will always be retrieved like this.</Description>
+        <Description Translatable="1">Defines if the values for filters should be retrieved from all available tickets. If enabled, only values which are actually used in any ticket will be available for filtering. Please note: The list of customers will always be retrieved like this.</Description>
         <Navigation>Frontend::Agent::View::Dashboard::TicketFilters</Navigation>
         <Value>
             <Item ValueType="Checkbox">1</Item>
@@ -6511,8 +6501,8 @@
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Dashboard::TicketGeneric</Item>
-                <Item Key="Title" Translatable="1">Open Tickets / Need to be answered</Item>
-                <Item Key="Description" Translatable="1">All open tickets, these tickets have already been worked on, but need a response</Item>
+                <Item Key="Title" Translatable="1">Open Tickets</Item>
+                <Item Key="Description" Translatable="1">All open tickets, these tickets have already been worked on.</Item>
                 <Item Key="Attributes">StateType=open;</Item>
                 <Item Key="Filter" Translatable="1">All</Item>
                 <Item Key="Time">Age</Item>
@@ -6593,7 +6583,7 @@
         </Value>
     </Setting>
     <Setting Name="AgentCustomerUserInformationCenter::Backend###0100-CUIC-TicketPendingReminder" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the ticket pending reminder overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. "AccessibleTickets" determines if the plugin will show only tickets assigned to a customer user directly (=0) or also all accessible tickets for this customer (=1).</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the ticket pending reminder overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns.</Description>
         <Navigation>Frontend::Agent::View::CustomerUserInformationCenter</Navigation>
         <Value>
             <Hash>
@@ -6611,36 +6601,41 @@
                 <Item Key="CacheTTLLocal">0.5</Item>
                 <Item Key="DefaultColumns">
                     <Hash>
-                        <Item Key="Age">2</Item>
-                        <Item Key="Changed">1</Item>
-                        <Item Key="Created">1</Item>
-                        <Item Key="CustomerCompanyName">1</Item>
-                        <Item Key="CustomerID">1</Item>
-                        <Item Key="CustomerName">1</Item>
-                        <Item Key="CustomerUserID">1</Item>
-                        <Item Key="EscalationResponseTime">1</Item>
-                        <Item Key="EscalationSolutionTime">1</Item>
-                        <Item Key="EscalationTime">1</Item>
-                        <Item Key="EscalationUpdateTime">1</Item>
-                        <Item Key="TicketNumber">2</Item>
-                        <Item Key="Lock">1</Item>
-                        <Item Key="Owner">1</Item>
-                        <Item Key="PendingTime">1</Item>
-                        <Item Key="Queue">1</Item>
-                        <Item Key="Responsible">1</Item>
-                        <Item Key="Priority">1</Item>
-                        <Item Key="Service">1</Item>
-                        <Item Key="State">1</Item>
-                        <Item Key="SLA">1</Item>
-                        <Item Key="Title">2</Item>
-                        <Item Key="Type">1</Item>
+                        <DefaultItem ValueType="Select">
+                            <Item ValueType="Option" Value="0" Translatable="1">0 - Disabled</Item>
+                            <Item ValueType="Option" Value="1" Translatable="1">1 - Available</Item>
+                            <Item ValueType="Option" Value="2" Translatable="1">2 - Enabled by default</Item>
+                        </DefaultItem>
+                        <Item Key="Age" SelectedID="2"></Item>
+                        <Item Key="Changed" SelectedID="1"></Item>
+                        <Item Key="Created" SelectedID="1"></Item>
+                        <Item Key="CustomerCompanyName" SelectedID="1"></Item>
+                        <Item Key="CustomerID" SelectedID="1"></Item>
+                        <Item Key="CustomerName" SelectedID="1"></Item>
+                        <Item Key="CustomerUserID" SelectedID="1"></Item>
+                        <Item Key="EscalationResponseTime" SelectedID="1"></Item>
+                        <Item Key="EscalationSolutionTime" SelectedID="1"></Item>
+                        <Item Key="EscalationTime" SelectedID="1"></Item>
+                        <Item Key="EscalationUpdateTime" SelectedID="1"></Item>
+                        <Item Key="TicketNumber" SelectedID="2"></Item>
+                        <Item Key="Lock" SelectedID="1"></Item>
+                        <Item Key="Owner" SelectedID="1"></Item>
+                        <Item Key="PendingTime" SelectedID="1"></Item>
+                        <Item Key="Queue" SelectedID="1"></Item>
+                        <Item Key="Responsible" SelectedID="1"></Item>
+                        <Item Key="Priority" SelectedID="1"></Item>
+                        <Item Key="Service" SelectedID="1"></Item>
+                        <Item Key="State" SelectedID="1"></Item>
+                        <Item Key="SLA" SelectedID="1"></Item>
+                        <Item Key="Title" SelectedID="2"></Item>
+                        <Item Key="Type" SelectedID="1"></Item>
                     </Hash>
                 </Item>
             </Hash>
         </Value>
     </Setting>
     <Setting Name="AgentCustomerUserInformationCenter::Backend###0110-CUIC-TicketEscalation" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the ticket escalation overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. "AccessibleTickets" determines if the plugin will show only tickets assigned to a customer user directly (=0) or also all accessible tickets for this customer (=1).</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the ticket escalation overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns.</Description>
         <Navigation>Frontend::Agent::View::CustomerUserInformationCenter</Navigation>
         <Value>
             <Hash>
@@ -6658,36 +6653,41 @@
                 <Item Key="CacheTTLLocal">0.5</Item>
                 <Item Key="DefaultColumns">
                     <Hash>
-                        <Item Key="Age">2</Item>
-                        <Item Key="Changed">1</Item>
-                        <Item Key="Created">1</Item>
-                        <Item Key="CustomerCompanyName">1</Item>
-                        <Item Key="CustomerID">1</Item>
-                        <Item Key="CustomerName">1</Item>
-                        <Item Key="CustomerUserID">1</Item>
-                        <Item Key="EscalationResponseTime">1</Item>
-                        <Item Key="EscalationSolutionTime">1</Item>
-                        <Item Key="EscalationTime">1</Item>
-                        <Item Key="EscalationUpdateTime">1</Item>
-                        <Item Key="TicketNumber">2</Item>
-                        <Item Key="Lock">1</Item>
-                        <Item Key="Owner">1</Item>
-                        <Item Key="PendingTime">1</Item>
-                        <Item Key="Queue">1</Item>
-                        <Item Key="Responsible">1</Item>
-                        <Item Key="Priority">1</Item>
-                        <Item Key="Service">1</Item>
-                        <Item Key="State">1</Item>
-                        <Item Key="SLA">1</Item>
-                        <Item Key="Title">2</Item>
-                        <Item Key="Type">1</Item>
+                        <DefaultItem ValueType="Select">
+                            <Item ValueType="Option" Value="0" Translatable="1">0 - Disabled</Item>
+                            <Item ValueType="Option" Value="1" Translatable="1">1 - Available</Item>
+                            <Item ValueType="Option" Value="2" Translatable="1">2 - Enabled by default</Item>
+                        </DefaultItem>
+                        <Item Key="Age" SelectedID="2"></Item>
+                        <Item Key="Changed" SelectedID="1"></Item>
+                        <Item Key="Created" SelectedID="1"></Item>
+                        <Item Key="CustomerCompanyName" SelectedID="1"></Item>
+                        <Item Key="CustomerID" SelectedID="1"></Item>
+                        <Item Key="CustomerName" SelectedID="1"></Item>
+                        <Item Key="CustomerUserID" SelectedID="1"></Item>
+                        <Item Key="EscalationResponseTime" SelectedID="1"></Item>
+                        <Item Key="EscalationSolutionTime" SelectedID="1"></Item>
+                        <Item Key="EscalationTime" SelectedID="1"></Item>
+                        <Item Key="EscalationUpdateTime" SelectedID="1"></Item>
+                        <Item Key="TicketNumber" SelectedID="2"></Item>
+                        <Item Key="Lock" SelectedID="1"></Item>
+                        <Item Key="Owner" SelectedID="1"></Item>
+                        <Item Key="PendingTime" SelectedID="1"></Item>
+                        <Item Key="Queue" SelectedID="1"></Item>
+                        <Item Key="Responsible" SelectedID="1"></Item>
+                        <Item Key="Priority" SelectedID="1"></Item>
+                        <Item Key="Service" SelectedID="1"></Item>
+                        <Item Key="State" SelectedID="1"></Item>
+                        <Item Key="SLA" SelectedID="1"></Item>
+                        <Item Key="Title" SelectedID="2"></Item>
+                        <Item Key="Type" SelectedID="1"></Item>
                     </Hash>
                 </Item>
             </Hash>
         </Value>
     </Setting>
     <Setting Name="AgentCustomerUserInformationCenter::Backend###0120-CUIC-TicketNew" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the new tickets overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. "AccessibleTickets" determines if the plugin will show only tickets assigned to a customer user directly (=0) or also all accessible tickets for this customer (=1).</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the new tickets overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns.</Description>
         <Navigation>Frontend::Agent::View::CustomerUserInformationCenter</Navigation>
         <Value>
             <Hash>
@@ -6705,42 +6705,47 @@
                 <Item Key="CacheTTLLocal">0.5</Item>
                 <Item Key="DefaultColumns">
                     <Hash>
-                        <Item Key="Age">2</Item>
-                        <Item Key="Changed">1</Item>
-                        <Item Key="Created">1</Item>
-                        <Item Key="CustomerCompanyName">1</Item>
-                        <Item Key="CustomerID">1</Item>
-                        <Item Key="CustomerName">1</Item>
-                        <Item Key="CustomerUserID">1</Item>
-                        <Item Key="EscalationResponseTime">1</Item>
-                        <Item Key="EscalationSolutionTime">1</Item>
-                        <Item Key="EscalationTime">1</Item>
-                        <Item Key="EscalationUpdateTime">1</Item>
-                        <Item Key="TicketNumber">2</Item>
-                        <Item Key="Lock">1</Item>
-                        <Item Key="Owner">1</Item>
-                        <Item Key="PendingTime">1</Item>
-                        <Item Key="Queue">1</Item>
-                        <Item Key="Responsible">1</Item>
-                        <Item Key="Priority">1</Item>
-                        <Item Key="Service">1</Item>
-                        <Item Key="State">1</Item>
-                        <Item Key="SLA">1</Item>
-                        <Item Key="Title">2</Item>
-                        <Item Key="Type">1</Item>
+                        <DefaultItem ValueType="Select">
+                            <Item ValueType="Option" Value="0" Translatable="1">0 - Disabled</Item>
+                            <Item ValueType="Option" Value="1" Translatable="1">1 - Available</Item>
+                            <Item ValueType="Option" Value="2" Translatable="1">2 - Enabled by default</Item>
+                        </DefaultItem>
+                        <Item Key="Age" SelectedID="2"></Item>
+                        <Item Key="Changed" SelectedID="1"></Item>
+                        <Item Key="Created" SelectedID="1"></Item>
+                        <Item Key="CustomerCompanyName" SelectedID="1"></Item>
+                        <Item Key="CustomerID" SelectedID="1"></Item>
+                        <Item Key="CustomerName" SelectedID="1"></Item>
+                        <Item Key="CustomerUserID" SelectedID="1"></Item>
+                        <Item Key="EscalationResponseTime" SelectedID="1"></Item>
+                        <Item Key="EscalationSolutionTime" SelectedID="1"></Item>
+                        <Item Key="EscalationTime" SelectedID="1"></Item>
+                        <Item Key="EscalationUpdateTime" SelectedID="1"></Item>
+                        <Item Key="TicketNumber" SelectedID="2"></Item>
+                        <Item Key="Lock" SelectedID="1"></Item>
+                        <Item Key="Owner" SelectedID="1"></Item>
+                        <Item Key="PendingTime" SelectedID="1"></Item>
+                        <Item Key="Queue" SelectedID="1"></Item>
+                        <Item Key="Responsible" SelectedID="1"></Item>
+                        <Item Key="Priority" SelectedID="1"></Item>
+                        <Item Key="Service" SelectedID="1"></Item>
+                        <Item Key="State" SelectedID="1"></Item>
+                        <Item Key="SLA" SelectedID="1"></Item>
+                        <Item Key="Title" SelectedID="2"></Item>
+                        <Item Key="Type" SelectedID="1"></Item>
                     </Hash>
                 </Item>
             </Hash>
         </Value>
     </Setting>
     <Setting Name="AgentCustomerUserInformationCenter::Backend###0130-CUIC-TicketOpen" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the open tickets overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. "AccessibleTickets" determines if the plugin will show only tickets assigned to a customer user directly (=0) or also all accessible tickets for this customer (=1).</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the open tickets overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns.</Description>
         <Navigation>Frontend::Agent::View::CustomerUserInformationCenter</Navigation>
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Dashboard::TicketGeneric</Item>
-                <Item Key="Title" Translatable="1">Open Tickets / Need to be answered</Item>
-                <Item Key="Description" Translatable="1">All open tickets, these tickets have already been worked on, but need a response</Item>
+                <Item Key="Title" Translatable="1">Open Tickets</Item>
+                <Item Key="Description" Translatable="1">All open tickets, these tickets have already been worked on.</Item>
                 <Item Key="Attributes">StateType=open;</Item>
                 <Item Key="Filter" Translatable="1">All</Item>
                 <Item Key="Time">Age</Item>
@@ -6752,36 +6757,41 @@
                 <Item Key="CacheTTLLocal">0.5</Item>
                 <Item Key="DefaultColumns">
                     <Hash>
-                        <Item Key="Age">2</Item>
-                        <Item Key="Changed">1</Item>
-                        <Item Key="Created">1</Item>
-                        <Item Key="CustomerCompanyName">1</Item>
-                        <Item Key="CustomerID">1</Item>
-                        <Item Key="CustomerName">1</Item>
-                        <Item Key="CustomerUserID">1</Item>
-                        <Item Key="EscalationResponseTime">1</Item>
-                        <Item Key="EscalationSolutionTime">1</Item>
-                        <Item Key="EscalationTime">1</Item>
-                        <Item Key="EscalationUpdateTime">1</Item>
-                        <Item Key="TicketNumber">2</Item>
-                        <Item Key="Lock">1</Item>
-                        <Item Key="Owner">1</Item>
-                        <Item Key="PendingTime">1</Item>
-                        <Item Key="Queue">1</Item>
-                        <Item Key="Responsible">1</Item>
-                        <Item Key="Priority">1</Item>
-                        <Item Key="Service">1</Item>
-                        <Item Key="State">1</Item>
-                        <Item Key="SLA">1</Item>
-                        <Item Key="Title">2</Item>
-                        <Item Key="Type">1</Item>
+                        <DefaultItem ValueType="Select">
+                            <Item ValueType="Option" Value="0" Translatable="1">0 - Disabled</Item>
+                            <Item ValueType="Option" Value="1" Translatable="1">1 - Available</Item>
+                            <Item ValueType="Option" Value="2" Translatable="1">2 - Enabled by default</Item>
+                        </DefaultItem>
+                        <Item Key="Age" SelectedID="2"></Item>
+                        <Item Key="Changed" SelectedID="1"></Item>
+                        <Item Key="Created" SelectedID="1"></Item>
+                        <Item Key="CustomerCompanyName" SelectedID="1"></Item>
+                        <Item Key="CustomerID" SelectedID="1"></Item>
+                        <Item Key="CustomerName" SelectedID="1"></Item>
+                        <Item Key="CustomerUserID" SelectedID="1"></Item>
+                        <Item Key="EscalationResponseTime" SelectedID="1"></Item>
+                        <Item Key="EscalationSolutionTime" SelectedID="1"></Item>
+                        <Item Key="EscalationTime" SelectedID="1"></Item>
+                        <Item Key="EscalationUpdateTime" SelectedID="1"></Item>
+                        <Item Key="TicketNumber" SelectedID="2"></Item>
+                        <Item Key="Lock" SelectedID="1"></Item>
+                        <Item Key="Owner" SelectedID="1"></Item>
+                        <Item Key="PendingTime" SelectedID="1"></Item>
+                        <Item Key="Queue" SelectedID="1"></Item>
+                        <Item Key="Responsible" SelectedID="1"></Item>
+                        <Item Key="Priority" SelectedID="1"></Item>
+                        <Item Key="Service" SelectedID="1"></Item>
+                        <Item Key="State" SelectedID="1"></Item>
+                        <Item Key="SLA" SelectedID="1"></Item>
+                        <Item Key="Title" SelectedID="2"></Item>
+                        <Item Key="Type" SelectedID="1"></Item>
                     </Hash>
                 </Item>
             </Hash>
         </Value>
     </Setting>
     <Setting Name="PreferencesGroups###CustomQueue" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the CustomQueue object in the preference view of the agent interface.</Description>
+        <Description Translatable="1">Parameters for the CustomQueue object in the preference view of the agent interface. Please note: setting 'Active' to 0 will only prevent agents from editing settings of this group in their personal preferences, but will still allow administrators to edit the settings of another user's behalf. Use 'PreferenceGroup' to control in which area these settings should be shown in the user interface.</Description>
         <Navigation>Frontend::Agent::View::Preferences</Navigation>
         <Value>
             <Hash>
@@ -6797,7 +6807,7 @@
         </Value>
     </Setting>
     <Setting Name="PreferencesGroups###CustomService" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the CustomService object in the preference view of the agent interface.</Description>
+        <Description Translatable="1">Parameters for the CustomService object in the preference view of the agent interface. Please note: setting 'Active' to 0 will only prevent agents from editing settings of this group in their personal preferences, but will still allow administrators to edit the settings of another user's behalf. Use 'PreferenceGroup' to control in which area these settings should be shown in the user interface.</Description>
         <Navigation>Frontend::Agent::View::Preferences</Navigation>
         <Value>
             <Hash>
@@ -6812,7 +6822,7 @@
         </Value>
     </Setting>
     <Setting Name="PreferencesGroups###RefreshTime" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the RefreshTime object in the preference view of the agent interface.</Description>
+        <Description Translatable="1">Parameters for the RefreshTime object in the preference view of the agent interface. Please note: setting 'Active' to 0 will only prevent agents from editing settings of this group in their personal preferences, but will still allow administrators to edit the settings of another user's behalf. Use 'PreferenceGroup' to control in which area these settings should be shown in the user interface.</Description>
         <Navigation>Frontend::Agent::View::Preferences</Navigation>
         <Value>
             <Hash>
@@ -6839,14 +6849,15 @@
         </Value>
     </Setting>
     <Setting Name="PreferencesGroups###TicketOverviewSmallPageShown" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the pages (in which the tickets are shown) of the small ticket overview.</Description>
+        <Description Translatable="1">Parameters for the pages (in which the tickets are shown) of the small ticket overview. Please note: setting 'Active' to 0 will only prevent agents from editing settings of this group in their personal preferences, but will still allow administrators to edit the settings of another user's behalf. Use 'PreferenceGroup' to control in which area these settings should be shown in the user interface.</Description>
         <Navigation>Frontend::Agent::View::Preferences</Navigation>
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">Ticket Overview "Small" Limit</Item>
-                <Item Key="Key" Translatable="1">Ticket limit per page for Ticket Overview "Small"</Item>
+                <Item Key="Desc" Translatable="1">Ticket limit per page for Ticket Overview "Small".</Item>
+                <Item Key="Key" Translatable="1"></Item>
                 <Item Key="Data">
                     <Hash>
                         <Item Key="10">10</Item>
@@ -6865,14 +6876,15 @@
         </Value>
     </Setting>
     <Setting Name="PreferencesGroups###TicketOverviewFilterSettings" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the column filters of the small ticket overview.</Description>
+        <Description Translatable="1">Parameters for the column filters of the small ticket overview. Please note: setting 'Active' to 0 will only prevent agents from editing settings of this group in their personal preferences, but will still allow administrators to edit the settings of another user's behalf. Use 'PreferenceGroup' to control in which area these settings should be shown in the user interface.</Description>
         <Navigation>Frontend::Agent::View::Preferences</Navigation>
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::ColumnFilters</Item>
                 <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">Enabled filters.</Item>
-                <Item Key="Key" Translatable="1">Column ticket filters for Ticket Overviews type "Small".</Item>
+                <Item Key="Desc" Translatable="1">Column ticket filters for Ticket Overviews type "Small".</Item>
+                <Item Key="Key" Translatable="1"></Item>
                 <Item Key="PrefKey">UserFilterColumnsEnabled</Item>
                 <Item Key="Prio">8100</Item>
                 <Item Key="Active">0</Item>
@@ -6880,14 +6892,15 @@
         </Value>
     </Setting>
     <Setting Name="PreferencesGroups###TicketOverviewMediumPageShown" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the pages (in which the tickets are shown) of the medium ticket overview.</Description>
+        <Description Translatable="1">Parameters for the pages (in which the tickets are shown) of the medium ticket overview. Please note: setting 'Active' to 0 will only prevent agents from editing settings of this group in their personal preferences, but will still allow administrators to edit the settings of another user's behalf. Use 'PreferenceGroup' to control in which area these settings should be shown in the user interface.</Description>
         <Navigation>Frontend::Agent::View::Preferences</Navigation>
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">Ticket Overview "Medium" Limit</Item>
-                <Item Key="Key" Translatable="1">Ticket limit per page for Ticket Overview "Medium"</Item>
+                <Item Key="Desc" Translatable="1">Ticket limit per page for Ticket Overview "Medium".</Item>
+                <Item Key="Key" Translatable="1"></Item>
                 <Item Key="Data">
                     <Hash>
                         <Item Key="10">10</Item>
@@ -6906,14 +6919,15 @@
         </Value>
     </Setting>
     <Setting Name="PreferencesGroups###TicketOverviewPreviewPageShown" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the pages (in which the tickets are shown) of the ticket preview overview.</Description>
+        <Description Translatable="1">Parameters for the pages (in which the tickets are shown) of the ticket preview overview. Please note: setting 'Active' to 0 will only prevent agents from editing settings of this group in their personal preferences, but will still allow administrators to edit the settings of another user's behalf. Use 'PreferenceGroup' to control in which area these settings should be shown in the user interface.</Description>
         <Navigation>Frontend::Agent::View::Preferences</Navigation>
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">Ticket Overview "Preview" Limit</Item>
-                <Item Key="Key" Translatable="1">Ticket limit per page for Ticket Overview "Preview"</Item>
+                <Item Key="Desc" Translatable="1">Ticket limit per page for Ticket Overview "Preview".</Item>
+                <Item Key="Key" Translatable="1"></Item>
                 <Item Key="Data">
                     <Hash>
                         <Item Key="10">10</Item>
@@ -6932,7 +6946,7 @@
         </Value>
     </Setting>
     <Setting Name="PreferencesGroups###CreateNextMask" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the CreateNextMask object in the preference view of the agent interface.</Description>
+        <Description Translatable="1">Parameters for the CreateNextMask object in the preference view of the agent interface. Please note: setting 'Active' to 0 will only prevent agents from editing settings of this group in their personal preferences, but will still allow administrators to edit the settings of another user's behalf. Use 'PreferenceGroup' to control in which area these settings should be shown in the user interface.</Description>
         <Navigation>Frontend::Agent::View::Preferences</Navigation>
         <Value>
             <Hash>
@@ -6943,8 +6957,8 @@
                 <Item Key="Key" Translatable="1"></Item>
                 <Item Key="Data">
                     <Hash>
-                        <Item Key="0">CreateTicket</Item>
-                        <Item Key="AgentTicketZoom">TicketZoom</Item>
+                        <Item Key="0" Translatable="1">Create Ticket</Item>
+                        <Item Key="AgentTicketZoom" Translatable="1">Ticket Zoom</Item>
                     </Hash>
                 </Item>
                 <Item Key="DataSelected"></Item>
@@ -7038,7 +7052,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::CustomerTicketMessage###Queue" Required="1" Valid="1">
-        <Description Translatable="1">Allows customers to set the ticket queue in the customer interface. If this is set to 'No', QueueDefault should be configured.</Description>
+        <Description Translatable="1">Allows customers to set the ticket queue in the customer interface. If this is not enabled, QueueDefault should be configured.</Description>
         <Navigation>Frontend::Customer::View::TicketMessage</Navigation>
         <Value>
             <Item ValueType="Checkbox">1</Item>
@@ -7052,7 +7066,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::CustomerTicketMessage###TicketType" Required="1" Valid="1">
-        <Description Translatable="1">Allows customers to set the ticket type in the customer interface. If this is set to 'No', TicketTypeDefault should be configured.</Description>
+        <Description Translatable="1">Allows customers to set the ticket type in the customer interface. If this is not enabled, TicketTypeDefault should be configured.</Description>
         <Navigation>Frontend::Customer::View::TicketMessage</Navigation>
         <Value>
             <Item ValueType="Checkbox">1</Item>
@@ -7126,8 +7140,8 @@
         <Navigation>Frontend::Customer::View::TicketMessage</Navigation>
         <Value>
             <Item ValueType="Select" SelectedID="Queue">
-                <Item ValueType="Option" Value="Queue">Queue</Item>
-                <Item ValueType="Option" Value="SystemAddress">SystemAddress</Item>
+                <Item ValueType="Option" Value="Queue" Translatable="1">Queue</Item>
+                <Item ValueType="Option" Value="SystemAddress" Translatable="1">System address</Item>
             </Item>
         </Value>
     </Setting>
@@ -7225,7 +7239,7 @@
         </Value>
     </Setting>
     <Setting Name="Ticket::Frontend::CustomerTicketZoom###AttributesView" Required="1" Valid="1">
-        <Description Translatable="1">Shows the activated ticket attributes in the customer interface (0 = Disabled and 1 = Enabled).</Description>
+        <Description Translatable="1">Shows the enabled ticket attributes in the customer interface (0 = Disabled and 1 = Enabled).</Description>
         <Navigation>Frontend::Customer::View::TicketZoom</Navigation>
         <Value>
             <Hash>
@@ -7245,6 +7259,30 @@
         <Navigation>Frontend::Customer::View::TicketZoom</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
+        </Value>
+    </Setting>
+    <Setting Name="Ticket::Frontend::CustomerTicketZoom###CustomerZoomExpand" Required="1" Valid="1">
+        <Description Translatable="1">Shows all the articles of the ticket (expanded) in the customer zoom view.</Description>
+        <Navigation>Frontend::Customer::View::TicketZoom</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">0</Item>
+        </Value>
+    </Setting>
+    <Setting Name="Ticket::Frontend::CustomerTicketZoom###DisplayNoteFrom" Required="1" Valid="1">
+        <Description Translatable="1">Defines the displayed style of the From field in notes that are visible for customers. A default agent name can be defined in Ticket::Frontend::CustomerTicketZoom###DefaultAgentName setting.</Description>
+        <Navigation>Frontend::Customer::View::TicketZoom</Navigation>
+        <Value>
+            <Item ValueType="Select" SelectedID="FromField">
+                <Item ValueType="Option" Value="FromField" Translatable="1">The value of the From field</Item>
+                <Item ValueType="Option" Value="DefaultAgentName" Translatable="1">Default agent name</Item>
+            </Item>
+        </Value>
+    </Setting>
+    <Setting Name="Ticket::Frontend::CustomerTicketZoom###DefaultAgentName" Required="1" Valid="1">
+        <Description Translatable="1">Defines the default agent name in the ticket zoom view of the customer interface.</Description>
+        <Navigation>Frontend::Customer::View::TicketZoom</Navigation>
+        <Value>
+            <Item ValueType="String" Translatable="1">Support Agent</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::CustomerTicketSearch::SearchLimit" Required="1" Valid="1">
@@ -7465,54 +7503,58 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Frontend::Navigation###AgentTicketQueue###1" Required="0" Valid="1">
-        <Description Translatable="1">Main menu for the agent interface.</Description>
+    <Setting Name="Frontend::Navigation###AgentTicketQueue###002-Ticket" Required="0" Valid="1">
+        <Description Translatable="1">Main menu item registration.</Description>
         <Navigation>Frontend::Agent::ModuleRegistration::MainMenu</Navigation>
         <Value>
-            <Hash>
-                <Item Key="Group">
-                    <Array>
-                    </Array>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+                <Item>
+                    <Hash>
+                        <Item Key="Group">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="GroupRo">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="Description" Translatable="1">Overview of all Tickets per assigned Queue.</Item>
+                        <Item Key="Name" Translatable="1">Queue view</Item>
+                        <Item Key="Link">Action=AgentTicketQueue</Item>
+                        <Item Key="LinkOption"></Item>
+                        <Item Key="NavBar">Ticket</Item>
+                        <Item Key="Type"></Item>
+                        <Item Key="Block"></Item>
+                        <Item Key="AccessKey">o</Item>
+                        <Item Key="Prio">100</Item>
+                    </Hash>
                 </Item>
-                <Item Key="GroupRo">
-                    <Array>
-                    </Array>
+                <Item>
+                    <Hash>
+                        <Item Key="Group">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="GroupRo">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="Description" Translatable="1">Overview of all Tickets per assigned Queue.</Item>
+                        <Item Key="Name" Translatable="1">Tickets</Item>
+                        <Item Key="Link">Action=AgentTicketQueue</Item>
+                        <Item Key="LinkOption"></Item>
+                        <Item Key="NavBar">Ticket</Item>
+                        <Item Key="Type">Menu</Item>
+                        <Item Key="Block">ItemArea</Item>
+                        <Item Key="AccessKey">t</Item>
+                        <Item Key="Prio">200</Item>
+                    </Hash>
                 </Item>
-                <Item Key="Description" Translatable="1">Overview of all open Tickets.</Item>
-                <Item Key="Name" Translatable="1">Queue view</Item>
-                <Item Key="Link">Action=AgentTicketQueue</Item>
-                <Item Key="LinkOption"></Item>
-                <Item Key="NavBar">Ticket</Item>
-                <Item Key="Type"></Item>
-                <Item Key="Block"></Item>
-                <Item Key="AccessKey">o</Item>
-                <Item Key="Prio">100</Item>
-            </Hash>
-        </Value>
-    </Setting>
-    <Setting Name="Frontend::Navigation###AgentTicketQueue###2" Required="0" Valid="1">
-        <Description Translatable="1">Main menu for the agent interface.</Description>
-        <Navigation>Frontend::Agent::ModuleRegistration::MainMenu</Navigation>
-        <Value>
-            <Hash>
-                <Item Key="Group">
-                    <Array>
-                    </Array>
-                </Item>
-                <Item Key="GroupRo">
-                    <Array>
-                    </Array>
-                </Item>
-                <Item Key="Description"></Item>
-                <Item Key="Name" Translatable="1">Tickets</Item>
-                <Item Key="Link">Action=AgentTicketQueue</Item>
-                <Item Key="LinkOption"></Item>
-                <Item Key="NavBar">Ticket</Item>
-                <Item Key="Type">Menu</Item>
-                <Item Key="Block">ItemArea</Item>
-                <Item Key="AccessKey">t</Item>
-                <Item Key="Prio">200</Item>
-            </Hash>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::Module###AgentTicketService" Required="0" Valid="1">
@@ -7558,29 +7600,37 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Frontend::Navigation###AgentTicketService###1" Required="0" Valid="1">
-        <Description Translatable="1">Main menu for the agent interface.</Description>
+    <Setting Name="Frontend::Navigation###AgentTicketService###002-Ticket" Required="0" Valid="1">
+        <Description Translatable="1">Main menu item registration.</Description>
         <Navigation>Frontend::Agent::ModuleRegistration::MainMenu</Navigation>
         <Value>
-            <Hash>
-                <Item Key="Group">
-                    <Array>
-                    </Array>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+                <Item>
+                    <Hash>
+                        <Item Key="Group">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="GroupRo">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="Description" Translatable="1">Overview of all open Tickets.</Item>
+                        <Item Key="Name" Translatable="1">Service view</Item>
+                        <Item Key="Link">Action=AgentTicketService</Item>
+                        <Item Key="LinkOption"></Item>
+                        <Item Key="NavBar">Ticket</Item>
+                        <Item Key="Type"></Item>
+                        <Item Key="Block"></Item>
+                        <Item Key="AccessKey">i</Item>
+                        <Item Key="Prio">105</Item>
+                    </Hash>
                 </Item>
-                <Item Key="GroupRo">
-                    <Array>
-                    </Array>
-                </Item>
-                <Item Key="Description" Translatable="1">Overview of all open Tickets.</Item>
-                <Item Key="Name" Translatable="1">Service view</Item>
-                <Item Key="Link">Action=AgentTicketService</Item>
-                <Item Key="LinkOption"></Item>
-                <Item Key="NavBar">Ticket</Item>
-                <Item Key="Type"></Item>
-                <Item Key="Block"></Item>
-                <Item Key="AccessKey">O</Item>
-                <Item Key="Prio">105</Item>
-            </Hash>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::Module###AgentTicketPhone" Required="0" Valid="1">
@@ -7621,29 +7671,37 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Frontend::Navigation###AgentTicketPhone###1" Required="0" Valid="1">
-        <Description Translatable="1">Main menu for the agent interface.</Description>
+    <Setting Name="Frontend::Navigation###AgentTicketPhone###002-Ticket" Required="0" Valid="1">
+        <Description Translatable="1">Main menu item registration.</Description>
         <Navigation>Frontend::Agent::ModuleRegistration::MainMenu</Navigation>
         <Value>
-            <Hash>
-                <Item Key="Group">
-                    <Array>
-                    </Array>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+                <Item>
+                    <Hash>
+                        <Item Key="Group">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="GroupRo">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="Description" Translatable="1">Create new phone ticket (inbound).</Item>
+                        <Item Key="Name" Translatable="1">New phone ticket</Item>
+                        <Item Key="Link">Action=AgentTicketPhone</Item>
+                        <Item Key="LinkOption"></Item>
+                        <Item Key="NavBar">Ticket</Item>
+                        <Item Key="Type"></Item>
+                        <Item Key="Block"></Item>
+                        <Item Key="AccessKey">n</Item>
+                        <Item Key="Prio">200</Item>
+                    </Hash>
                 </Item>
-                <Item Key="GroupRo">
-                    <Array>
-                    </Array>
-                </Item>
-                <Item Key="Description" Translatable="1">Create new phone ticket (inbound).</Item>
-                <Item Key="Name" Translatable="1">New phone ticket</Item>
-                <Item Key="Link">Action=AgentTicketPhone</Item>
-                <Item Key="LinkOption"></Item>
-                <Item Key="NavBar">Ticket</Item>
-                <Item Key="Type"></Item>
-                <Item Key="Block"></Item>
-                <Item Key="AccessKey">n</Item>
-                <Item Key="Prio">200</Item>
-            </Hash>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::Module###AgentTicketPhoneOutbound" Required="0" Valid="1">
@@ -7756,29 +7814,37 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Frontend::Navigation###AgentTicketEmail###1" Required="0" Valid="1">
-        <Description Translatable="1">Main menu for the agent interface.</Description>
+    <Setting Name="Frontend::Navigation###AgentTicketEmail###002-Ticket" Required="0" Valid="1">
+        <Description Translatable="1">Main menu item registration.</Description>
         <Navigation>Frontend::Agent::ModuleRegistration::MainMenu</Navigation>
         <Value>
-            <Hash>
-                <Item Key="Group">
-                    <Array>
-                    </Array>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+                <Item>
+                    <Hash>
+                        <Item Key="Group">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="GroupRo">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="Description" Translatable="1">Create new email ticket and send this out (outbound).</Item>
+                        <Item Key="Name" Translatable="1">New email ticket</Item>
+                        <Item Key="Link">Action=AgentTicketEmail</Item>
+                        <Item Key="LinkOption"></Item>
+                        <Item Key="NavBar">Ticket</Item>
+                        <Item Key="Type"></Item>
+                        <Item Key="Block"></Item>
+                        <Item Key="AccessKey">m</Item>
+                        <Item Key="Prio">210</Item>
+                    </Hash>
                 </Item>
-                <Item Key="GroupRo">
-                    <Array>
-                    </Array>
-                </Item>
-                <Item Key="Description" Translatable="1">Create new email ticket and send this out (outbound).</Item>
-                <Item Key="Name" Translatable="1">New email ticket</Item>
-                <Item Key="Link">Action=AgentTicketEmail</Item>
-                <Item Key="LinkOption"></Item>
-                <Item Key="NavBar">Ticket</Item>
-                <Item Key="Type"></Item>
-                <Item Key="Block"></Item>
-                <Item Key="AccessKey">m</Item>
-                <Item Key="Prio">210</Item>
-            </Hash>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::Module###AgentTicketSearch" Required="0" Valid="1">
@@ -7823,29 +7889,37 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Frontend::Navigation###AgentTicketSearch###1" Required="0" Valid="1">
-        <Description Translatable="1">Main menu for the agent interface.</Description>
+    <Setting Name="Frontend::Navigation###AgentTicketSearch###002-Ticket" Required="0" Valid="1">
+        <Description Translatable="1">Main menu item registration.</Description>
         <Navigation>Frontend::Agent::ModuleRegistration::MainMenu</Navigation>
         <Value>
-            <Hash>
-                <Item Key="Group">
-                    <Array>
-                    </Array>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+                <Item>
+                    <Hash>
+                        <Item Key="Group">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="GroupRo">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="Description" Translatable="1">Search Tickets.</Item>
+                        <Item Key="Name" Translatable="1">Search</Item>
+                        <Item Key="Link">Action=AgentTicketSearch</Item>
+                        <Item Key="LinkOption">onclick="window.setTimeout(function(){Core.Agent.Search.OpenSearchDialog('AgentTicketSearch');}, 0); return false;"</Item>
+                        <Item Key="NavBar">Ticket</Item>
+                        <Item Key="Type"></Item>
+                        <Item Key="Block"></Item>
+                        <Item Key="AccessKey">s</Item>
+                        <Item Key="Prio">300</Item>
+                    </Hash>
                 </Item>
-                <Item Key="GroupRo">
-                    <Array>
-                    </Array>
-                </Item>
-                <Item Key="Description" Translatable="1">Search Tickets.</Item>
-                <Item Key="Name" Translatable="1">Search</Item>
-                <Item Key="Link">Action=AgentTicketSearch</Item>
-                <Item Key="LinkOption">onclick="window.setTimeout(function(){Core.Agent.Search.OpenSearchDialog('AgentTicketSearch');}, 0); return false;"</Item>
-                <Item Key="NavBar">Ticket</Item>
-                <Item Key="Type"></Item>
-                <Item Key="Block"></Item>
-                <Item Key="AccessKey">s</Item>
-                <Item Key="Prio">300</Item>
-            </Hash>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::Module###AgentTicketLockedView" Required="0" Valid="1">
@@ -7884,9 +7958,23 @@
                     <Array>
                         <Item>Core.UI.AllocationList.js</Item>
                         <Item>Core.Agent.TableFilters.js</Item>
+                        <Item>Core.Agent.Overview.js</Item>
+                        <Item>Core.Agent.TicketSplit.js</Item>
                     </Array>
                 </Item>
             </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::Navigation###AgentTicketLockedView###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Agent::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::Module###AgentTicketResponsibleView" Required="0" Valid="1">
@@ -7931,6 +8019,18 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Frontend::Navigation###AgentTicketResponsibleView###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Agent::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
     <Setting Name="Frontend::Module###AgentTicketWatchView" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Navigation>Frontend::Agent::ModuleRegistration</Navigation>
@@ -7967,9 +8067,23 @@
                     <Array>
                         <Item>Core.UI.AllocationList.js</Item>
                         <Item>Core.Agent.TableFilters.js</Item>
+                        <Item>Core.Agent.Overview.js</Item>
+                        <Item>Core.Agent.TicketSplit.js</Item>
                     </Array>
                 </Item>
             </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::Navigation###AgentTicketWatchView###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Agent::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::Module###AgentCustomerSearch" Required="0" Valid="1">
@@ -8056,29 +8170,37 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Frontend::Navigation###AgentTicketStatusView###1" Required="0" Valid="1">
-        <Description Translatable="1">Main menu for the agent interface.</Description>
+    <Setting Name="Frontend::Navigation###AgentTicketStatusView###002-Ticket" Required="0" Valid="1">
+        <Description Translatable="1">Main menu item registration.</Description>
         <Navigation>Frontend::Agent::ModuleRegistration::MainMenu</Navigation>
         <Value>
-            <Hash>
-                <Item Key="Group">
-                    <Array>
-                    </Array>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+                <Item>
+                    <Hash>
+                        <Item Key="Group">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="GroupRo">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="Description" Translatable="1">Overview of all open Tickets.</Item>
+                        <Item Key="Name" Translatable="1">Status view</Item>
+                        <Item Key="Link">Action=AgentTicketStatusView</Item>
+                        <Item Key="LinkOption"></Item>
+                        <Item Key="NavBar">Ticket</Item>
+                        <Item Key="Type"></Item>
+                        <Item Key="Block"></Item>
+                        <Item Key="AccessKey">v</Item>
+                        <Item Key="Prio">110</Item>
+                    </Hash>
                 </Item>
-                <Item Key="GroupRo">
-                    <Array>
-                    </Array>
-                </Item>
-                <Item Key="Description" Translatable="1">Overview of all open Tickets.</Item>
-                <Item Key="Name" Translatable="1">Status view</Item>
-                <Item Key="Link">Action=AgentTicketStatusView</Item>
-                <Item Key="LinkOption"></Item>
-                <Item Key="NavBar">Ticket</Item>
-                <Item Key="Type"></Item>
-                <Item Key="Block"></Item>
-                <Item Key="AccessKey">v</Item>
-                <Item Key="Prio">110</Item>
-            </Hash>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::Module###AgentTicketEscalationView" Required="0" Valid="1">
@@ -8123,29 +8245,37 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="Frontend::Navigation###AgentTicketEscalationView###1" Required="0" Valid="1">
-        <Description Translatable="1">Main menu for the agent interface.</Description>
+    <Setting Name="Frontend::Navigation###AgentTicketEscalationView###002-Ticket" Required="0" Valid="1">
+        <Description Translatable="1">Main menu item registration.</Description>
         <Navigation>Frontend::Agent::ModuleRegistration::MainMenu</Navigation>
         <Value>
-            <Hash>
-                <Item Key="Group">
-                    <Array>
-                    </Array>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+                <Item>
+                    <Hash>
+                        <Item Key="Group">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="GroupRo">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="Description" Translatable="1">Overview Escalated Tickets.</Item>
+                        <Item Key="Name" Translatable="1">Escalation view</Item>
+                        <Item Key="Link">Action=AgentTicketEscalationView</Item>
+                        <Item Key="LinkOption"></Item>
+                        <Item Key="NavBar">Ticket</Item>
+                        <Item Key="Type"></Item>
+                        <Item Key="Block"></Item>
+                        <Item Key="AccessKey">e</Item>
+                        <Item Key="Prio">120</Item>
+                    </Hash>
                 </Item>
-                <Item Key="GroupRo">
-                    <Array>
-                    </Array>
-                </Item>
-                <Item Key="Description" Translatable="1">Overview Escalated Tickets.</Item>
-                <Item Key="Name" Translatable="1">Escalation view</Item>
-                <Item Key="Link">Action=AgentTicketEscalationView</Item>
-                <Item Key="LinkOption"></Item>
-                <Item Key="NavBar">Ticket</Item>
-                <Item Key="Type"></Item>
-                <Item Key="Block"></Item>
-                <Item Key="AccessKey">e</Item>
-                <Item Key="Prio">120</Item>
-            </Hash>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::Module###AgentZoom" Required="0" Valid="1">
@@ -8505,8 +8635,8 @@
         <Navigation>Frontend::Agent::View::TicketMove</Navigation>
         <Value>
             <Item ValueType="Select" SelectedID="TicketZoom">
-                <Item ValueType="Option" Value="TicketZoom">TicketZoom</Item>
-                <Item ValueType="Option" Value="LastScreenOverview">LastScreenOverview</Item>
+                <Item ValueType="Option" Value="TicketZoom" Translatable="1">Ticket Zoom</Item>
+                <Item ValueType="Option" Value="LastScreenOverview" Translatable="1">Last Screen Overview</Item>
             </Item>
         </Value>
     </Setting>
@@ -9039,6 +9169,18 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Frontend::Navigation###AdminACL###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
     <Setting Name="Frontend::NavigationModule###AdminACL" Required="0" Valid="1">
         <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
@@ -9096,6 +9238,18 @@
                     </Array>
                 </Item>
             </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::Navigation###AdminQueue###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::NavigationModule###AdminQueue" Required="0" Valid="1">
@@ -9156,6 +9310,18 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Frontend::Navigation###AdminTemplate###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
     <Setting Name="Frontend::NavigationModule###AdminTemplate" Required="0" Valid="1">
         <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
@@ -9212,6 +9378,18 @@
                     </Array>
                 </Item>
             </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::Navigation###AdminQueueTemplates###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::NavigationModule###AdminQueueTemplates" Required="0" Valid="1">
@@ -9272,6 +9450,18 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Frontend::Navigation###AdminAutoResponse###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
     <Setting Name="Frontend::NavigationModule###AdminAutoResponse" Required="0" Valid="1">
         <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
@@ -9311,7 +9501,7 @@
                         </Array>
                     </Item>
                     <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
-                    <Item Key="Title" Translatable="1">Auto Responses ↔ Queues</Item>
+                    <Item Key="Title" Translatable="1">Queues ↔ Auto Responses</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
             </Item>
@@ -9330,6 +9520,18 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Frontend::Navigation###AdminQueueAutoResponse###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
     <Setting Name="Frontend::NavigationModule###AdminQueueAutoResponse" Required="0" Valid="1">
         <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
@@ -9345,7 +9547,7 @@
                     </Array>
                 </Item>
                 <Item Key="Module">Kernel::Output::HTML::NavBar::ModuleAdmin</Item>
-                <Item Key="Name" Translatable="1">Auto Responses ↔ Queues</Item>
+                <Item Key="Name" Translatable="1">Queues ↔ Auto Responses</Item>
                 <Item Key="Block">Ticket</Item>
                 <Item Key="Description" Translatable="1">Link queues to auto responses.</Item>
                 <Item Key="IconBig">fa-reply</Item>
@@ -9388,6 +9590,18 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Frontend::Navigation###AdminAttachment###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
     <Setting Name="Frontend::NavigationModule###AdminAttachment" Required="0" Valid="1">
         <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
@@ -9427,7 +9641,7 @@
                         </Array>
                     </Item>
                     <Item Key="Description" Translatable="1">This module is part of the admin area of OTRS.</Item>
-                    <Item Key="Title" Translatable="1">Attachments ↔ Templates</Item>
+                    <Item Key="Title" Translatable="1">Templates ↔ Attachments</Item>
                     <Item Key="NavBarName">Admin</Item>
                 </Hash>
             </Item>
@@ -9446,6 +9660,18 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Frontend::Navigation###AdminTemplateAttachment###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
     <Setting Name="Frontend::NavigationModule###AdminTemplateAttachment" Required="0" Valid="1">
         <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
@@ -9461,9 +9687,9 @@
                     </Array>
                 </Item>
                 <Item Key="Module">Kernel::Output::HTML::NavBar::ModuleAdmin</Item>
-                <Item Key="Name" Translatable="1">Attachments ↔ Templates</Item>
+                <Item Key="Name" Translatable="1">Templates ↔ Attachments</Item>
                 <Item Key="Block">Ticket</Item>
-                <Item Key="Description" Translatable="1">Link attachments to templates.</Item>
+                <Item Key="Description" Translatable="1">Link templates to attachments.</Item>
                 <Item Key="IconBig">fa-paperclip</Item>
                 <Item Key="IconSmall">fa-file-text-o</Item>
             </Hash>
@@ -9502,6 +9728,18 @@
                     </Array>
                 </Item>
             </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::Navigation###AdminSalutation###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::NavigationModule###AdminSalutation" Required="0" Valid="1">
@@ -9562,6 +9800,18 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Frontend::Navigation###AdminSignature###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
     <Setting Name="Frontend::NavigationModule###AdminSignature" Required="0" Valid="1">
         <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
@@ -9618,6 +9868,18 @@
                     </Array>
                 </Item>
             </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::Navigation###AdminSystemAddress###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::NavigationModule###AdminSystemAddress" Required="0" Valid="1">
@@ -9683,6 +9945,18 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Frontend::Navigation###AdminNotificationEvent###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
     <Setting Name="Frontend::NavigationModule###AdminNotificationEvent" Required="0" Valid="1">
         <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
@@ -9741,6 +10015,18 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Frontend::Navigation###AdminService###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
     <Setting Name="Frontend::NavigationModule###AdminService" Required="0" Valid="1">
         <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
@@ -9797,6 +10083,18 @@
                     </Array>
                 </Item>
             </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::Navigation###AdminSLA###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::NavigationModule###AdminSLA" Required="0" Valid="1">
@@ -9858,6 +10156,18 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Frontend::Navigation###AdminType###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
     <Setting Name="Frontend::NavigationModule###AdminType" Required="0" Valid="1">
         <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
@@ -9915,6 +10225,18 @@
                     </Array>
                 </Item>
             </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Frontend::Navigation###AdminState###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Frontend::NavigationModule###AdminState" Required="0" Valid="1">
@@ -9976,6 +10298,18 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Frontend::Navigation###AdminPriority###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
     <Setting Name="Frontend::NavigationModule###AdminPriority" Required="0" Valid="1">
         <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
@@ -10034,6 +10368,18 @@
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Frontend::Navigation###AdminGenericAgent###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
     <Setting Name="Frontend::NavigationModule###AdminGenericAgent" Required="0" Valid="1">
         <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
@@ -10080,6 +10426,20 @@
         <Navigation>Core::Ticket</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex="^[0-9]{1,6}$">4000</Item>
+        </Value>
+    </Setting>
+    <Setting Name="Ticket::GenericAgentAllowCustomScriptExecution" Required="0" Valid="1">
+        <Description Translatable="1">Allows generic agent to execute custom command line scripts.</Description>
+        <Navigation>Core::Ticket</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">1</Item>
+        </Value>
+    </Setting>
+    <Setting Name="Ticket::GenericAgentAllowCustomModuleExecution" Required="0" Valid="1">
+        <Description Translatable="1">Allows generic agent to execute custom modules.</Description>
+        <Navigation>Core::Ticket</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">1</Item>
         </Value>
     </Setting>
     <Setting Name="Ticket::UnlockOnAway" Required="1" Valid="1">
@@ -10255,7 +10615,7 @@
         </Value>
     </Setting>
     <Setting Name="PreferencesGroups###NotificationEvent" Required="0" Valid="1">
-        <Description Translatable="1">Transport selection for ticket notifications.</Description>
+        <Description Translatable="1">Transport selection for ticket notifications. Please note: setting 'Active' to 0 will only prevent agents from editing settings of this group in their personal preferences, but will still allow administrators to edit the settings of another user's behalf. Use 'PreferenceGroup' to control in which area these settings should be shown in the user interface.</Description>
         <Navigation>Frontend::Agent::View::Preferences</Navigation>
         <Value>
             <Hash>
@@ -10297,79 +10657,79 @@
             </Item>
         </Value>
     </Setting>
-    <Setting Name="CustomerFrontend::Navigation###CustomerTicketOverview###1" Required="0" Valid="1">
-        <Description Translatable="1">Main menu for the agent interface.</Description>
+    <Setting Name="CustomerFrontend::Navigation###CustomerTicketOverview###002-Ticket" Required="0" Valid="1">
+        <Description Translatable="1">Main menu item registration.</Description>
         <Navigation>Frontend::Customer::ModuleRegistration::MainMenu</Navigation>
         <Value>
-            <Hash>
-                <Item Key="Group">
-                    <Array>
-                    </Array>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+                <Item>
+                    <Hash>
+                        <Item Key="Group">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="GroupRo">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="Description" Translatable="1">Tickets.</Item>
+                        <Item Key="Name" Translatable="1">Tickets</Item>
+                        <Item Key="Link">Action=CustomerTicketOverview;Subaction=MyTickets</Item>
+                        <Item Key="LinkOption"></Item>
+                        <Item Key="NavBar">Ticket</Item>
+                        <Item Key="Type">Menu</Item>
+                        <Item Key="Block"></Item>
+                        <Item Key="AccessKey">m</Item>
+                        <Item Key="Prio">100</Item>
+                    </Hash>
                 </Item>
-                <Item Key="GroupRo">
-                    <Array>
-                    </Array>
+                <Item>
+                    <Hash>
+                        <Item Key="Group">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="GroupRo">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="Description" Translatable="1">My Tickets.</Item>
+                        <Item Key="Name" Translatable="1">My Tickets</Item>
+                        <Item Key="Link">Action=CustomerTicketOverview;Subaction=MyTickets</Item>
+                        <Item Key="LinkOption"></Item>
+                        <Item Key="NavBar">Ticket</Item>
+                        <Item Key="Type">Submenu</Item>
+                        <Item Key="Block"></Item>
+                        <Item Key="AccessKey"></Item>
+                        <Item Key="Prio">110</Item>
+                    </Hash>
                 </Item>
-                <Item Key="Description" Translatable="1">Tickets.</Item>
-                <Item Key="Name" Translatable="1">Tickets</Item>
-                <Item Key="Link">Action=CustomerTicketOverview;Subaction=MyTickets</Item>
-                <Item Key="LinkOption"></Item>
-                <Item Key="NavBar">Ticket</Item>
-                <Item Key="Type">Menu</Item>
-                <Item Key="Block"></Item>
-                <Item Key="AccessKey">m</Item>
-                <Item Key="Prio">100</Item>
-            </Hash>
-        </Value>
-    </Setting>
-    <Setting Name="CustomerFrontend::Navigation###CustomerTicketOverview###2" Required="0" Valid="1">
-        <Description Translatable="1">Main menu for the agent interface.</Description>
-        <Navigation>Frontend::Customer::ModuleRegistration::MainMenu</Navigation>
-        <Value>
-            <Hash>
-                <Item Key="Group">
-                    <Array>
-                    </Array>
+                <Item>
+                    <Hash>
+                        <Item Key="Group">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="GroupRo">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="Description" Translatable="1">Company Tickets.</Item>
+                        <Item Key="Name" Translatable="1">Company Tickets</Item>
+                        <Item Key="Link">Action=CustomerTicketOverview;Subaction=CompanyTickets</Item>
+                        <Item Key="LinkOption"></Item>
+                        <Item Key="NavBar">Ticket</Item>
+                        <Item Key="Type">Submenu</Item>
+                        <Item Key="Block"></Item>
+                        <Item Key="AccessKey">t</Item>
+                        <Item Key="Prio">120</Item>
+                    </Hash>
                 </Item>
-                <Item Key="GroupRo">
-                    <Array>
-                    </Array>
-                </Item>
-                <Item Key="Description" Translatable="1">My Tickets.</Item>
-                <Item Key="Name" Translatable="1">My Tickets</Item>
-                <Item Key="Link">Action=CustomerTicketOverview;Subaction=MyTickets</Item>
-                <Item Key="LinkOption"></Item>
-                <Item Key="NavBar">Ticket</Item>
-                <Item Key="Type">Submenu</Item>
-                <Item Key="Block"></Item>
-                <Item Key="AccessKey"></Item>
-                <Item Key="Prio">110</Item>
-            </Hash>
-        </Value>
-    </Setting>
-    <Setting Name="CustomerFrontend::Navigation###CustomerTicketOverview###3" Required="0" Valid="1">
-        <Description Translatable="1">Main menu for the agent interface.</Description>
-        <Navigation>Frontend::Customer::ModuleRegistration::MainMenu</Navigation>
-        <Value>
-            <Hash>
-                <Item Key="Group">
-                    <Array>
-                    </Array>
-                </Item>
-                <Item Key="GroupRo">
-                    <Array>
-                    </Array>
-                </Item>
-                <Item Key="Description" Translatable="1">Company Tickets.</Item>
-                <Item Key="Name" Translatable="1">Company Tickets</Item>
-                <Item Key="Link">Action=CustomerTicketOverview;Subaction=CompanyTickets</Item>
-                <Item Key="LinkOption"></Item>
-                <Item Key="NavBar">Ticket</Item>
-                <Item Key="Type">Submenu</Item>
-                <Item Key="Block"></Item>
-                <Item Key="AccessKey">M</Item>
-                <Item Key="Prio">120</Item>
-            </Hash>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="CustomerFrontend::Module###CustomerTicketMessage" Required="0" Valid="1">
@@ -10394,7 +10754,7 @@
         </Value>
     </Setting>
     <Setting Name="Loader::Module::CustomerTicketMessage###002-Ticket" Required="0" Valid="1">
-        <Description Translatable="1">Loader module registration for the agent interface.</Description>
+        <Description Translatable="1">Loader module registration for the customer interface.</Description>
         <Navigation>Frontend::Customer::ModuleRegistration::Loader</Navigation>
         <Value>
             <Hash>
@@ -10406,29 +10766,37 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="CustomerFrontend::Navigation###CustomerTicketMessage###1" Required="0" Valid="1">
-        <Description Translatable="1">Main menu for the agent interface.</Description>
+    <Setting Name="CustomerFrontend::Navigation###CustomerTicketMessage###002-Ticket" Required="0" Valid="1">
+        <Description Translatable="1">Main menu item registration.</Description>
         <Navigation>Frontend::Customer::ModuleRegistration::MainMenu</Navigation>
         <Value>
-            <Hash>
-                <Item Key="Group">
-                    <Array>
-                    </Array>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+                <Item>
+                    <Hash>
+                        <Item Key="Group">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="GroupRo">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="Description" Translatable="1">Create new Ticket.</Item>
+                        <Item Key="Name" Translatable="1">New Ticket</Item>
+                        <Item Key="Link">Action=CustomerTicketMessage</Item>
+                        <Item Key="LinkOption"></Item>
+                        <Item Key="NavBar">Ticket</Item>
+                        <Item Key="Type">Submenu</Item>
+                        <Item Key="Block"></Item>
+                        <Item Key="AccessKey">n</Item>
+                        <Item Key="Prio">100</Item>
+                    </Hash>
                 </Item>
-                <Item Key="GroupRo">
-                    <Array>
-                    </Array>
-                </Item>
-                <Item Key="Description" Translatable="1">Create new Ticket.</Item>
-                <Item Key="Name" Translatable="1">New Ticket</Item>
-                <Item Key="Link">Action=CustomerTicketMessage</Item>
-                <Item Key="LinkOption"></Item>
-                <Item Key="NavBar">Ticket</Item>
-                <Item Key="Type">Submenu</Item>
-                <Item Key="Block"></Item>
-                <Item Key="AccessKey">n</Item>
-                <Item Key="Prio">100</Item>
-            </Hash>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="CustomerFrontend::Module###CustomerTicketZoom" Required="0" Valid="1">
@@ -10453,7 +10821,7 @@
         </Value>
     </Setting>
     <Setting Name="Loader::Module::CustomerTicketZoom###002-Ticket" Required="0" Valid="1">
-        <Description Translatable="1">Loader module registration for the agent interface.</Description>
+        <Description Translatable="1">Loader module registration for the customer interface.</Description>
         <Navigation>Frontend::Customer::ModuleRegistration::Loader</Navigation>
         <Value>
             <Hash>
@@ -10551,7 +10919,7 @@
         </Value>
     </Setting>
     <Setting Name="Loader::Module::CustomerTicketSearch###002-Ticket" Required="0" Valid="1">
-        <Description Translatable="1">Loader module registration for the agent interface.</Description>
+        <Description Translatable="1">Loader module registration for the customer interface.</Description>
         <Navigation>Frontend::Customer::ModuleRegistration::Loader</Navigation>
         <Value>
             <Hash>
@@ -10563,29 +10931,37 @@
             </Hash>
         </Value>
     </Setting>
-    <Setting Name="CustomerFrontend::Navigation###CustomerTicketSearch###1" Required="0" Valid="1">
-        <Description Translatable="1">Main menu for the agent interface.</Description>
+    <Setting Name="CustomerFrontend::Navigation###CustomerTicketSearch###002-Ticket" Required="0" Valid="1">
+        <Description Translatable="1">Main menu item registration.</Description>
         <Navigation>Frontend::Customer::ModuleRegistration::MainMenu</Navigation>
         <Value>
-            <Hash>
-                <Item Key="Group">
-                    <Array>
-                    </Array>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+                <Item>
+                    <Hash>
+                        <Item Key="Group">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="GroupRo">
+                            <Array>
+                            </Array>
+                        </Item>
+                        <Item Key="Description" Translatable="1">Search.</Item>
+                        <Item Key="Name" Translatable="1">Search</Item>
+                        <Item Key="Link">Action=CustomerTicketSearch</Item>
+                        <Item Key="LinkOption"></Item>
+                        <Item Key="NavBar">Ticket</Item>
+                        <Item Key="Type">Submenu</Item>
+                        <Item Key="Block"></Item>
+                        <Item Key="AccessKey">s</Item>
+                        <Item Key="Prio">300</Item>
+                    </Hash>
                 </Item>
-                <Item Key="GroupRo">
-                    <Array>
-                    </Array>
-                </Item>
-                <Item Key="Description" Translatable="1">Search.</Item>
-                <Item Key="Name" Translatable="1">Search</Item>
-                <Item Key="Link">Action=CustomerTicketSearch</Item>
-                <Item Key="LinkOption"></Item>
-                <Item Key="NavBar">Ticket</Item>
-                <Item Key="Type">Submenu</Item>
-                <Item Key="Block"></Item>
-                <Item Key="AccessKey">s</Item>
-                <Item Key="Prio">300</Item>
-            </Hash>
+            </Array>
         </Value>
     </Setting>
     <Setting Name="Ticket::Acl::Module###1-Ticket::Acl::Module" Required="0" Valid="0">
@@ -10716,7 +11092,9 @@
         <Navigation>Core::Ticket::ACL</Navigation>
         <Value>
             <Array>
+                <Item>AgentAppointmentCalendarOverview</Item>
                 <Item>AgentTicketBounce</Item>
+                <Item>AgentTicketBulk</Item>
                 <Item>AgentTicketClose</Item>
                 <Item>AgentTicketCompose</Item>
                 <Item>AgentTicketCustomer</Item>
@@ -10745,6 +11123,7 @@
                 <Item>AgentTicketWatcher</Item>
                 <Item>AgentTicketZoom</Item>
                 <Item>AgentLinkObject</Item>
+                <Item>AgentSplitSelection</Item>
                 <Item>CustomerTicketPrint</Item>
                 <Item>CustomerTicketProcess</Item>
                 <Item>CustomerTicketZoom</Item>
@@ -10931,6 +11310,7 @@
                 <Item>In-Reply-To</Item>
                 <Item>Auto-Submitted</Item>
                 <Item>X-Loop</Item>
+                <Item>X-Spam</Item>
                 <Item>X-Spam-Flag</Item>
                 <Item>X-Spam-Level</Item>
                 <Item>X-Spam-Score</Item>
@@ -11143,7 +11523,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="PostMaster::PreFilterModule###000-ExternalTicketNumberRecognition1" Required="0" Valid="0">
-        <Description Translatable="1">Recognize if a ticket is a follow-up to an existing ticket using an external ticket number.</Description>
+        <Description Translatable="1">Recognize if a ticket is a follow-up to an existing ticket using an external ticket number. Note: the first capturing group from the 'NumberRegExp' expression will be used as the ticket number value.</Description>
         <Navigation>Core::Email::PostMaster</Navigation>
         <Value>
             <Hash>
@@ -11161,7 +11541,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="PostMaster::PreFilterModule###000-ExternalTicketNumberRecognition2" Required="0" Valid="0">
-        <Description Translatable="1">Recognize if a ticket is a follow-up to an existing ticket using an external ticket number.</Description>
+        <Description Translatable="1">Recognize if a ticket is a follow-up to an existing ticket using an external ticket number. Note: the first capturing group from the 'NumberRegExp' expression will be used as the ticket number value.</Description>
         <Navigation>Core::Email::PostMaster</Navigation>
         <Value>
             <Hash>
@@ -11179,7 +11559,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="PostMaster::PreFilterModule###000-ExternalTicketNumberRecognition3" Required="0" Valid="0">
-        <Description Translatable="1">Recognize if a ticket is a follow-up to an existing ticket using an external ticket number.</Description>
+        <Description Translatable="1">Recognize if a ticket is a follow-up to an existing ticket using an external ticket number. Note: the first capturing group from the 'NumberRegExp' expression will be used as the ticket number value.</Description>
         <Navigation>Core::Email::PostMaster</Navigation>
         <Value>
             <Hash>
@@ -11197,7 +11577,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="PostMaster::PreFilterModule###000-ExternalTicketNumberRecognition4" Required="0" Valid="0">
-        <Description Translatable="1">Recognize if a ticket is a follow-up to an existing ticket using an external ticket number.</Description>
+        <Description Translatable="1">Recognize if a ticket is a follow-up to an existing ticket using an external ticket number. Note: the first capturing group from the 'NumberRegExp' expression will be used as the ticket number value.</Description>
         <Navigation>Core::Email::PostMaster</Navigation>
         <Value>
             <Hash>
@@ -11320,7 +11700,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="AutoResponseForWebTickets" Required="1" Valid="1">
-        <Description Translatable="1">If this option is set to 'Yes', tickets created via the web interface, via Customers or Agents, will receive an autoresponse if configured. If this option is set to 'No', no autoresponses will be sent.</Description>
+        <Description Translatable="1">If this option is enabled, tickets created via the web interface, via Customers or Agents, will receive an autoresponse if configured. If this option is not enabled, no autoresponses will be sent.</Description>
         <Navigation>Core::Email::PostMaster</Navigation>
         <Value>
             <Item ValueType="Checkbox">1</Item>
@@ -11482,6 +11862,18 @@ Thanks for your help!
             </Hash>
         </Value>
     </Setting>
+    <Setting Name="Frontend::Navigation###AdminDynamicField###002-Ticket" Required="0" Valid="0">
+        <Description Translatable="1">Main menu item registration.</Description>
+        <Navigation>Frontend::Admin::ModuleRegistration::MainMenu</Navigation>
+        <Value>
+            <Array>
+                <DefaultItem ValueType="FrontendNavigation">
+                    <Hash>
+                    </Hash>
+                </DefaultItem>
+            </Array>
+        </Value>
+    </Setting>
     <Setting Name="Frontend::NavigationModule###AdminDynamicField" Required="0" Valid="1">
         <Description Translatable="1">Admin area navigation for the agent interface.</Description>
         <Navigation>Frontend::Admin::ModuleRegistration::AdminOverview</Navigation>
@@ -11506,14 +11898,15 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="PreferencesGroups###DynamicFieldsOverviewPageShown" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the pages (in which the dynamic fields are shown) of the dynamic fields overview.</Description>
+        <Description Translatable="1">Parameters for the pages (in which the dynamic fields are shown) of the dynamic fields overview. Please note: setting 'Active' to 0 will only prevent agents from editing settings of this group in their personal preferences, but will still allow administrators to edit the settings of another user's behalf. Use 'PreferenceGroup' to control in which area these settings should be shown in the user interface.</Description>
         <Navigation>Frontend::Agent::View::Preferences</Navigation>
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::Output::HTML::Preferences::Generic</Item>
                 <Item Key="PreferenceGroup">Miscellaneous</Item>
                 <Item Key="Label" Translatable="1">Dynamic Fields Overview Limit</Item>
-                <Item Key="Key" Translatable="1">Dynamic fields limit per page for Dynamic Fields Overview</Item>
+                <Item Key="Desc" Translatable="1">Dynamic fields limit per page for Dynamic Fields Overview.</Item>
+                <Item Key="Key" Translatable="1"></Item>
                 <Item Key="Data">
                     <Hash>
                         <Item Key="10">10</Item>
@@ -12193,6 +12586,10 @@ Thanks for your help!
         <Navigation>Frontend::Agent::View::TicketSearch</Navigation>
         <Value>
             <Hash>
+                <DefaultItem ValueType="Select">
+                    <Item ValueType="Option" Value="0" Translatable="1">0 - Disabled</Item>
+                    <Item ValueType="Option" Value="1" Translatable="1">1 - Enabled</Item>
+                </DefaultItem>
             </Hash>
         </Value>
     </Setting>
@@ -12225,6 +12622,10 @@ Thanks for your help!
         <Navigation>Frontend::Customer::View::TicketSearch</Navigation>
         <Value>
             <Hash>
+                <DefaultItem ValueType="Select">
+                    <Item ValueType="Option" Value="0" Translatable="1">0 - Disabled</Item>
+                    <Item ValueType="Option" Value="1" Translatable="1">1 - Enabled</Item>
+                </DefaultItem>
             </Hash>
         </Value>
     </Setting>
@@ -12239,7 +12640,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element1" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12250,7 +12651,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element2" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12261,7 +12662,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element3" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12272,7 +12673,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element4" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12283,7 +12684,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element5" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12294,7 +12695,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element6" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12305,7 +12706,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element7" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12316,7 +12717,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element8" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12327,7 +12728,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element9" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12338,7 +12739,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element10" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12349,7 +12750,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element11" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12360,7 +12761,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element12" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12371,7 +12772,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element13" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12382,7 +12783,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element14" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12393,7 +12794,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element15" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12404,7 +12805,7 @@ Thanks for your help!
         </Value>
     </Setting>
     <Setting Name="Ticket::TicketDynamicFieldDefault###Element16" Required="0" Valid="0">
-        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".</Description>
+        <Description Translatable="1">Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (https://doc.otrs.com/doc/), chapter "Ticket Event Module".</Description>
         <Navigation>Core::Ticket::DynamicFieldDefault</Navigation>
         <Value>
             <Hash>
@@ -12659,6 +13060,8 @@ Thanks for your help!
                 </DefaultItem>
                 <Item Key="Age" SelectedID="2"></Item>
                 <Item Key="Changed" SelectedID="1"></Item>
+                <Item Key="Created" SelectedID="1"></Item>
+                <Item Key="CustomerCompanyName" SelectedID="1"></Item>
                 <Item Key="CustomerID" SelectedID="2"></Item>
                 <Item Key="CustomerName" SelectedID="1"></Item>
                 <Item Key="CustomerUserID" SelectedID="1"></Item>
@@ -13182,6 +13585,319 @@ Thanks for your help!
                 <Item Key="LinkType">ParentChild</Item>
                 <Item Key="Direction">Target</Item>
             </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Ticket::Frontend::Article::Actions###Internal" Required="1" Valid="1">
+        <Description Translatable="1">Defines available article actions for Internal articles.</Description>
+        <Navigation>Frontend::Agent::View::TicketZoom::ArticleAction</Navigation>
+        <Value>
+            <Hash>
+                <DefaultItem>
+                    <Hash>
+                        <Item Key="Module"></Item>
+                        <Item Key="Prio"></Item>
+                        <Item Key="Valid"></Item>
+                    </Hash>
+                </DefaultItem>
+                <Item Key="AgentTicketCompose">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketCompose</Item>
+                        <Item Key="Prio">100</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketForward">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketForward</Item>
+                        <Item Key="Prio">200</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketBounce">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketBounce</Item>
+                        <Item Key="Prio">300</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketPhone">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketPhone</Item>
+                        <Item Key="Prio">400</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketPrint">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketPrint</Item>
+                        <Item Key="Prio">500</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketPlain">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketPlain</Item>
+                        <Item Key="Prio">600</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="MarkAsImportant">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::MarkAsImportant</Item>
+                        <Item Key="Prio">700</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketNote">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketNote</Item>
+                        <Item Key="Prio">800</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Ticket::Frontend::Article::Actions###Phone" Required="1" Valid="1">
+        <Description Translatable="1">Defines available article actions for Phone articles.</Description>
+        <Navigation>Frontend::Agent::View::TicketZoom::ArticleAction</Navigation>
+        <Value>
+            <Hash>
+                <DefaultItem>
+                    <Hash>
+                        <Item Key="Module"></Item>
+                        <Item Key="Prio"></Item>
+                        <Item Key="Valid"></Item>
+                    </Hash>
+                </DefaultItem>
+                <Item Key="AgentTicketCompose">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketCompose</Item>
+                        <Item Key="Prio">100</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketForward">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketForward</Item>
+                        <Item Key="Prio">200</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketBounce">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketBounce</Item>
+                        <Item Key="Prio">300</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketPhone">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketPhone</Item>
+                        <Item Key="Prio">400</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketPrint">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketPrint</Item>
+                        <Item Key="Prio">500</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketPlain">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketPlain</Item>
+                        <Item Key="Prio">600</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="MarkAsImportant">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::MarkAsImportant</Item>
+                        <Item Key="Prio">700</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketNote">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketNote</Item>
+                        <Item Key="Prio">800</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Ticket::Frontend::Article::Actions###Email" Required="1" Valid="1">
+        <Description Translatable="1">Defines available article actions for Email articles.</Description>
+        <Navigation>Frontend::Agent::View::TicketZoom::ArticleAction</Navigation>
+        <Value>
+            <Hash>
+                <DefaultItem>
+                    <Hash>
+                        <Item Key="Module"></Item>
+                        <Item Key="Prio"></Item>
+                        <Item Key="Valid"></Item>
+                    </Hash>
+                </DefaultItem>
+                <Item Key="AgentTicketCompose">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketCompose</Item>
+                        <Item Key="Prio">100</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketForward">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketForward</Item>
+                        <Item Key="Prio">200</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketBounce">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketBounce</Item>
+                        <Item Key="Prio">300</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketPhone">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketPhone</Item>
+                        <Item Key="Prio">400</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketPrint">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketPrint</Item>
+                        <Item Key="Prio">500</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketMessageLog">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketMessageLog</Item>
+                        <Item Key="Prio">550</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketPlain">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketPlain</Item>
+                        <Item Key="Prio">600</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="MarkAsImportant">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::MarkAsImportant</Item>
+                        <Item Key="Prio">700</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketNote">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketNote</Item>
+                        <Item Key="Prio">800</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketEmailResend">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketEmailResend</Item>
+                        <Item Key="Prio">900</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Ticket::Frontend::Article::Actions###Chat" Required="1" Valid="1">
+        <Description Translatable="1">Defines available article actions for Chat articles.</Description>
+        <Navigation>Frontend::Agent::View::TicketZoom::ArticleAction</Navigation>
+        <Value>
+            <Hash>
+                <DefaultItem>
+                    <Hash>
+                        <Item Key="Module"></Item>
+                        <Item Key="Prio"></Item>
+                        <Item Key="Valid"></Item>
+                    </Hash>
+                </DefaultItem>
+                <Item Key="AgentTicketPrint">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketPrint</Item>
+                        <Item Key="Prio">500</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="MarkAsImportant">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::MarkAsImportant</Item>
+                        <Item Key="Prio">700</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketForward">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketForward</Item>
+                        <Item Key="Prio">200</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="AgentTicketCompose">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::AgentTicketCompose</Item>
+                        <Item Key="Prio">100</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Ticket::Frontend::Article::Actions###Invalid" Required="1" Valid="1">
+        <Description Translatable="1">Defines available article actions for invalid articles.</Description>
+        <Navigation>Frontend::Agent::View::TicketZoom::ArticleAction</Navigation>
+        <Value>
+            <Hash>
+                <DefaultItem>
+                    <Hash>
+                        <Item Key="Module"></Item>
+                        <Item Key="Prio"></Item>
+                        <Item Key="Valid"></Item>
+                    </Hash>
+                </DefaultItem>
+                <Item Key="ReinstallPackageLink">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::ReinstallPackageLink</Item>
+                        <Item Key="Prio">200</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+                <Item Key="GetHelpLink">
+                    <Hash>
+                        <Item Key="Module">Kernel::Output::HTML::ArticleAction::GetHelpLink</Item>
+                        <Item Key="Prio">100</Item>
+                        <Item Key="Valid">1</Item>
+                    </Hash>
+                </Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Ticket::Frontend::RedirectAfterCloseDisabled" Required="1" Valid="1" UserModificationActive="1" UserModificationPossible="1">
+        <Description Translatable="1">Disables the redirection to the last screen overview / dashboard after a ticket is closed.</Description>
+        <Navigation>Frontend::Agent</Navigation>
+        <Value>
+            <Item ValueType="Checkbox">0</Item>
+        </Value>
+    </Setting>
+    <Setting Name="Ticket::Frontend::UserDefaultQueue" Required="0" Valid="0" UserModificationActive="1" UserModificationPossible="1">
+        <Description Translatable="1">Defines the default queue for new tickets in the agent interface.</Description>
+        <Navigation>Frontend::Agent</Navigation>
+        <Value>
+            <Item ValueType="Entity" ValueEntityType="Queue" ValueRegex="">Postmaster</Item>
         </Value>
     </Setting>
 </otrs_config>

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::ProcessManagement::TransitionAction::TicketServiceSet;
@@ -20,6 +20,7 @@ our @ObjectDependencies = (
     'Kernel::System::Log',
     'Kernel::System::Service',
     'Kernel::System::Ticket',
+    'Kernel::Config',
 );
 
 =head1 NAME
@@ -96,6 +97,7 @@ sub Run {
 
     # use ticket attributes if needed
     $Self->_ReplaceTicketAttributes(%Param);
+    $Self->_ReplaceAdditionalAttributes(%Param);
 
     if ( !$Param{Config}->{ServiceID} && !$Param{Config}->{Service} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -105,7 +107,11 @@ sub Run {
         return;
     }
 
-    if ( !$Param{Ticket}->{CustomerUserID} ) {
+    if (
+        !$Param{Ticket}->{CustomerUserID}
+        && !$Kernel::OM->Get('Kernel::Config')->Get('Ticket::Service::Default::UnknownCustomer')
+        )
+    {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => $CommonMessage . "To set a service the ticket requires a customer!",
@@ -305,10 +311,10 @@ sub _CheckService {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

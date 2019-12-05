@@ -1,27 +1,24 @@
 package Selenium::CanStartBinary::ProbePort;
-$Selenium::CanStartBinary::ProbePort::VERSION = '1.11';
+$Selenium::CanStartBinary::ProbePort::VERSION = '1.36';
+use strict;
+use warnings;
+
 # ABSTRACT: Utility functions for finding open ports to eventually bind to
+
 use IO::Socket::INET;
 use Selenium::Waiter qw/wait_until/;
 
 require Exporter;
-our @ISA = qw/Exporter/;
+our @ISA       = qw/Exporter/;
 our @EXPORT_OK = qw/find_open_port_above find_open_port probe_port/;
 
+
 sub find_open_port_above {
-    my ($port) = @_;
-
-    my $free_port = wait_until {
-        if ( probe_port($port) ) {
-            $port++;
-            return 0;
-        }
-        else {
-            return $port;
-        }
-    };
-
-    return $free_port;
+    socket(SOCK, PF_INET, SOCK_STREAM, getprotobyname("tcp"));
+    bind(SOCK, sockaddr_in(0, INADDR_ANY));
+    my $port = (sockaddr_in(getsockname(SOCK)))[0];
+    close(SOCK);
+    return $port;
 }
 
 sub find_open_port {
@@ -36,7 +33,7 @@ sub probe_port {
     return IO::Socket::INET->new(
         PeerAddr => '127.0.0.1',
         PeerPort => $port,
-        Timeout => 3
+        Timeout  => 3
     );
 }
 
@@ -52,7 +49,9 @@ Selenium::CanStartBinary::ProbePort - Utility functions for finding open ports t
 
 =head1 VERSION
 
-version 1.11
+version 1.36
+
+=for Pod::Coverage *EVERYTHING*
 
 =head1 SEE ALSO
 
@@ -69,7 +68,7 @@ L<Selenium::Remote::Driver|Selenium::Remote::Driver>
 =head1 BUGS
 
 Please report any bugs or feature requests on the bugtracker website
-https://github.com/gempesaw/Selenium-Remote-Driver/issues
+L<https://github.com/teodesian/Selenium-Remote-Driver/issues>
 
 When submitting a bug or request, please include a test-file or a
 patch to an existing test-file that illustrates the bug or desired
@@ -119,7 +118,7 @@ Aditya Ivaturi <ivaturi@gmail.com>
 
 Copyright (c) 2010-2011 Aditya Ivaturi, Gordon Child
 
-Copyright (c) 2014-2016 Daniel Gempesaw
+Copyright (c) 2014-2017 Daniel Gempesaw
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

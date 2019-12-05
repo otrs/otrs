@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -137,7 +137,7 @@ my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
 
 my @DeploymentIDs;
 
-my $Success = $SysConfigObject->ConfigurationDeploy(
+my %DeploymentResult = $SysConfigObject->ConfigurationDeploy(
     Comments     => "UnitTest",
     UserID       => 1,
     Force        => 1,
@@ -145,7 +145,7 @@ my $Success = $SysConfigObject->ConfigurationDeploy(
     NoValidation => 1,
 );
 $Self->True(
-    $Success,
+    $DeploymentResult{Success},
     "ConfigurationDeploy() Initial Deployment",
 );
 my %LastDeployment = $SysConfigDBObject->DeploymentGetLast();
@@ -219,7 +219,7 @@ for my $Update (@Updates) {
 
     $UpdateSettings->( %{$Update} );
 
-    my $Success = $SysConfigObject->ConfigurationDeploy(
+    my %DeploymentResult = $SysConfigObject->ConfigurationDeploy(
         Comments     => "UnitTest",
         UserID       => 1,
         Force        => 1,
@@ -227,7 +227,7 @@ for my $Update (@Updates) {
         NoValidation => 1,
     );
     $Self->True(
-        $Success,
+        $DeploymentResult{Success},
         "ConfigurationDeploy() Deployment $Update->{EffectiveValue}",
     );
     my %LastDeployment = $SysConfigDBObject->DeploymentGetLast();

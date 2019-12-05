@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -131,10 +131,9 @@ my $EmailObject              = $Kernel::OM->Get('Kernel::System::Email');
 my $MailQueueObject          = $Kernel::OM->Get('Kernel::System::MailQueue');
 my $MailQueueItemMaxAttempts = $Kernel::OM->Get('Kernel::Config')->Get('MailQueue')->{ItemMaxAttempts};
 
-my $UserLogin = $HelperObject->TestUserCreate(
+my ( $UserLogin, $UserID ) = $HelperObject->TestUserCreate(
     Groups => [ 'admin', 'users' ],
 );
-my $UserID = $UserObject->UserLookup( UserLogin => $UserLogin );
 
 my $SendEmail = sub {
     my %Param = @_;
@@ -221,8 +220,8 @@ my $CheckForCommunicationLog = sub {
         reverse @{
             $CommunicationLogDBObj->ObjectLogList(
                 CommunicationID => $ComLogLookupInfo->{CommunicationID},
-                )
-            }
+            )
+        }
     ];
 
     my $CommunicationLogConnection
@@ -260,7 +259,7 @@ my $CheckForQueueNotifications = sub {
 
     # Get all the queue items that aren't related to an article.
     my $MailQueueItems = $MailQueueObject->List();
-    my @Notifications = grep { !$_->{ArticleID} } @$MailQueueItems;
+    my @Notifications  = grep { !$_->{ArticleID} } @$MailQueueItems;
 
     $Self->True(
         scalar @Notifications,
@@ -461,7 +460,7 @@ for my $Test (@Tests) {
     local $FakeSMTPEnv{'connect'} = $TestFakeSMTPEnv{'connect'};
 
     # SMTP permanent / temporary label.
-    my $FakeSMTPCode = $Test->{FakeSMTPEnv}->{'code'};
+    my $FakeSMTPCode  = $Test->{FakeSMTPEnv}->{'code'};
     my $SMTPErrorType = $FakeSMTPCode && $FakeSMTPCode =~ m/^5/i ? 'permanent' : 'temporary';
 
     # Build the full test base name.
@@ -544,7 +543,7 @@ for my $Test (@Tests) {
     }
 
     for my $Attempt ( 1 .. $Attempts ) {
-        my $AttemptBaseMessage = sprintf $TestBaseMessage, $Attempt;
+        my $AttemptBaseMessage            = sprintf $TestBaseMessage, $Attempt;
         my $AttemptCommunicationLogStatus = $Test->{CommunicationLogStatus};
         if ( $AttemptCommunicationLogStatus->{$Attempt} ) {
             $AttemptCommunicationLogStatus = $AttemptCommunicationLogStatus->{$Attempt};

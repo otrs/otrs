@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-##nofilter(TidyAll::Plugin::OTRS::Perl::NoExitInConsoleCommands)
+## nofilter(TidyAll::Plugin::OTRS::Perl::NoExitInConsoleCommands)
 
 package Kernel::System::Console::Command::Maint::PostMaster::MailAccountFetch;
 
@@ -50,7 +50,7 @@ sub Configure {
     $Self->AddOption(
         Name => 'timeout',
         Description =>
-            "Timeout in seconds to kill the child process, that does the mail fetching (Default: 600 seconds)",
+            "Timeout in seconds to kill the child process, that does the mail fetching (default: 600).",
         Required   => 0,
         HasValue   => 1,
         ValueRegex => qr{^\d+$}smx,
@@ -65,7 +65,7 @@ sub PreRun {
     my $PIDObject = $Kernel::OM->Get('Kernel::System::PID');
 
     my $PIDCreated = $PIDObject->PIDCreate(
-        Name  => $Self->Name(),
+        Name  => 'MailAccountFetch',
         Force => $Self->GetOption('force-pid'),
         TTL   => 600,                             # 10 minutes
     );
@@ -92,7 +92,7 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     my $MailAccountObject = $Kernel::OM->Get('Kernel::System::MailAccount');
-    my %List = $MailAccountObject->MailAccountList( Valid => 1 );
+    my %List              = $MailAccountObject->MailAccountList( Valid => 1 );
 
     my $Debug         = $Self->GetOption('debug');
     my $Timeout       = $Self->GetOption('timeout') || 600;
@@ -263,7 +263,7 @@ sub PostRun {
         );
     }
 
-    return $Kernel::OM->Get('Kernel::System::PID')->PIDDelete( Name => $Self->Name() );
+    return $Kernel::OM->Get('Kernel::System::PID')->PIDDelete( Name => 'MailAccountFetch' );
 }
 
 1;

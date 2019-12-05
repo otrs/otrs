@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 ## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
 
@@ -52,7 +52,7 @@ sub new {
 
 Check if provided EffectiveValue matches structure defined in XMLContentParsed.
 
-    my %Result = $SysConfigObject->SettingEffectiveValueCheck(
+    my %Result = $ValueTypeObject->SettingEffectiveValueCheck(
         XMLContentParsed => {
             Value => [
                 {
@@ -102,23 +102,6 @@ sub SettingEffectiveValueCheck {
         $Result{Error} = "FrontendRegistration EffectiveValue must be a hash!";
         return %Result;
     }
-
-    GROUP:
-    for my $Group (qw(Group GroupRo)) {
-        if ( ref $Param{EffectiveValue}->{$Group} ne 'ARRAY' ) {
-            $Result{Error} = "FrontendRegistration EffectiveValue must have defined $Group (Array)!";
-            last GROUP;
-        }
-
-        for my $Item ( @{ $Param{EffectiveValue}->{$Group} } ) {
-            if ( ref $Item ) {
-                $Result{Error} = "FrontendRegistration $Group item must contain scalar value!";
-                last GROUP;
-            }
-        }
-    }
-
-    return %Result if $Result{Error};
 
     DEFINED:
     for my $Defined (qw(NavBarName Description)) {
@@ -210,6 +193,13 @@ sub EffectiveValueGet {
         }
     }
 
+    # Set undefined group attributes.
+    for my $Group (qw(Group GroupRo)) {
+        if ( !defined $EffectiveValue->{$Group} ) {
+            $EffectiveValue->{$Group} = [];
+        }
+    }
+
     return $EffectiveValue;
 }
 
@@ -274,6 +264,13 @@ sub SettingRender {
         return '';
     }
 
+    # Set undefined group attributes.
+    for my $Group (qw(Group GroupRo)) {
+        if ( !defined $EffectiveValue->{$Group} ) {
+            $EffectiveValue->{$Group} = [];
+        }
+    }
+
     my %EffectiveValueCheck = (
         Success => 1,
     );
@@ -296,7 +293,7 @@ sub SettingRender {
     if ( !$EffectiveValueCheck{Success} ) {
         my $Message = $LanguageObject->Translate("Value is not correct! Please, consider updating this module.");
 
-        $HTML .= "<div class='BadEffectiveValue'>\n";
+        $HTML .= $Param{IsValid} ? "<div class='BadEffectiveValue'>\n" : "<div>\n";
         $HTML .= "<p>* $Message</p>\n";
         $HTML .= "</div>\n";
     }
@@ -308,10 +305,16 @@ sub SettingRender {
         $EffectiveValue->{Title} = '';
     }
 
+    my $Readonly = '';
+    if ( !$Param{RW} ) {
+        $Readonly = "readonly='readonly'";
+    }
+
     for my $Key ( sort keys %{$EffectiveValue} ) {
 
         $HTML .= "<div class='HashItem'>\n";
         $HTML .= "<input type='text' value='$Key' readonly='readonly' class='Key' />\n";
+
         $HTML .= "<div class='SettingContent'>\n";
 
         if ( grep { $Key eq $_ } qw (Group GroupRo) ) {
@@ -328,7 +331,7 @@ sub SettingRender {
                 $HTML .= "<div class='ArrayItem'>\n";
                 $HTML .= "<div class='SettingContent'>\n";
                 $HTML .= "<input type='text' value='$HTMLGroupItem' "
-                    . "id='$Param{Name}_Hash###$Key\_Array$GroupIndex' />\n";
+                    . "id='$Param{Name}_Hash###$Key\_Array$GroupIndex' $Readonly />\n";
                 $HTML .= "</div>\n";
 
                 if ( $Param{RW} ) {
@@ -344,13 +347,18 @@ sub SettingRender {
                 $GroupIndex++;
             }
 
-            if ( $Param{RW} ) {
-                $HTML .= "    <button data-suffix='$Param{Name}_Hash###$Key\_Array$GroupIndex' class='AddArrayItem' "
-                    . "type='button' title='$AddNewEntry' value='Add new entry'>\n"
-                    . "        <i class='fa fa-plus-circle'></i>\n"
-                    . "        <span class='InvisibleText'>$AddNewEntry</span>\n"
-                    . "    </button>\n";
+            my $ButtonClass = 'AddArrayItem';
+            if ( !$Param{RW} ) {
+                $ButtonClass .= " Hidden";
             }
+
+            # Always add "AddArrayItem" button, it might be needed when calculating effective value (if array is empty).
+            $HTML .= "    <button data-suffix='$Param{Name}_Hash###$Key\_Array$GroupIndex' class='$ButtonClass' "
+                . "type='button' title='$AddNewEntry' value='Add new entry'>\n"
+                . "        <i class='fa fa-plus-circle'></i>\n"
+                . "        <span class='InvisibleText'>$AddNewEntry</span>\n"
+                . "    </button>\n";
+
             $HTML .= "</div>\n";
         }
         else {
@@ -360,7 +368,7 @@ sub SettingRender {
             );
 
             $HTML .= "<input type='text' value='$HTMLValue' "
-                . "id='$Param{Name}_Hash###$Key' />\n";
+                . "id='$Param{Name}_Hash###$Key' $Readonly />\n";
         }
 
         $HTML .= "</div>\n";
@@ -375,10 +383,10 @@ sub SettingRender {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

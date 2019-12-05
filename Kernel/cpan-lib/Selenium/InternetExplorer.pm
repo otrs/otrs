@@ -1,17 +1,20 @@
 package Selenium::InternetExplorer;
-$Selenium::InternetExplorer::VERSION = '1.11';
+$Selenium::InternetExplorer::VERSION = '1.36';
+use strict;
+use warnings;
+
 # ABSTRACT: A convenience package for creating a IE instance
 use Moo;
 extends 'Selenium::Remote::Driver';
 
 
 has '+browser_name' => (
-    is => 'ro',
+    is      => 'ro',
     default => sub { 'internet_explorer' }
 );
 
 has '+platform' => (
-    is => 'ro',
+    is      => 'ro',
     default => sub { 'WINDOWS' }
 );
 
@@ -30,7 +33,7 @@ Selenium::InternetExplorer - A convenience package for creating a IE instance
 
 =head1 VERSION
 
-version 1.11
+version 1.36
 
 =head1 SYNOPSIS
 
@@ -72,7 +75,7 @@ L<Selenium::Remote::Driver|Selenium::Remote::Driver>
 =head1 BUGS
 
 Please report any bugs or feature requests on the bugtracker website
-https://github.com/gempesaw/Selenium-Remote-Driver/issues
+L<https://github.com/teodesian/Selenium-Remote-Driver/issues>
 
 When submitting a bug or request, please include a test-file or a
 patch to an existing test-file that illustrates the bug or desired
@@ -122,7 +125,7 @@ Aditya Ivaturi <ivaturi@gmail.com>
 
 Copyright (c) 2010-2011 Aditya Ivaturi, Gordon Child
 
-Copyright (c) 2014-2016 Daniel Gempesaw
+Copyright (c) 2014-2017 Daniel Gempesaw
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

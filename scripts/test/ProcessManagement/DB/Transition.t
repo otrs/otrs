@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -682,7 +682,7 @@ for my $Test (@Tests) {
 
     # get the old Transition (if any)
     my $OldTransition = $TransitionObject->TransitionGet(
-        ID => $Test->{Config}->{ID} || 0,
+        ID     => $Test->{Config}->{ID} || 0,
         UserID => $Test->{Config}->{UserID},
     );
 
@@ -845,7 +845,7 @@ $Self->Is(
 );
 
 my $Counter = 0;
-for my $TransitionID ( sort { $a <=> $b } keys %TestTransitionListCopy ) {
+for my $TransitionID ( sort { int $a <=> int $b } keys %TestTransitionListCopy ) {
     $Self->Is(
         $TransitionID,
         $AddedTransitionsList[$Counter],
@@ -933,7 +933,7 @@ my $List = $TransitionObject->TransitionList(
 
 # create the list of transitions with details manually
 my $ExpectedTransitionList;
-for my $TransitionID ( sort { $a <=> $b } keys %{$List} ) {
+for my $TransitionID ( sort { int $a <=> int $b } keys %{$List} ) {
 
     my $TransitionData = $TransitionObject->TransitionGet(
         ID     => $TransitionID,

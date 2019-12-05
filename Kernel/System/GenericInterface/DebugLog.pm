@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::GenericInterface::DebugLog;
@@ -341,7 +341,7 @@ sub LogGetWithData {
             SQL =>
                 'SELECT create_time, content, debug_level, subject'
                 . ' FROM gi_debugger_entry_content WHERE gi_debugger_entry_id = ?'
-                . ' ORDER BY create_time ASC',
+                . ' ORDER BY create_time ASC, id ASC',
             Bind => [ \$LogData->{LogID} ],
         )
         )
@@ -525,6 +525,7 @@ when the parameter 'WithData' is set, the complete communication chains will be 
         RemoteIP          => '192.168.0.1', # optional, must be valid IPv4 or IPv6 address
         WebserviceID      => 1, # optional
         WithData          => 0, # optional
+        Sort              => 'ASC', # optional. 'ASC' (default) or 'DESC'
     );
 
     $LogData = [
@@ -642,6 +643,18 @@ sub LogSearch {
         );
         return;
     }
+    if (
+        IsStringWithData( $Param{Sort} )
+        && $Param{Sort} ne 'ASC'
+        && $Param{Sort} ne 'DESC'
+        )
+    {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Sort must be 'DESC' or 'ASC'!",
+        );
+        return;
+    }
 
     # prepare db request
     my $SQL =
@@ -676,7 +689,8 @@ sub LogSearch {
         push @Bind, \$Param{CreatedAtOrBefore};
     }
 
-    $SQLExt .= ' ORDER BY create_time ASC';
+    my $SQLSort = IsStringWithData( $Param{Sort} ) ? $Param{Sort} : 'ASC';
+    $SQLExt .= ' ORDER BY create_time ' . $SQLSort;
 
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
@@ -760,7 +774,7 @@ sub LogCleanup {
     }
 
     my $DateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
-    my $Success = $DateTimeObject->Set( String => $Param{CreatedAtOrBefore} );
+    my $Success        = $DateTimeObject->Set( String => $Param{CreatedAtOrBefore} );
     if ( !$Success ) {
 
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -937,10 +951,10 @@ sub _LogAddChain {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

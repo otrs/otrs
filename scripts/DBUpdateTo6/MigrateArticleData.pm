@@ -1,15 +1,17 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package scripts::DBUpdateTo6::MigrateArticleData;    ## no critic
 
 use strict;
 use warnings;
+
+use IO::Interactive qw(is_interactive);
 
 use parent qw(scripts::DBUpdateTo6::Base);
 
@@ -28,13 +30,13 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-    my $Verbose = $Param{CommandlineOptions}->{Verbose} || 0;
+    my $Verbose  = $Param{CommandlineOptions}->{Verbose} || 0;
 
-    my $CheckPreviousRequirement = $Self->_CheckMigrationIsDone();
+    my $MigrationStatus = $Self->_CheckMigrationIsDone();
 
-    return 1 if $CheckPreviousRequirement->{MigrationDone};
+    return 1 if $MigrationStatus->{MigrationDone};
 
-    # check if article_type table exists
+    # Check if article_type table exists.
     my $TableExists = $Self->TableExists(
         Table => 'article_type',
     );
@@ -49,7 +51,7 @@ sub Run {
 
     my %ArticleTypeMapping = %{ $TaskConfig->{ArticleTypeMapping} };
 
-    my %TablesData = %{ $CheckPreviousRequirement->{TablesData} };
+    my %TablesData = %{ $MigrationStatus->{TablesData} };
 
     # Collect data for further calculation of IsVisibleForCustomer.
     return if !$DBObject->Prepare(
@@ -159,7 +161,7 @@ sub Run {
         $StartInEntry += $RowsPerLoop;
     }
 
-    print "\n";
+    print "\n" if $Verbose;
 
     return 1;
 }
@@ -313,9 +315,9 @@ sub _MigrateData {
 
 =head2 CheckPreviousRequirement()
 
-check for initial conditions for running this migration step.
+Check for initial conditions for running this migration step.
 
-Returns 1 on success
+Returns 1 on success:
 
     my $Result = $DBUpdateTo6Object->CheckPreviousRequirement();
 
@@ -324,86 +326,226 @@ Returns 1 on success
 sub CheckPreviousRequirement {
     my ( $Self, %Param ) = @_;
 
-    # Check for orphaned articles by default.
-    my $OrphanedArticleCheck = 1;
-
-    # Check if article table schema has been migrated already.
-    my $ArticleTable         = 'article';
-    my $ArticleTableMigrated = $Self->TableExists(
-        Table => 'article_data_mime',
-    );
-    if ($ArticleTableMigrated) {
-        $ArticleTable = 'article_data_mime';
-
-        # Do not check for orphaned articles, if ticket ID column has already been dropped.
-        $OrphanedArticleCheck = $Self->ColumnExists(
-            Table  => 'article_data_mime',
-            Column => 'ticket_id',
-        );
-    }
-
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    # Count articles that have a corresponding ticket:
-    #   - if article table has already been migrated and ticket_id column still exists
-    #   - if article table has not been migrated yet
+    my $Verbose = $Param{CommandlineOptions}->{Verbose} || 0;
+
+    # Check for interactive mode.
+    my $InteractiveMode = 1;
+    if ( $Param{CommandlineOptions}->{NonInteractive} || !is_interactive() ) {
+        $InteractiveMode = 0;
+    }
+
+    # Check for orphaned articles only if article table was not migrated yet.
+    my $OrphanedArticleCheck = !$Self->TableExists(
+        Table => 'article_data_mime',
+    );
+
     if ($OrphanedArticleCheck) {
 
-        if ($ArticleTableMigrated) {
-            return if !$DBObject->Prepare(
-                SQL => "
-                    SELECT COUNT(tck.id)
-                    FROM article_data_mime adm, ticket tck
-                    WHERE adm.ticket_id=tck.id
-                ",
-            );
-        }
-        else {
-            return if !$DBObject->Prepare(
-                SQL => "
-                    SELECT COUNT(tck.id)
-                    FROM article art, ticket tck
-                    WHERE art.ticket_id=tck.id
-                ",
-            );
-        }
+        # Define orphaned entries checks, for now all related to the article table.
+        #   Check in correct order to prevent dependency issues.
+        my @OrphanedEntryChecks = (
+            {
+                Table          => 'time_accounting',
+                Field          => 'article_id',
+                ReferenceTable => 'article',
+                ReferenceField => 'id',
+            },
+            {
+                Table          => 'article_attachment',
+                Field          => 'article_id',
+                ReferenceTable => 'article',
+                ReferenceField => 'id',
+            },
+            {
+                Table          => 'article_flag',
+                Field          => 'article_id',
+                ReferenceTable => 'article',
+                ReferenceField => 'id',
+            },
+            {
+                Table          => 'article_plain',
+                Field          => 'article_id',
+                ReferenceTable => 'article',
+                ReferenceField => 'id',
+            },
+            {
+                Table => 'ticket_history',
+                CheckSQL =>
+                    'SELECT COUNT(tab.article_id) '
+                    . 'FROM ticket_history tab '
+                    . 'LEFT JOIN article ref ON tab.article_id = ref.id '
+                    . 'WHERE tab.article_id IS NOT NULL '
+                    . 'AND tab.article_id != 0 '
+                    . 'AND ref.id IS NULL',
+                DeleteSQL => [
+                    'DELETE tab FROM ticket_history tab '
+                        . 'LEFT JOIN article ref ON tab.article_id = ref.id '
+                        . 'WHERE tab.article_id IS NOT NULL '
+                        . 'AND tab.article_id != 0 '
+                        . 'AND ref.id IS NULL',
+                    'UPDATE ticket_history '
+                        . 'SET article_id = NULL '
+                        . 'WHERE article_id = 0',
+                ],
+            },
+            {
+                Table          => 'article',
+                Field          => 'ticket_id',
+                ReferenceTable => 'ticket',
+                ReferenceField => 'id',
+                DeleteSQL      => [
 
-        my $GeneralCount;
-        my $EffectiveCount;
-
-        EFFECTIVE:
-        while ( my @Row = $DBObject->FetchrowArray() ) {
-            $EffectiveCount = $Row[0];
-            last EFFECTIVE;
-        }
-
-        # Count all articles in table.
-        return if !$DBObject->Prepare(
-            SQL => "
-                SELECT COUNT(id)
-                FROM $ArticleTable
-            ",
+                    # If articles are to be deleted, delete all dependent data from other tables first.
+                    'DELETE sub FROM article tab '
+                        . 'LEFT JOIN ticket ref ON tab.ticket_id = ref.id '
+                        . 'LEFT JOIN article_flag sub ON tab.id = sub.article_id '
+                        . 'WHERE tab.ticket_id IS NOT NULL '
+                        . 'AND ref.id IS NULL',
+                    'DELETE sub FROM article tab '
+                        . 'LEFT JOIN ticket ref ON tab.ticket_id = ref.id '
+                        . 'LEFT JOIN article_attachment sub ON tab.id = sub.article_id '
+                        . 'WHERE tab.ticket_id IS NOT NULL '
+                        . 'AND ref.id IS NULL',
+                    'DELETE sub FROM article tab '
+                        . 'LEFT JOIN ticket ref ON tab.ticket_id = ref.id '
+                        . 'LEFT JOIN time_accounting sub ON tab.id = sub.article_id '
+                        . 'WHERE tab.ticket_id IS NOT NULL '
+                        . 'AND ref.id IS NULL',
+                    'DELETE sub FROM article tab '
+                        . 'LEFT JOIN ticket ref ON tab.ticket_id = ref.id '
+                        . 'LEFT JOIN article_plain sub ON tab.id = sub.article_id '
+                        . 'WHERE tab.ticket_id IS NOT NULL '
+                        . 'AND ref.id IS NULL',
+                    'DELETE sub FROM article tab '
+                        . 'LEFT JOIN ticket ref ON tab.ticket_id = ref.id '
+                        . 'LEFT JOIN ticket_history sub ON tab.id = sub.article_id '
+                        . 'WHERE tab.ticket_id IS NOT NULL '
+                        . 'AND ref.id IS NULL',
+                    'DELETE tab FROM article tab '
+                        . 'LEFT JOIN ticket ref ON tab.ticket_id = ref.id '
+                        . 'WHERE tab.ticket_id IS NOT NULL '
+                        . 'AND ref.id IS NULL',
+                ],
+            },
         );
 
-        GENERAL:
-        while ( my @Row = $DBObject->FetchrowArray() ) {
-            $GeneralCount = $Row[0];
-            last GENERAL;
+        print "\n" if $Verbose;
+
+        my $Stop;
+
+        ORPHANEDENTRYCHECK:
+        for my $Index ( 0 .. $#OrphanedEntryChecks ) {
+            my $OrphanedEntryCheck = $OrphanedEntryChecks[$Index];
+
+            print "        Check for orphaned entries in $OrphanedEntryCheck->{Table} table ...\n" if $Verbose;
+
+            my $CheckSQL = $OrphanedEntryCheck->{CheckSQL} ||
+                "SELECT COUNT(tab.$OrphanedEntryCheck->{Field}) "
+                . "FROM $OrphanedEntryCheck->{Table} tab "
+                . "LEFT JOIN $OrphanedEntryCheck->{ReferenceTable} ref ON tab.$OrphanedEntryCheck->{Field} = ref.$OrphanedEntryCheck->{ReferenceField} "
+                . "WHERE tab.$OrphanedEntryCheck->{Field} IS NOT NULL "
+                . "AND ref.$OrphanedEntryCheck->{ReferenceField} IS NULL";
+
+            return if !$DBObject->Prepare(
+                SQL => $CheckSQL,
+            );
+
+            my $Count = 0;
+            while ( my @Row = $DBObject->FetchrowArray() ) {
+                $Count = $Row[0];
+            }
+
+            # No orphaned entries found.
+            next ORPHANEDENTRYCHECK if !$Count;
+
+            print "\n" if !$Verbose && !$Index;
+
+            print "        Found $Count orphaned entries in $OrphanedEntryCheck->{Table} table ...\n";
+
+            my $DeleteSQL = $OrphanedEntryCheck->{DeleteSQL} || [
+                "DELETE tab FROM $OrphanedEntryCheck->{Table} tab "
+                    . "LEFT JOIN $OrphanedEntryCheck->{ReferenceTable} ref ON tab.$OrphanedEntryCheck->{Field} = ref.$OrphanedEntryCheck->{ReferenceField} "
+                    . "WHERE tab.$OrphanedEntryCheck->{Field} IS NOT NULL "
+                    . "AND ref.$OrphanedEntryCheck->{ReferenceField} IS NULL"
+            ];
+
+            # Only in interactive mode or if the CleanupOrphanedArticles parameter is active.
+            if ( $InteractiveMode || $Param{CommandlineOptions}->{CleanupOrphanedArticles} ) {
+
+                my $Answer = '';
+
+                # In interactive mode we ask the user what he wants to do.
+                if ( !$Param{CommandlineOptions}->{CleanupOrphanedArticles} ) {
+
+                    # Ask the user and get the answer.
+                    print '        Do you want to automatically delete the entries from the database now? [Y]es/[N]o: ';
+                    $Answer = <>;
+
+                    # Remove white space from input.
+                    $Answer =~ s{\s}{}smx;
+                }
+
+                # Fix the problem automatically.
+                if ( $Answer =~ m{^y}i || $Param{CommandlineOptions}->{CleanupOrphanedArticles} ) {
+
+                    # Delete the orphaned entries.
+                    for my $SQL ( @{$DeleteSQL} ) {
+                        return if !$DBObject->Do(
+                            SQL => $SQL,
+                        );
+                    }
+
+                    # Now check if no orphaned entries are found anymore.
+                    return if !$DBObject->Prepare(
+                        SQL => $CheckSQL,
+                    );
+                    my $Count;
+                    while ( my @Row = $DBObject->FetchrowArray() ) {
+                        $Count = $Row[0];
+                    }
+
+                    # Everything was deleted automatically.
+                    if ( !$Count ) {
+                        print "        Fixing... Done.\n\n";
+                        next ORPHANEDENTRYCHECK;
+                    }
+
+                    # Could not be deleted automatically.
+                    print "        It was not possible to automatically delete the orphaned entries.\n";
+                }
+
+                print
+                    "        Please delete them manually with the following SQL statements and then run the migration script again:\n";
+                for my $SQL ( @{$DeleteSQL} ) {
+                    print $SQL . ";\n";
+                }
+                print "\n";
+
+                return;
+            }
+
+            # In non-interactive mode we just remember that there was a problem, and show the output
+            #    and in a later step we then stop.
+            else {
+
+                # Show manual instructions and remember to stop later.
+                print
+                    "        Please delete them manually with the following SQL statements and then run the migration script again:\n";
+                for my $SQL ( @{$DeleteSQL} ) {
+                    print $SQL;
+                }
+                print "\n";
+
+                $Stop = 1;
+            }
+
         }
 
-        # If effective count is less that general count, that means we have some orphaned articles and it's not
-        #   possible to continue with the migration.
-        if ( $EffectiveCount < $GeneralCount ) {
-            my $OrphanedArticlesCount = $GeneralCount - $EffectiveCount;
+        print "\n" if $Verbose;
 
-            print "\n    Error:\n"
-                . "    $OrphanedArticlesCount orphaned article(s) found! \n"
-                . "    Please make sure that all articles have a corresponding ticket. \n"
-                . "    If you are sure these are leftover from prior removal, \n"
-                . "    please delete them manually before starting migration again. \n\n";
-
-            return;
-        }
+        return if $Stop;
     }
 
     # Check if article_type table still exist.
@@ -437,12 +579,11 @@ sub CheckPreviousRequirement {
         # If unknown article types are encountered, do not continue with the migration.
         if (@UnknownArticleTypes) {
 
-            print "    \nError.\n"
-                . "    There are some unknown article types: ${\(join ', ', @UnknownArticleTypes)}. \n"
-                . "    Please provide additional migration matrix entries in following file: \n\n"
-                . "    scripts/DBUpdateTo6/TaskConfig/MigrateArticleData.yml \n\n"
-                . "    Tip: Create a copy of .dist file with the same name and edit it instead, \n"
-                . "    before starting migration again. \n\n";
+            print "\n    Error! Unknown article types were found: ${\(join ', ', @UnknownArticleTypes)}.\n"
+                . "    Please provide additional migration matrix entries in following file:\n\n"
+                . "        scripts/DBUpdateTo6/TaskConfig/MigrateArticleData.yml\n\n"
+                . "    Tip: Create a copy of .dist file with the same name and edit it instead,\n"
+                . "    before starting migration again.\n\n";
 
             return;
         }
@@ -539,10 +680,10 @@ sub _CheckMigrationIsDone {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

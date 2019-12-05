@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Ticket::TicketACL;
@@ -55,6 +55,8 @@ Example to restrict ticket actions:
 
         QueueID          => 123,                      # Optional
         Queue            => 'some queue name',        # Optional
+        NewQueueID       => 123,                      # Optional, QueueID or NewQueueID can be
+                                                      #   used and they both refers to QueueID
 
         ServiceID        => 123,                      # Optional
         Service          => 'some service name',      # Optional
@@ -1130,6 +1132,19 @@ sub _GetChecks {
         }
     }
 
+    # Check for ActivityEntityID if set as parameter (ProcessManagement).
+    if ( ( $CheckAll || $RequiredChecks{Process} ) && $Param{ActivityEntityID} ) {
+
+        my $Activity = $Kernel::OM->Get('Kernel::System::ProcessManagement::Activity')->ActivityGet(
+            ActivityEntityID => $Param{ActivityEntityID},
+            Interface        => [$Interface],
+        );
+
+        if ( IsHashRefWithData($Activity) ) {
+            $Checks{Process}->{ActivityEntityID} = $Param{ActivityEntityID};
+        }
+    }
+
     # check for dynamic fields
     if ( IsHashRefWithData( $Param{DynamicField} ) ) {
         $Checks{DynamicField} = $Param{DynamicField};
@@ -1323,6 +1338,10 @@ sub _GetChecks {
 
         # get queue object
         my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
+
+        if ( $Param{NewQueueID} && !$Param{QueueID} ) {
+            $Param{QueueID} = $Param{NewQueueID};
+        }
 
         if ( $Param{QueueID} ) {
             my %Queue = $QueueObject->QueueGet( ID => $Param{QueueID} );
@@ -1531,7 +1550,7 @@ sub _GetChecks {
 
         # use priority data (if given)
         if ( $Param{NewPriorityID} && !$Param{PriorityID} ) {
-            $Param{PriorityID} = $Param{NewPriorityID}
+            $Param{PriorityID} = $Param{NewPriorityID};
         }
 
         if ( $Param{PriorityID} ) {
@@ -2190,10 +2209,10 @@ sub _CompareMatchWithData {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

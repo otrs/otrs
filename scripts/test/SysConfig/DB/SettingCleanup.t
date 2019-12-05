@@ -1,10 +1,10 @@
 
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -21,7 +21,7 @@ $Kernel::OM->ObjectParamAdd(
         RestoreDatabase => 1,
     },
 );
-my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
@@ -49,20 +49,23 @@ return if !$DBObject->Do(
 # Prepare valid config XML and Perl
 #
 my $ValidSettingXML = <<'EOF',
-<Setting Name="Test1" Required="1" Valid="1">
-    <Description Translatable="1">Test 1.</Description>
-    <Navigation>Core::Ticket</Navigation>
-    <Value>
-        <Item ValueType="String" ValueRegex=".*">Test setting 1</Item>
-    </Value>
-</Setting>
-<Setting Name="Test2" Required="1" Valid="1">
-    <Description Translatable="1">Test 2.</Description>
-    <Navigation>Core::Ticket</Navigation>
-    <Value>
-        <Item ValueType="File">/usr/bin/gpg</Item>
-    </Value>
-</Setting>
+<?xml version="1.0" encoding="utf-8" ?>
+<otrs_config version="2.0" init="Framework">
+    <Setting Name="Test1" Required="1" Valid="1">
+        <Description Translatable="1">Test 1.</Description>
+        <Navigation>Core::Ticket</Navigation>
+        <Value>
+            <Item ValueType="String" ValueRegex=".*">Test setting 1</Item>
+        </Value>
+    </Setting>
+    <Setting Name="Test2" Required="1" Valid="1">
+        <Description Translatable="1">Test 2.</Description>
+        <Navigation>Core::Ticket</Navigation>
+        <Value>
+            <Item ValueType="File">/usr/bin/gpg</Item>
+        </Value>
+    </Setting>
+</otrs_config>
 EOF
 
     my $SysConfigXMLObject = $Kernel::OM->Get('Kernel::System::SysConfig::XML');
@@ -74,7 +77,7 @@ my @DefaultSettingAddParams = $SysConfigXMLObject->SettingListParse(
 my $SysConfigDBObject = $Kernel::OM->Get('Kernel::System::SysConfig::DB');
 
 # Add default setting s
-my $SettingName1      = 'ProductName ' . $HelperObject->GetRandomNumber() . 1;
+my $SettingName1      = 'ProductName ' . $Helper->GetRandomNumber() . 1;
 my $DefaultSettingID1 = $SysConfigDBObject->DefaultSettingAdd(
     Name                     => $SettingName1,
     Description              => 'Defines the name of the application ...',
@@ -93,7 +96,7 @@ my $DefaultSettingID1 = $SysConfigDBObject->DefaultSettingAdd(
     UserID                   => 1,
 );
 
-my $SettingName2      = 'ProductName ' . $HelperObject->GetRandomNumber() . 2;
+my $SettingName2      = 'ProductName ' . $Helper->GetRandomNumber() . 2;
 my $DefaultSettingID2 = $SysConfigDBObject->DefaultSettingAdd(
     Name                     => $SettingName2,
     Description              => 'Defines the name of the application ...',
@@ -112,7 +115,7 @@ my $DefaultSettingID2 = $SysConfigDBObject->DefaultSettingAdd(
     UserID                   => 1,
 );
 
-my $SettingName3      = 'ProductName ' . $HelperObject->GetRandomNumber() . 3;
+my $SettingName3      = 'ProductName ' . $Helper->GetRandomNumber() . 3;
 my $DefaultSettingID3 = $SysConfigDBObject->DefaultSettingAdd(
     Name                     => $SettingName3,
     Description              => 'Defines the name of the application ...',
@@ -131,7 +134,7 @@ my $DefaultSettingID3 = $SysConfigDBObject->DefaultSettingAdd(
     UserID                   => 1,
 );
 
-my $SettingName4      = 'ProductName ' . $HelperObject->GetRandomNumber() . 4;
+my $SettingName4      = 'ProductName ' . $Helper->GetRandomNumber() . 4;
 my $DefaultSettingID4 = $SysConfigDBObject->DefaultSettingAdd(
     Name                     => $SettingName4,
     Description              => 'Defines the name of the application ...',
@@ -190,10 +193,7 @@ my $ModifiedID2 = $SysConfigDBObject->ModifiedSettingAdd(
     UserID            => 1,
 );
 
-my $TestUserLogin = $HelperObject->TestUserCreate();
-my $UserID        = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-    UserLogin => $TestUserLogin,
-);
+my ( $TestUserLogin, $UserID ) = $Helper->TestUserCreate();
 
 my $ExclusiveLockGUID2 = $SysConfigDBObject->DefaultSettingLock(
     DefaultID => $DefaultSettingID3,

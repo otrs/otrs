@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -26,6 +26,7 @@ $ConfigObject->Set(
     Value => 1,
 );
 
+my $CacheObject               = $Kernel::OM->Get('Kernel::System::Cache');
 my $StatsObject               = $Kernel::OM->Get('Kernel::System::Stats');
 my $QueueObject               = $Kernel::OM->Get('Kernel::System::Queue');
 my $TicketObject              = $Kernel::OM->Get('Kernel::System::Ticket');
@@ -356,6 +357,10 @@ my %StateList = $Kernel::OM->Get('Kernel::System::State')->StateList(
 my %LookupStateList = map { $StateList{$_} => $_ } sort keys %StateList;
 
 # set the language to 'en' before the StatsRun
+$Kernel::OM->ObjectsDiscard(
+    Objects => ['Kernel::Language'],
+);
+
 $Kernel::OM->ObjectParamAdd(
     'Kernel::Language' => {
         UserLanguage => 'en',
@@ -3484,7 +3489,7 @@ my @Tests = (
                 'Title for result tests 2015-08-08 00:00:00-2015-08-14 23:59:59',
             ],
             [
-                'Number',    # TODO ad the moment Number is not translatable
+                'Nummer',
                 'Ticket#',
                 'Titel',
                 'Erstellt',
@@ -3880,6 +3885,13 @@ for my $Test (@Tests) {
                 UserLanguage => $Test->{Language},
             },
         );
+
+        my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
+
+        $Self->True(
+            1,
+            "Test $TestCount: Set the language to '$Test->{Language}'.",
+        );
     }
 
     # check ContractAdd attribute
@@ -3891,6 +3903,17 @@ for my $Test (@Tests) {
         );
 
         next TEST;
+    }
+
+    # Since we created tickets on different date and jumped to another, TicketGet() cache can be outdated.
+    for my $Ticket (@TicketIDs) {
+        my $TicketID = $Ticket->{TicketID};
+
+        # Clean cache.
+        $CacheObject->Delete(
+            Type => 'Ticket',
+            Key  => "Cache::GetTicket${TicketID}::0::0",
+        );
     }
 
     # set the fixed time

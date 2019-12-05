@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -12,27 +12,39 @@ use utf8;
 
 use vars (qw($Self));
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get helper object
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-        # enable change owner to everyone feature
+        # Enable change owner to everyone feature.
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Ticket::ChangeOwnerToEveryone',
             Value => 1
         );
 
-        # do not check RichText
+        # Do not check RichText.
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Frontend::RichText',
             Value => 0
+        );
+
+        # Disable check of email addresses.
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'CheckEmailAddresses',
+            Value => 0,
+        );
+
+        # Disable MX record check.
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'CheckMXRecord',
+            Value => 0,
         );
 
         my $Config = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::AgentTicketOwner');
@@ -46,7 +58,7 @@ $Selenium->RunTest(
             },
         );
 
-        # create test users and login first
+        # Create test users and login first.
         my @TestUser;
         for my $User ( 1 .. 2 ) {
             my $TestUserLogin = $Helper->TestUserCreate(
@@ -64,7 +76,7 @@ $Selenium->RunTest(
 
         my $UserObject = $Kernel::OM->Get('Kernel::System::User');
 
-        # get test users ID
+        # Get test users ID.
         my @UserID;
         for my $UserID (@TestUser) {
             my $TestUserID = $UserObject->UserLookup(
@@ -98,10 +110,9 @@ $Selenium->RunTest(
             Valid  => 0,
         );
 
-        # get ticket object
         my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-        # create test ticket
+        # Create test ticket.
         my $TicketID = $TicketObject->TicketCreate(
             Title        => 'Selenium Test Ticket',
             Queue        => 'Raw',
@@ -115,36 +126,21 @@ $Selenium->RunTest(
         );
         $Self->True(
             $TicketID,
-            "Ticket is created - ID $TicketID",
+            "Ticket $TicketID is created",
         );
 
-        # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # navigate to zoom view of created test ticket
-        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID");
+        # Navigate to owner screen of created test ticket.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketOwner;TicketID=$TicketID");
 
-        # force sub menus to be visible in order to be able to click one of the links
-        $Selenium->WaitFor(
-            JavaScript =>
-                'return typeof($) === "function" && $("#nav-People ul").css({ "height": "auto", "opacity": "100" });'
-        );
-
-        # click on 'Owner' and switch window
-        $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketOwner;TicketID=$TicketID' )]")
-            ->VerifiedClick();
-
-        $Selenium->WaitFor( WindowCount => 2 );
-        my $Handles = $Selenium->get_window_handles();
-        $Selenium->switch_to_window( $Handles->[1] );
-
-        # wait until page has loaded, if necessary
+        # Wait until page has loaded, if necessary.
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $(".WidgetSimple").length;'
         );
 
-        # check page
+        # Check page.
         for my $ID (
             qw(NewOwnerID Subject RichText FileUpload IsVisibleForCustomer submitRichText)
             )
@@ -154,66 +150,249 @@ $Selenium->RunTest(
             $Element->is_displayed();
         }
 
-        # check out of office user message without filter
+        # Check out of office user message without filter.
         $Self->Is(
             $Selenium->execute_script("return \$('#NewOwnerID option[value=$UserID[1]]').text();"),
             "$UserData{UserFullname}",
             "Out of office message is found for the user - $TestUser[1]"
         );
 
-        # expand 'New owner' input field
-        $Selenium->execute_script("\$('#NewOwnerID_Search').focus().focus()");
+        # Expand 'New owner' input field.
+        $Selenium->execute_script("\$('#NewOwnerID_Search').focus().focus();");
 
-        # click on filter button in input fileld
+        # Click on filter button in input fileld.
         $Selenium->execute_script("\$('.InputField_Filters').click();");
 
-        # enable 'Previous Owner' filter
+        # Enable 'Previous Owner' filter.
         $Selenium->execute_script("\$('.InputField_FiltersList').children('input').click();");
 
-        # check out of office user message with filter
+        # Check out of office user message with filter.
         $Self->Is(
             $Selenium->execute_script("return \$('#NewOwnerID option[value=$UserID[1]]').text();"),
             "1: $UserData{UserFullname}",
             "Out of office message is found for the user - $TestUser[1]"
         );
 
-        # change ticket user owner
-        $Selenium->execute_script(
-            "\$('#NewOwnerID').val('$UserID[1]').trigger('redraw.InputField').trigger('change');"
+        # Change ticket user owner.
+        $Selenium->InputFieldValueSet(
+            Element => '#NewOwnerID',
+            Value   => $UserID[1],
         );
 
         $Selenium->find_element( "#Subject",        'css' )->send_keys('Test');
         $Selenium->find_element( "#RichText",       'css' )->send_keys('Test');
-        $Selenium->find_element( "#submitRichText", 'css' )->click();
+        $Selenium->find_element( "#submitRichText", 'css' )->VerifiedClick();
 
-        $Selenium->WaitFor( WindowCount => 1 );
-        $Selenium->switch_to_window( $Handles->[0] );
-
-        # navigate to AgentTicketHistory of created test ticket
+        # Navigate to AgentTicketHistory of created test ticket.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketHistory;TicketID=$TicketID");
 
-        # confirm owner change action
+        # Confirm owner change action.
         my $OwnerMsg = "Added note (Owner)";
         $Self->True(
             index( $Selenium->get_page_source(), $OwnerMsg ) > -1,
             "Ticket owner action completed",
         );
 
-        # delete created test tickets
-        my $Success = $TicketObject->TicketDelete(
-            TicketID => $TicketID,
-            UserID   => $UserID[0],
+        # Login as second created user who is set Out Of Office and create Note article, see bug#13521.
+        $Selenium->Login(
+            Type     => 'Agent',
+            User     => $TestUser[1],
+            Password => $TestUser[1],
+        );
+
+        # Navigate to note screen of created test ticket.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketNote;TicketID=$TicketID");
+
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#Subject").length && $("#RichText").length && $("#submitRichText").length;'
+        );
+
+        # Create Note article.
+        $Selenium->find_element( "#Subject",        'css' )->send_keys('TestSubject');
+        $Selenium->find_element( "#RichText",       'css' )->send_keys('TestBody');
+        $Selenium->find_element( "#submitRichText", 'css' )->VerifiedClick();
+
+        # Navigate to zoom view of created test ticket.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID");
+
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return typeof(\$) === 'function' && \$('#Row2 .Sender a').text() === '$TestUser[1] $TestUser[1]';"
+        );
+
+        # Verified there is no Out Of Office message in the 'Sender' column of created Note.
+        $Self->Is(
+            $Selenium->execute_script("return \$('#Row2 .Sender a').text();"),
+            "$TestUser[1] $TestUser[1]",
+            "There is no Out Of Office message in the article 'Sender' column."
+        );
+
+        # Check <OTRS_CUSTOMER_BODY> tag in NotificationOwnerUpdate notification body (see bug#14678).
+        my $MailQueueObject = $Kernel::OM->Get('Kernel::System::MailQueue');
+        my $TestEmailObject = $Kernel::OM->Get('Kernel::System::Email::Test');
+
+        # Cleanup mail queue.
+        $MailQueueObject->Delete();
+
+        my $SendEmails = sub {
+            my %Param = @_;
+            my $Items = $MailQueueObject->List();
+            my @ToReturn;
+            for my $Item (@$Items) {
+                $MailQueueObject->Send( %{$Item} );
+                push @ToReturn, $Item->{Message};
+            }
+
+            # Clean mail queue.
+            $MailQueueObject->Delete();
+
+            return @ToReturn;
+        };
+
+        # Enable Test email backend.
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'SendmailModule',
+            Value => 'Kernel::System::Email::Test',
+        );
+
+        # Cleanup test email backend.
+        my $Success = $TestEmailObject->CleanUp();
+        $Self->True(
+            $Success,
+            'Initial cleanup',
+        );
+
+        # Disable AgentTicketOwner###NoteMandatory.
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'Ticket::Frontend::AgentTicketOwner###NoteMandatory',
+            Value => 0
+        );
+
+        my $RandomID = $Helper->GetRandomID();
+        my $Subject  = "Subject-$RandomID";
+        my $Body     = "Body-$RandomID";
+
+        my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
+            ChannelName => 'Email',
+        );
+
+        # Create customer article for test ticket.
+        my $ArticleID = $ArticleBackendObject->ArticleCreate(
+            TicketID             => $TicketID,
+            IsVisibleForCustomer => 1,
+            SenderType           => 'customer',
+            Subject              => $Subject,
+            Body                 => $Body,
+            Charset              => 'ISO-8859-15',
+            MimeType             => 'text/plain',
+            HistoryType          => 'EmailCustomer',
+            HistoryComment       => 'Some free text!',
+            UserID               => $UserID[1],
+        );
+        $Self->True(
+            $ArticleID,
+            "ArticleID $ArticleID is created for TicketID $TicketID",
+        );
+
+        # Add notification.
+        my $NotificationEventObject = $Kernel::OM->Get('Kernel::System::NotificationEvent');
+        my $NotificationID          = $NotificationEventObject->NotificationAdd(
+            Name => "Notification-$RandomID",
+            Data => {
+                Events          => ['NotificationOwnerUpdate'],
+                RecipientAgents => [ $UserID[0] ],
+                Transports      => ['Email'],
+            },
+            Message => {
+                en => {
+                    Subject     => "Notification-Subject-$RandomID",
+                    Body        => 'OTRS_CUSTOMER_BODY tag: <OTRS_CUSTOMER_BODY>',
+                    ContentType => 'text/plain',
+                },
+            },
+            ValidID => 1,
+            UserID  => 1,
+        );
+        $Self->True(
+            $NotificationID,
+            "NotificationID $NotificationID is created",
+        );
+
+        # Navigate to owner screen of created test ticket to change owner without note (article).
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketOwner;TicketID=$TicketID");
+
+        # Wait until page has loaded, if necessary.
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $(".WidgetSimple").length && $("#NewOwnerID").length;'
+        );
+
+        # Change ticket owner.
+        $Selenium->InputFieldValueSet(
+            Element => '#NewOwnerID',
+            Value   => $UserID[0],
+        );
+
+        # Submit.
+        $Selenium->find_element( "#submitRichText", 'css' )->VerifiedClick();
+
+        $SendEmails->();
+
+        # Get test emails.
+        my $Emails = $TestEmailObject->EmailsGet();
+
+        # Check if OTRS_CUSTOMER_BODY tag is replaced correctly in any email.
+        my $Found = 0;
+        my $Match = "OTRS_CUSTOMER_BODY tag: $Body";
+        EMAIL:
+        for my $Email ( @{$Emails} ) {
+            $Found = ( ${ $Email->{Body} } =~ m/$Match/ ? 1 : 0 );
+            last EMAIL if $Found;
+        }
+
+        $Self->True(
+            $Found,
+            'OTRS_CUSTOMER_BODY tag is replaced correctly',
+        );
+
+        # Cleanup test email backend and mail queue.
+        $TestEmailObject->CleanUp();
+        $MailQueueObject->Delete();
+
+        $Success = $NotificationEventObject->NotificationDelete(
+            ID     => $NotificationID,
+            UserID => 1,
         );
         $Self->True(
             $Success,
-            "Ticket is deleted - ID $TicketID"
+            "NotificationID $NotificationID is deleted",
         );
 
-        # make sure the cache is correct
+        # Delete created test tickets.
+        $Success = $TicketObject->TicketDelete(
+            TicketID => $TicketID,
+            UserID   => $UserID[0],
+        );
+
+        # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+        if ( !$Success ) {
+            sleep 3;
+            $Success = $TicketObject->TicketDelete(
+                TicketID => $TicketID,
+                UserID   => $UserID[0],
+            );
+        }
+        $Self->True(
+            $Success,
+            "Ticket $TicketID is deleted"
+        );
+
+        # Make sure the cache is correct.
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
             Type => 'Ticket',
         );
-
     }
 );
 

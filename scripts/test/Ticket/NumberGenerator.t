@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -42,7 +42,7 @@ for my $Backend (qw(AutoIncrement Date DateChecksum)) {
                 Value => $TicketHook,
             );
 
-            for my $Count ( 1 .. 100 ) {
+            for my $Count ( 1 .. 5 ) {
 
                 # Produce a ticket number for a foreign system
                 $ConfigObject->Set(

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -12,25 +12,27 @@ use utf8;
 
 use vars (qw($Self));
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get helper object
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-        # do not check RichText
+        # Do not check RichText.
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Frontend::RichText',
             Value => 0
         );
 
+        # Defined user language for testing if message is being translated correctly.
+        my $Language = "de";
+
         # create test user and login
         my $TestUserLogin = $Helper->TestUserCreate(
-            Groups => ['admin'],
+            Groups   => ['admin'],
+            Language => $Language,
         ) || die "Did not get test user";
 
         $Selenium->Login(
@@ -39,42 +41,43 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # navigate to AdminAutoResponse screen
+        # Navigate to AdminAutoResponse screen.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminAutoResponse");
 
-        # check overview AdminAutoResponse
+        # Check overview AdminAutoResponse.
         $Selenium->find_element( "table",             'css' );
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
 
-        # check breadcrumb on Overview screen
+        # Check breadcrumb on Overview screen.
         $Self->True(
             $Selenium->find_element( '.BreadCrumb', 'css' ),
             "Breadcrumb is found on Overview screen.",
         );
 
-        # click 'Add auto response'
+        # Click 'Add auto response'.
         $Selenium->find_element("//a[contains(\@href, \'Action=AdminAutoResponse;Subaction=Add' )]")->VerifiedClick();
 
-        # get needed variables
-        my $Count;
+        my $LanguageObject = Kernel::Language->new(
+            UserLanguage => $Language,
+        );
 
-        # check breadcrumb on Add screen
+        # Check breadcrumb on Add screen.
+        my $Count;
         $Count = 1;
         for my $BreadcrumbText ( 'Auto Response Management', 'Add Auto Response' ) {
             $Self->Is(
                 $Selenium->execute_script("return \$('.BreadCrumb li:eq($Count)').text().trim()"),
-                $BreadcrumbText,
+                $LanguageObject->Translate($BreadcrumbText),
                 "Breadcrumb text '$BreadcrumbText' is found on screen"
             );
 
             $Count++;
         }
 
-        # check page
+        # Check page.
         for my $ID (
             qw(Name Subject RichText TypeID AddressID ValidID Comment)
             )
@@ -84,10 +87,12 @@ $Selenium->RunTest(
             $Element->is_displayed();
         }
 
-        # check client side validation
+        # Check client side validation.
         my $Element = $Selenium->find_element( "#Name", 'css' );
         $Element->send_keys("");
-        $Element->VerifiedSubmit();
+
+        $Selenium->find_element( "#Submit", 'css' )->click();
+        $Selenium->WaitFor( JavaScript => "return \$('#Name.Error').length" );
 
         $Self->Is(
             $Selenium->execute_script(
@@ -97,20 +102,18 @@ $Selenium->RunTest(
             'Client side validation correctly detected missing input value',
         );
 
-        # check form action
+        # Check form action.
         $Self->True(
             $Selenium->find_element( '#Submit', 'css' ),
             "Submit is found on Add screen.",
         );
 
-        # get needed variables
         my $RandomNumber = $Helper->GetRandomNumber();
         my @AutoResponseNames;
 
-        # create a real test auto responses
         for my $Item (qw(First Second)) {
 
-            # navigate to 'Add auto response' screen in second case
+            # Navigate to 'Add auto response' screen in second case.
             if ( $Item eq 'Second' ) {
                 $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminAutoResponse;Subaction=Add");
             }
@@ -121,12 +124,21 @@ $Selenium->RunTest(
             $Selenium->find_element( "#Name",     'css' )->send_keys($AutoResponseName);
             $Selenium->find_element( "#Subject",  'css' )->send_keys($AutoResponseName);
             $Selenium->find_element( "#RichText", 'css' )->send_keys($Text);
-            $Selenium->execute_script("\$('#TypeID').val('1').trigger('redraw.InputField').trigger('change');");
-            $Selenium->execute_script("\$('#AddressID').val('1').trigger('redraw.InputField').trigger('change');");
-            $Selenium->execute_script("\$('#ValidID').val('1').trigger('redraw.InputField').trigger('change');");
-            $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
+            $Selenium->InputFieldValueSet(
+                Element => '#TypeID',
+                Value   => 1,
+            );
+            $Selenium->InputFieldValueSet(
+                Element => '#AddressID',
+                Value   => 1,
+            );
+            $Selenium->InputFieldValueSet(
+                Element => '#ValidID',
+                Value   => 1,
+            );
+            $Selenium->find_element( "#Submit", 'css' )->VerifiedClick();
 
-            # check if test auto response show on AdminAutoResponse screen
+            # Check if test auto response show on AdminAutoResponse screen.
             $Self->Is(
                 $Selenium->execute_script(
                     "return \$('table tbody tr td:contains($AutoResponseName)').length"
@@ -138,14 +150,14 @@ $Selenium->RunTest(
             push @AutoResponseNames, $AutoResponseName;
         }
 
-        # edit test job and set it to invalid
+        # Edit test job and set it to invalid.
         $Selenium->find_element( $AutoResponseNames[0], 'link_text' )->VerifiedClick();
 
-        # check breadcrumb on Edit screen
+        # Check breadcrumb on Edit screen.
         $Count = 1;
         for my $BreadcrumbText (
-            'Auto Response Management',
-            'Edit Auto Response: ' . $AutoResponseNames[0]
+            $LanguageObject->Translate('Auto Response Management'),
+            $LanguageObject->Translate('Edit Auto Response') . ': ' . $AutoResponseNames[0]
             )
         {
             $Self->Is(
@@ -157,7 +169,7 @@ $Selenium->RunTest(
             $Count++;
         }
 
-        # check form actions
+        # Check form actions.
         for my $Action (qw(Submit SubmitAndContinue)) {
             $Self->True(
                 $Selenium->find_element( "#$Action", 'css' ),
@@ -168,10 +180,13 @@ $Selenium->RunTest(
         $AutoResponseNames[0] = 'Update' . $AutoResponseNames[0];
         $Selenium->find_element( "#Name", 'css' )->clear();
         $Selenium->find_element( "#Name", 'css' )->send_keys( $AutoResponseNames[0] );
-        $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
-        $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
+        $Selenium->InputFieldValueSet(
+            Element => '#ValidID',
+            Value   => 2,
+        );
+        $Selenium->find_element( "#Submit", 'css' )->VerifiedClick();
 
-        # check if edited auto response show on AdminAutoResponse
+        # Check if edited auto response show on AdminAutoResponse.
         $Self->Is(
             $Selenium->execute_script(
                 "return \$('table tbody tr td:contains($AutoResponseNames[0])').length"
@@ -180,7 +195,7 @@ $Selenium->RunTest(
             "Auto response job '$AutoResponseNames[0]' is found in the table",
         );
 
-        # check class of invalid AutoResponse in the overview table
+        # Check class of invalid AutoResponse in the overview table.
         $Self->Is(
             $Selenium->execute_script(
                 "return \$('tr.Invalid td a:contains($AutoResponseNames[0])').length"
@@ -189,13 +204,16 @@ $Selenium->RunTest(
             "There is a class 'Invalid' for auto response $AutoResponseNames[0]",
         );
 
-        # navigate to AdminAutoResponse screen
+        # Navigate to AdminAutoResponse screen.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminAutoResponse");
 
-        # filter auto responses
+        # Filter auto responses.
         $Selenium->find_element( "#FilterAutoResponses", 'css' )->clear();
         $Selenium->find_element( "#FilterAutoResponses", 'css' )->send_keys( $AutoResponseNames[0], "\N{U+E007}" );
-        sleep 1;
+
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('table tbody tr:visible').length === 1"
+        );
 
         $Self->Is(
             $Selenium->execute_script(
@@ -213,9 +231,21 @@ $Selenium->RunTest(
             "Auto response '$AutoResponseNames[1]' is not found in the table"
         );
 
-        # cleanup
-        # since there are no tickets that rely on our test auto response,
-        # we can remove them from the DB
+        $Count = 0;
+        for my $ColumnName (qw(Name Type Comment Validity Changed Created)) {
+
+            # Check if column name is translated.
+            $Self->Is(
+                $Selenium->execute_script("return \$('#AutoResponses tr th:eq($Count)').text().trim()"),
+                $LanguageObject->Translate($ColumnName),
+                "Column name $ColumnName is translated",
+            );
+            $Count++;
+        }
+
+        # Cleanup
+        # Since there are no tickets that rely on our test auto response,
+        # we can remove them from the DB.
         my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
         my $Success;
 

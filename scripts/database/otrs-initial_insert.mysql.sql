@@ -830,30 +830,40 @@ INSERT INTO article (id, ticket_id, communication_channel_id, article_sender_typ
 # ----------------------------------------------------------
 INSERT INTO article_data_mime (id, article_id, a_from, a_to, a_subject, a_body, a_message_id, incoming_time, content_path, create_by, create_time, change_by, change_time)
     VALUES
-    (1, 1, 'OTRS Feedback <marketing@otrs.com>', 'Your OTRS System <otrs@localhost>', 'Welcome to OTRS!', 'Welcome to OTRS!
+    (1, 1, 'OTRS Feedback <marketing@otrs.com>', 'Your OTRS System <otrs@localhost>', 'Welcome to OTRS!', 'Welcome to the OTRS Group’s community!
 
-Thank you for installing OTRS, the world’s most popular service management software available in more than 35 languages and used by 150,000 companies worldwide.
+Thank you for installing ((OTRS)) Community Edition, the world’s most popular open source service management software. It’s available in 40 languages and used by more than 170,000 companies worldwide.
 
-You can find updates and patches for OTRS Free at
-https://www.otrs.com/download-open-source-help-desk-software-otrs-free/.
+Please be aware that we do not offer official vendor support for the ((OTRS)) Community Edition.
 
-Please be aware that we do not offer official vendor support for OTRS Free. In case of questions, please use our:
+Resources for ((OTRS)) Community Edition Users
 
-- online documentation available at http://otrs.github.io/doc/
-- mailing lists available at http://lists.otrs.org/
-- E-Learning with OTRS at https://www.otrs.com/e-learning-otrs/
+You can find updates and patches for ((OTRS)) Community Edition at https://community.otrs.com/download-otrs-community-edition/.
 
-To meet higher business requirements, we recommend to use the OTRS Business Solution™, that offers
+Find help and exchange ideas in our knowledge base at https://community.otrs.com/open-source/. Here, you’ll be able to take part of the OTRS Group’s Community and take advantage of our blog posts. You can report a bug, suggest a feature or discover online documentation.
 
-- exclusive business features like chat, integration of data from external databases etc.
-- included professional updates & services
-- implementation and configuration by our experts
+Mailing lists are also available at https://lists.otrs.org/
 
-Find more information about it at https://www.otrs.com/solutions/.
+Interested in OTRS? We offer professional service management solutions too.
 
-Best regards and ((enjoy)) OTRS,
+To get the most up-to-date version of OTRS and to receive the best possible support for your business, we recommend that you use our fully-managed version of OTRS: https://otrs.com/how-to-buy/.
 
-Your OTRS Group
+With this version, you’ll gain access to:
+
+- Exclusive features that are only available to OTRS users
+- The OTRS Feature Add-ons
+- Business process management support
+- Included professional services – training, support and consulting
+- All the latest security updates and patches
+- Implementation and configuration by our experts
+
+Find more information about OTRS support and consulting by visiting https://otrs.com/otrs-solutions/.
+
+Ready to get started with fully-managed OTRS instead? -> Contact Sales: https://otrs.com/contact/
+
+Best regards and ((enjoy)) ((OTRS)) Community Edition,
+
+Your OTRS Team
 ', '<007@localhost>', 1436949030, '2015/07/15', 1, current_timestamp, 1, current_timestamp);
 # ----------------------------------------------------------
 #  insert into table article_data_mime_plain
@@ -866,30 +876,40 @@ Subject: Welcome to OTRS!
 Content-Type: text/plain\; charset=utf-8
 Content-Transfer-Encoding: 8bit
 
-Welcome to OTRS!
+Welcome to the OTRS Group’s community!
 
-Thank you for installing OTRS, the world’s most popular service management software available in more than 35 languages and used by 150,000 companies worldwide.
+Thank you for installing ((OTRS)) Community Edition, the world’s most popular open source service management software. It’s available in 40 languages and used by more than 170,000 companies worldwide.
 
-You can find updates and patches for OTRS Free at
-https://www.otrs.com/download-open-source-help-desk-software-otrs-free/.
+Please be aware that we do not offer official vendor support for the ((OTRS)) Community Edition.
 
-Please be aware that we do not offer official vendor support for OTRS Free. In case of questions, please use our:
+Resources for ((OTRS)) Community Edition Users
 
-- online documentation available at http://otrs.github.io/doc/
-- mailing lists available at http://lists.otrs.org/
-- E-Learning with OTRS at https://www.otrs.com/e-learning-otrs/
+You can find updates and patches for ((OTRS)) Community Edition at https://community.otrs.com/download-otrs-community-edition/.
 
-To meet higher business requirements, we recommend to use the OTRS Business Solution™, that offers
+Find help and exchange ideas in our knowledge base at https://community.otrs.com/open-source/. Here, you’ll be able to take part of the OTRS Group’s Community and take advantage of our blog posts. You can report a bug, suggest a feature or discover online documentation.
 
-- exclusive business features like chat, integration of data from external databases etc.
-- included professional updates & services
-- implementation and configuration by our experts
+Mailing lists are also available at https://lists.otrs.org/
 
-Find more information about it at https://www.otrs.com/solutions/.
+Interested in OTRS? We offer professional service management solutions too.
 
-Best regards and ((enjoy)) OTRS,
+To get the most up-to-date version of OTRS and to receive the best possible support for your business, we recommend that you use our fully-managed version of OTRS: https://otrs.com/how-to-buy/.
 
-Your OTRS Group
+With this version, you’ll gain access to:
+
+- Exclusive features that are only available to OTRS users
+- The OTRS Feature Add-ons
+- Business process management support
+- Included professional services – training, support and consulting
+- All the latest security updates and patches
+- Implementation and configuration by our experts
+
+Find more information about OTRS support and consulting by visiting https://otrs.com/otrs-solutions/.
+
+Ready to get started with fully-managed OTRS instead? -> Contact Sales: https://otrs.com/contact/
+
+Best regards and ((enjoy)) ((OTRS)) Community Edition,
+
+Your OTRS Team
 ', 1, current_timestamp, 1, current_timestamp);
 # ----------------------------------------------------------
 #  insert into table ticket_history
@@ -3153,6 +3173,21 @@ INSERT INTO notification_event_message (id, notification_id, content_type, langu
 Please note, that the delivery of an email article of [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has failed. Please check the email address of your recipient for mistakes and try again. You can manually resend the article from the ticket if required.
 
 Error Message:
+<OTRS_AGENT_TransmissionStatusMessage>
+
+<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>\;ArticleID=<OTRS_AGENT_ArticleID>
+
+-- <OTRS_CONFIG_NotificationSenderName>');
+# ----------------------------------------------------------
+#  insert into table notification_event_message
+# ----------------------------------------------------------
+INSERT INTO notification_event_message (id, notification_id, content_type, language, subject, text)
+    VALUES
+    (111, 15, 'text/plain', 'hu', 'E-mail kézbesítési hiba', 'Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+
+Felhívjuk a figyelmét, hogy a(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy e-mail bejegyzésének kézbesítése nem sikerült. Ellenőrizze, hogy nincs-e a címzett e-mail címében hiba, és próbálja meg újra. Kézileg is újraküldheti a bejegyzést a jegyből, ha szükséges.
+
+Hibaüzenet:
 <OTRS_AGENT_TransmissionStatusMessage>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom\;TicketID=<OTRS_TICKET_TicketID>\;ArticleID=<OTRS_AGENT_ArticleID>

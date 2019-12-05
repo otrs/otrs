@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -76,14 +76,24 @@ $Selenium->RunTest(
 
         # add real test mail account
         my $RandomID = "EmailAccount" . $Helper->GetRandomID();
-        $Selenium->execute_script("\$('#TypeAdd').val('IMAP').trigger('redraw.InputField').trigger('change');");
+        $Selenium->InputFieldValueSet(
+            Element => '#TypeAdd',
+            Value   => 'IMAP',
+        );
         $Selenium->find_element( "#LoginAdd",    'css' )->send_keys($RandomID);
         $Selenium->find_element( "#PasswordAdd", 'css' )->send_keys("SomePassword");
         $Selenium->find_element( "#HostAdd",     'css' )->send_keys("pop3.example.com");
-        $Selenium->execute_script("\$('#Trusted').val('0').trigger('redraw.InputField').trigger('change');");
-        $Selenium->execute_script("\$('#DispatchingBy').val('Queue').trigger('redraw.InputField').trigger('change');");
-        $Selenium->find_element( "#Comment",  'css' )->send_keys("Selenium test AdminMailAccount");
-        $Selenium->find_element( "#LoginAdd", 'css' )->VerifiedSubmit();
+        $Selenium->InputFieldValueSet(
+            Element => '#Trusted',
+            Value   => 0,
+        );
+        $Selenium->InputFieldValueSet(
+            Element => '#DispatchingBy',
+            Value   => 'Queue',
+        );
+
+        $Selenium->find_element( "#Comment", 'css' )->send_keys("Selenium test AdminMailAccount");
+        $Selenium->find_element( "#Submit",  'css' )->VerifiedClick();
 
         # check if test mail account is present
         my $TestMailHost = "pop3.example.com / $RandomID";
@@ -131,7 +141,7 @@ $Selenium->RunTest(
         }
 
         my $MailAccountID = $Selenium->find_element( 'input[name=ID]', 'css' )->get_value();
-        my %MailAccount = $Kernel::OM->Get('Kernel::System::MailAccount')->MailAccountGet( ID => $MailAccountID );
+        my %MailAccount   = $Kernel::OM->Get('Kernel::System::MailAccount')->MailAccountGet( ID => $MailAccountID );
         $Self->Is(
             scalar $MailAccount{Password},
             'SomePassword',
@@ -139,7 +149,7 @@ $Selenium->RunTest(
         );
 
         # Save current screen.
-        $Selenium->find_element( "#LoginEdit", 'css' )->VerifiedSubmit();
+        $Selenium->find_element( "#Submit", 'css' )->VerifiedClick();
 
         # Discard the instance of cache object, because of in-memory cache.
         $Kernel::OM->ObjectsDiscard(
@@ -158,7 +168,7 @@ $Selenium->RunTest(
         # Update password and verify that it is changed in DB.
         $Selenium->find_element( "#PasswordEdit", 'css' )->clear();
         $Selenium->find_element( "#PasswordEdit", 'css' )->send_keys("SomePassword2");
-        $Selenium->find_element( "#LoginEdit",    'css' )->VerifiedSubmit();
+        $Selenium->find_element( "#Submit",       'css' )->VerifiedClick();
 
         # Discard the instance of cache object, because of in-memory cache.
         $Kernel::OM->ObjectsDiscard(
@@ -177,8 +187,11 @@ $Selenium->RunTest(
 
         $Selenium->find_element( "#HostEdit", 'css' )->clear();
         $Selenium->find_element( "#HostEdit", 'css' )->send_keys("pop3edit.example.com");
-        $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
-        $Selenium->find_element( "#LoginEdit", 'css' )->VerifiedSubmit();
+        $Selenium->InputFieldValueSet(
+            Element => '#ValidID',
+            Value   => '2',
+        );
+        $Selenium->find_element( "#Submit", 'css' )->VerifiedClick();
 
         # check class of invalid EmailAccount in the overview table
         $Self->True(
@@ -254,8 +267,13 @@ $Selenium->RunTest(
             my $FieldID = $Test->{FieldID};
             my $ForAttr = $Test->{ForAttr};
 
-            $Selenium->execute_script(
-                "\$('#$FieldID').val('$Test->{Selected}').trigger('redraw.InputField').trigger('change');"
+            $Selenium->InputFieldValueSet(
+                Element => "#$FieldID",
+                Value   => $Test->{Selected},
+            );
+            $Selenium->InputFieldValueSet(
+                Element => "#$FieldID",
+                Value   => $Test->{Selected},
             );
 
             $Self->Is(

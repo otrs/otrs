@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 [% SET OTRSBusinessLabel = '<strong>OTRS Business Solution</strong>™' %]
@@ -46,7 +46,7 @@
 [% RenderBlockEnd("ActionOverview") %]
 [% RenderBlockStart("ActionAdd") %]
                     <li>
-                        <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Add" class="CallForAction Fullsize Center"><span><i class="fa fa-plus-square"></i>[% Translate("Add notification") | html %]</span></a>
+                        <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Add" class="CallForAction Fullsize Center"><span><i class="fa fa-plus-square"></i>[% Translate("Add Notification") | html %]</span></a>
                     </li>
                     <li>
                         <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=NotificationExport" class="CallForAction Fullsize Center"><span><i class="fa fa-download"></i>[% Translate("Export Notifications") | html %]</span></a>
@@ -126,7 +126,7 @@
                     <tbody>
 [% RenderBlockStart("NoDataFoundMsg") %]
                         <tr>
-                            <td colspan="6">
+                            <td colspan="8">
                                 [% Translate("No data found.") | html %]
                             </td>
                         </tr>
@@ -159,7 +159,7 @@
 
 [% RenderBlockStart("OverviewUpdate") %]
 
-        <form action="[% Env("CGIHandle") %]" method="post" class="Validate" name="compose" id="NotificationEvent">
+        <form action="[% Env("CGIHandle") %]" method="post" class="Validate PreventMultipleSubmits" name="compose" id="NotificationEvent">
             <div class="WidgetSimple">
                 <div class="Header">
                 [% IF Data.Action == 'Add' %]
@@ -378,7 +378,7 @@
                         <div class="Clear"></div>
 
 [% RenderBlockStart("BackendArticleField") %]
-                        <label for="[% Data.Key %]">[% Data.Label %]:</label>
+                        <label for="[% Data.Key %]">[% Translate(Data.Label) | html %]:</label>
                         <div class="Field">
                             <input type="text" name="[% Data.Key %]" id="[% Data.Key %]" class="W75pc [% Data.Key %]ServerError" value="[% Data.Value | html %]"/>
                             <div id="[% Data.Key %]ServerError" class="TooltipErrorMessage">
@@ -415,7 +415,7 @@
                         </div>
                         <div class="Clear"></div>
 
-                        <label for="RecipientGroups">[% Translate("Send to all group members") | html %]: </label>
+                        <label for="RecipientGroups">[% Translate("Send to all group members (agents only)") | html %]: </label>
                         <div class="Field">
                             [% Data.RecipientGroupsStrg %]
                         </div>
@@ -461,13 +461,13 @@
                     </fieldset>
 [% RenderBlockStart("TransportRow") %]
                     <fieldset class="TableLike FixedLabel SpacingTop">
-                        <legend><span>[% Data.TransportName | html %]</span></legend>
+                        <legend><span>[% Translate(Data.TransportName) | html %]</span></legend>
 [% RenderBlockStart("TransportRowEnabled") %]
                         <label for="Transport[% Data.Transport | html %]">
                             [% Translate("Enable this notification method") | html %]:
                         </label>
                         <div class="Field">
-                            <input type="checkbox" name="Transports" id="Transport[% Data.Transport | html %]" value="[% Data.Transport | html %]" class="Validate_OneChecked [% Data.TransportsServerError %]" title="[% Translate("Transport") %]: [% Translate(Data.Transport) %]" [% Data.TransportChecked %] />
+                            <input type="checkbox" name="Transports" id="Transport[% Data.Transport | html %]" value="[% Data.Transport | html %]" class="Validate_OneChecked [% Data.TransportsServerError | html %]" title="[% Translate("Transport") | html %]: [% Translate(Data.Transport) | html %]" [% Data.TransportChecked %] />
                             <div id="Transport[% Data.Transport | html %]Error" class="TooltipErrorMessage">
                                 <p>[% Translate("At least one method is needed per notification.") | html %]</p>
                             </div>
@@ -497,12 +497,12 @@
 [% RenderBlockEnd("TransportRowDisabled") %]
 [% RenderBlockStart("TransportRowRecommendation") %]
                         <div class="Field Info">
-                            <a href="[% Env("Baselink") %]Action=AdminOTRSBusiness" class="Button"><i class="fa fa-angle-double-up"></i> [% Translate("Upgrade to %s", OTRSBusinessLabel) %]</a>
+                            <a href="[% Env("Baselink") %]Action=AdminOTRSBusiness" class="Button"><i class="fa fa-angle-double-up"></i> [% Translate("Upgrade to %s") | html | ReplacePlaceholders(OTRSBusinessLabel) %]</a>
                         </div>
 [% RenderBlockEnd("TransportRowRecommendation") %]
 [% RenderBlockStart("TransportRowNotActive") %]
                         <div class="Field Info">
-                            <a href="[% Env("Baselink") %]Action=AdminCloudServices" class="Button"><i class="fa fa-angle-double-up"></i> [% Translate("Please activate this transport in order to use it.") %]</a>
+                            <a href="[% Env("Baselink") %]Action=AdminCloudServices" class="Button"><i class="fa fa-angle-double-up"></i> [% Translate("Please activate this transport in order to use it.") | html %]</a>
                         </div>
 [% RenderBlockEnd("TransportRowNotActive") %]
                         <div class="Clear"></div>
@@ -539,7 +539,7 @@
                                     </div>
                                     <h2 class="Title">
                                         [% IF Data.Language %]
-                                          [% Translate(Data.Language) %]
+                                          [% Translate(Data.Language) | html %]
                                         [% ELSE %]
                                            <span class="Warning">'[% Data.LanguageID | html %]' &mdash; [% Translate("This language is not present or enabled on the system. This notification text could be deleted if it is not needed anymore.") | html %]</span>
                                         [% END %]
@@ -577,13 +577,13 @@
                             [% Translate("Text") | html %]:
                                         </label>
                                         <div class="RichTextField">
-                                            <textarea name="[% Data.LanguageID | html %]_Body" id="[% Data.LanguageID | html %]_Body" class="RichText Validate_RequiredRichText [% Data.BodyServerError | html %]" title="[% Translate("Message body") | html %]" rows="15" cols="[% Config("Ticket::Frontend::TextAreaNote") %]">[% Data.Body | html %]</textarea>
+                                            <textarea name="[% Data.LanguageID | html %]_Body" id="[% Data.LanguageID | html %]_Body" class="RichText Validate_RequiredRichText [% Data.BodyServerError | html %]" title="[% Translate("Message body") | html %]" rows="15" cols="[% Config("Ticket::Frontend::TextAreaNote") | html %]">[% Data.Body | html %]</textarea>
 
                                             <div id="[% Data.LanguageID | html %]_BodyError" class="TooltipErrorMessage">
                                                 <p>[% Translate("This field is required.") | html %]</p>
                                             </div>
                                             <div id="[% Data.LanguageID | html %]_BodyServerError" class="TooltipErrorMessage">
-                                                <p>[% Translate("This field is required.") | html %]</p>
+                                                <p>[% Translate("This field is required and must have less than 4000 characters.") | html %]</p>
                                             </div>
                                         </div>
                                         <div class="Clear"></div>
@@ -625,7 +625,7 @@
                                             [% Translate("Text") | html %]:
                                         </label>
                                         <div class="RichTextField">
-                                            <textarea id="Template_Body" class="" name="Template_Body" title="[% Translate("Message body") | html %]" rows="15" cols="[% Config("Ticket::Frontend::TextAreaNote") %]"></textarea>
+                                            <textarea id="Template_Body" class="" name="Template_Body" title="[% Translate("Message body") | html %]" rows="15" cols="[% Config("Ticket::Frontend::TextAreaNote") | html %]"></textarea>
                                             <div id="Template_BodyError" class="TooltipErrorMessage">
                                                 <p>[% Translate("This field is required.") | html %]</p>
                                             </div>

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::CustomerTicketMessage;
@@ -247,8 +247,8 @@ sub Run {
     }
     elsif ( $Self->{Subaction} eq 'StoreNew' ) {
 
-        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
-        my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Phone' );
+        my $ArticleObject        = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+        my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Internal' );
 
         my $NextScreen = $Config->{NextScreenAfterNewTicket};
         my %Error;
@@ -258,7 +258,7 @@ sub Run {
         my ( $NewQueueID, $To ) = split( /\|\|/, $Dest );
         if ( !$To ) {
             $NewQueueID = $ParamObject->GetParam( Param => 'NewQueueID' ) || '';
-            $To = 'System';
+            $To         = 'System';
         }
 
         # fallback, if no destination is given
@@ -272,6 +272,8 @@ sub Run {
                 $To         = $Queue;
             }
         }
+
+        $GetParam{NewQueueID} = $NewQueueID;
 
         # use default if ticket type is not available in screen but activated on system
         if ( $ConfigObject->Get('Ticket::Type') && !$Config->{'TicketType'} ) {
@@ -362,7 +364,9 @@ sub Run {
                 );
 
                 if ( !IsHashRefWithData($ValidationResult) ) {
-                    my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
+                    my $Output = $LayoutObject->CustomerHeader(
+                        Title => Translatable('Error'),
+                    );
                     $Output .= $LayoutObject->CustomerError(
                         Message =>
                             $LayoutObject->{LanguageObject}
@@ -440,7 +444,7 @@ sub Run {
 
             # set the correct queue name in $To if it was altered
             if ( $To ne $Tos->{$NewQueueID} ) {
-                $To = $Tos->{$NewQueueID}
+                $To = $Tos->{$NewQueueID};
             }
         }
 
@@ -596,7 +600,9 @@ sub Run {
         );
 
         if ( !$ArticleID ) {
-            my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
+            my $Output = $LayoutObject->CustomerHeader(
+                Title => Translatable('Error'),
+            );
             $Output .= $LayoutObject->CustomerError();
             $Output .= $LayoutObject->CustomerFooter();
             return $Output;
@@ -1132,7 +1138,7 @@ sub _MaskNew {
             Data => {
                 %Param,
                 TypeIDInvalid => $Param{Errors}->{TypeIDInvalid},
-                }
+            }
         );
     }
 
@@ -1199,7 +1205,7 @@ sub _MaskNew {
                 Data => {
                     SLAMandatory => $Config->{SLAMandatory} || 0,
                     %Param,
-                    }
+                }
             );
         }
     }

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -25,6 +25,8 @@ my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
 my $RandomNumber = $HelperObject->GetRandomNumber();
 
+$HelperObject->FixedTimeSet();
+
 my $SettingName1 = 'ProductName ' . $RandomNumber . 1;
 my $SettingName2 = 'ProductName ' . $RandomNumber . 2;
 my $SettingName3 = 'ProductName ' . $RandomNumber . 3;
@@ -34,20 +36,23 @@ my $SettingName4 = 'ProductName ' . $RandomNumber . 4;
 # Prepare valid config XML and Perl
 #
 my $ValidSettingXML = <<'EOF',
-<Setting Name="Test1" Required="1" Valid="1">
-    <Description Translatable="1">Test 1.</Description>
-    <Navigation>Core::Ticket</Navigation>
-    <Value>
-        <Item ValueType="String" ValueRegex=".*">Test setting 1</Item>
-    </Value>
-</Setting>
-<Setting Name="Test2" Required="1" Valid="1">
-    <Description Translatable="1">Test 2.</Description>
-    <Navigation>Core::Ticket</Navigation>
-    <Value>
-        <Item ValueType="File">/usr/bin/gpg</Item>
-    </Value>
-</Setting>
+<?xml version="1.0" encoding="utf-8" ?>
+<otrs_config version="2.0" init="Framework">
+    <Setting Name="Test1" Required="1" Valid="1">
+        <Description Translatable="1">Test 1.</Description>
+        <Navigation>Core::Ticket</Navigation>
+        <Value>
+            <Item ValueType="String" ValueRegex=".*">Test setting 1</Item>
+        </Value>
+    </Setting>
+    <Setting Name="Test2" Required="1" Valid="1">
+        <Description Translatable="1">Test 2.</Description>
+        <Navigation>Core::Ticket</Navigation>
+        <Value>
+            <Item ValueType="File">/usr/bin/gpg</Item>
+        </Value>
+    </Setting>
+</otrs_config>
 EOF
 
     my $SysConfigXMLObject = $Kernel::OM->Get('Kernel::System::SysConfig::XML');
@@ -166,7 +171,7 @@ my $ExclusiveLockGUID = $SysConfigDBObject->DefaultSettingLock(
 my %Result = $SysConfigObject->SettingUpdate(
     Name              => $SettingName1,
     IsValid           => 1,
-    EffectiveValue    => 'Modified 1 Setting 1',
+    EffectiveValue    => 'ConfigurationDeploymentSettingListGet.t Modified 1 Setting 1',
     ExclusiveLockGUID => $ExclusiveLockGUID,
     UserID            => 1,
 );
@@ -178,7 +183,7 @@ $Self->True(
 %Result = $SysConfigObject->SettingUpdate(
     Name              => $SettingName3,
     IsValid           => 1,
-    EffectiveValue    => 'Modified 1 Setting 3',
+    EffectiveValue    => 'ConfigurationDeploymentSettingListGet.t Modified 1 Setting 3',
     ExclusiveLockGUID => $ExclusiveLockGUID,
     UserID            => 1,
 );
@@ -191,14 +196,14 @@ my $Success = $SysConfigDBObject->DefaultSettingUnlock(
     UnlockAll => 1,
 );
 
-$Success = $SysConfigObject->ConfigurationDeploy(
+my %DeploymentResult = $SysConfigObject->ConfigurationDeploy(
     Comments     => "UnitTest",
     UserID       => 1,
     Force        => 1,
     NoValidation => 1,
 );
 $Self->True(
-    $Success,
+    $DeploymentResult{Success},
     "ConfigurationDeploy() 1 with true",
 );
 
@@ -209,15 +214,15 @@ my @List = $SysConfigObject->ConfigurationDeploySettingsListGet(
 );
 
 # There are some settings deployed in Selenium tests, skip them.
-@List = grep { $_->{Name} !~ m{^Example.*} } @List;
+@List = grep { $_->{EffectiveValue} =~ m{^ConfigurationDeploymentSettingListGet.t} } @List;
 
 my %SettingsResult = map { $_->{Name} => $_->{EffectiveValue} } @List;
 
 $Self->IsDeeply(
     \%SettingsResult,
     {
-        $SettingName1 => 'Modified 1 Setting 1',
-        $SettingName3 => 'Modified 1 Setting 3',
+        $SettingName1 => 'ConfigurationDeploymentSettingListGet.t Modified 1 Setting 1',
+        $SettingName3 => 'ConfigurationDeploymentSettingListGet.t Modified 1 Setting 3',
     },
     "ConfigurationDeployGetLast() Deployment 1",
 );
@@ -231,7 +236,7 @@ $ExclusiveLockGUID = $SysConfigDBObject->DefaultSettingLock(
 %Result = $SysConfigObject->SettingUpdate(
     Name              => $SettingName1,
     IsValid           => 1,
-    EffectiveValue    => 'Modified 2 Setting 1',
+    EffectiveValue    => 'ConfigurationDeploymentSettingListGet.t Modified 2 Setting 1',
     ExclusiveLockGUID => $ExclusiveLockGUID,
     UserID            => 1,
 );
@@ -243,7 +248,7 @@ $Self->True(
 %Result = $SysConfigObject->SettingUpdate(
     Name              => $SettingName2,
     IsValid           => 1,
-    EffectiveValue    => 'Modified 1 Setting 2',
+    EffectiveValue    => 'ConfigurationDeploymentSettingListGet.t Modified 1 Setting 2',
     ExclusiveLockGUID => $ExclusiveLockGUID,
     UserID            => 1,
 );
@@ -255,7 +260,7 @@ $Self->True(
 %Result = $SysConfigObject->SettingUpdate(
     Name              => $SettingName4,
     IsValid           => 1,
-    EffectiveValue    => 'Modified 1 Setting 4',
+    EffectiveValue    => 'ConfigurationDeploymentSettingListGet.t Modified 1 Setting 4',
     ExclusiveLockGUID => $ExclusiveLockGUID,
     UserID            => 1,
 );
@@ -268,14 +273,19 @@ $Success = $SysConfigDBObject->DefaultSettingUnlock(
     UnlockAll => 1,
 );
 
-$Success = $SysConfigObject->ConfigurationDeploy(
+# Make sure that there is enough time between two ConfigurationDeploy() calls.
+# DeploymentModifiedVersionList() method works with timestamps, so it can return
+# data which was deployed in previous deployment. See https://bugs.otrs.org/show_bug.cgi?id=13071.
+$HelperObject->FixedTimeAddSeconds(2);
+
+%DeploymentResult = $SysConfigObject->ConfigurationDeploy(
     Comments     => "UnitTest",
     UserID       => 1,
     Force        => 1,
     NoValidation => 1,
 );
 $Self->True(
-    $Success,
+    $DeploymentResult{Success},
     "ConfigurationDeploy() 2 with true",
 );
 
@@ -290,9 +300,9 @@ $Self->True(
 $Self->IsDeeply(
     \%SettingsResult,
     {
-        $SettingName1 => 'Modified 2 Setting 1',
-        $SettingName2 => 'Modified 1 Setting 2',
-        $SettingName4 => 'Modified 1 Setting 4',
+        $SettingName1 => 'ConfigurationDeploymentSettingListGet.t Modified 2 Setting 1',
+        $SettingName2 => 'ConfigurationDeploymentSettingListGet.t Modified 1 Setting 2',
+        $SettingName4 => 'ConfigurationDeploymentSettingListGet.t Modified 1 Setting 4',
     },
     "ConfigurationDeployGetLast() Deployment 2",
 );

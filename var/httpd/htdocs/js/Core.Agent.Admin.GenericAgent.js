@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 "use strict";
@@ -99,11 +99,11 @@ Core.Agent.Admin.GenericAgent = (function (TargetNS) {
             return false;
         });
 
-        $('#AddEvent').on('click', function (){
-            if ($('#EventType').val() !== null) {
-                TargetNS.AddEvent($('#EventType').val());
-                return;
+        $('#GenericAgentJobs a.TrashCan').on('click', function () {
+            if (window.confirm(Core.Language.Translate('Do you really want to delete this generic agent job?'))) {
+                return true;
             }
+            return false;
         });
 
         $('#TicketEvent').on('change', function (){
@@ -120,7 +120,9 @@ Core.Agent.Admin.GenericAgent = (function (TargetNS) {
 
         $('#EventType').on('change', function (){
             TargetNS.ToggleEventSelect($(this).val());
+            Core.UI.InputFields.Activate($('.EventTypeName'));
         });
+        TargetNS.ToggleEventSelect($('#EventType').val());
 
         Core.UI.Table.InitTableFilter($("#FilterGenericAgentJobs"), $("#GenericAgentJobs"));
 
@@ -137,8 +139,8 @@ Core.Agent.Admin.GenericAgent = (function (TargetNS) {
      *      Toggles the event selection.
      */
     TargetNS.ToggleEventSelect = function (SelectedEventType) {
-        $('.EventList').addClass('Hidden');
-        $('#' + SelectedEventType + 'Event').removeClass('Hidden');
+        $('.EventList').parent().hide();
+        $('#' + SelectedEventType + 'Event').parent().show();
     };
 
 

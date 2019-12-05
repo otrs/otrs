@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminRoleGroup;
@@ -37,7 +37,7 @@ sub Run {
     if ( $Self->{Subaction} eq 'Role' ) {
 
         # get user data
-        my $ID = $ParamObject->GetParam( Param => 'ID' );
+        my $ID       = $ParamObject->GetParam( Param => 'ID' );
         my %RoleData = $GroupObject->RoleGet( ID => $ID );
 
         # get group data
@@ -70,7 +70,7 @@ sub Run {
     elsif ( $Self->{Subaction} eq 'Group' ) {
 
         # get group data
-        my $ID = $ParamObject->GetParam( Param => 'ID' );
+        my $ID        = $ParamObject->GetParam( Param => 'ID' );
         my %GroupData = $GroupObject->GroupGet( ID => $ID );
 
         # get user list

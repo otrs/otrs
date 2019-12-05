@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -165,20 +165,14 @@ $ConfigObject->{'ActivityDialog::Activity'}       = \%TestActivities;
 my $RandomID = $Helper->GetRandomID();
 
 # define a set of users
-my $UserID1   = 1;
-my $TestUser2 = $Helper->TestUserCreate();
-my $UserID2   = $UserObject->UserLookup(
-    UserLogin => $TestUser2,
-);
+my $UserID1 = 1;
+my ( $TestUser2, $UserID2 ) = $Helper->TestUserCreate();
 $Self->IsNot(
     $UserID2,
     undef,
     "TestUserCreate() - UserID $UserID2 ID"
 );
-my $TestUser3 = $Helper->TestUserCreate();
-my $UserID3   = $UserObject->UserLookup(
-    UserLogin => $TestUser3,
-);
+my ( $TestUser3, $UserID3 ) = $Helper->TestUserCreate();
 $Self->IsNot(
     $UserID3,
     undef,

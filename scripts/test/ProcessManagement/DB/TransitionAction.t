@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -597,7 +597,7 @@ for my $Test (@Tests) {
 
     # get the old TransitionAction (if any)
     my $OldTransitionAction = $TransitionActionObject->TransitionActionGet(
-        ID => $Test->{Config}->{ID} || 0,
+        ID     => $Test->{Config}->{ID} || 0,
         UserID => $Test->{Config}->{UserID},
     );
 
@@ -759,11 +759,12 @@ $Self->Is(
     "TransitionActionList Test 2: All TransitionAction | Number of TransitionActions match added TransitionActions",
 );
 
-my $Counter = 0;
-for my $TransitionActionID ( sort { $a <=> $b } keys %TestTransitionActionListCopy ) {
+my $Counter                        = 0;
+my @AddedTransitionActionsListSort = sort { int $a <=> int $b } @AddedTransitionActionsList;
+for my $TransitionActionID ( sort { int $a <=> int $b } keys %TestTransitionActionListCopy ) {
     $Self->Is(
         $TransitionActionID,
-        $AddedTransitionActionsList[$Counter],
+        $AddedTransitionActionsListSort[$Counter],
         "TransitionActionList Test 2: All | TransitionActionID match AddedTransitionActionID",
     );
     $Counter++;
@@ -848,7 +849,7 @@ my $List = $TransitionActionObject->TransitionActionList(
 
 # create the list of TransitionActions with details manually
 my $ExpectedTransitionActionList;
-for my $TransitionActionID ( sort { $a <=> $b } keys %{$List} ) {
+for my $TransitionActionID ( sort { int $a <=> int $b } keys %{$List} ) {
 
     my $TransitionActionData = $TransitionActionObject->TransitionActionGet(
         ID     => $TransitionActionID,

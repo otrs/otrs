@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Console::Command::Admin::Package::Upgrade;
@@ -14,7 +14,9 @@ use warnings;
 use parent qw(Kernel::System::Console::BaseCommand Kernel::System::Console::Command::Admin::Package::List);
 
 our @ObjectDependencies = (
+    'Kernel::System::Cache',
     'Kernel::System::Package',
+    'Kernel::Config',
 );
 
 sub Configure {
@@ -43,15 +45,50 @@ sub Run {
 
     $Self->Print("<yellow>Upgrading package...</yellow>\n");
 
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
+    # Enable in-memory cache to improve SysConfig performance, which is normally disabled for commands.
+    $CacheObject->Configure(
+        CacheInMemory => 1,
+    );
+
     my $FileString = $Self->_PackageContentGet( Location => $Self->GetArgument('location') );
     return $Self->ExitCodeError() if !$FileString;
 
-    # parse package
-    my %Structure = $Kernel::OM->Get('Kernel::System::Package')->PackageParse(
+    my $PackageObject = $Kernel::OM->Get('Kernel::System::Package');
+
+    # Parse package.
+    my %Structure = $PackageObject->PackageParse(
         String => $FileString,
     );
 
-    # intro screen
+    my $Verified = $PackageObject->PackageVerify(
+        Package   => $FileString,
+        Structure => \%Structure,
+    ) || 'verified';
+    my %VerifyInfo = $PackageObject->PackageVerifyInfo();
+
+    # Check if installation of packages, which are not verified by us, is possible.
+    my $PackageAllowNotVerifiedPackages = $Kernel::OM->Get('Kernel::Config')->Get('Package::AllowNotVerifiedPackages');
+
+    if ( $Verified ne 'verified' ) {
+
+        if ( !$PackageAllowNotVerifiedPackages ) {
+
+            $Self->PrintError(
+                "$Structure{Name}->{Content}-$Structure{Version}->{Content} is not verified by the OTRS Group!\n\nThe installation of packages which are not verified by the OTRS Group is not possible by default."
+            );
+            return $Self->ExitCodeError();
+        }
+        else {
+
+            $Self->Print(
+                "<yellow>Package $Structure{Name}->{Content}-$Structure{Version}->{Content} not verified by the OTRS Group! It is recommended not to use this package.</yellow>\n"
+            );
+        }
+    }
+
+    # Intro screen.
     if ( $Structure{IntroUpgrade} ) {
         my %Data = $Self->_PackageMetadataGet(
             Tag                  => $Structure{IntroUpgrade},
@@ -67,7 +104,7 @@ sub Run {
         }
     }
 
-    # upgrade
+    # Upgrade.
     my $Success = $Kernel::OM->Get('Kernel::System::Package')->PackageUpgrade(
         String => $FileString,
         Force  => $Self->GetOption('force'),
@@ -78,7 +115,7 @@ sub Run {
         return $Self->ExitCodeError();
     }
 
-    # intro screen
+    # Intro screen.
     if ( $Structure{IntroUpgrade} ) {
         my %Data = $Self->_PackageMetadataGet(
             Tag                  => $Structure{IntroUpgrade},
@@ -93,6 +130,11 @@ sub Run {
             print "+----------------------------------------------------------------------------+\n";
         }
     }
+
+    # Disable in memory cache.
+    $CacheObject->Configure(
+        CacheInMemory => 0,
+    );
 
     $Self->Print("<green>Done.</green>\n");
     return $Self->ExitCodeOk();

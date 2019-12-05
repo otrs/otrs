@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 "use strict";
@@ -17,7 +17,7 @@ Core.Agent.Admin = Core.Agent.Admin || {};
  * @memberof Core.Agent.Admin
  * @author OTRS AG
  * @description
- *      This namespace contains the special module functions for the GenericInterface webservice module.
+ *      This namespace contains the special module functions for the GenericInterface web service module.
  */
 Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
 
@@ -77,6 +77,78 @@ Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
             TargetNS.HideElements();
         });
 
+        $('#ProviderErrorHandling').on('change', function() {
+            TargetNS.Redirect(Webservice.ErrorHandling, 'ProviderErrorHandling', {
+                CommunicationType: 'Provider',
+                ErrorHandlingType: $(this).val()
+            });
+        });
+
+        $('#RequesterErrorHandling').on('change', function() {
+            TargetNS.Redirect(Webservice.ErrorHandling, 'RequesterErrorHandling', {
+                CommunicationType: 'Requester',
+                ErrorHandlingType: $(this).val()
+            });
+        });
+
+        // initialize the table sorting feature
+        $('.ErrorHandlingPriority tbody').sortable({
+            create: function () {
+
+                // enumerate rows on page load
+                var Count = 1;
+                $(this).find("tr td:first-child").each(function() {
+                    $(this).text(Count);
+                    Count++;
+                });
+            },
+            stop: function () {
+
+                var $Widget = $(this).closest('.WidgetSimple'),
+                    Count = 1,
+                    Priority = [];
+
+                // re-enumerate rows after sorting actions
+                $(this).find("tr td:first-child").each(function() {
+                    $(this).text(Count);
+                    Count++;
+                });
+
+                $(this).find("tr").each(function() {
+                    if ($(this).attr('id')) {
+                        Priority.push($(this).attr('id'));
+                    }
+                });
+
+                if (Priority.length > 1) {
+
+                    $Widget.addClass('Loading');
+
+                    Core.AJAX.FunctionCall(
+                        Core.Config.Get('Baselink'),
+                        $(this).closest('table').data('query-string') + ';Priority=' + JSON.stringify(Priority),
+                        function() {
+
+                            $Widget.removeClass('Loading');
+
+                            $Widget.find('h2')
+                                   .before('<i class="fa fa-check"></i>')
+                                   .prev('.fa-check')
+                                   .hide()
+                                   .css('float', 'right')
+                                   .css('margin-right', '5px')
+                                   .css('margin-top', '3px')
+                                   .css('color', '#666666')
+                                   .delay(200)
+                                   .fadeIn(function() {
+                                $(this).delay(1500).fadeOut();
+                            });
+                        }
+                    );
+                }
+            }
+        }).disableSelection();
+
         $('#SaveAndFinishButton').on('click', function(){
             $('#ReturnToWebservice').val(1);
         });
@@ -96,12 +168,12 @@ Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
      * @function
      * @param {Object} Event - The browser event object, e.g. of the clicked DOM element.
      * @description
-     *      Shows a confirmation dialog to delete the webservice.
+     *      Shows a confirmation dialog to delete the web service.
      */
     TargetNS.ShowDeleteDialog = function(Event){
         Core.UI.Dialog.ShowContentDialog(
             $('#DeleteDialogContainer'),
-            Core.Language.Translate('Delete webservice'),
+            Core.Language.Translate('Delete web service'),
             '240px',
             'Center',
             true,
@@ -148,7 +220,7 @@ Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
      * @function
      * @param {Object} Event - The browser event object, e.g. of the clicked DOM element.
      * @description
-     *      Shows a dialog to clone a webservice.
+     *      Shows a dialog to clone a web service.
      */
     TargetNS.ShowCloneDialog = function(Event){
 
@@ -156,7 +228,7 @@ Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
 
         Core.UI.Dialog.ShowContentDialog(
             $('#CloneDialogContainer'),
-            Core.Language.Translate('Clone webservice'),
+            Core.Language.Translate('Clone web service'),
             '240px',
             'Center',
             true
@@ -166,7 +238,7 @@ Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
         // Currently we have not a function to initialize the validation on a single form
         Core.Form.Validate.Init();
 
-        // get current system time to define suggested the name of the cloned webservice
+        // get current system time to define suggested the name of the cloned web service
         CurrentDate = new Date();
         CloneName = $('#Name').val() + "-" + CurrentDate.getTime();
 
@@ -191,13 +263,13 @@ Core.Agent.Admin.GenericInterfaceWebservice = (function (TargetNS) {
      * @function
      * @param {Object} Event - The browser event object, e.g. of the clicked DOM element.
      * @description
-     *      Shows a dialog to import a webservice.
+     *      Shows a dialog to import a web service.
      */
     TargetNS.ShowImportDialog = function(Event){
 
         Core.UI.Dialog.ShowContentDialog(
             $('#ImportDialogContainer'),
-            Core.Language.Translate('Import webservice'),
+            Core.Language.Translate('Import web service'),
             '240px',
             'Center',
             true

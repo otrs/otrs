@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -15,6 +15,18 @@ use utf8;
 use vars (qw($Self));
 
 use Kernel::System::ObjectManager;
+
+# Get needed objects
+my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+$HelperObject->FixedTimeSet();
+
+my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
+# Delete cache.
+$CacheObject->Delete(
+    Type => 'SysConfigPersistent',
+    Key  => "EffectiveValues2PerlFile",
+);
 
 my @Tests = (
     {
@@ -298,4 +310,34 @@ for my $Test (@Tests) {
     );
 }
 
+$HelperObject->FixedTimeAddSeconds( 60 * 60 * 24 * 35 );    # Add 35 days, it should be enough to make results obsolete.
+my $FileString = $SysConfigObject->_EffectiveValues2PerlFile(
+    Settings => [
+        {
+            Name           => 'SettingName###Key1',
+            IsValid        => 1,
+            EffectiveValue => 'NewValue',
+        },
+    ],
+    TargetPath => 'Kernel/Config/Files/User/1.pm',
+);
+$Self->True(
+    $FileString,
+    'Call _EffectiveValues2PerlFile() after 35 days',
+);
+
+# Get cache value directly.
+my $Cached = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+    Type => 'SysConfigPersistent',
+    Key  => "EffectiveValues2PerlFile",
+);
+
+delete $Cached->{NewValue};
+
+$Self->IsDeeply(
+    $Cached,
+    {
+    },
+    'Make sure that all other parts of cache are deleted (they are expired).'
+);
 1;

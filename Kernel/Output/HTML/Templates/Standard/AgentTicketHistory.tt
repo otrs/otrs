@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 <div class="LayoutPopup ARIARoleMain">
@@ -13,7 +13,7 @@
             [% Translate("History of %s%s%s", Config('Ticket::Hook'), Config('Ticket::HookDivider'), Data.TicketNumber) | html %] &mdash; [% Data.Title | html %]
         </h1>
         <p>
-            <a href="#" class="CancelClosePopup">[% Translate("Close dialog") | html %]</a>
+            <a href="#" class="CancelClosePopup">[% Translate("Close this dialog") | html %]</a>
         </p>
     </div>
 
@@ -25,7 +25,7 @@
                     <input type="text" id="FilterHistory" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterHistory" value="" title="[% Translate("Filter for history items") | html %]">
                 </span>
                 <span class="FloatRight">
-                    <a href="" class="CallForAction" id="ExpandCollapseAll"><span><i class="fa fa-bars"></i> Expand/collapse all</span></a>
+                    <a href="" class="CallForAction" id="ExpandCollapseAll"><span><i class="fa fa-bars"></i>[% Translate("Expand/collapse all") | html %]</span></a>
                 </span>
             </div>
         </div>
@@ -44,8 +44,7 @@
             <div class="Header">
                 <div class="WidgetAction Toggle"><a href="#" title="[% Translate("Show or hide the content") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a></div>
                 <h2>
-                    [% Data.CreateTime | Localize("RelativeTime") %]
-                    <span>[% Data.CreateTime | Localize("TimeLong") %]</span>
+                    [% Data.CreateTime | Localize("TimeLong") %]
                 </h2>
             </div>
             <div class="Content">
@@ -54,6 +53,7 @@
                         <tr>
                             <th>[% Translate("Agent") | html %]</th>
                             <th>[% Translate("Action") | html %]</th>
+                            <th class="CreateTime W10pc Hidden">[% Translate("CreateTime") | html %]</th>
                             <th class="Center">[% Translate("Article") | html %]</th>
                         </tr>
                     </thead>
@@ -68,7 +68,10 @@
                             [% END %]
                             </td>
                             <td title="[% Data.HistoryType | html %]">
-                                [% Data.Name | html %]
+                                [% Data.Name | html %] ([% Data.HistoryType | html %])
+                            </td>
+                            <td class="Hidden CreateTime">
+                                [% Data.CreateTime | html %]
                             </td>
                             <td class="Center">
                             [% IF Data.ArticleID != '0' %]

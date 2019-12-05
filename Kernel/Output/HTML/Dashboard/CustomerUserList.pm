@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::Dashboard::CustomerUserList;
@@ -31,7 +31,7 @@ sub new {
     my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     # get current filter
-    my $Name = $ParamObject->GetParam( Param => 'Name' ) || '';
+    my $Name           = $ParamObject->GetParam( Param => 'Name' ) || '';
     my $PreferencesKey = 'UserDashboardCustomerUserListFilter' . $Self->{Name};
 
     $Self->{PrefKey} = 'UserDashboardPref' . $Self->{Name} . '-Shown';
@@ -154,14 +154,21 @@ sub Run {
         }
     }
 
-    # show add new customer button if there are writable customer backends and if
-    # the agent has permission
-    my $AddAccess = $LayoutObject->Permission(
-        Action => 'AdminCustomerUser',
-        Type   => 'rw',                  # ro|rw possible
-    );
+    # Show add new customer button if:
+    #   - The agent has permission to use the module
+    #   - There are writable customer backends
+    my $AddAccess;
 
-    # get writable data sources
+    TYPE:
+    for my $Permission (qw(ro rw)) {
+        $AddAccess = $LayoutObject->Permission(
+            Action => 'AdminCustomerUser',
+            Type   => $Permission,
+        );
+        last TYPE if $AddAccess;
+    }
+
+    # Get writable data sources.
     my %CustomerSource = $CustomerUserObject->CustomerSourceList(
         ReadOnly => 0,
     );
@@ -346,7 +353,7 @@ sub Run {
         );
 
         my $TicketCountClosed = $TicketObject->TicketSearch(
-            StateType            => 'closed',
+            StateType            => 'Closed',
             CustomerUserLoginRaw => $CustomerKey,
             Result               => 'COUNT',
             Permission           => $Self->{Config}->{Permission},

@@ -1919,6 +1919,14 @@ END;
 --
 ;
 BEGIN
+    EXECUTE IMMEDIATE 'CREATE INDEX article_data_mime_article_id ON article_data_mime (article_id)';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+/
+--
+;
+BEGIN
     EXECUTE IMMEDIATE 'CREATE INDEX article_data_mime_message_idf3 ON article_data_mime (a_message_id_md5)';
 EXCEPTION
   WHEN OTHERS THEN NULL;
@@ -4066,7 +4074,7 @@ CREATE TABLE dynamic_field (
     label VARCHAR2 (200) NOT NULL,
     field_order NUMBER (12, 0) NOT NULL,
     field_type VARCHAR2 (200) NOT NULL,
-    object_type VARCHAR2 (200) NOT NULL,
+    object_type VARCHAR2 (100) NOT NULL,
     config CLOB NULL,
     valid_id NUMBER (5, 0) NOT NULL,
     create_time DATE NOT NULL,
@@ -4119,7 +4127,7 @@ END;
 CREATE TABLE dynamic_field_obj_id_name (
     object_id NUMBER (12, 0) NOT NULL,
     object_name VARCHAR2 (200) NOT NULL,
-    object_type VARCHAR2 (200) NOT NULL,
+    object_type VARCHAR2 (100) NOT NULL,
     CONSTRAINT dynamic_field_object_name UNIQUE (object_name, object_type)
 );
 ALTER TABLE dynamic_field_obj_id_name ADD CONSTRAINT PK_dynamic_field_obj_id_name PRIMARY KEY (object_id);
@@ -5397,6 +5405,14 @@ END;
 --
 ;
 BEGIN
+    EXECUTE IMMEDIATE 'CREATE INDEX communication_start_time ON communication_log (start_time)';
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END;
+/
+--
+;
+BEGIN
     EXECUTE IMMEDIATE 'CREATE INDEX communication_status ON communication_log (status)';
 EXCEPTION
   WHEN OTHERS THEN NULL;
@@ -5595,7 +5611,7 @@ END;
 -- ----------------------------------------------------------
 CREATE TABLE form_draft (
     id NUMBER (12, 0) NOT NULL,
-    object_type VARCHAR2 (200) NOT NULL,
+    object_type VARCHAR2 (100) NOT NULL,
     object_id NUMBER (12, 0) NOT NULL,
     action VARCHAR2 (200) NOT NULL,
     title VARCHAR2 (255) NULL,

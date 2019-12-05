@@ -1,15 +1,17 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminRoleUser;
 
 use strict;
 use warnings;
+
+use Kernel::Language qw(Translatable);
 
 our $ObjectManagerDisabled = 1;
 
@@ -37,7 +39,7 @@ sub Run {
     if ( $Self->{Subaction} eq 'User' ) {
 
         # get user data
-        my $ID = $ParamObject->GetParam( Param => 'ID' );
+        my $ID       = $ParamObject->GetParam( Param => 'ID' );
         my %UserData = $UserObject->GetUserData( UserID => $ID );
 
         # get role list
@@ -68,7 +70,7 @@ sub Run {
     elsif ( $Self->{Subaction} eq 'Role' ) {
 
         # get role data
-        my $ID = $ParamObject->GetParam( Param => 'ID' );
+        my $ID       = $ParamObject->GetParam( Param => 'ID' );
         my %RoleData = $GroupObject->RoleGet( ID => $ID );
 
         # get user list, with the full name in the value
@@ -214,8 +216,8 @@ sub _Change {
     my $NeType = $Type eq 'Role' ? 'User' : 'Role';
 
     my %VisibleType = (
-        Role => 'Role',
-        User => 'Agent'
+        Role => Translatable('Role'),
+        User => Translatable('Agent'),
     );
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
@@ -300,7 +302,7 @@ sub _Overview {
 
     # get user list
     my $UserObject = $Kernel::OM->Get('Kernel::System::User');
-    my %UserData = $UserObject->UserList( Valid => 1 );
+    my %UserData   = $UserObject->UserList( Valid => 1 );
 
     # get user name
     USERID:

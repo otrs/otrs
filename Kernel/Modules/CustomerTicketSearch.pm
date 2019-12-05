@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::CustomerTicketSearch;
@@ -87,11 +87,11 @@ sub Run {
     my %GetParam;
 
     # get config data
-    my $StartHit = int( $ParamObject->GetParam( Param => 'StartHit' ) || 1 );
+    my $StartHit    = int( $ParamObject->GetParam( Param => 'StartHit' ) || 1 );
     my $SearchLimit = $ConfigObject->Get('Ticket::CustomerTicketSearch::SearchLimit')
         || 200;
     my $SearchPageShown = $ConfigObject->Get('Ticket::CustomerTicketSearch::SearchPageShown') || 40;
-    my $SortBy = $ParamObject->GetParam( Param => 'SortBy' )
+    my $SortBy          = $ParamObject->GetParam( Param => 'SortBy' )
         || $ConfigObject->Get('Ticket::CustomerTicketSearch::SortBy::Default')
         || 'Age';
     my $CurrentOrder = $ParamObject->GetParam( Param => 'Order' )
@@ -100,7 +100,7 @@ sub Run {
 
     # get search profile object
     my $SearchProfileObject = $Kernel::OM->Get('Kernel::System::SearchProfile');
-    my $TakeLastSearch = $ParamObject->GetParam( Param => 'TakeLastSearch' ) || '';
+    my $TakeLastSearch      = $ParamObject->GetParam( Param => 'TakeLastSearch' ) || '';
 
     # collect all searchable article field definitions and add the fields to the attributes array
     my %ArticleSearchableFields = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleSearchableFieldsList();
@@ -271,6 +271,10 @@ sub Run {
 
         if ( !$ProfileName ) {
             $ProfileName = "($Profile)";
+        }
+
+        if ( $ProfileName eq '(last-search)' ) {
+            $ProfileName = '(' . $LayoutObject->{LanguageObject}->Translate('last-search') . ')';
         }
 
         # store search URL in LastScreenOverview to make sure the
@@ -581,15 +585,16 @@ sub Run {
                 # Get ticket data.
                 my %Ticket = $TicketObject->TicketGet(
                     TicketID      => $TicketID,
-                    DynamicFields => 0,
+                    DynamicFields => 1,
                     Extended      => 1,
                     UserID        => $Self->{UserID},
                 );
 
                 # Get first article data.
                 my @Articles = $ArticleObject->ArticleList(
-                    TicketID  => $TicketID,
-                    OnlyFirst => 1,
+                    TicketID             => $TicketID,
+                    IsVisibleForCustomer => 1,
+                    OnlyFirst            => 1,
                 );
                 my %Article;
                 for my $Article (@Articles) {
@@ -604,7 +609,7 @@ sub Run {
 
                 # If no article was found, set some defaults.
                 if ( !%Article ) {
-                    %Data = %Ticket;
+                    %Data          = %Ticket;
                     $Data{Subject} = $Ticket{Title} || $LayoutObject->{LanguageObject}->Translate('Untitled');
                     $Data{Body}    = $LayoutObject->{LanguageObject}->Translate('This item has no articles yet.');
                     $Data{From}    = '--';
@@ -625,7 +630,8 @@ sub Run {
                 # get whole article (if configured!)
                 if ( $Config->{SearchArticleCSVTree} && $GetParam{ResultForm} eq 'CSV' ) {
                     my @Articles = $ArticleObject->ArticleList(
-                        TicketID => $TicketID,
+                        TicketID             => $TicketID,
+                        IsVisibleForCustomer => 1,
                     );
                     if (@Articles) {
                         for my $Article (@Articles) {
@@ -733,7 +739,7 @@ sub Run {
                 'ticket_search_%s',
                 $CurSystemDateTimeObject->Format(
                     Format => '%Y-%m-%d_%H-%M'
-                    )
+                )
             );
 
             # get CSV object
@@ -788,25 +794,28 @@ sub Run {
 
                 # Get last customer article.
                 my @Articles = $ArticleObject->ArticleList(
-                    TicketID   => $TicketID,
-                    SenderType => 'customer',
-                    OnlyLast   => 1,
+                    TicketID             => $TicketID,
+                    SenderType           => 'customer',
+                    IsVisibleForCustomer => 1,
+                    OnlyLast             => 1,
                 );
 
                 # If the ticket has no customer article, get the last agent article.
                 if ( !@Articles ) {
                     @Articles = $ArticleObject->ArticleList(
-                        TicketID   => $TicketID,
-                        SenderType => 'agent',
-                        OnlyLast   => 1,
+                        TicketID             => $TicketID,
+                        SenderType           => 'agent',
+                        IsVisibleForCustomer => 1,
+                        OnlyLast             => 1,
                     );
                 }
 
                 # Finally, if everything failed, get latest article.
                 if ( !@Articles ) {
                     @Articles = $ArticleObject->ArticleList(
-                        TicketID => $TicketID,
-                        OnlyLast => 1,
+                        TicketID             => $TicketID,
+                        IsVisibleForCustomer => 1,
+                        OnlyLast             => 1,
                     );
                 }
 
@@ -822,9 +831,9 @@ sub Run {
 
                 # If no article was found, set some defaults.
                 if ( !%Article ) {
-                    %Data = %Ticket;
+                    %Data          = %Ticket;
                     $Data{Subject} = $Ticket{Title} || $LayoutObject->{LanguageObject}->Translate('Untitled');
-                    $Data{From} = '--';
+                    $Data{From}    = '--';
                 }
                 else {
                     %Data = ( %Ticket, %Article );
@@ -859,7 +868,7 @@ sub Run {
                 $UserInfo{CustomerName} = '(' . $UserInfo{CustomerName} . ')'
                     if ( $UserInfo{CustomerName} );
 
-                my %Info = ( %Data, %UserInfo );
+                my %Info    = ( %Data, %UserInfo );
                 my $Created = $LayoutObject->{LanguageObject}->FormatTimeString(
                     $Data{CreateTime} // $Data{Created},
                     'DateFormat',
@@ -1144,32 +1153,35 @@ sub Run {
                     # Get ticket data.
                     my %Ticket = $TicketObject->TicketGet(
                         TicketID      => $TicketID,
-                        DynamicFields => 0,
+                        DynamicFields => 1,
                         Extended      => 1,
                         UserID        => $Self->{UserID},
                     );
 
                     # Get last customer article.
                     my @Articles = $ArticleObject->ArticleList(
-                        TicketID   => $TicketID,
-                        SenderType => 'customer',
-                        OnlyLast   => 1,
+                        TicketID             => $TicketID,
+                        SenderType           => 'customer',
+                        IsVisibleForCustomer => 1,
+                        OnlyLast             => 1,
                     );
 
                     # If the ticket has no customer article, get the last agent article.
                     if ( !@Articles ) {
                         @Articles = $ArticleObject->ArticleList(
-                            TicketID   => $TicketID,
-                            SenderType => 'agent',
-                            OnlyLast   => 1,
+                            TicketID             => $TicketID,
+                            SenderType           => 'agent',
+                            IsVisibleForCustomer => 1,
+                            OnlyLast             => 1,
                         );
                     }
 
                     # Finally, if everything failed, get latest article.
                     if ( !@Articles ) {
                         @Articles = $ArticleObject->ArticleList(
-                            TicketID => $TicketID,
-                            OnlyLast => 1,
+                            TicketID             => $TicketID,
+                            IsVisibleForCustomer => 1,
+                            OnlyLast             => 1,
                         );
                     }
 
@@ -1185,9 +1197,9 @@ sub Run {
 
                     # If no article was found, set some defaults.
                     if ( !%Article ) {
-                        %Data = %Ticket;
+                        %Data          = %Ticket;
                         $Data{Subject} = $Ticket{Title} || $LayoutObject->{LanguageObject}->Translate('Untitled');
-                        $Data{Body} = $LayoutObject->{LanguageObject}->Translate(
+                        $Data{Body}    = $LayoutObject->{LanguageObject}->Translate(
                             'This item has no articles yet.'
                         );
                     }
@@ -1458,7 +1470,7 @@ sub Run {
         );
 
         # show footer filter - show only if more the one page is available
-        if ( $PageNav{TotalHits} && ( $PageNav{TotalHits} > $SearchPageShown ) ) {
+        if ( $SearchLimit && ( $SearchLimit > $SearchPageShown ) ) {
             $LayoutObject->Block(
                 Name => 'Pagination',
                 Data => {
@@ -1569,7 +1581,7 @@ sub Run {
                     if ( IsHashRefWithData($HistoricalValues) ) {
                         for my $Key ( sort keys %{$HistoricalValues} ) {
                             if ( !$Data->{$Key} ) {
-                                $Data->{$Key} = $HistoricalValues->{$Key}
+                                $Data->{$Key} = $HistoricalValues->{$Key};
                             }
                         }
                     }
@@ -1662,18 +1674,23 @@ sub MaskForm {
         SelectedID => $Param{ResultForm} || 'Normal',
         Class      => 'Modernize',
     );
+
+    my %Profiles = $Kernel::OM->Get('Kernel::System::SearchProfile')->SearchProfileList(
+        Base      => 'CustomerTicketSearch',
+        UserLogin => $Self->{UserLogin},
+    );
+
+    if ( $Profiles{'last-search'} ) {
+        $Profiles{'last-search'} = $LayoutObject->{LanguageObject}->Translate('last-search');
+    }
+
     $Param{ProfilesStrg} = $LayoutObject->BuildSelection(
-        Data => {
-            '', '-',
-            $Kernel::OM->Get('Kernel::System::SearchProfile')->SearchProfileList(
-                Base      => 'CustomerTicketSearch',
-                UserLogin => $Self->{UserLogin},
-            ),
-        },
-        Translation => 0,
-        Name        => 'Profile',
-        SelectedID  => $Param{Profile},
-        Class       => 'Modernize',
+        Data         => \%Profiles,
+        Translation  => 0,
+        Name         => 'Profile',
+        SelectedID   => $Param{Profile},
+        Class        => 'Modernize',
+        PossibleNone => 1,
     );
 
     my %Customers = $Kernel::OM->Get('Kernel::System::CustomerGroup')->GroupContextCustomers(

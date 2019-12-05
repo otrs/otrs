@@ -1,12 +1,12 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-# nofilter(TidyAll::Plugin::OTRS::TT::ScriptUsage)
+## nofilter(TidyAll::Plugin::OTRS::TT::ScriptUsage)
 
 <div class="OverviewBox ARIARoleMain [% Data.View | html %]">
     <h1>[% Translate("Agenda Overview") | html %]</h1>
@@ -153,7 +153,7 @@
 [% RenderBlockStart("AppointmentNoDataRow") %]
         <tbody>
             <tr>
-                <td colspan="7">
+                <td colspan="8">
                     [% Translate("No data found.") | html %]
                 </td>
             </tr>
@@ -162,7 +162,7 @@
 [% RenderBlockStart("CalendarsNotFound") %]
         <tbody>
             <tr>
-                <td colspan="7">
+                <td colspan="8">
                     [% Translate("No calendars found. Please add a calendar first by using Manage Calendars page.") | html %]
                 </td>
             </tr>

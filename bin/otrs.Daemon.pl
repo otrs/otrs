@@ -1,21 +1,19 @@
 #!/usr/bin/perl -X
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU AFFERO General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# any later version.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-# or see http://www.gnu.org/licenses/agpl.txt.
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -34,8 +32,7 @@ use Fcntl qw(:flock);
 
 use Kernel::System::ObjectManager;
 
-print STDOUT "otrs.Daemon.pl - the OTRS daemon\n";
-print STDOUT "Copyright (C) 2001-2017 OTRS AG, http://otrs.com/\n\n";
+print STDOUT "\nManage the OTRS daemon process.\n\n";
 
 local $Kernel::OM = Kernel::System::ObjectManager->new(
     'Kernel::System::Log' => {
@@ -64,7 +61,7 @@ if ( $NodeID !~ m{ \A \d+ \z }xms && $NodeID > 0 && $NodeID < 1000 ) {
 }
 
 # get pid directory
-my $PIDDir = $ConfigObject->Get('Daemon::PID::Path') || $ConfigObject->Get('Home') . '/var/run/';
+my $PIDDir  = $ConfigObject->Get('Daemon::PID::Path') || $ConfigObject->Get('Home') . '/var/run/';
 my $PIDFile = $PIDDir . "Daemon-NodeID-$NodeID.pid";
 my $PIDFH;
 
@@ -155,20 +152,24 @@ else {
 
 sub PrintUsage {
     my $UsageText = "Usage:\n";
-    $UsageText .= " otrs.Daemon.pl <ACTION> [--debug] [--force]\n";
+    $UsageText .= " otrs.Daemon.pl action [--debug] [--force]\n";
+    $UsageText .= "\nOptions:\n";
+    $UsageText .= sprintf " %-22s - %s", '[--debug]', 'Run the daemon in debug mode.' . "\n";
+    $UsageText .= sprintf " %-22s - %s", '[--force]',
+        'Reduce the time the main daemon waits other daemons to stop.' . "\n";
     $UsageText .= "\nActions:\n";
-    $UsageText .= sprintf " %-30s - %s", 'start', 'Starts the daemon process' . "\n";
-    $UsageText .= sprintf " %-30s - %s", 'stop', 'Stops the daemon process' . "\n";
-    $UsageText .= sprintf " %-30s - %s", 'status', 'Shows daemon process current state' . "\n";
-    $UsageText .= sprintf " %-30s - %s", 'help', 'Shows this help screen' . "\n";
-    $UsageText .= "\nNote:\n";
+    $UsageText .= sprintf " %-22s - %s", 'start', 'Start the daemon process.' . "\n";
+    $UsageText .= sprintf " %-22s - %s", 'stop', 'Stop the daemon process.' . "\n";
+    $UsageText .= sprintf " %-22s - %s", 'status', 'Show daemon process current state.' . "\n";
+    $UsageText .= sprintf " %-22s - %s", 'help', 'Display help for this command.' . "\n";
+    $UsageText .= "\nHelp:\n";
     $UsageText
-        .= " In debug mode if a daemon module is specified the debug mode will be activated only for that daemon.\n";
-    $UsageText .= " Debug information is stored in the daemon log files localed under: $LogDir\n";
+        .= "In debug mode if a daemon module is specified the debug mode will be activated only for that daemon.\n";
+    $UsageText .= "Debug information is stored in the daemon log files localed under: $LogDir\n";
     $UsageText .= "\n otrs.Daemon.pl start --debug SchedulerTaskWorker SchedulerCronTaskManager\n\n";
     $UsageText
-        .= "\n Forced stop reduces the time the main daemon waits other daemons to stop from normal 30 seconds to 5.\n";
-    $UsageText .= "\n otrs.Daemon.pl stop --force\n\n";
+        .= "Forced stop reduces the time the main daemon waits other daemons to stop from normal 30 seconds to 5.\n";
+    $UsageText .= "\n otrs.Daemon.pl stop --force\n";
     print STDOUT "$UsageText\n";
 
     return 1;
@@ -203,7 +204,7 @@ sub Start {
 
     my $DaemonChecker = 1;
     my $DaemonSuspend;
-    local $SIG{INT} = sub { $DaemonChecker = 0; $DaemonSuspend = 0; };
+    local $SIG{INT}  = sub { $DaemonChecker = 0; $DaemonSuspend  = 0; };
     local $SIG{TERM} = sub { $DaemonChecker = 0; $DaemonStopWait = 5; $DaemonSuspend = 0; };
     local $SIG{CHLD} = "IGNORE";
     local $SIG{HUP}  = sub {
@@ -260,23 +261,8 @@ sub Start {
                 local $SIG{TERM} = sub { $ChildRun = 0; };
                 local $SIG{CHLD} = "IGNORE";
 
-                # Define the ZZZ files.
-                my @ZZZFiles = (
-                    'ZZZAAuto.pm',
-                    'ZZZAuto.pm',
-                );
-
-                # Reload the ZZZ files (mod_perl workaround).
-                for my $ZZZFile (@ZZZFiles) {
-
-                    PREFIX:
-                    for my $Prefix (@INC) {
-                        my $File = $Prefix . '/Kernel/Config/Files/' . $ZZZFile;
-                        next PREFIX if !-f $File;
-                        do $File;
-                        last PREFIX;
-                    }
-                }
+                # Force reload configuration files.
+                _ReloadConfigurationFiles();
 
                 local $Kernel::OM = Kernel::System::ObjectManager->new(
                     'Kernel::System::Log' => {
@@ -538,7 +524,7 @@ sub _LogFilesSet {
     return 1 if $RotationType ne 'otrs';
 
     # remove not needed log files if OTRS rotation is enabled
-    my $DaysToKeep = $ConfigObject->Get('Daemon::Log::DaysToKeep') || 1;
+    my $DaysToKeep     = $ConfigObject->Get('Daemon::Log::DaysToKeep') || 1;
     my $DaysToKeepTime = $SystemTime - $DaysToKeep * 24 * 60 * 60;
 
     my @LogFiles = glob "$LogDir/*.log";
@@ -688,6 +674,25 @@ sub _StopDaemonModules {
         print STDOUT "Killing $Module with PID $DaemonModules{$Module}->{PID}\n";
 
         kill 9, $DaemonModules{$Module}->{PID};
+    }
+
+    return 1;
+}
+
+sub _ReloadConfigurationFiles {
+
+    my $ConfigFilesLocation = 'Kernel/Config/Files/';
+    my $ConfigDirectory     = $Kernel::OM->Get('Kernel::Config')->Get('Home') . '/' . $ConfigFilesLocation;
+
+    my %Seen;
+    my @Glob = glob "$ConfigDirectory/*.pm";
+
+    FILENAME:
+    for my $Filename (@Glob) {
+        next FILENAME if !-e $Filename;
+
+        my $Basename = File::Basename::basename($Filename);
+        delete $INC{ $ConfigFilesLocation . $Basename };
     }
 
     return 1;

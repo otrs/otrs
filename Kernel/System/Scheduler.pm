@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Scheduler;
@@ -130,6 +130,38 @@ sub FutureTaskList {
     return @List;
 }
 
+=head2 TaskList()
+
+get the list of scheduler tasks
+
+    my @List = $SchedulerObject->TaskList(
+        Type => 'some type',  # optional
+    );
+
+Returns:
+
+    @List = (
+        {
+            TaskID => 123,
+            Name   => 'any name',
+            Type   => 'GenericInterface',
+        },
+        {
+            TaskID => 456,
+            Name   => 'any other name',
+            Type   => 'GenericInterface',
+        },
+        # ...
+    );
+
+=cut
+
+sub TaskList {
+    my ( $Self, %Param ) = @_;
+
+    return $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB')->TaskList(%Param);
+}
+
 =head2 FutureTaskDelete()
 
 delete a task from scheduler future task list
@@ -161,10 +193,10 @@ sub FutureTaskDelete {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

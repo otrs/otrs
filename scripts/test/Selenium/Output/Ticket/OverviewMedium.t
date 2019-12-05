@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -12,23 +12,23 @@ use utf8;
 
 use vars (qw($Self));
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get helper object
-        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $Helper       = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $UserObject   = $Kernel::OM->Get('Kernel::System::User');
 
-        # get sort attributes config params
+        # Get sort attributes config params.
         my %SortOverview = (
             Age          => 1,
             Title        => 1,
             TicketNumber => 1,
         );
 
-        # defines from which ticket attributes the agent can select the result order
+        # Defines from which ticket attributes the agent can select the result order.
         $Helper->ConfigSettingChange(
             Key   => 'TicketOverviewMenuSort###SortAttributes',
             Value => \%SortOverview,
@@ -47,20 +47,12 @@ $Selenium->RunTest(
             Value => 3,
         );
 
-        # create test user and login
+        # Create test user.
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => [ 'admin', 'users' ],
         ) || die "Did not get test user";
 
-        $Selenium->Login(
-            Type     => 'Agent',
-            User     => $TestUserLogin,
-            Password => $TestUserLogin,
-        );
-
-        my $UserObject = $Kernel::OM->Get('Kernel::System::User');
-
-        # get test user ID
+        # Get test user ID.
         my $TestUserID = $UserObject->UserLookup(
             UserLogin => $TestUserLogin,
         );
@@ -70,7 +62,7 @@ $Selenium->RunTest(
             UserID => $TestUserID,
         );
 
-        # create test queue
+        # Create test queue.
         my $QueueName = 'Queue' . $Helper->GetRandomID();
         my $QueueID   = $Kernel::OM->Get('Kernel::System::Queue')->QueueAdd(
             Name            => $QueueName,
@@ -87,10 +79,7 @@ $Selenium->RunTest(
             "QueueAdd() successful for test $QueueName - ID $QueueID",
         );
 
-        # get ticket object
-        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
-        # create test tickets
+        # Create test tickets.
         my @TicketIDs;
         my @TicketNumbers;
         for my $Ticket ( 1 .. 15 ) {
@@ -118,11 +107,18 @@ $Selenium->RunTest(
         }
         my @SortTicketNumbers = sort @TicketNumbers;
 
-        # go to queue ticket overview
+        # Login as test user.
+        $Selenium->Login(
+            Type     => 'Agent',
+            User     => $TestUserLogin,
+            Password => $TestUserLogin,
+        );
+
+        # Go to queue ticket overview.
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketQueue;QueueID=$QueueID;View=");
 
-        # switch to medium view
+        # Switch to medium view.
         $Selenium->find_element( "a.Medium", 'css' )->VerifiedClick();
 
         # Check if owner name conforms to current FirstnameLastNameOrder setting.
@@ -131,26 +127,36 @@ $Selenium->RunTest(
             "$TestUser{UserFullname} - found on screen"
         );
 
-        # sort by ticket number
-        $Selenium->execute_script(
-            "\$('#SortBy').val('TicketNumber|Up').trigger('redraw.InputField').trigger('change');"
+        # Sort by ticket number.
+        $Selenium->InputFieldValueSet(
+            Element => '#SortBy',
+            Value   => 'TicketNumber|Up',
         );
 
-        # wait for page reload after changing sort param
+        # Wait for page reload after changing sort param.
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("a[href*=\'SortBy=TicketNumber;OrderBy=Up\']").length'
         );
+        $Selenium->VerifiedRefresh();
 
-        # set 10 tickets per page
-        $Selenium->find_element( "a#ShowContextSettingsDialog", 'css' )->VerifiedClick();
-        $Selenium->execute_script(
-            "\$('#UserTicketOverviewMediumPageShown').val('10').trigger('redraw.InputField').trigger('change');"
+        # Set 10 tickets per page.
+        $Selenium->find_element( "a#ShowContextSettingsDialog", 'css' )->click();
+        sleep 1;
+        $Selenium->WaitFor(
+            JavaScript => 'return $(".Dialog.Modal #UserTicketOverviewMediumPageShown").length'
         );
-        $Selenium->find_element( "#DialogButton1", 'css' )->VerifiedClick();
+        $Selenium->InputFieldValueSet(
+            Element => '#UserTicketOverviewMediumPageShown',
+            Value   => '10',
+        );
+        $Selenium->find_element( "#DialogButton1", 'css' )->click();
+        $Selenium->WaitFor(
+            JavaScript => 'return !$(".Dialog.Modal").length'
+        );
 
-        # check for ticket with lowest ticket number on first 1st page and verify that ticket
-        # with highest ticket number number is not present
+        # Check for ticket with lowest ticket number on first 1st page and verify that ticket
+        # with highest ticket number is not present.
         $Self->True(
             index( $Selenium->get_page_source(), $SortTicketNumbers[0] ) > -1,
             "$SortTicketNumbers[0] - found on screen"
@@ -160,16 +166,16 @@ $Selenium->RunTest(
             "$SortTicketNumbers[14] - not found on screen"
         );
 
-        # switch to 2nd page to test pagination
+        # Switch to 2nd page to test pagination.
         $Selenium->find_element( "#AgentTicketQueuePage2", 'css' )->VerifiedClick();
 
-        # check for ticket with highest ticket number
+        # Check for ticket with highest ticket number.
         $Self->True(
             index( $Selenium->get_page_source(), $SortTicketNumbers[14] ) > -1,
             "$SortTicketNumbers[14] - found on screen"
         );
 
-        # check if settings are stored when switching between view
+        # Check if settings are stored when switching between view.
         $Selenium->find_element( "a.Large",  'css' )->VerifiedClick();
         $Selenium->find_element( "a.Medium", 'css' )->VerifiedClick();
         $Self->True(
@@ -181,20 +187,29 @@ $Selenium->RunTest(
             "$SortTicketNumbers[14] - not found on screen after changing views"
         );
 
-        # delete created test tickets
+        # Delete created test tickets.
         my $Success;
         for my $TicketID (@TicketIDs) {
             $Success = $TicketObject->TicketDelete(
                 TicketID => $TicketID,
                 UserID   => $TestUserID,
             );
+
+            # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+            if ( !$Success ) {
+                sleep 3;
+                $Success = $TicketObject->TicketDelete(
+                    TicketID => $TicketID,
+                    UserID   => $TestUserID,
+                );
+            }
             $Self->True(
                 $Success,
                 "Delete ticket - $TicketID"
             );
         }
 
-        # delete created test queue
+        # Delete created test queue.
         $Success = $Kernel::OM->Get('Kernel::System::DB')->Do(
             SQL => "DELETE FROM queue WHERE id = $QueueID",
         );
@@ -203,13 +218,12 @@ $Selenium->RunTest(
             "Delete queue - $QueueID",
         );
 
-        # make sure cache is correct
-        for my $Cache (qw( Ticket Queue )) {
-            $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-                Type => $Cache,
-            );
-        }
+        my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
+        # Make sure cache is correct.
+        for my $Cache (qw( Ticket Queue )) {
+            $CacheObject->CleanUp( Type => $Cache );
+        }
     }
 );
 

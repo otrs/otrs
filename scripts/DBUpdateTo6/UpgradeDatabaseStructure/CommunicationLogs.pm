@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package scripts::DBUpdateTo6::UpgradeDatabaseStructure::CommunicationLogs;    ## no critic
@@ -143,6 +143,14 @@ sub Run {
                 <IndexColumn Name="object_id"/>
             </Index>
         </Table>',
+
+        # Create an Index for the column 'start_time' in table 'communication_log',
+        #   used in the communication-log purge.
+        '<TableAlter Name="communication_log">
+            <IndexCreate Name="communication_start_time">
+                <IndexColumn Name="start_time"/>
+            </IndexCreate>
+        </TableAlter>',
     );
 
     return if !$Self->ExecuteXMLDBArray(
@@ -156,10 +164,10 @@ sub Run {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

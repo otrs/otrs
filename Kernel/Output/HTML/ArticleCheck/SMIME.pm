@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::ArticleCheck::SMIME;
@@ -19,6 +19,7 @@ our @ObjectDependencies = (
     'Kernel::System::Crypt::SMIME',
     'Kernel::System::Log',
     'Kernel::System::Ticket::Article',
+    'Kernel::Output::HTML::Layout',
 );
 
 sub new {
@@ -48,8 +49,11 @@ sub Check {
     my %SignCheck;
     my @Return;
 
-    # get config object
     my $ConfigObject = $Param{ConfigObject} || $Kernel::OM->Get('Kernel::Config');
+    my $LayoutObject = $Param{LayoutObject} || $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    my $UserType     = $LayoutObject->{UserType} // '';
+    my $ChangeUserID = $UserType eq 'Customer' ? $ConfigObject->Get('CustomerPanelUserID') : $Self->{UserID};
 
     # check if smime is enabled
     return if !$ConfigObject->Get('SMIME');
@@ -263,12 +267,12 @@ sub Check {
                 # made if sender and signer addresses does not match
 
                 # get original sender from email
-                my @OrigEmail = map {"$_\n"} split( /\n/, $Message );
+                my @OrigEmail        = map {"$_\n"} split( /\n/, $Message );
                 my $ParserObjectOrig = Kernel::System::EmailParser->new(
                     Email => \@OrigEmail,
                 );
 
-                my $OrigFrom = $ParserObjectOrig->GetParam( WHAT => 'From' );
+                my $OrigFrom   = $ParserObjectOrig->GetParam( WHAT => 'From' );
                 my $OrigSender = $ParserObjectOrig->GetEmailAddress( Email => $OrigFrom );
 
                 # compare sender email to signer email
@@ -291,19 +295,31 @@ sub Check {
                         . ", but sender address $OrigSender: does not match certificate address!";
                 }
 
+                # Determine if we have decrypted article and attachments before.
+                my %Index = $ArticleBackendObject->ArticleAttachmentIndex(
+                    ArticleID => $Self->{ArticleID},
+                );
+
+                if (
+                    !grep { $Index{$_}->{ContentType} =~ m{ application/ (?: x- )? pkcs7-mime }xms } sort keys %Index
+                    )
+                {
+                    return @Return;
+                }
+
                 # updated article body
                 $ArticleBackendObject->ArticleUpdate(
                     TicketID  => $Param{Article}->{TicketID},
                     ArticleID => $Self->{ArticleID},
                     Key       => 'Body',
                     Value     => $Body,
-                    UserID    => $Self->{UserID},
+                    UserID    => $ChangeUserID,
                 );
 
                 # delete crypted attachments
                 $ArticleBackendObject->ArticleDeleteAttachment(
                     ArticleID => $Self->{ArticleID},
-                    UserID    => $Self->{UserID},
+                    UserID    => $ChangeUserID,
                 );
 
                 # write attachments to the storage
@@ -311,7 +327,7 @@ sub Check {
                     $ArticleBackendObject->ArticleWriteAttachment(
                         %{$Attachment},
                         ArticleID => $Self->{ArticleID},
-                        UserID    => $Self->{UserID},
+                        UserID    => $ChangeUserID,
                     );
                 }
 
@@ -375,12 +391,12 @@ sub Check {
                 # made if sender and signer addresses does not match
 
                 # get original sender from email
-                my @OrigEmail = map {"$_\n"} split( /\n/, $Message );
+                my @OrigEmail        = map {"$_\n"} split( /\n/, $Message );
                 my $ParserObjectOrig = Kernel::System::EmailParser->new(
                     Email => \@OrigEmail,
                 );
 
-                my $OrigFrom = $ParserObjectOrig->GetParam( WHAT => 'From' );
+                my $OrigFrom   = $ParserObjectOrig->GetParam( WHAT => 'From' );
                 my $OrigSender = $ParserObjectOrig->GetEmailAddress( Email => $OrigFrom );
 
                 # compare sender email to signer email
@@ -403,29 +419,41 @@ sub Check {
                         . ", but sender address $OrigSender: does not match certificate address!";
                 }
 
-                # updated article body
-                $ArticleBackendObject->ArticleUpdate(
-                    TicketID  => $Param{Article}->{TicketID},
+                # Determine if we have decrypted article and attachments before.
+                my %Index = $ArticleBackendObject->ArticleAttachmentIndex(
                     ArticleID => $Self->{ArticleID},
-                    Key       => 'Body',
-                    Value     => $Body,
-                    UserID    => $Self->{UserID},
                 );
 
-                # delete crypted attachments
-                $ArticleBackendObject->ArticleDeleteAttachment(
-                    ArticleID => $Self->{ArticleID},
-                    UserID    => $Self->{UserID},
-                );
+                if (
+                    grep { $Index{$_}->{ContentType} =~ m{ application/ (?: x- )? pkcs7 }xms } sort keys %Index
+                    )
+                {
 
-                # write attachments to the storage
-                for my $Attachment ( $ParserObject->GetAttachments() ) {
-                    $ArticleBackendObject->ArticleWriteAttachment(
-                        %{$Attachment},
+                    # Update article body.
+                    $ArticleBackendObject->ArticleUpdate(
+                        TicketID  => $Param{Article}->{TicketID},
                         ArticleID => $Self->{ArticleID},
-                        UserID    => $Self->{UserID},
+                        Key       => 'Body',
+                        Value     => $Body,
+                        UserID    => $ChangeUserID,
                     );
+
+                    # Delete crypted attachments.
+                    $ArticleBackendObject->ArticleDeleteAttachment(
+                        ArticleID => $Self->{ArticleID},
+                        UserID    => $ChangeUserID,
+                    );
+
+                    # Write decrypted attachments to the storage.
+                    for my $Attachment ( $ParserObject->GetAttachments() ) {
+                        $ArticleBackendObject->ArticleWriteAttachment(
+                            %{$Attachment},
+                            ArticleID => $Self->{ArticleID},
+                            UserID    => $ChangeUserID,
+                        );
+                    }
                 }
+
             }
 
             # output signature verification errors

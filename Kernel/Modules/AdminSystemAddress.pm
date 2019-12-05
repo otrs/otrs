@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminSystemAddress;
@@ -39,7 +39,7 @@ sub Run {
     # change
     # ------------------------------------------------------------ #
     if ( $Self->{Subaction} eq 'Change' ) {
-        my $ID = $ParamObject->GetParam( Param => 'ID' ) || '';
+        my $ID   = $ParamObject->GetParam( Param => 'ID' ) || '';
         my %Data = $SystemAddressObject->SystemAddressGet(
             ID => $ID,
         );
@@ -96,6 +96,15 @@ sub Run {
         if ($NameExists) {
             $Errors{NameInvalid} = 'ServerError';
             $Errors{ErrorType}   = 'AlreadyUsed';
+        }
+
+        # Check if system address is used by auto response.
+        my $SystemAddressIsUsed = $Kernel::OM->Get('Kernel::System::SystemAddress')->SystemAddressIsUsed(
+            SystemAddressID => $GetParam{ID},
+        );
+        if ( $SystemAddressIsUsed && $GetParam{ValidID} > 1 ) {
+            $Errors{ValidIDInvalid}      = 'ServerError';
+            $Errors{SystemAddressIsUsed} = 1;
         }
 
         # if no errors occurred
@@ -300,10 +309,10 @@ sub _Edit {
         Class      => 'Modernize Validate_Required ' . ( $Param{Errors}->{'ValidIDInvalid'} || '' ),
     );
     $Param{QueueOption} = $LayoutObject->AgentQueueListOption(
-        Data       => { $Kernel::OM->Get('Kernel::System::Queue')->QueueList( Valid => 1 ), },
-        Name       => 'QueueID',
-        SelectedID => $Param{QueueID},
-        Class => 'Modernize Validate_Required ' . ( $Param{Errors}->{'QueueIDInvalid'} || '' ),
+        Data           => { $Kernel::OM->Get('Kernel::System::Queue')->QueueList( Valid => 1 ), },
+        Name           => 'QueueID',
+        SelectedID     => $Param{QueueID},
+        Class          => 'Modernize Validate_Required ' . ( $Param{Errors}->{'QueueIDInvalid'} || '' ),
         OnChangeSubmit => 0,
     );
 

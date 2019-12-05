@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -33,7 +33,7 @@ while ( my @Row = $DBObject->FetchrowArray() ) {
 
 my $CacheType = 'UnitTestTicketCounter';
 
-my $ChildCount = 5;
+my $ChildCount = $Kernel::OM->Get('Kernel::Config')->Get('UnitTest::TicketCreateNumber::ChildCount') || 5;
 
 for my $TicketNumberBackend (qw (AutoIncrement Date DateChecksum)) {
     for my $ChildIndex ( 1 .. $ChildCount ) {

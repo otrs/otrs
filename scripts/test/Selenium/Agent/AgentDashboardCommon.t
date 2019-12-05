@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -102,6 +102,24 @@ $Selenium->RunTest(
             "Widget is read-only.",
         );
 
+        # Kill the session of the current user and see what happens - this needs to cause a redirect to login.
+        my $SessionObject = $Kernel::OM->Get('Kernel::System::AuthSession');
+        my @Sessions      = $SessionObject->GetAllSessionIDs();
+        for my $SessionID (@Sessions) {
+            $SessionObject->RemoveSessionID(
+                SessionID => $SessionID
+            );
+        }
+
+        # Refresh the user online widget.
+        $Selenium->execute_script("\$('#Dashboard0400-UserOnline-box .ActionMenu').show();");
+        $Selenium->find_element( "#Dashboard0400-UserOnline-box .WidgetAction.Refresh a", "css" )->click();
+
+        # We should now have been be redirected to the login screen.
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#LoginBox:visible").length'
+        ) || die "Login screen not found.";
     }
 );
 

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentTicketService;
@@ -200,6 +200,9 @@ sub Run {
         $Output .= $LayoutObject->NavigationBar();
     }
 
+    # Notify if there are tickets which are not updated.
+    $Output .= $LayoutObject->NotifyNonUpdatedTickets() // '';
+
     # viewable locks
     my @ViewableLockIDs = $Kernel::OM->Get('Kernel::System::Lock')->LockViewableLock( Type => 'ID' );
 
@@ -303,15 +306,27 @@ sub Run {
     # otherwise use Preview as default as in LayoutTicket
     $View ||= 'Preview';
 
+    # Check if selected view is available.
+    my $Backends = $ConfigObject->Get('Ticket::Frontend::Overview');
+    if ( !$Backends->{$View} ) {
+
+        # Try to find fallback, take first configured view mode.
+        KEY:
+        for my $Key ( sort keys %{$Backends} ) {
+            $View = $Key;
+            last KEY;
+        }
+    }
+
     # get personal page shown count
     my $PageShownPreferencesKey = 'UserTicketOverview' . $View . 'PageShown';
-    my $PageShown = $Self->{$PageShownPreferencesKey} || 10;
+    my $PageShown               = $Self->{$PageShownPreferencesKey} || 10;
 
     # do shown tickets lookup
     my $Limit = 10_000;
 
     my $ElementChanged = $ParamObject->GetParam( Param => 'ElementChanged' ) || '';
-    my $HeaderColumn = $ElementChanged;
+    my $HeaderColumn   = $ElementChanged;
     $HeaderColumn =~ s{\A ColumnFilter }{}msxg;
 
     # get data (viewable tickets...)
@@ -427,7 +442,7 @@ sub Run {
         next COLUMNNAME if $GetColumnFilter{$ColumnName} eq '';
         $ColumnFilterLink
             .= ';' . $LayoutObject->Ascii2Html( Text => 'ColumnFilter' . $ColumnName )
-            . '=' . $LayoutObject->Ascii2Html( Text => $GetColumnFilter{$ColumnName} )
+            . '=' . $LayoutObject->Ascii2Html( Text => $GetColumnFilter{$ColumnName} );
     }
 
     my $LinkPage = 'ServiceID='
@@ -489,31 +504,40 @@ sub Run {
     # remember the number shown tickets for the custom services
     $Data{TicketsShown} = $Count || 0;
 
+    # Get ticket count for all services.
+    my @ServiceIDs           = sort { $AllServices{$a} cmp $AllServices{$b} } keys %AllServices;
+    my @AllServicesTicketIDs = $TicketObject->TicketSearch(
+        LockIDs    => \@ViewableLockIDs,
+        StateIDs   => \@ViewableStateIDs,
+        QueueIDs   => \@ViewableQueueIDs,
+        ServiceIDs => \@ServiceIDs,
+        Permission => $Permission,
+        UserID     => $Self->{UserID},
+        Result     => 'ARRAY',
+    );
+
+    my $TicketCountByServiceID = $TicketObject->TicketCountByAttribute(
+        Attribute => 'ServiceID',
+        TicketIDs => \@AllServicesTicketIDs,
+    );
+
     SERVICEID:
-    for my $ServiceIDItem ( sort { $AllServices{$a} cmp $AllServices{$b} } keys %AllServices ) {
+    for my $ServiceIDItem (@ServiceIDs) {
+        my $ServiceIDCount = $TicketCountByServiceID->{$ServiceIDItem};
 
-        $Count = $TicketObject->TicketSearch(
-            LockIDs    => \@ViewableLockIDs,
-            StateIDs   => \@ViewableStateIDs,
-            QueueIDs   => \@ViewableQueueIDs,
-            ServiceIDs => [$ServiceIDItem],
-            Permission => $Permission,
-            UserID     => $Self->{UserID},
-            Result     => 'COUNT',
-        ) || 0;
-
-        next SERVICEID if !$Count;
+        next SERVICEID if !$ServiceIDCount;
 
         push @{ $Data{Services} }, {
-            Count     => $Count,
+            Count     => $ServiceIDCount,
             Service   => $AllServices{$ServiceIDItem},
             ServiceID => $ServiceIDItem,
         };
 
-        # remember the number shown tickets for the selected service
-        if ( $ServiceID && $ServiceID eq $ServiceIDItem ) {
-            $Data{TicketsShown} = $Count || 0;
-        }
+        # Remember the number of shown tickets for the selected service.
+        next SERVICEID if !$ServiceID;
+        next SERVICEID if $ServiceID ne $ServiceIDItem;
+
+        $Data{TicketsShown} = $ServiceIDCount;
     }
 
     my $LastColumnFilter = $ParamObject->GetParam( Param => 'LastColumnFilter' ) || '';
@@ -532,9 +556,8 @@ sub Run {
 
     # show tickets
     $Output .= $LayoutObject->TicketListShow(
-        Filter     => $Filter,
-        Filters    => \%NavBarFilter,
-        FilterLink => $LinkFilter,
+        Filter  => $Filter,
+        Filters => \%NavBarFilter,
 
         DataInTheMiddle => $LayoutObject->Output(
             TemplateFile => 'AgentTicketService',
@@ -656,7 +679,7 @@ sub _MaskServiceView {
             $Counter{$CustomService} = $Counter{ $Service{Service} };
             $Service{Service} = $CustomService;
         }
-        my @ServiceName = split /::/, $Service{Service};
+        my @ServiceName      = split /::/, $Service{Service};
         my $ShortServiceName = $ServiceName[-1];
         $Service{ServiceID} = 0 if ( !$Service{ServiceID} );
 

@@ -1,15 +1,19 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::SysConfig::Migration;
 
 use strict;
 use warnings;
+
+use parent qw(scripts::DBUpdateTo6::Base);
+
+use List::Util qw(first);
 
 our @ObjectDependencies = (
     'Kernel::System::Log',
@@ -105,7 +109,13 @@ sub MigrateXMLStructure {
 
     my %NavigationLookup = $Self->NavigationLookupGet();
 
+    my @Frontends;
+
+    SETTING:
     for my $Setting (@Settings) {
+
+        # Stop the setting loop process if it's the ending tag.
+        last SETTING if $Setting =~ m/<\/otrs_config>/i;
 
         # Update version (from 1.0 to 2.0).
         $Setting =~ s{^(<otrs_config.*?version)="1.0"}{$1="2.0"}gsmx;
@@ -352,28 +362,33 @@ sub MigrateXMLStructure {
             if ( $NavBar && $Setting =~ m{<ConfigItem\s+Name="(.*?)"(.*?)>}gsmx ) {
                 my $Name    = $1;
                 my $Options = $2;
-                my $Index   = 1;
 
                 my @NavBars = split m{<\/NavBar>\s+?<NavBar}, $NavBar;
 
-                my $Navigation = '';
-
                 $Name =~ s{Frontend::Module}{Frontend::Navigation}gsmx;
+                $Name .= '###' . ( $InitToLoaderMapping{$Init} // '005-' ) . $Param{Name};
+
+                my $Navigation = sprintf "%-*s%s", 4, "", "<Setting Name=\"$Name\"$Options>\n";
+                $Navigation .= sprintf "%-*s%s", 8, "",
+                    "<Description Translatable=\"1\">Main menu item registration.</Description>";
+
+                if ( $Setting =~ m{<SubGroup>(.*?)</SubGroup>} ) {
+                    my $NavigationStr = $NavigationLookup{$1} || $1;
+                    $NavigationStr .= "::MainMenu";
+                    $Navigation    .= sprintf( "\n%-*s%s", 8, "", "<Navigation>$NavigationStr</Navigation>" );
+                }
+
+                $Navigation .= sprintf( "\n%-*s%s", 8,  "", "<Value>" );
+                $Navigation .= sprintf( "\n%-*s%s", 12, "", "<Array>" );
+                $Navigation .= sprintf( "\n%-*s%s", 16, "", "<DefaultItem ValueType=\"FrontendNavigation\">" );
+                $Navigation .= sprintf( "\n%-*s%s", 20, "", "<Hash>" );
+                $Navigation .= sprintf( "\n%-*s%s", 20, "", "</Hash>" );
+                $Navigation .= sprintf( "\n%-*s%s", 16, "", "</DefaultItem>" );
 
                 for my $NavBarItem (@NavBars) {
 
-                    $Navigation .= sprintf "%-*s%s", 4, "", "<Setting Name=\"$Name###$Index\"$Options>\n";
-                    $Navigation .= sprintf "%-*s%s", 8, "",
-                        "<Description Translatable=\"1\">Main menu for the agent interface.</Description>";
-
-                    if ( $Setting =~ m{<SubGroup>(.*?)</SubGroup>} ) {
-                        my $NavigationStr = $NavigationLookup{$1} || $1;
-                        $NavigationStr .= "::MainMenu";
-                        $Navigation .= sprintf( "\n%-*s%s", 8, "", "<Navigation>$NavigationStr</Navigation>" );
-                    }
-
-                    $Navigation .= sprintf( "\n%-*s%s", 8,  "", "<Value>" );
-                    $Navigation .= sprintf( "\n%-*s%s", 12, "", "<Hash>" );
+                    $Navigation .= sprintf( "\n%-*s%s", 16, "", "<Item>" );
+                    $Navigation .= sprintf( "\n%-*s%s", 20, "", "<Hash>" );
 
                     for my $NavBarTag (qw(Group GroupRo)) {
                         my @Items;
@@ -382,11 +397,11 @@ sub MigrateXMLStructure {
                             push @Items, $1;
                         }
 
-                        $Navigation .= sprintf( "\n%-*s%s", 16, "", "<Item Key=\"$NavBarTag\">" );
-                        $Navigation .= sprintf( "\n%-*s%s", 20, "", "<Array>" );
+                        $Navigation .= sprintf( "\n%-*s%s", 24, "", "<Item Key=\"$NavBarTag\">" );
+                        $Navigation .= sprintf( "\n%-*s%s", 28, "", "<Array>" );
 
                         for my $Value (@Items) {
-                            $Navigation .= sprintf( "\n%-*s%s", 24, "", "<Item>$Value</Item>" );
+                            $Navigation .= sprintf( "\n%-*s%s", 32, "", "<Item>$Value</Item>" );
                         }
 
                         if (
@@ -397,13 +412,13 @@ sub MigrateXMLStructure {
                             # take group items from FrontendModuleReg
                             for my $Value ( @{ $GroupItems{$NavBarTag} } ) {
                                 if ($Value) {
-                                    $Navigation .= sprintf( "\n%-*s%s", 24, "", "<Item>$Value</Item>" );
+                                    $Navigation .= sprintf( "\n%-*s%s", 32, "", "<Item>$Value</Item>" );
                                 }
                             }
                         }
 
-                        $Navigation .= sprintf( "\n%-*s%s", 20, "", "</Array>" );
-                        $Navigation .= sprintf( "\n%-*s%s", 16, "", "</Item>" );
+                        $Navigation .= sprintf( "\n%-*s%s", 28, "", "</Array>" );
+                        $Navigation .= sprintf( "\n%-*s%s", 24, "", "</Item>" );
                     }
 
                     for my $NavBarTag (qw(Description Name Link LinkOption NavBar Type Block AccessKey Prio)) {
@@ -418,19 +433,153 @@ sub MigrateXMLStructure {
                             $Value      = $2;
                         }
                         $Navigation .= sprintf(
-                            "\n%-*s%s", 16, "",
+                            "\n%-*s%s", 24, "",
                             "<Item Key=\"$NavBarTag\"$Attributes>$Value</Item>",
                         );
                     }
 
-                    $Navigation .= sprintf( "\n%-*s%s", 12, "", "</Hash>" );
-                    $Navigation .= sprintf( "\n%-*s%s", 8,  "", "</Value>" );
-                    $Navigation .= sprintf( "\n%-*s%s", 4,  "", "</ConfigItem>\n" );    # We rename ConfigItems later
-
-                    $Index++;
+                    $Navigation .= sprintf( "\n%-*s%s", 20, "", "</Hash>" );
+                    $Navigation .= sprintf( "\n%-*s%s", 16, "", "</Item>" );
                 }
 
+                $Navigation .= sprintf( "\n%-*s%s", 12, "", "</Array>" );
+                $Navigation .= sprintf( "\n%-*s%s", 8,  "", "</Value>" );
+                $Navigation .= sprintf( "\n%-*s%s", 4,  "", "</ConfigItem>\n" );    # We rename ConfigItems later
+
                 $Setting .= "\n" . $Navigation;
+            }
+            elsif ( !$NavBar && $Setting =~ m{<ConfigItem\s+Name="(.*?)"(.*?)>}gsmx ) {
+                my $Name    = $1;
+                my $Options = $2;
+
+                my %NoDefaultNavigationSetting = (
+                    'CustomerFrontend::Module###AjaxAttachment'                             => 1,
+                    'CustomerFrontend::Module###CustomerAccept'                             => 1,
+                    'CustomerFrontend::Module###CustomerChatDownload'                       => 1,
+                    'CustomerFrontend::Module###CustomerDynamicFieldDatabaseDetailedSearch' => 1,
+                    'CustomerFrontend::Module###CustomerDynamicFieldDatabaseDetails'        => 1,
+                    'CustomerFrontend::Module###CustomerDynamicFieldDatabaseSearch'         => 1,
+                    'CustomerFrontend::Module###CustomerTicketArticleContent'               => 1,
+                    'CustomerFrontend::Module###CustomerTicketAttachment'                   => 1,
+                    'CustomerFrontend::Module###CustomerTicketPrint'                        => 1,
+                    'CustomerFrontend::Module###CustomerTicketZoom'                         => 1,
+                    'CustomerFrontend::Module###CustomerVideoChat'                          => 1,
+                    'CustomerFrontend::Module###Login'                                      => 1,
+                    'CustomerFrontend::Module###Logout'                                     => 1,
+                    'CustomerFrontend::Module###PictureUpload'                              => 1,
+                    'Frontend::Module###AdminAppointmentImport'                             => 1,
+                    'Frontend::Module###AdminDynamicFieldCheckbox'                          => 1,
+                    'Frontend::Module###AdminDynamicFieldContactWithData'                   => 1,
+                    'Frontend::Module###AdminDynamicFieldDatabase'                          => 1,
+                    'Frontend::Module###AdminDynamicFieldDateTime'                          => 1,
+                    'Frontend::Module###AdminDynamicFieldDropdown'                          => 1,
+                    'Frontend::Module###AdminDynamicFieldMultiselect'                       => 1,
+                    'Frontend::Module###AdminDynamicFieldText'                              => 1,
+                    'Frontend::Module###AdminDynamicFieldWebService'                        => 1,
+                    'Frontend::Module###AdminGenericInterfaceErrorHandlingDefault'          => 1,
+                    'Frontend::Module###AdminGenericInterfaceErrorHandlingRequestRetry'     => 1,
+                    'Frontend::Module###AdminGenericInterfaceInvokerDefault'                => 1,
+                    'Frontend::Module###AdminGenericInterfaceInvokerEvent'                  => 1,
+                    'Frontend::Module###AdminGenericInterfaceMappingSimple'                 => 1,
+                    'Frontend::Module###AdminGenericInterfaceMappingXSLT'                   => 1,
+                    'Frontend::Module###AdminGenericInterfaceOperationDefault'              => 1,
+                    'Frontend::Module###AdminGenericInterfaceTransportHTTPREST'             => 1,
+                    'Frontend::Module###AdminGenericInterfaceTransportHTTPSOAP'             => 1,
+                    'Frontend::Module###AdminGenericInterfaceWebserviceHistory'             => 1,
+                    'Frontend::Module###AdminInit'                                          => 1,
+                    'Frontend::Module###AdminProcessManagementActivity'                     => 1,
+                    'Frontend::Module###AdminProcessManagementActivityDialog'               => 1,
+                    'Frontend::Module###AdminProcessManagementPath'                         => 1,
+                    'Frontend::Module###AdminProcessManagementTransition'                   => 1,
+                    'Frontend::Module###AdminProcessManagementTransitionAction'             => 1,
+                    'Frontend::Module###AgentAppointmentEdit'                               => 1,
+                    'Frontend::Module###AgentAppointmentPluginSearch'                       => 1,
+                    'Frontend::Module###AgentChatAppend'                                    => 1,
+                    'Frontend::Module###AgentChatAvailability'                              => 1,
+                    'Frontend::Module###AgentChatDownload'                                  => 1,
+                    'Frontend::Module###AgentChatPopup'                                     => 1,
+                    'Frontend::Module###AgentChatPreview'                                   => 1,
+                    'Frontend::Module###AgentContactWithDataSearch'                         => 1,
+                    'Frontend::Module###AgentCustomerSearch'                                => 1,
+                    'Frontend::Module###AgentCustomerSearchSMS'                             => 1,
+                    'Frontend::Module###AgentCustomerUserAddressBook'                       => 1,
+                    'Frontend::Module###AgentCustomerUserInformationCenterSearch'           => 1,
+                    'Frontend::Module###AgentDaemonInfo'                                    => 1,
+                    'Frontend::Module###AgentDynamicFieldDatabaseDetailedSearch'            => 1,
+                    'Frontend::Module###AgentDynamicFieldDatabaseDetails'                   => 1,
+                    'Frontend::Module###AgentDynamicFieldDatabaseSearch'                    => 1,
+                    'Frontend::Module###AgentInfo'                                          => 1,
+                    'Frontend::Module###AgentHTMLReference'                                 => 1,
+                    'Frontend::Module###AgentOTRSBusiness'                                  => 1,
+                    'Frontend::Module###AgentSplitSelection'                                => 1,
+                    'Frontend::Module###AgentTicketArticleContent'                          => 1,
+                    'Frontend::Module###AgentTicketAttachment'                              => 1,
+                    'Frontend::Module###AgentTicketAttachmentView'                          => 1,
+                    'Frontend::Module###AgentTicketBounce'                                  => 1,
+                    'Frontend::Module###AgentTicketBulk'                                    => 1,
+                    'Frontend::Module###AgentTicketClose'                                   => 1,
+                    'Frontend::Module###AgentTicketCompose'                                 => 1,
+                    'Frontend::Module###AgentTicketCustomer'                                => 1,
+                    'Frontend::Module###AgentTicketEmailOutbound'                           => 1,
+                    'Frontend::Module###AgentTicketEmailResend'                             => 1,
+                    'Frontend::Module###AgentTicketForward'                                 => 1,
+                    'Frontend::Module###AgentTicketFreeText'                                => 1,
+                    'Frontend::Module###AgentTicketHistory'                                 => 1,
+                    'Frontend::Module###AgentTicketLock'                                    => 1,
+                    'Frontend::Module###AgentTicketMerge'                                   => 1,
+                    'Frontend::Module###AgentTicketMove'                                    => 1,
+                    'Frontend::Module###AgentTicketNote'                                    => 1,
+                    'Frontend::Module###AgentTicketOwner'                                   => 1,
+                    'Frontend::Module###AgentTicketPending'                                 => 1,
+                    'Frontend::Module###AgentTicketPhoneInbound'                            => 1,
+                    'Frontend::Module###AgentTicketPhoneOutbound'                           => 1,
+                    'Frontend::Module###AgentTicketPlain'                                   => 1,
+                    'Frontend::Module###AgentTicketPrint'                                   => 1,
+                    'Frontend::Module###AgentTicketPriority'                                => 1,
+                    'Frontend::Module###AgentTicketResponsible'                             => 1,
+                    'Frontend::Module###AgentTicketSMSOutbound'                             => 1,
+                    'Frontend::Module###AgentTicketWatcher'                                 => 1,
+                    'Frontend::Module###AgentTicketZoom'                                    => 1,
+                    'Frontend::Module###AgentUserSearch'                                    => 1,
+                    'Frontend::Module###AgentVideoChat'                                     => 1,
+                    'Frontend::Module###AgentZoom'                                          => 1,
+                    'Frontend::Module###AjaxAttachment'                                     => 1,
+                    'Frontend::Module###Login'                                              => 1,
+                    'Frontend::Module###Logout'                                             => 1,
+                    'Frontend::Module###PictureUpload'                                      => 1,
+                    'PublicFrontend::Module###PublicCalendar'                               => 1,
+                    'PublicFrontend::Module###PublicDefault'                                => 1,
+                    'PublicFrontend::Module###PublicRepository'                             => 1,
+                    'PublicFrontend::Module###PublicSupportDataCollector'                   => 1,
+                );
+
+                if ( !$NoDefaultNavigationSetting{$Name} ) {
+
+                    $Name =~ s{Frontend::Module}{Frontend::Navigation}gsmx;
+                    $Name .= '###' . ( $InitToLoaderMapping{$Init} // '005-' ) . $Param{Name};
+
+                    my $Navigation = sprintf "%-*s%s", 4, "", "<Setting Name=\"$Name\" Required=\"0\" Valid=\"0\">\n";
+                    $Navigation .= sprintf "%-*s%s", 8, "",
+                        "<Description Translatable=\"1\">Main menu item registration.</Description>";
+
+                    if ( $Setting =~ m{<SubGroup>(.*?)</SubGroup>} ) {
+                        my $NavigationStr = $NavigationLookup{$1} || $1;
+                        $NavigationStr .= "::MainMenu";
+                        $Navigation    .= sprintf( "\n%-*s%s", 8, "", "<Navigation>$NavigationStr</Navigation>" );
+                    }
+
+                    $Navigation .= sprintf( "\n%-*s%s", 8,  "", "<Value>" );
+                    $Navigation .= sprintf( "\n%-*s%s", 12, "", "<Array>" );
+                    $Navigation .= sprintf( "\n%-*s%s", 16, "", "<DefaultItem ValueType=\"FrontendNavigation\">" );
+                    $Navigation .= sprintf( "\n%-*s%s", 20, "", "<Hash>" );
+                    $Navigation .= sprintf( "\n%-*s%s", 20, "", "</Hash>" );
+                    $Navigation .= sprintf( "\n%-*s%s", 16, "", "</DefaultItem>" );
+                    $Navigation .= sprintf( "\n%-*s%s", 12, "", "</Array>" );
+                    $Navigation .= sprintf( "\n%-*s%s", 8,  "", "</Value>" );
+                    $Navigation .= sprintf( "\n%-*s%s", 4, "", "</ConfigItem>\n" );    # We rename ConfigItems later
+
+                    $Setting .= "\n" . $Navigation;
+                }
             }
 
             if ( $NavBarModule && $Setting =~ m{<ConfigItem\s+Name="(.*?)"(.*?)>}gsmx ) {
@@ -449,7 +598,7 @@ sub MigrateXMLStructure {
                 if ( $Setting =~ m{<SubGroup>(.*?)</SubGroup>} ) {
                     my $NavigationStr = $NavigationLookup{$1} || $1;
 
-                    $NavigationStr .= '::AdminOverview';
+                    $NavigationStr    .= '::AdminOverview';
                     $NavigationModule .= sprintf( "\n%-*s%s", 8, "", "<Navigation>$NavigationStr</Navigation>" );
                 }
 
@@ -731,7 +880,7 @@ sub MigrateXMLStructure {
                 $ReplacementString = "\n\t\t\t<Hash>\n" .
                     "\t\t\t\t<DefaultItem ValueType=\"Select\">\n";
                 for my $DFoption (@DFoptions) {
-                    ## nofilter (TidyAll::Plugin::OTRS::Perl::Translatable)
+                    ## nofilter(TidyAll::Plugin::OTRS::Perl::Translatable)
                     $ReplacementString
                         .= "\t\t\t\t\t<Item ValueType=\"Option\" Value=\"$DFCount\" Translatable=\"1\">$DFoption</Item>\n";
                     $DFCount++;
@@ -746,8 +895,7 @@ sub MigrateXMLStructure {
                 $Setting =~ s{
                     Name=(.*?)\#\#\#(|FollowUp|ProcessWidget|SearchOverview|SearchCSV)DynamicField\"(.*?)
                     <Setting>(\s+)<Hash>(\s+)<\/Hash>
-                }
-                     {Name=$1$Hashtag$2DynamicField"$3<Value>$ReplacementString}gsmx;    #"
+                }{Name=$1$Hashtag$2DynamicField"$3<Value>$ReplacementString}gsmx;
 
                 # DefaultColumns
                 $ReplacementString =~ s{\n\t\t\t<Hash>\n}{\n\t<Hash>\n};
@@ -759,13 +907,12 @@ sub MigrateXMLStructure {
                 $Setting =~ s{
                     Name=(.*?)\#\#\#DefaultColumns\"(.*?)
                     <Setting>(\s+)<Hash>(\s+)<Item\sKey=\"Age\">2</Item>
-                }
-                     {Name=$1$DefaultColumnsHashtag"$2<Value>$ReplacementString}gsmx;    #"
+                }{Name=$1$DefaultColumnsHashtag"$2<Value>$ReplacementString}gsmx;
+
                 $Setting =~ s{
                     Name=(.*?)DefaultOverviewColumns\"(.*?)
                     <Setting>(\s+)<Hash>(\s+)<Item\sKey=\"Age\">2</Item>
-                }
-                     {Name=$1DefaultOverviewColumns"$2<Value>$ReplacementString}gsmx;    #"
+                }{Name=$1DefaultOverviewColumns"$2<Value>$ReplacementString}gsmx;
 
                 # AgentCustomerInformationCenter-||DashboardBackend
                 my $BackendReplacement = "<Item Key=\"DefaultColumns\">" .
@@ -837,6 +984,29 @@ sub MigrateXMLStructure {
             }
         }
 
+        # get the needed ArticleTypeMapping from a YML file
+        my $TaskConfig         = $Self->GetTaskConfig( Module => 'MigrateArticleData' );
+        my %ArticleTypeMapping = %{ $TaskConfig->{ArticleTypeMapping} };
+
+        # Migrate Postmaster settings for
+        #   PostMaster::PreFilterModule
+        #   PostMaster::PreCreateFilterModule
+        #   PostMaster::PostFilterModule
+        #   PostMaster::CheckFollowUpModule
+        if (
+            $Setting =~ m{ Name="PostMaster::(PreFilter|PreCreateFilter|PostFilter|CheckFollowUp)Module\#\#\# .+ }xms
+            )
+        {
+            $Setting
+                =~ s{<Item Key="X-OTRS-ArticleType">(.*?)</Item>}{<Item Key="X-OTRS-IsVisibleForCustomer">$ArticleTypeMapping{$1}->{Visible}</Item>}g;
+            $Setting
+                =~ s{<Item Key="X-OTRS-FollowUp-ArticleType">(.*?)</Item>}{<Item Key="X-OTRS-FollowUp-IsVisibleForCustomer">$ArticleTypeMapping{$1}->{Visible}</Item>}g;
+            $Setting
+                =~ s{<Item Key="ArticleType"[^>]*>(.*?)</Item>}{<Item Key="IsVisibleForCustomer" Translatable="1">$ArticleTypeMapping{$1}->{Visible}</Item>}g;
+            $Setting
+                =~ s{<Item Key="Module">Kernel::System::PostMaster::Filter::FollowUpArticleTypeCheck</Item>}{<Item Key="Module">Kernel::System::PostMaster::Filter::FollowUpArticleVisibilityCheck</Item>}g;
+        }
+
         # Remove Group.
         $Setting =~ s{\s+<Group>(.*?)</Group>}{}gsmx;
 
@@ -846,7 +1016,7 @@ sub MigrateXMLStructure {
         my @NavigationValues = $Setting =~ m{<Navigation>(.*?)</Navigation>}g;
         if ( scalar @NavigationValues ) {
             my $NavigationValue = $NavigationValues[0];
-            my $NavigationStr = $NavigationLookup{$NavigationValue} || $NavigationValue;
+            my $NavigationStr   = $NavigationLookup{$NavigationValue} || $NavigationValue;
 
             if (
                 scalar @NavigationValues < 2
@@ -854,7 +1024,7 @@ sub MigrateXMLStructure {
                     'Frontend::Admin::ModuleRegistration',
                     'Frontend::Agent::ModuleRegistration',
                     'Frontend::Customer::ModuleRegistration',
-                    )
+                )
                 )
             {
                 $Setting =~ s{<Navigation>.*?</Navigation>}{<Navigation>$NavigationStr</Navigation>}gsmx;
@@ -1038,17 +1208,17 @@ sub MigrateXMLStructure {
             'Ticket::Frontend::AgentTicketQueue###SortBy::Default',
             'Ticket::Frontend::AgentTicketSearch###Defaults###ArticleCreateTimePoint',
             'Ticket::Frontend::AgentTicketSearch###Defaults###ArticleCreateTimeSlot',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###Body',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###Cc',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Body',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Cc',
             'Ticket::Frontend::AgentTicketSearch###Defaults###CustomerID',
             'Ticket::Frontend::AgentTicketSearch###Defaults###CustomerUserLogin',
             'Ticket::Frontend::AgentTicketSearch###Defaults###DynamicField',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###From',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_From',
             'Ticket::Frontend::AgentTicketSearch###Defaults###Fulltext',
             'Ticket::Frontend::AgentTicketSearch###Defaults###QueueIDs',
             'Ticket::Frontend::AgentTicketSearch###Defaults###SearchInArchive',
             'Ticket::Frontend::AgentTicketSearch###Defaults###StateIDs',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###Subject',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Subject',
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketChangeTimePoint',
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketChangeTimeSlot',
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketCloseTimePoint',
@@ -1059,7 +1229,7 @@ sub MigrateXMLStructure {
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketEscalationTimeSlot',
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketNumber',
             'Ticket::Frontend::AgentTicketSearch###Defaults###Title',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###To',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_To',
             'Ticket::Frontend::AgentTicketSearch###Order::Default',
             'Ticket::Frontend::AgentTicketSearch###SortBy::Default',
             'Ticket::Frontend::AgentTicketService###Order::Default',
@@ -1109,17 +1279,17 @@ sub MigrateXMLStructure {
             'Ticket::Frontend::AgentTicketQueue###SortBy::Default',
             'Ticket::Frontend::AgentTicketSearch###Defaults###ArticleCreateTimePoint',
             'Ticket::Frontend::AgentTicketSearch###Defaults###ArticleCreateTimeSlot',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###Body',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###Cc',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Body',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Cc',
             'Ticket::Frontend::AgentTicketSearch###Defaults###CustomerID',
             'Ticket::Frontend::AgentTicketSearch###Defaults###CustomerUserLogin',
             'Ticket::Frontend::AgentTicketSearch###Defaults###DynamicField',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###From',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_From',
             'Ticket::Frontend::AgentTicketSearch###Defaults###Fulltext',
             'Ticket::Frontend::AgentTicketSearch###Defaults###QueueIDs',
             'Ticket::Frontend::AgentTicketSearch###Defaults###SearchInArchive',
             'Ticket::Frontend::AgentTicketSearch###Defaults###StateIDs',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###Subject',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Subject',
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketChangeTimePoint',
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketChangeTimeSlot',
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketCloseTimePoint',
@@ -1130,7 +1300,7 @@ sub MigrateXMLStructure {
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketEscalationTimeSlot',
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketNumber',
             'Ticket::Frontend::AgentTicketSearch###Defaults###Title',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###To',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_To',
             'Ticket::Frontend::AgentTicketSearch###Order::Default',
             'Ticket::Frontend::AgentTicketSearch###SortBy::Default',
             'Ticket::Frontend::AgentTicketService###Order::Default',
@@ -1303,17 +1473,17 @@ sub MigrateXMLStructure {
             'Ticket::Frontend::AgentTicketQueue###SortBy::Default'                       => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Defaults###ArticleCreateTimePoint'    => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Defaults###ArticleCreateTimeSlot'     => 'Advanced',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###Body'                      => 'Advanced',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###Cc'                        => 'Advanced',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Body'             => 'Advanced',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Cc'               => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Defaults###CustomerID'                => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Defaults###CustomerUserLogin'         => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Defaults###DynamicField'              => 'Advanced',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###From'                      => 'Advanced',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_From'             => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Defaults###Fulltext'                  => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Defaults###QueueIDs'                  => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Defaults###SearchInArchive'           => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Defaults###StateIDs'                  => 'Advanced',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###Subject'                   => 'Advanced',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Subject'          => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketChangeTimePoint'     => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketChangeTimeSlot'      => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketCloseTimePoint'      => 'Advanced',
@@ -1324,7 +1494,7 @@ sub MigrateXMLStructure {
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketEscalationTimeSlot'  => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Defaults###TicketNumber'              => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Defaults###Title'                     => 'Advanced',
-            'Ticket::Frontend::AgentTicketSearch###Defaults###To'                        => 'Advanced',
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_To'               => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###Order::Default'                       => 'Advanced',
             'Ticket::Frontend::AgentTicketSearch###SortBy::Default'                      => 'Advanced',
             'Ticket::Frontend::AgentTicketService###Order::Default'                      => 'Advanced',
@@ -1392,6 +1562,9 @@ Migrate the configs effective values to the new format for OTRS 6.
             'GeneralCatalogPreferences###Permissions',
             'Loader::Agent::CommonJS###100-GeneralCatalog'
         ],
+        PackageLookupNewConfigName => {
+            'Ticket::EventModulePost###999-GenericInterface' => 'Ticket::EventModulePost###9900-GenericInterface',
+        },
         ReturnMigratedSettingsCounts => 1,                          # (optional) returns an array with counts of un/successful migrated settings
     );
 
@@ -1428,6 +1601,23 @@ sub MigrateConfigEffectiveValues {
     $Kernel::OM->Get('Kernel::System::Main')->Require( $Param{FileClass} );
     $Param{FileClass}->Load( \%OTRS5Config );
 
+    my $OTRS5ConfigFileContentList = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
+        Location => $Param{FilePath},
+        Result   => 'ARRAY',
+    );
+
+    my @DisabledOTRS5Config;
+    for my $Line ( @{$OTRS5ConfigFileContentList} ) {
+
+        # Check if the line starts with a delete.
+        if ( $Line =~ m{ \A delete[ ]\$Self->\{(.+)\};}xms ) {
+            my $DisabledSettingString = $1;
+            $DisabledSettingString =~ s{['"]}{}xmsg;
+            $DisabledSettingString =~ s{\}->\{}{###}xmsg;
+            push @DisabledOTRS5Config, $DisabledSettingString;
+        }
+    }
+
     # get all OTRS 6 default settings
     my @DefaultSettings = $SysConfigObject->ConfigurationList();
 
@@ -1435,8 +1625,8 @@ sub MigrateConfigEffectiveValues {
     # my @SearchResult = grep /###/, sort values %DefaultSettings;
     my @SearchResult = grep { $_->{Name} =~ m{###} } @DefaultSettings;
 
-    # find all the setting which have sublevels and store them in a hash
-    my %SettingsWithSubLevels;
+    # find all the setting which have sublevels and store them in a hash for OTRS 6
+    my %SettingsWithSubLevelsOTRS6;
     for my $Setting (@SearchResult) {
 
         my @SettingNameParts = split /###/, $Setting->{Name};
@@ -1448,15 +1638,19 @@ sub MigrateConfigEffectiveValues {
             @SettingNameParts
 
             # Skip any setting with more than one sub-levels in hash key (unsupported in OTRS 5).
-            && !defined $SettingsWithSubLevels{$FirstLevelKey}->{ $SettingNameParts[0] }
+            && !defined $SettingsWithSubLevelsOTRS6{$FirstLevelKey}->{ $SettingNameParts[0] }
             )
         {
-            $SettingsWithSubLevels{$FirstLevelKey}->{ $SettingNameParts[0] }->{$LastLevelKey} = 1;
+            $SettingsWithSubLevelsOTRS6{$FirstLevelKey}->{ $SettingNameParts[0] }->{$LastLevelKey} = 1;
         }
         else {
-            $SettingsWithSubLevels{$FirstLevelKey}->{$LastLevelKey} = 1;
+            $SettingsWithSubLevelsOTRS6{$FirstLevelKey}->{$LastLevelKey} = 1;
         }
     }
+
+    # get the needed ArticleTypeMapping from a YML file (needed for Postmaster filter settings later)
+    my $TaskConfig         = $Self->GetTaskConfig( Module => 'MigrateArticleData' );
+    my %ArticleTypeMapping = %{ $TaskConfig->{ArticleTypeMapping} };
 
     # build a lookup hash of all given package settings
     my %PackageSettingLookup;
@@ -1469,6 +1663,21 @@ sub MigrateConfigEffectiveValues {
 
     # to store unsuccessfull settings which could not be migrated
     my @UnsuccessfullSettings;
+
+    # Add an additional mapping for 2-Level settings, which have a renamed first part.
+    if ( $Param{PackageLookupNewConfigName} ) {
+
+        my %AdditionalMapping;
+        for my $OldName ( sort keys %{ $Param{PackageLookupNewConfigName} } ) {
+            my $NewName = $Param{PackageLookupNewConfigName}->{$OldName};
+
+            $OldName =~ s{#.*\z}{}ms;
+            $NewName =~ s{#.*\z}{}ms;
+            $AdditionalMapping{$OldName} = $NewName;
+        }
+
+        %{ $Param{PackageLookupNewConfigName} } = ( %{ $Param{PackageLookupNewConfigName} }, %AdditionalMapping );
+    }
 
     SETTINGNAME:
     for my $SettingName ( sort keys %OTRS5Config ) {
@@ -1492,8 +1701,21 @@ sub MigrateConfigEffectiveValues {
         next SETTINGNAME if $SettingName eq 'Ticket::StorageModule::CheckAllBackends';
         next SETTINGNAME if $SettingName eq 'ArticleDir';
 
+        my $CheckSubLevels;
+        if ( $SettingsWithSubLevelsOTRS6{$SettingName} ) {
+            $CheckSubLevels = 1;
+        }
+        elsif (
+            $Param{PackageLookupNewConfigName}
+            && $Param{PackageLookupNewConfigName}->{$SettingName}
+            && $SettingsWithSubLevelsOTRS6{ $Param{PackageLookupNewConfigName}->{$SettingName} }
+            )
+        {
+            $CheckSubLevels = 1;
+        }
+
         # check if this OTRS5 setting has subhashes in the name
-        if ( $SettingsWithSubLevels{$SettingName} ) {
+        if ($CheckSubLevels) {
 
             SETTINGKEYFIRSTLEVEL:
             for my $SettingKeyFirstLevel ( sort keys %{ $OTRS5Config{$SettingName} } ) {
@@ -1501,8 +1723,8 @@ sub MigrateConfigEffectiveValues {
                 # there is a second level
                 # example: Ticket::Frontend::AgentTicketZoom###Widgets###0100-TicketInformation
                 if (
-                    $SettingsWithSubLevels{$SettingName}->{$SettingKeyFirstLevel}
-                    && IsHashRefWithData( $SettingsWithSubLevels{$SettingName}->{$SettingKeyFirstLevel} )
+                    $SettingsWithSubLevelsOTRS6{$SettingName}->{$SettingKeyFirstLevel}
+                    && IsHashRefWithData( $SettingsWithSubLevelsOTRS6{$SettingName}->{$SettingKeyFirstLevel} )
                     && IsHashRefWithData( $OTRS5Config{$SettingName}->{$SettingKeyFirstLevel} )
                     )
                 {
@@ -1523,8 +1745,9 @@ sub MigrateConfigEffectiveValues {
 
                         # check and convert config name if it has been renamed in OTRS 6
                         # otherwise it will use the given old name
-                        $NewSettingKey = _LookupNewConfigName(
-                            OldName => $NewSettingKey,
+                        $NewSettingKey = $Self->_LookupNewConfigName(
+                            OldName                    => $NewSettingKey,
+                            PackageLookupNewConfigName => $Param{PackageLookupNewConfigName},
                         );
 
                         # skip settings which are not in the given package settings
@@ -1563,26 +1786,11 @@ sub MigrateConfigEffectiveValues {
                             next SETTINGKEYSECONDLEVEL;
                         }
 
-                        # lock the setting
-                        my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
-                            Name   => $NewSettingKey,
-                            Force  => 1,
-                            UserID => 1,
-                        );
-
-                        # update the setting
-                        %Result = $SysConfigObject->SettingUpdate(
-                            Name              => $NewSettingKey,
-                            IsValid           => 1,
-                            EffectiveValue    => $OTRS5EffectiveValue,
-                            ExclusiveLockGUID => $ExclusiveLockGUID,
-                            NoValidation      => 1,
-                            UserID            => 1,
-                        );
-
-                        # unlock the setting again
-                        $SysConfigObject->SettingUnlock(
-                            Name => $NewSettingKey,
+                        # update the setting.
+                        %Result = $Self->_SettingUpdate(
+                            Name           => $NewSettingKey,
+                            IsValid        => 1,
+                            EffectiveValue => $OTRS5EffectiveValue,
                         );
 
                         if ( !$Result{Success} ) {
@@ -1602,10 +1810,16 @@ sub MigrateConfigEffectiveValues {
                     # build the new setting key
                     my $NewSettingKey = $SettingName . '###' . $SettingKeyFirstLevel;
 
+                    # Skip not longer existing settings.
+                    if ( $NewSettingKey eq 'Ticket::Frontend::OverviewSmall###ColumnHeader' ) {
+                        next SETTINGKEYFIRSTLEVEL;
+                    }
+
                     # check and convert config name if it has been renamed in OTRS 6
                     # otherwise it will use the given old name
-                    $NewSettingKey = _LookupNewConfigName(
-                        OldName => $NewSettingKey,
+                    $NewSettingKey = $Self->_LookupNewConfigName(
+                        OldName                    => $NewSettingKey,
+                        PackageLookupNewConfigName => $Param{PackageLookupNewConfigName},
                     );
 
                     # skip settings which are not in the given package settings
@@ -1640,7 +1854,8 @@ sub MigrateConfigEffectiveValues {
                     {
 
                         # migrate (and split) the frontend module settings
-                        my $Result = _MigrateFrontendModuleSetting(
+                        my $Result = $Self->_MigrateFrontendModuleSetting(
+                            FrontendSettingName => $SettingName,
                             FrontendModuleName  => $SettingKeyFirstLevel,
                             OTRS5EffectiveValue => $OTRS5EffectiveValue,
                             OTRS6Setting        => \%OTRS6Setting,
@@ -1664,6 +1879,65 @@ sub MigrateConfigEffectiveValues {
                         $OTRS5EffectiveValue->{PreferenceGroup} = $OTRS6Setting{EffectiveValue}->{PreferenceGroup};
                     }
 
+                    # Migrate Postmaster settings for
+                    #   PostMaster::PreFilterModule
+                    #   PostMaster::PreCreateFilterModule
+                    #   PostMaster::PostFilterModule
+                    #   PostMaster::CheckFollowUpModule
+                    if (
+                        $SettingName
+                        =~ m{ \A PostMaster::(PreFilter|PreCreateFilter|PostFilter|CheckFollowUp)Module \z }xms
+                        )
+                    {
+
+                        # update no longer existing module.
+                        if (
+                            $OTRS5EffectiveValue->{Module} eq
+                            'Kernel::System::PostMaster::Filter::FollowUpArticleTypeCheck'
+                            )
+                        {
+                            $OTRS5EffectiveValue->{Module}
+                                = 'Kernel::System::PostMaster::Filter::FollowUpArticleVisibilityCheck';
+                        }
+
+                        # Define mapping for old to new keys.
+                        my %Old2NewKeyMapping = (
+                            'X-OTRS-ArticleType'          => 'X-OTRS-IsVisibleForCustomer',
+                            'X-OTRS-FollowUp-ArticleType' => 'X-OTRS-FollowUp-IsVisibleForCustomer',
+                            'ArticleType'                 => 'IsVisibleForCustomer',
+                        );
+
+                        OLDKEY:
+                        for my $OldKey ( sort keys %Old2NewKeyMapping ) {
+
+                            my $NewKey = $Old2NewKeyMapping{$OldKey};
+
+                            # Convert subentries below Match and Set.
+                            AREA:
+                            for my $Area (qw(Match Set)) {
+                                next AREA if !IsHashRefWithData( $OTRS5EffectiveValue->{$Area} );
+                                next AREA if !$OTRS5EffectiveValue->{$Area}->{$OldKey};
+
+                                # Add the new key with the converted value from the old key.
+                                $OTRS5EffectiveValue->{$Area}->{$NewKey}
+                                    = $ArticleTypeMapping{ $OTRS5EffectiveValue->{$Area}->{$OldKey} }->{Visible};
+
+                                # Delete the old key.
+                                delete $OTRS5EffectiveValue->{$Area}->{$OldKey};
+                            }
+
+                            # Convert direct entries.
+                            next OLDKEY if !$OTRS5EffectiveValue->{$OldKey};
+
+                            # Add the new key with the converted value from the old key.
+                            $OTRS5EffectiveValue->{$NewKey}
+                                = $ArticleTypeMapping{ $OTRS5EffectiveValue->{$OldKey} }->{Visible};
+
+                            # Delete the old key.
+                            delete $OTRS5EffectiveValue->{$OldKey};
+                        }
+                    }
+
                     # check if the setting value structure from OTRS 5 is still valid on OTRS6
                     my %Result = $SysConfigObject->SettingEffectiveValueCheck(
                         EffectiveValue   => $OTRS5EffectiveValue,
@@ -1677,26 +1951,11 @@ sub MigrateConfigEffectiveValues {
                         next SETTINGKEYFIRSTLEVEL;
                     }
 
-                    # lock the setting
-                    my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
-                        Name   => $NewSettingKey,
-                        Force  => 1,
-                        UserID => 1,
-                    );
-
-                    # update the setting
-                    %Result = $SysConfigObject->SettingUpdate(
-                        Name              => $NewSettingKey,
-                        IsValid           => 1,
-                        EffectiveValue    => $OTRS5EffectiveValue,
-                        ExclusiveLockGUID => $ExclusiveLockGUID,
-                        NoValidation      => 1,
-                        UserID            => 1,
-                    );
-
-                    # unlock the setting again
-                    $SysConfigObject->SettingUnlock(
-                        Name => $NewSettingKey,
+                    # update the setting.
+                    %Result = $Self->_SettingUpdate(
+                        Name           => $NewSettingKey,
+                        IsValid        => 1,
+                        EffectiveValue => $OTRS5EffectiveValue,
                     );
 
                     if ( !$Result{Success} ) {
@@ -1716,8 +1975,9 @@ sub MigrateConfigEffectiveValues {
 
             # check and convert config name if it has been renamed in OTRS 6
             # otherwise it will use the given old name
-            my $NewSettingName = _LookupNewConfigName(
-                OldName => $SettingName,
+            my $NewSettingName = $Self->_LookupNewConfigName(
+                OldName                    => $SettingName,
+                PackageLookupNewConfigName => $Param{PackageLookupNewConfigName},
             );
 
             # skip settings which are not in the given package settings
@@ -1743,7 +2003,7 @@ sub MigrateConfigEffectiveValues {
                 next SETTINGNAME;
             }
 
-            my $OTRS5EffectiveValue = $OTRS5Config{$NewSettingName};
+            my $OTRS5EffectiveValue = $OTRS5Config{$SettingName};
 
             # the ticket number generator random is dropped from OTRS 6, enforce that DateChecksum is set instead
             if (
@@ -1768,26 +2028,11 @@ sub MigrateConfigEffectiveValues {
                 next SETTINGNAME;
             }
 
-            # lock the setting
-            my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
-                Name   => $NewSettingName,
-                Force  => 1,
-                UserID => 1,
-            );
-
-            # update the setting
-            %Result = $SysConfigObject->SettingUpdate(
-                Name              => $NewSettingName,
-                IsValid           => 1,
-                EffectiveValue    => $OTRS5EffectiveValue,
-                ExclusiveLockGUID => $ExclusiveLockGUID,
-                NoValidation      => 1,
-                UserID            => 1,
-            );
-
-            # unlock the setting again
-            $SysConfigObject->SettingUnlock(
-                Name => $NewSettingName,
+            # update the setting.
+            %Result = $Self->_SettingUpdate(
+                Name           => $NewSettingName,
+                IsValid        => 1,
+                EffectiveValue => $OTRS5EffectiveValue,
             );
 
             if ( !$Result{Success} ) {
@@ -1797,18 +2042,70 @@ sub MigrateConfigEffectiveValues {
         }
     }
 
+    my $DisabledSettingsCount = 0;
+
+    # Set all settings which are disabled in OTRS 5 to disabled.
+    DISABLEDSETTINGNAME:
+    for my $DisabledSettingKey (@DisabledOTRS5Config) {
+
+        # Check and convert config name if it has been renamed in OTRS 6
+        #   otherwise it will use the given old name.
+        my $NewSettingKey = $Self->_LookupNewConfigName(
+            OldName                    => $DisabledSettingKey,
+            PackageLookupNewConfigName => $Param{PackageLookupNewConfigName},
+        );
+
+        # Skip settings which are not in the given package settings.
+        if ( %PackageSettingLookup && !$PackageSettingLookup{$NewSettingKey} ) {
+            next DISABLEDSETTINGNAME;
+        }
+
+        # Try to get the default setting from OTRS 6 for the modified setting name.
+        my %OTRS6Setting = $SysConfigObject->SettingGet(
+            Name  => $NewSettingKey,
+            NoLog => 1,
+        );
+
+        # Skip settings which already have been modified in the meantime.
+        next DISABLEDSETTINGNAME if $OTRS6Setting{ModifiedID};
+
+        # Skip this setting if it is a readonly setting.
+        next DISABLEDSETTINGNAME if $OTRS6Setting{IsReadonly};
+
+        # Skip this setting if it is a required setting.
+        next DISABLEDSETTINGNAME if $OTRS6Setting{IsRequired};
+
+        # Log if there is a setting that can not be found in OTRS 6 (might come from packages).
+        if ( !%OTRS6Setting ) {
+            push @MissingSettings, $NewSettingKey;
+            next DISABLEDSETTINGNAME;
+        }
+
+        # Disable the setting.
+        my %Result = $Self->_SettingUpdate(
+            Name    => $NewSettingKey,
+            IsValid => 0,
+        );
+
+        if ( !$Result{Success} ) {
+            push @UnsuccessfullSettings, $NewSettingKey;
+            next DISABLEDSETTINGNAME;
+        }
+
+        $DisabledSettingsCount++;
+    }
+
     # do not print the following status output if not wanted
     return 1 if $Param{NoOutput};
 
     my $AllSettingsCount = scalar keys %OTRS5Config;
 
-    # TODO: Add explanation for the following output values
     print "\n";
     print "        - AllSettingsCount: " . $AllSettingsCount . "\n";
+    print "        - DisabledCount: " . $DisabledSettingsCount . "\n";
     print "        - MissingCount: " . scalar @MissingSettings . "\n";
     print "        - UnsuccessfullCount: " . scalar @UnsuccessfullSettings . "\n\n";
 
-    # TODO: Maybe do not show the missing settings in the final version, just the Missing count above.
     if (@MissingSettings) {
         print "\nMissing Settings: \n";
         for my $Setting (@MissingSettings) {
@@ -1826,6 +2123,7 @@ sub MigrateConfigEffectiveValues {
     if ( $Param{ReturnMigratedSettingsCounts} ) {
         return {
             AllSettingsCount      => $AllSettingsCount,
+            DisabledSettingsCount => $DisabledSettingsCount,
             MissingSettings       => \@MissingSettings,
             UnsuccessfullSettings => \@UnsuccessfullSettings,
         };
@@ -2000,7 +2298,9 @@ sub NavigationLookupGet {
         'SystemMaintenance'                                   => 'Core::SystemMaintenance',
 
         # Packages
-        'OutputFilter' => 'Frontend::Base::OutputFilter',
+        'OutputFilter'                       => 'Frontend::Base::OutputFilter',
+        'Frontend::Customer::ModuleMetaHead' => 'Frontend::Customer',
+        'Frontend::Public::ModuleMetaHead'   => 'Frontend::Public',
 
         # OTRSBusiness
         'Core::NotificationEvent'               => 'Frontend::Agent::View::NotificationView',
@@ -2030,7 +2330,7 @@ Returns:
 =cut
 
 sub _LookupNewConfigName {
-    my (%Param) = @_;
+    my ( $Self, %Param ) = @_;
 
     # check needed stuff
     if ( !$Param{OldName} ) {
@@ -2046,11 +2346,14 @@ sub _LookupNewConfigName {
         'CustomerCompany::EventModulePost###100-UpdateCustomerUsers' =>
             'CustomerCompany::EventModulePost###2000-UpdateCustomerUsers',
 
+        'CustomerCompany::EventModulePost###110-UpdateTickets' =>
+            'CustomerCompany::EventModulePost###2300-UpdateTickets',
+
         'CustomerCompany::EventModulePost###1000-GenericInterface' =>
             'CustomerCompany::EventModulePost###9900-GenericInterface',
 
-        'CustomerCompany::EventModulePost###110-UpdateTickets' =>
-            'CustomerCompany::EventModulePost###2300-UpdateTickets',
+        'CustomerUser::EventModulePost###100-UpdateDynamicFieldObjectName' =>
+            'CustomerUser::EventModulePost###2000-UpdateDynamicFieldObjectName',
 
         'CustomerUser::EventModulePost###100-UpdateSearchProfiles' =>
             'CustomerUser::EventModulePost###2100-UpdateSearchProfiles',
@@ -2067,6 +2370,9 @@ sub _LookupNewConfigName {
         'DynamicField::EventModulePost###1000-GenericInterface' =>
             'DynamicField::EventModulePost###9900-GenericInterface',
 
+        'Frontend::NotifyModule###5-Ticket::TicketEscalation' =>
+            'Frontend::NotifyModule###5000-Ticket::TicketEscalation',
+
         'Frontend::NotifyModule###100-CloudServicesDisabled' =>
             'Frontend::NotifyModule###1000-CloudServicesDisabled',
 
@@ -2079,14 +2385,44 @@ sub _LookupNewConfigName {
         'Frontend::NotifyModule###250-AgentSessionLimit' =>
             'Frontend::NotifyModule###2500-AgentSessionLimit',
 
+        'Frontend::NotifyModule###300-ShowAgentOnline' =>
+            'Frontend::NotifyModule###3000-ShowAgentOnline',
+
+        'Frontend::NotifyModule###400-ShowCustomerOnline' =>
+            'Frontend::NotifyModule###4000-ShowCustomerOnline',
+
         'Frontend::NotifyModule###500-OutofOffice-Check' =>
             'Frontend::NotifyModule###5500-OutofOffice-Check',
 
         'Frontend::NotifyModule###600-SystemMaintenance-Check' =>
             'Frontend::NotifyModule###6000-SystemMaintenance-Check',
 
+        'Frontend::NotifyModule###700-AgentTimeZone-Check' =>
+            'Frontend::NotifyModule###7000-AgentTimeZone-Check',
+
         'Frontend::NotifyModule###800-Daemon-Check' =>
             'Frontend::NotifyModule###8000-Daemon-Check',
+
+        'Frontend::NotifyModule###900-Generic' =>
+            'Frontend::NotifyModule###9000-Generic',
+
+        'Frontend::ToolBarModule###1-Ticket::AgentTicketQueue' =>
+            'Frontend::ToolBarModule###110-Ticket::AgentTicketQueue',
+
+        'Frontend::ToolBarModule###2-Ticket::AgentTicketStatus' =>
+            'Frontend::ToolBarModule###120-Ticket::AgentTicketStatus',
+
+        'Frontend::ToolBarModule###3-Ticket::AgentTicketEscalation' =>
+            'Frontend::ToolBarModule###130-Ticket::AgentTicketEscalation',
+
+        'Frontend::ToolBarModule###4-Ticket::AgentTicketPhone' =>
+            'Frontend::ToolBarModule###140-Ticket::AgentTicketPhone',
+
+        'Frontend::ToolBarModule###5-Ticket::AgentTicketEmail' =>
+            'Frontend::ToolBarModule###150-Ticket::AgentTicketEmail',
+
+        'Frontend::ToolBarModule###6-Ticket::AgentTicketProcess' =>
+            'Frontend::ToolBarModule###160-Ticket::AgentTicketProcess',
 
         'Frontend::ToolBarModule###7-Ticket::TicketResponsible' =>
             'Frontend::ToolBarModule###170-Ticket::TicketResponsible',
@@ -2096,6 +2432,21 @@ sub _LookupNewConfigName {
 
         'Frontend::ToolBarModule###9-Ticket::TicketLocked' =>
             'Frontend::ToolBarModule###190-Ticket::TicketLocked',
+
+        'Frontend::ToolBarModule###10-Ticket::AgentTicketService' =>
+            'Frontend::ToolBarModule###200-Ticket::AgentTicketService',
+
+        'Frontend::ToolBarModule###11-Ticket::TicketSearchProfile' =>
+            'Frontend::ToolBarModule###210-Ticket::TicketSearchProfile',
+
+        'Frontend::ToolBarModule###12-Ticket::TicketSearchFulltext' =>,
+        'Frontend::ToolBarModule###220-Ticket::TicketSearchFulltext',
+
+        'Frontend::ToolBarModule###13-CICSearchCustomerID' =>
+            'Frontend::ToolBarModule###230-CICSearchCustomerID',
+
+        'Frontend::ToolBarModule###14-CICSearchCustomerUser' =>
+            'Frontend::ToolBarModule###240-CICSearchCustomerUser',
 
         'Package::EventModulePost###1000-GenericInterface' =>
             'Package::EventModulePost###9900-GenericInterface',
@@ -2109,14 +2460,17 @@ sub _LookupNewConfigName {
         'Queue::EventModulePost###130-UpdateQueue' =>
             'Queue::EventModulePost###2300-UpdateQueue',
 
-        'Ticket::EventModulePost###098-ArticleSearchIndex' =>
-            'Ticket::EventModulePost###2000-ArticleSearchIndex',
-
         'Ticket::EventModulePost###100-ArchiveRestore' =>
             'Ticket::EventModulePost###2300-ArchiveRestore',
 
         'Ticket::EventModulePost###110-AcceleratorUpdate' =>
             'Ticket::EventModulePost###2600-AcceleratorUpdate',
+
+        'Ticket::EventModulePost###120-ForceOwnerResetOnMove' =>
+            'Ticket::EventModulePost###2700-ForceOwnerResetOnMove',
+
+        'Ticket::EventModulePost###130-ForceStateChangeOnLock' =>
+            'Ticket::EventModulePost###2800-ForceStateChangeOnLock',
 
         'Ticket::EventModulePost###140-ResponsibleAutoSet' =>
             'Ticket::EventModulePost###3000-ResponsibleAutoSet',
@@ -2142,11 +2496,17 @@ sub _LookupNewConfigName {
         'Ticket::EventModulePost###940-TicketArticleNewMessageUpdate' =>
             'Ticket::EventModulePost###4000-TicketArticleNewMessageUpdate',
 
+        'Ticket::EventModulePost###950-DynamicFieldFromCustomerUser' =>
+            'Ticket::EventModulePost###4100-DynamicFieldFromCustomerUser',
+
         'Ticket::EventModulePost###998-TicketProcessTransitions' =>
             'Ticket::EventModulePost###9800-TicketProcessTransitions',
 
         'Ticket::EventModulePost###999-GenericInterface' =>
             'Ticket::EventModulePost###9900-GenericInterface',
+
+        'Ticket::EventModulePost###TicketDynamicFieldDefault' =>
+            'Ticket::EventModulePost###9600-TicketDynamicFieldDefault',
 
         'Ticket::Frontend::ArticleComposeModule###1-SignEmail' =>
             'Ticket::Frontend::ArticleComposeModule###2-SignEmail',
@@ -2157,11 +2517,31 @@ sub _LookupNewConfigName {
         'Ticket::Frontend::ArticlePreViewModule###1-SMIME' =>
             'Ticket::Frontend::ArticlePreViewModule###2-SMIME',
 
+        'PostMaster::PreCreateFilterModule###000-FollowUpArticleTypeCheck' =>
+            'PostMaster::PreCreateFilterModule###000-FollowUpArticleVisibilityCheck',
+
+        'Ticket::Frontend::AgentTicketSearch###Defaults###From' =>
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_From',
+
+        'Ticket::Frontend::AgentTicketSearch###Defaults###To' =>
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_To',
+
+        'Ticket::Frontend::AgentTicketSearch###Defaults###Cc' =>
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Cc',
+
+        'Ticket::Frontend::AgentTicketSearch###Defaults###Subject' =>
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Subject',
+
+        'Ticket::Frontend::AgentTicketSearch###Defaults###Body' =>
+            'Ticket::Frontend::AgentTicketSearch###Defaults###MIMEBase_Body',
+
         # Moved and renamed config setting from OTRSBusiness.xml to Framework.xml
         'ChatEngine::AgentOnlineThreshold' => 'SessionAgentOnlineThreshold',
 
         # Moved and renamed config setting from OTRSBusiness.xml to Framework.xml
         'ChatEngine::CustomerOnlineThreshold' => 'SessionCustomerOnlineThreshold',
+
+        %{ $Param{PackageLookupNewConfigName} // {} },
     );
 
     # get the new name if found, otherwise use the given old name
@@ -2175,6 +2555,7 @@ sub _LookupNewConfigName {
 Helper function to migrate a frontend module setting from OTRS 5 to OTRS 6.
 
     my $NewName = $SysConfigMigrationObject->_MigrateFrontendModuleSetting(
+        FrontendSettingName => 'Frontend::Module',
         FrontendModuleName  => 'AgentTicketQueue',
         OTRS5EffectiveValue => {
             'Description' => 'Overview of all open Tickets.',
@@ -2227,10 +2608,10 @@ Returns:
 =cut
 
 sub _MigrateFrontendModuleSetting {
-    my (%Param) = @_;
+    my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(FrontendModuleName OTRS5EffectiveValue OTRS6Setting)) {
+    for my $Needed (qw(FrontendSettingName FrontendModuleName OTRS5EffectiveValue OTRS6Setting)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -2298,98 +2679,6 @@ sub _MigrateFrontendModuleSetting {
     return if !$Result{Success};
 
     # ###########################################################################
-    # migrate the NavBar settings
-    # ###########################################################################
-    if ( $Param{OTRS5EffectiveValue}->{NavBar} ) {
-
-        # get all OTRS 6 default settings
-        my @DefaultSettings = $SysConfigObject->ConfigurationList();
-
-        # search for OTRS 6 NavBar settings
-        #
-        # this will find settings like:
-        #            Frontend::Navigation###
-        #    CustomerFrontend::Navigation###
-        #      PublicFrontend::Navigation###
-        #
-        my $Search = 'Frontend::Navigation###' . $Param{FrontendModuleName} . '###';
-        my @SearchResult = grep { $_->{Name} =~ m{$Search} } @DefaultSettings;
-
-        # check that the number of navbar settings is the same in OTRS 5 and 6 for this frontend module
-        if ( @SearchResult && scalar @SearchResult == scalar @{ $Param{OTRS5EffectiveValue}->{NavBar} } ) {
-
-            my $Counter = 0;
-            for my $NavBarSetting (@SearchResult) {
-                my $NavBarSettingName = $NavBarSetting->{Name};
-
-                # try to get the (default) setting from OTRS 6 for the NavBar setting
-                my %OTRS6NavBarSetting = $SysConfigObject->SettingGet(
-                    Name  => $NavBarSettingName,
-                    NoLog => 1,
-                );
-
-                return if !%OTRS6NavBarSetting;
-
-                # skip this setting if it has already been modified in the meantime
-                return 1 if $OTRS6NavBarSetting{ModifiedID};
-
-                # skip this setting if it is a readonly setting
-                return 1 if $OTRS6NavBarSetting{IsReadonly};
-
-                # set group settings from OTRS 5
-                $OTRS6NavBarSetting{EffectiveValue}->{Group}   = \@Group;
-                $OTRS6NavBarSetting{EffectiveValue}->{GroupRo} = \@GroupRo;
-
-                # take NavBar settings from OTRS 5
-                for my $Attribute ( sort keys %{ $Param{OTRS5EffectiveValue}->{NavBar}->[$Counter] } ) {
-                    $OTRS6NavBarSetting{EffectiveValue}->{$Attribute}
-                        = $Param{OTRS5EffectiveValue}->{NavBar}->[$Counter]->{$Attribute};
-                }
-
-                # lock the setting
-                my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
-                    Name   => $NavBarSettingName,
-                    Force  => 1,
-                    UserID => 1,
-                );
-
-                # update the setting
-                my %Result = $SysConfigObject->SettingUpdate(
-                    Name              => $NavBarSettingName,
-                    IsValid           => 1,
-                    EffectiveValue    => $OTRS6NavBarSetting{EffectiveValue},
-                    ExclusiveLockGUID => $ExclusiveLockGUID,
-                    NoValidation      => 1,
-                    UserID            => 1,
-                );
-
-                # unlock the setting again
-                $SysConfigObject->SettingUnlock(
-                    Name => $NavBarSettingName,
-                );
-
-                return if !$Result{Success};
-
-                # increase counter
-                $Counter++;
-            }
-        }
-
-        # log error
-        else {
-
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message =>
-                    'Different number of navbar settings in OTRS 5 and OTRS 6 for setting Frontend::Navigation###'
-                    . $Param{FrontendModuleName}
-                    . '###...',
-            );
-            return;
-        }
-    }
-
-    # ###########################################################################
     # migrate the NavBarModule settings
     # ###########################################################################
     if ( $Param{OTRS5EffectiveValue}->{NavBarModule} ) {
@@ -2402,60 +2691,232 @@ sub _MigrateFrontendModuleSetting {
             NoLog => 1,
         );
 
-        return if !%OTRS6NavBarModuleSetting;
+        if (
+            %OTRS6NavBarModuleSetting
+            && !$OTRS6NavBarModuleSetting{ModifiedID}
+            && !$OTRS6NavBarModuleSetting{IsReadonly}
+            )
+        {
 
-        # skip this setting if it has already been modified in the meantime
-        return 1 if $OTRS6NavBarModuleSetting{ModifiedID};
+            # set group settings from OTRS 5
+            $OTRS6NavBarModuleSetting{EffectiveValue}->{Group}   = \@Group;
+            $OTRS6NavBarModuleSetting{EffectiveValue}->{GroupRo} = \@GroupRo;
 
-        # skip this setting if it is a readonly setting
-        return 1 if $OTRS6NavBarModuleSetting{IsReadonly};
+            # take NavBarModule settings from OTRS 5
+            for my $Attribute ( sort keys %{ $Param{OTRS5EffectiveValue}->{NavBarModule} } ) {
+                $OTRS6NavBarModuleSetting{EffectiveValue}->{$Attribute}
+                    = $Param{OTRS5EffectiveValue}->{NavBarModule}->{$Attribute};
+            }
 
-        # set group settings from OTRS 5
-        $OTRS6NavBarModuleSetting{EffectiveValue}->{Group}   = \@Group;
-        $OTRS6NavBarModuleSetting{EffectiveValue}->{GroupRo} = \@GroupRo;
+            # lock the setting
+            my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
+                Name   => $NavBarModuleSettingName,
+                Force  => 1,
+                UserID => 1,
+            );
 
-        # take NavBarModule settings from OTRS 5
-        for my $Attribute ( sort keys %{ $Param{OTRS5EffectiveValue}->{NavBarModule} } ) {
-            $OTRS6NavBarModuleSetting{EffectiveValue}->{$Attribute}
-                = $Param{OTRS5EffectiveValue}->{NavBarModule}->{$Attribute};
+            # update the setting
+            my %Result = $SysConfigObject->SettingUpdate(
+                Name              => $NavBarModuleSettingName,
+                IsValid           => 1,
+                EffectiveValue    => $OTRS6NavBarModuleSetting{EffectiveValue},
+                ExclusiveLockGUID => $ExclusiveLockGUID,
+                NoValidation      => 1,
+                UserID            => 1,
+            );
+
+            # unlock the setting again
+            $SysConfigObject->SettingUnlock(
+                Name => $NavBarModuleSettingName,
+            );
+
+            return if !$Result{Success};
         }
+    }
 
-        # lock the setting
-        my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
-            Name   => $NavBarModuleSettingName,
-            Force  => 1,
-            UserID => 1,
-        );
+    # ###########################################################################
+    # migrate the NavBar settings
+    # ###########################################################################
 
-        # update the setting
-        my %Result = $SysConfigObject->SettingUpdate(
-            Name              => $NavBarModuleSettingName,
-            IsValid           => 1,
-            EffectiveValue    => $OTRS6NavBarModuleSetting{EffectiveValue},
-            ExclusiveLockGUID => $ExclusiveLockGUID,
-            NoValidation      => 1,
-            UserID            => 1,
-        );
+    # Skip navbar items if name is empty.
+    my @OTRS5NavBar = grep {
+        defined $_->{Name} && length $_->{Name}
+    } @{ $Param{OTRS5EffectiveValue}->{NavBar} || [] };
 
-        # unlock the setting again
-        $SysConfigObject->SettingUnlock(
-            Name => $NavBarModuleSettingName,
-        );
+    if (@OTRS5NavBar) {
 
-        return if !$Result{Success};
+        # get all OTRS 6 default settings
+        my @DefaultSettings = $SysConfigObject->ConfigurationList();
+
+        # search for OTRS 6 NavBar settings
+        #
+        # this will find settings like:
+        #            Frontend::Navigation###
+        #    CustomerFrontend::Navigation###
+        #      PublicFrontend::Navigation###
+        #
+        $Param{FrontendSettingName} =~ s{Frontend::Module}{Frontend::Navigation}gsmx;
+
+        my $Search       = $Param{FrontendSettingName} . '###' . $Param{FrontendModuleName} . '###';
+        my @SearchResult = grep { $_->{Name} =~ m{$Search} } @DefaultSettings;
+
+        if ( scalar @SearchResult == 1 ) {
+
+            # try to get the (default) setting from OTRS 6 for the NavBar setting
+            my %OTRS6NavBarSetting = $SysConfigObject->SettingGet(
+                Name  => $SearchResult[0]->{Name},
+                NoLog => 1,
+            );
+
+            return if !%OTRS6NavBarSetting;
+
+            # skip this setting if it has already been modified in the meantime
+            return 1 if $OTRS6NavBarSetting{ModifiedID};
+
+            # skip this setting if it is a readonly setting
+            return 1 if $OTRS6NavBarSetting{IsReadonly};
+
+            $OTRS6NavBarSetting{EffectiveValue} = [];
+
+            for my $OTRS5NavBarItem (@OTRS5NavBar) {
+
+                if ( !$OTRS5NavBarItem->{Group} ) {
+                    $OTRS5NavBarItem->{Group} = \@Group;
+                }
+                if ( !$OTRS5NavBarItem->{GroupRo} ) {
+                    $OTRS5NavBarItem->{GroupRo} = \@GroupRo;
+                }
+
+                push @{ $OTRS6NavBarSetting{EffectiveValue} }, $OTRS5NavBarItem;
+            }
+
+            # Save the updated effective value for the current setting.
+            my %Result = $Self->_SettingUpdate(
+                Name           => $SearchResult[0]->{Name},
+                EffectiveValue => $OTRS6NavBarSetting{EffectiveValue},
+                IsValid        => 1,
+                UserID         => 1,
+            );
+
+            return if !$Result{Success};
+        }
+    }
+
+    # No NavBar entries exists in OTRS 5 config for the frontend modulel, so we disable all nav bar settings
+    #   for this frontend navigation.
+    else {
+
+        # get all OTRS 6 default settings
+        my @DefaultSettings = $SysConfigObject->ConfigurationList();
+
+        # search for OTRS 6 NavBar settings
+        #
+        # this will find settings like:
+        #            Frontend::Navigation###
+        #    CustomerFrontend::Navigation###
+        #      PublicFrontend::Navigation###
+        #
+        $Param{FrontendSettingName} =~ s{Frontend::Module}{Frontend::Navigation}gsmx;
+
+        my $Search       = $Param{FrontendSettingName} . '###' . $Param{FrontendModuleName} . '###';
+        my @SearchResult = grep { $_->{Name} =~ m{$Search} } @DefaultSettings;
+
+        NAVBARSETTING:
+        for my $NavBarSetting (@SearchResult) {
+            my $NavBarSettingName = $NavBarSetting->{Name};
+
+            # try to get the (default) setting from OTRS 6 for the NavBar setting
+            my %OTRS6NavBarSetting = $SysConfigObject->SettingGet(
+                Name  => $NavBarSettingName,
+                NoLog => 1,
+            );
+
+            next NAVBARSETTING if !%OTRS6NavBarSetting;
+
+            # skip this setting if it is already invalid
+            next NAVBARSETTING if !$OTRS6NavBarSetting{IsValid};
+
+            # skip this setting if it has already been modified in the meantime
+            next NAVBARSETTING if $OTRS6NavBarSetting{ModifiedID};
+
+            # skip this setting if it is a readonly setting
+            next NAVBARSETTING if $OTRS6NavBarSetting{IsReadonly};
+
+            # skip this setting if it is a required setting
+            next NAVBARSETTING if $OTRS6NavBarSetting{IsRequired};
+
+            # Disable the setting.
+            my %Result = $Self->_SettingUpdate(
+                Name    => $NavBarSettingName,
+                IsValid => 0,
+            );
+
+            return if !$Result{Success};
+        }
     }
 
     return 1;
+}
+
+=head2 _SettingUpdate()
+
+This method locks provided settings(by force), updates them and unlock the setting.
+
+    my %Result = $SysConfigMigrationObject->_SettingUpdate(
+        Name           => 'Setting::Name',
+        IsValid        => 1,                         # (optional) 1 or 0, modified 0
+        EffectiveValue => $SettingEffectiveValue,    # (optional)
+    );
+
+Returns:
+
+    %Result = (
+        Success => 1,        # or false in case of an error
+        Error   => undef,    # error message
+    );
+
+=cut
+
+sub _SettingUpdate {
+    my ( $Self, %Param ) = @_;
+
+    return if !$Param{Name};
+
+    my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
+
+    # lock the setting
+    my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
+        Name   => $Param{Name},
+        Force  => 1,
+        UserID => 1,
+    );
+
+    # Disable the setting.
+    my %Result = $SysConfigObject->SettingUpdate(
+        Name              => $Param{Name},
+        IsValid           => $Param{IsValid},
+        EffectiveValue    => $Param{EffectiveValue},
+        ExclusiveLockGUID => $ExclusiveLockGUID,
+        NoValidation      => 1,
+        UserID            => 1,
+    );
+
+    # unlock the setting again
+    $SysConfigObject->SettingUnlock(
+        Name => $Param{Name},
+    );
+
+    return %Result;
 }
 
 1;
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

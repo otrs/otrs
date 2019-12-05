@@ -8,6 +8,9 @@
 *.swp
 *.swo
 *~
+.profile
+.vstags
+.vscode
 
 # OTRS
 .procmailrc
@@ -92,6 +95,7 @@ Kernel/GenericInterface/Invoker/Generic/PassThrough.pm
 Kernel/Language/*OTRSBusiness.pm
 Kernel/Modules/AdminCloudServiceSMS.pm
 Kernel/Modules/AdminSMSTemplate.pm
+Kernel/Modules/AdminQueueSMSTemplates.pm
 Kernel/Modules/*Chat*
 Kernel/Modules/*ContactWithData*
 Kernel/Modules/*DynamicFieldDatabase*
@@ -115,6 +119,7 @@ Kernel/Output/HTML/ArticleAction/AgentTicketSMSOutbound.pm
 Kernel/Output/HTML/*Chat*
 Kernel/Output/HTML/CustomerUser/*Chat*
 Kernel/Output/HTML/FilterElementPost/AddDynamicFieldNames.pm
+Kernel/Output/HTML/FilterElementPost/FAQAgentRelatedArticles.pm
 Kernel/Output/HTML/FilterElementPost/ContactWithData.pm
 Kernel/Output/HTML/FilterElementPost/SLASelectionDialog.pm
 Kernel/Output/HTML/Layout/NotificationView.pm
@@ -137,6 +142,7 @@ Kernel/Output/HTML/Templates/Standard/AdminCloudServiceSMS.tt
 Kernel/Output/HTML/Templates/Standard/AdminDynamicFieldWebService.tt
 Kernel/Output/HTML/Templates/Standard/AdminNotificationEventTransportSMSSettings.tt
 Kernel/Output/HTML/Templates/Standard/AdminSMSTemplate.tt
+Kernel/Output/HTML/Templates/Standard/AdminQueueSMSTemplates.tt
 Kernel/Output/HTML/Templates/Standard/AdminSystemConfigurationDeploymentHistory.tt
 Kernel/Output/HTML/Templates/Standard/AdminSystemConfigurationDeploymentHistoryDetails.tt
 Kernel/Output/HTML/Templates/Standard/AdminSystemConfigurationSettingHistoryDetails.tt
@@ -153,6 +159,7 @@ Kernel/Output/HTML/Templates/Standard/AgentNotificationViewSmall.tt
 Kernel/Output/HTML/Templates/Standard/AgentTicketAttachmentView.tt
 Kernel/Output/HTML/Templates/Standard/AgentTicketSMS.tt
 Kernel/Output/HTML/Templates/Standard/AgentTicketSMSOutbound.tt
+Kernel/Output/HTML/Templates/Standard/AgentTicketZoom/ContactWithData.tt
 Kernel/Output/HTML/Templates/Standard/AgentTicketZoom/ArticleRender/SMS.tt
 Kernel/Output/HTML/Templates/Standard/ArticleContent/SMS.tt
 Kernel/Output/HTML/Templates/Standard/CustomerTicketZoom/ArticleRender/SMS.tt
@@ -168,6 +175,7 @@ Kernel/Output/HTML/Templates/Standard/SystemConfiguration/SettingHistoryListComp
 Kernel/Output/HTML/Templates/Standard/TimelineView/*
 Kernel/Output/HTML/TicketMenu/AttachmentView.pm
 Kernel/Output/HTML/TicketMenu/SMS.pm
+Kernel/Output/HTML/TicketZoom/ContactWithData.pm
 Kernel/Output/HTML/TicketZoom/Agent/SMS.pm
 Kernel/Output/HTML/TicketZoom/Customer/SMS.pm
 Kernel/Output/HTML/TimelineView/*
@@ -188,6 +196,7 @@ Kernel/System/Console/Command/Maint/Chat*
 Kernel/System/Console/Command/Maint/NotificationView*
 Kernel/System/Console/Command/Maint/Stats/Reports*
 Kernel/System/CommunicationChannel/SMS.pm
+Kernel/System/CommunicationLog/Transport/CloudService.pm
 Kernel/System/DynamicField/Driver/BaseDatabase.pm
 Kernel/System/DynamicField/Driver/ContactWithData.pm
 Kernel/System/DynamicField/Driver/Database.pm
@@ -220,6 +229,9 @@ scripts/test/Selenium/Agent/Admin/AdminDynamicFieldContactWithData.t
 scripts/test/Selenium/Agent/Admin/AdminDynamicFieldDatabase.t
 scripts/test/Selenium/Agent/Admin/AdminDynamicFieldWebService.t
 scripts/test/Selenium/Agent/Admin/AdminSMSTemplate.t
+scripts/test/Selenium/Agent/Admin/AdminQueueSMSTemplates.t
+scripts/test/Selenium/Agent/Admin/AdminSystemConfigurationAdvanced.t
+scripts/test/Selenium/Agent/Admin/AdminSystemConfigurationDeploymentHistory.t
 scripts/test/Selenium/Agent/Admin/GenericInterface/AdminGenericInterfaceWebserviceImportExample.t
 scripts/test/Selenium/Agent/AgentAppointmentResourceOverview.t
 scripts/test/Selenium/Agent/AgentContactWithDataSearch.t
@@ -232,13 +244,16 @@ scripts/test/Selenium/Agent/AgentTicketAttachmentView.t
 scripts/test/Selenium/Agent/AgentTicketSMS.t
 scripts/test/Selenium/Agent/AgentTicketSMSOutbound.t
 scripts/test/Selenium/Agent/Chat.t
+scripts/test/Selenium/Agent/ChatIntegration.t
 scripts/test/Selenium/Agent/VideoChat.t
 scripts/test/Selenium/Customer/Chat.t
 scripts/test/Selenium/Customer/CustomerDynamicFieldDatabase.t
 scripts/test/Selenium/Customer/CustomerDynamicFieldWebService.t
 scripts/test/Selenium/Customer/VideoChat.t
 scripts/test/Selenium/Output/FilterElementPost/SLASelectionDialog.t
+scripts/test/Selenium/Output/TicketZoom/ContactWithData.t
 scripts/test/Selenium/Public/Chat.t
+scripts/test/Selenium/Public/ChatInclude.t
 scripts/test/SMSTemplate.t
 scripts/test/StatsReport.t
 scripts/test/SysConfig/OTRSBusiness/*
@@ -255,6 +270,7 @@ var/httpd/htdocs/js/Core.Agent.Admin.CloudServiceSMS.js
 var/httpd/htdocs/js/Core.Agent.Admin.DynamicFieldDatabase.js
 var/httpd/htdocs/js/Core.Agent.Admin.DynamicFieldWebService.js
 var/httpd/htdocs/js/Core.Agent.Admin.SMSTemplate.js
+var/httpd/htdocs/js/Core.Agent.Admin.QueueSMSTemplates.js
 var/httpd/htdocs/js/Core.Agent.Admin.SystemConfigurationUser.js
 var/httpd/htdocs/js/Core.Agent.AppointmentTeam.js
 var/httpd/htdocs/js/Core.Agent.CustomerSearchSMS.js
@@ -267,6 +283,7 @@ var/httpd/htdocs/js/Core.Agent.NotificationView.js
 var/httpd/htdocs/js/Core.Agent.TicketSMS.js
 var/httpd/htdocs/js/Core.Agent.TicketAttachmentView.js
 var/httpd/htdocs/js/Core.Customer.TicketMessage.SLASelectionDialog.js
+var/httpd/htdocs/js/test/sample/ChatIncludeExamplePage.html
 var/httpd/htdocs/js/thirdparty/adapter.js-1.4.0/
 var/httpd/htdocs/js/thirdparty/libphonenumber-js/
 var/httpd/htdocs/skins/Agent/business*
@@ -298,6 +315,8 @@ var/processes/examples/Start_RMA_pre.pm
 var/processes/examples/Travel_expense.yml
 var/processes/examples/Travel_expense_post.pm
 var/processes/examples/Travel_expense_pre.pm
+var/processes/examples/Service_*.pm
+var/processes/examples/Service_*.yml
 var/thirdparty/phantomjs
 var/webservices/examples/BugzillaConnector.yml
 var/webservices/examples/BugzillaConnector_post.pm
@@ -308,6 +327,18 @@ var/webservices/examples/JIRAConnector_pre.pm
 var/webservices/examples/OTRSConnector.yml
 var/webservices/examples/OTRSConnector_post.pm
 var/webservices/examples/OTRSConnector_pre.pm
+
+# STORM
+Kernel/Config/Files/XML/OTRSStorm.xml
+Kernel/Modules/AdminSTORM.pm
+Kernel/Output/HTML/Templates/Standard/AdminSTORM.tt
+Kernel/Output/HTML/Templates/Standard/NotificationEvent/Email/TLP-Amber.tt
+Kernel/Output/HTML/Templates/Standard/NotificationEvent/Email/TLP-Green.tt
+Kernel/Output/HTML/Templates/Standard/NotificationEvent/Email/TLP-Red.tt
+Kernel/Output/HTML/Templates/Standard/NotificationEvent/Email/TLP-White.tt
+var/httpd/htdocs/skins/Agent/storm/*
+var/packagesetup/OTRSSTORM.pm
+OTRSSTORM.sopm
 
 # OTRSContinuousIntegrationProvisioner (vagrant VMs)
 .cache

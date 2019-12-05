@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 "use strict";
@@ -209,7 +209,7 @@ Core.AJAX = (function (TargetNS) {
     function UpdateTicketAttachments(Attachments) {
 
         // delete existing attachments
-        $('#AttachmentList tbody').empty();
+        $('.AttachmentList tbody').empty();
 
         // go through all attachments and append them to the attachment table
         $(Attachments).each(function() {
@@ -221,16 +221,16 @@ Core.AJAX = (function (TargetNS) {
                 'FileID'   : this.FileID,
             });
 
-            $(AttachmentItem).prependTo($('#AttachmentList tbody')).fadeIn();
+            $(AttachmentItem).prependTo($('.AttachmentList tbody')).fadeIn();
         });
 
         // make sure to display the attachment table only if any attachments
         // are actually in it.
-        if ($('#AttachmentList tbody tr').length) {
-            $('#AttachmentList').show();
+        if ($('.AttachmentList tbody tr').length) {
+            $('.AttachmentList').show();
         }
         else {
-            $('#AttachmentList').hide();
+            $('.AttachmentList').hide();
         }
     }
 
@@ -402,7 +402,7 @@ Core.AJAX = (function (TargetNS) {
             OldUrl = location.href,
             NewUrl = Core.Config.Get('Baselink') + "RequestedURL=" + encodeURIComponent(OldUrl);
 
-        if (Headers.match(/X-OTRS-Login: /)) {
+        if (Headers.match(/X-OTRS-Login: /i)) {
             location.href = NewUrl;
             return true;
         }

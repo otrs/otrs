@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -139,6 +139,7 @@ my $WebserviceConfig = {
                 NameSpace => 'http://otrs.org/SoapTestInterface/',
                 Encoding  => 'UTF-8',
                 Endpoint  => $RemoteSystem,
+                Timeout   => 120,
             },
         },
         Invoker => {
@@ -191,6 +192,11 @@ $Helper->ConfigSettingChange(
     Valid => 1,
     Key   => 'SessionMaxIdleTime',
     Value => 5,
+);
+$Helper->ConfigSettingChange(
+    Valid => 1,
+    Key   => 'SessionModule',
+    Value => 'Kernel::System::AuthSession::DB',
 );
 
 my $SessionObject = $Kernel::OM->Get('Kernel::System::AuthSession');
@@ -521,12 +527,12 @@ for my $Test (@Tests) {
     if ( defined $LocalResult->{Data}->{SessionData} ) {
         @{ $LocalResult->{Data}->{SessionData} }
             = grep { $_->{Key} ne 'UserSessionStart' && $_->{Key} ne 'UserLastRequest' }
-            @{ $LocalResult->{Data}->{SessionData} }
+            @{ $LocalResult->{Data}->{SessionData} };
     }
     if ( defined $RequesterResult->{Data}->{SessionData} ) {
         @{ $RequesterResult->{Data}->{SessionData} }
             = grep { $_->{Key} ne 'UserSessionStart' && $_->{Key} ne 'UserLastRequest' }
-            @{ $RequesterResult->{Data}->{SessionData} }
+            @{ $RequesterResult->{Data}->{SessionData} };
     }
 
     $Self->IsDeeply(

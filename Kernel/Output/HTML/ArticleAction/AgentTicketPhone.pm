@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::ArticleAction::AgentTicketPhone;
@@ -52,10 +52,10 @@ sub CheckAccess {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # check if module is registered
-    return if !$ConfigObject->Get('Frontend::Module')->{AgentTicketPhone};
+    return if !$ConfigObject->Get('Frontend::Module')->{AgentSplitSelection};
 
     # check Acl
-    return if !$Param{AclActionLookup}->{AgentTicketPhone};
+    return if !$Param{AclActionLookup}->{AgentSplitSelection};
 
     return 1;
 }

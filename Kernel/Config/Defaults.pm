@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 # Default configuration for OTRS. All changes to this file will be lost after an
@@ -96,7 +96,7 @@ sub LoadDefaults {
 
     # AdminEmail
     # (Email of the system admin.)
-    $Self->{AdminEmail} = 'admin@example.com';
+    $Self->{AdminEmail} = 'support@<OTRS_CONFIG_FQDN>';
 
     # Organization
     # (If this is anything other than '', then the email will have an
@@ -193,14 +193,17 @@ sub LoadDefaults {
         'id'      => 'Indonesian',
         'it'      => 'Italian',
         'ja'      => 'Japanese',
+        'ko'      => 'Korean',
         'lt'      => 'Lithuanian',
         'lv'      => 'Latvian',
+        'mk'      => 'Macedonian',
         'ms'      => 'Malay',
-        'nl'      => 'Nederlands',
+        'nl'      => 'Dutch',
         'nb_NO'   => 'Norwegian',
         'pt_BR'   => 'Portuguese (Brasil)',
         'pt'      => 'Portuguese',
         'pl'      => 'Polish',
+        'ro'      => 'Romanian',
         'ru'      => 'Russian',
         'sl'      => 'Slovenian',
         'sr_Latn' => 'Serbian Latin',
@@ -243,14 +246,17 @@ sub LoadDefaults {
         'id'      => 'Bahasa Indonesia',
         'it'      => 'Italiano',
         'ja'      => '日本語',
+        'ko'      => '한국어',
         'lt'      => 'Lietuvių kalba',
         'lv'      => 'Latvijas',
+        'mk'      => 'Mакедонски',
         'ms'      => 'Melayu',
         'nl'      => 'Nederlandse',
         'nb_NO'   => 'Norsk bokmål',
         'pt_BR'   => 'Português Brasileiro',
         'pt'      => 'Português',
         'pl'      => 'Polski',
+        'ro'      => 'Română',
         'ru'      => 'Русский',
         'sl'      => 'Slovenščina',
         'sr_Latn' => 'Srpski',
@@ -987,7 +993,7 @@ sub LoadDefaults {
         'thirdparty/jquery-validate-1.16.0/jquery.validate.js',
         'thirdparty/jquery-ui-1.12.1/jquery-ui.js',
         'thirdparty/jquery-pubsub/pubsub.js',
-        'thirdparty/jquery-jstree-3.3.4/jquery.jstree.js',
+        'thirdparty/jquery-jstree-3.3.7/jquery.jstree.js',
         'thirdparty/nunjucks-3.0.1/nunjucks.js',
         'Core.Init.js',
         'Core.Debug.js',
@@ -1026,7 +1032,7 @@ sub LoadDefaults {
         'thirdparty/jquery-ui-touch-punch-0.2.3/jquery.ui.touch-punch.js',
         'thirdparty/jquery-validate-1.16.0/jquery.validate.js',
         'thirdparty/jquery-pubsub/pubsub.js',
-        'thirdparty/jquery-jstree-3.3.4/jquery.jstree.js',
+        'thirdparty/jquery-jstree-3.3.7/jquery.jstree.js',
         'thirdparty/nunjucks-3.0.1/nunjucks.js',
         'Core.Init.js',
         'Core.JavaScriptEnhancements.js',
@@ -1077,7 +1083,7 @@ sub LoadDefaults {
     # Package::RepositoryRoot
     # (get online repository list, use the fist availabe result)
     $Self->{'Package::RepositoryRoot'} = [
-        'http://ftp.otrs.org/pub/otrs/misc/packages/repository.xml',
+        'https://ftp.otrs.org/pub/otrs/misc/packages/repository.xml',
     ];
 
     # Package::RepositoryList
@@ -1169,6 +1175,7 @@ sub LoadDefaults {
         'Block'   => 'Input',
         'PreferenceGroup' => 'Miscellaneous',
         'Data'    => '[% Env("UserComment") %]',
+        'Desc'    => 'This is a Description for Comment on Framework.',
         'Key'     => 'Comment',
         'Label'   => 'Comment',
         'Module'  => 'Kernel::Output::HTML::Preferences::Generic',
@@ -1185,16 +1192,18 @@ sub LoadDefaults {
         'Module'  => 'Kernel::Output::HTML::Preferences::Language',
         'PrefKey' => 'UserLanguage',
         'Prio'    => '1000',
+        'NeedsReload' => 1,
     };
     $Self->{PreferencesGroups}->{Theme} = {
         'Active'  => '1',
-        'PreferenceGroup'  => 'UserProfile',
-        'Key'     => 'Frontend theme',
+        'PreferenceGroup'  => 'Miscellaneous',
+        'Key'     => '',
         'Label'   => 'Theme',
         'Desc'    => 'Select your preferred theme for OTRS.',
         'Module'  => 'Kernel::Output::HTML::Preferences::Theme',
         'PrefKey' => 'UserTheme',
         'Prio'    => '3000',
+        'NeedsReload' => 1,
     };
 
     # --------------------------------------------------- #
@@ -1439,7 +1448,7 @@ via the Preferences button after logging in.
     # CustomerUser
     # (customer user database backend and settings)
     $Self->{CustomerUser} = {
-        Name   => 'Database Backend',
+        Name   => Translatable('Database Backend'),
         Module => 'Kernel::System::CustomerUser::DB',
         Params => {
 
@@ -1487,6 +1496,9 @@ via the Preferences button after logging in.
         CustomerUserNameFields             => [ 'title', 'first_name', 'last_name' ],
         CustomerUserEmailUniqCheck         => 1,
 
+#        # Configures the character for joining customer user name parts. Join single space if it is not defined.
+#        # CustomerUserNameFieldsJoin => '',
+
 #        # show now own tickets in customer panel, CompanyTickets
 #        CustomerUserExcludePrimaryCustomerID => 0,
 #        # generate auto logins
@@ -1499,7 +1511,7 @@ via the Preferences button after logging in.
         CustomerCompanySupport => 1,
         # cache time to live in sec. - cache any database queries
         CacheTTL => 60 * 60 * 24,
-#        # just a read only source
+#        # Consider this source read only.
 #        ReadOnly => 1,
         Map => [
 
@@ -1588,6 +1600,8 @@ via the Preferences button after logging in.
 #        CustomerUserSearchListLimit => 250,
 #        CustomerUserPostMasterSearchFields => ['mail'],
 #        CustomerUserNameFields => ['givenname', 'sn'],
+#        # Configures the character for joining customer user name parts. Join single space if it is not defined.
+#        CustomerUserNameFieldsJoin => '',
 #        # show customer user and customer tickets in customer interface
 #        CustomerUserExcludePrimaryCustomerID => 0,
 #        # add a ldap filter for valid users (expert setting)
@@ -1596,8 +1610,6 @@ via the Preferences button after logging in.
 #        AdminSetPreferences => 0,
 #        # cache time to live in sec. - cache any ldap queries
 #        CacheTTL => 0,
-#        # just a read only source
-#        ReadOnly => 1,
 #        Map => [
 #            # note: Login, Email and CustomerID needed!
 #            # var, frontend, storage, shown (1=always,2=lite), required, storage-type, http-link, readonly, http-link-target, link class(es)
@@ -1611,17 +1623,17 @@ via the Preferences button after logging in.
 #            [ 'UserPhone',       Translatable('Phone'),               'telephonenumber',     1, 0, 'var', '', 1, undef, undef ],
 #            [ 'UserAddress',     Translatable('Address'),             'postaladdress',       1, 0, 'var', '', 1, undef, undef ],
 #            [ 'UserComment',     Translatable('Comment'),             'description',         1, 0, 'var', '', 1, undef, undef ],
-
+#
 #            # this is needed, if "SMIME::FetchFromCustomer" is active
 #            # [ 'UserSMIMECertificate', 'SMIMECertificate', 'userSMIMECertificate', 0, 1, 'var', '', 1, undef, undef ],
-
-             # Dynamic field example
-#             [ 'DynamicField_Name_X', undef, 'Name_X', 0, 0, 'dynamic_field', undef, 0, undef, undef ],
+#
+#            # Dynamic field example
+#            # [ 'DynamicField_Name_X', undef, 'Name_X', 0, 0, 'dynamic_field', undef, 0, undef, undef ],
 #        ],
 #    };
 
     $Self->{CustomerCompany} = {
-        Name   => 'Database Backend',
+        Name   => Translatable('Database Backend'),
         Module => 'Kernel::System::CustomerCompany::DB',
         Params => {
             # if you want to use an external database, add the
@@ -1742,28 +1754,30 @@ via the Preferences button after logging in.
             'Core.Agent.TableFilters.js',
         ],
     };
-    $Self->{'Frontend::Navigation'}->{Admin}->{1} = {
-        Group       => [
-            'admin',
-        ],
-        GroupRo     => [],
-        AccessKey   => 'a',
-        Block       => 'ItemArea',
-        Description => '',
-        Link        => 'Action=Admin',
-        LinkOption  => '',
-        Name        => 'Admin',
-        NavBar      => 'Admin',
-        Prio        => '10000',
-        Type        => 'Menu',
-    };
+    $Self->{'Frontend::Navigation'}->{Admin}->{'001-Framework'} = [
+        {
+            Group       => [
+                'admin',
+            ],
+            GroupRo     => [],
+            AccessKey   => 'a',
+            Block       => 'ItemArea',
+            Description => 'Admin modules overview.',
+            Link        => 'Action=Admin',
+            LinkOption  => '',
+            Name        => 'Admin',
+            NavBar      => 'Admin',
+            Prio        => '10000',
+            Type        => 'Menu',
+        },
+    ];
     $Self->{'Frontend::NavigationModule'}->{Admin} = {
         Group       => [
             'admin',
         ],
         GroupRo     => [],
         Module => 'Kernel::Output::HTML::NavBar::ModuleAdmin',
-        Description => '',
+        Description => 'Admin modules overview.',
         IconBig => '',
         IconSmall => '',
         Name => '',
@@ -1881,7 +1895,7 @@ via the Preferences button after logging in.
         ],
     };
 
-    return;
+    return 1;
 }
 
 #
@@ -1916,12 +1930,15 @@ sub new {
 
     # load extra config files
     if ( -e "$Self->{Home}/Kernel/Config/Files/" ) {
+
         my @Files = glob("$Self->{Home}/Kernel/Config/Files/*.pm");
 
-        # sort
+        # Resorting the filelist.
         my @NewFileOrderPre  = ();
         my @NewFileOrderPost = ();
+
         for my $File (@Files) {
+
             if ( $File =~ /Ticket/ ) {
                 push @NewFileOrderPre, $File;
             }
@@ -1929,7 +1946,9 @@ sub new {
                 push @NewFileOrderPost, $File;
             }
         }
+
         @Files = ( @NewFileOrderPre, @NewFileOrderPost );
+
         FILE:
         for my $File (@Files) {
 
@@ -1938,25 +1957,31 @@ sub new {
                 next FILE;
             }
 
+            my $RelativeFile = $File =~ s{\Q$Self->{Home}\E/*}{}gr;
+
             # Extract package name and load it.
-            my $Package = $File =~ s/\Q$Self->{Home}\E//gr;
+            my $Package = $RelativeFile;
             $Package =~ s/^\///g;
             $Package =~ s/\/{2,}/\//g;
             $Package =~ s/\//::/g;
             $Package =~ s/\.pm$//g;
 
             eval {
+
                 # Try to load file.
-                if ( !require $File ) {
+                if ( !require $RelativeFile ) {
                     die "ERROR: Could not load $File: $!\n";
                 }
+
                 # Check if package has loaded and has a Load() method.
                 if (!$Package->can('Load')) {
                     die "$Package has no Load() method.";
                 }
+
                 # Call package method but pass $Self as instance.
                 $Package->Load($Self);
             };
+
             if ( $@ ) {
                 my $ErrorMessage = $@;
                 print STDERR $@;
@@ -1971,11 +1996,14 @@ sub new {
             "ERROR: $Self->{Home}/RELEASE does not exist! This file is needed by central system parts of OTRS, the system will not work without this file.\n";
         die;
     }
+
     if ( open( my $Product, '<', "$Self->{Home}/RELEASE" ) ) {    ## no critic
+
         while ( my $Line = <$Product> ) {
 
             # filtering of comment lines
             if ( $Line !~ /^#/ ) {
+
                 if ( $Line =~ /^PRODUCT\s{0,2}=\s{0,2}(.*)\s{0,2}$/i ) {
                     $Self->{Product} = $1;
                 }
@@ -1984,7 +2012,8 @@ sub new {
                 }
             }
         }
-        close($Product);
+
+        close $Product;
     }
     else {
         print STDERR
@@ -2001,7 +2030,9 @@ sub new {
         # replace config variables in config variables
         KEY:
         for my $Key ( sort keys %{$Self} ) {
+
             next KEY if !defined $Key;
+
             if ( defined $Self->{$Key} ) {
                 $Self->{$Key} =~ s/\<OTRS_CONFIG_(.+?)\>/$Self->{$1}/g;
             }
@@ -2010,6 +2041,8 @@ sub new {
             }
         }
     }
+
+    $Self->AutoloadPerlPackages();
 
     return $Self;
 }
@@ -2045,6 +2078,7 @@ sub Set {
 
     # set runtime config option
     if ( $Param{Key} =~ /^(.+?)###(.+?)$/ ) {
+
         if ( !defined $Param{Value} ) {
             delete $Self->{$1}->{$2};
         }
@@ -2053,6 +2087,7 @@ sub Set {
         }
     }
     else {
+
         if ( !defined $Param{Value} ) {
             delete $Self->{ $Param{Key} };
         }
@@ -2060,6 +2095,7 @@ sub Set {
             $Self->{ $Param{Key} } = $Param{Value};
         }
     }
+
     return 1;
 }
 
@@ -2104,14 +2140,50 @@ sub ConfigChecksum {
     return Digest::MD5::md5_hex($ConfigString);
 }
 
+sub AutoloadPerlPackages {
+    my ($Self) = @_;
+
+    return 1 if !$Self->{AutoloadPerlPackages};
+    return 1 if ref $Self->{AutoloadPerlPackages} ne 'HASH';
+    my %AutoloadConfiguration = %{ $Self->{AutoloadPerlPackages} };
+    return 1 if !%AutoloadConfiguration;
+
+    CONFIGKEY:
+    for my $ConfigKey (sort keys %AutoloadConfiguration) {
+
+        my $ConfigValue = $AutoloadConfiguration{$ConfigKey};
+
+        next CONFIGKEY if ref $ConfigValue ne 'ARRAY';
+
+        PACKAGE:
+        for my $Package ( @{$ConfigValue} ) {
+
+            next PACKAGE if !$Package;
+
+            if ( substr($Package, 0, 16) ne 'Kernel::Autoload' ) {
+                print STDERR "Error: Autoload packages must be located in Kernel/Autoload, skipping $Package\n";
+                next PACKAGE;
+            }
+
+            # Don't use the MainObject here to load the file.
+            eval {
+                my $FileName = $Package =~ s{::}{/}smxgr;
+                require $FileName . '.pm'; ## nofilter(TidyAll::Plugin::OTRS::Perl::Require)
+            };
+        }
+    }
+
+    return 1;
+}
+
 1;
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

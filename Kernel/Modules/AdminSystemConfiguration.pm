@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminSystemConfiguration;
@@ -49,10 +49,13 @@ sub Run {
         );
     }
 
+    my $ConfigLevel = $Kernel::OM->Get('Kernel::Config')->Get('ConfigLevel') || 0;
+
     # collect some data which needs to be passed to several screens
     my %OutputData = (
         CategoriesStrg  => $Self->_GetCategoriesStrg(),
         InvalidSettings => $Self->_CheckInvalidSettings(),
+        ConfigLevel     => $ConfigLevel,
     );
 
     # Create navigation tree
@@ -87,7 +90,7 @@ sub Run {
     # Search for settings using ajax
     elsif ( $Self->{Subaction} eq 'AJAXSearch' ) {
 
-        my $Search = $ParamObject->GetParam( Param => 'Term' ) || '';
+        my $Search     = $ParamObject->GetParam( Param => 'Term' ) || '';
         my $MaxResults = int( $ParamObject->GetParam( Param => 'MaxResults' ) || 20 );
         my @Data;
 
@@ -126,7 +129,7 @@ sub Run {
         my @SettingNames = $SysConfigObject->ConfigurationInvalidList();
         my @Parameters   = (
             {
-                Name  => 'Invalid settings',
+                Name  => Translatable('Invalid settings'),
                 Value => 'Invalid',
             }
         );
@@ -136,7 +139,9 @@ sub Run {
         # Check if setting is fixed but not yet deployed.
         for my $SettingName (@SettingNames) {
             my %Setting = $SysConfigObject->SettingGet(
-                Name => $SettingName,
+                Name            => $SettingName,
+                OverriddenInXML => 1,
+                UserID          => $Self->{UserID},
             );
 
             my %EffectiveValueCheck = $SysConfigObject->SettingEffectiveValueCheck(
@@ -196,11 +201,6 @@ sub Run {
         $Output .= $LayoutObject->NavigationBar();
 
         my $RootNavigation = $ParamObject->GetParam( Param => 'RootNavigation' ) || '';
-
-        # Get path structure to show in the bread crumbs
-        my @Path = $SysConfigObject->SettingNavigationToPath(
-            Navigation => $RootNavigation,
-        );
 
         # Get navigation tree
         my %Tree = $SysConfigObject->ConfigurationNavigationTree();
@@ -271,7 +271,9 @@ sub Run {
                 for my $SettingName ( sort @Result ) {
 
                     my %Setting = $SysConfigObject->SettingGet(
-                        Name => $SettingName,
+                        Name            => $SettingName,
+                        OverriddenInXML => 1,
+                        UserID          => $Self->{UserID},
                     );
 
                     $Setting{HTMLStrg} = $SysConfigObject->SettingRender(
@@ -345,7 +347,9 @@ sub Run {
             for my $SettingName ( sort @{$Favourites} ) {
 
                 my %Setting = $SysConfigObject->SettingGet(
-                    Name => $SettingName,
+                    Name            => $SettingName,
+                    OverriddenInXML => 1,
+                    UserID          => $Self->{UserID},
                 );
 
                 $Setting{HTMLStrg} = $SysConfigObject->SettingRender(
@@ -382,18 +386,22 @@ sub Run {
     # direct link
     elsif ( $Self->{Subaction} eq 'View' ) {
 
-        my $View = $ParamObject->GetParam( Param => 'Setting' ) || '';
+        my $SettingName = $ParamObject->GetParam( Param => 'Setting' ) || '';
         my @SettingList;
 
-        if ($View) {
+        if ($SettingName) {
+
+            # URL-decode setting name, just in case. Please see bug#13271 for more information.
+            $SettingName = URI::Escape::uri_unescape($SettingName);
 
             my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-
-            my %Setting = $SysConfigObject->SettingGet(
-                Name => $View,
+            my %Setting         = $SysConfigObject->SettingGet(
+                Name            => $SettingName,
+                OverriddenInXML => 1,
+                UserID          => $Self->{UserID},
             );
 
-            if (%Setting) {
+            if ( %Setting && !$Setting{IsInvisible} ) {
 
                 $Setting{HTMLStrg} = $SysConfigObject->SettingRender(
                     Setting => \%Setting,
@@ -407,11 +415,15 @@ sub Run {
 
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
+
+        my $DeploymentID = $ParamObject->GetParam( Param => 'DeploymentID' );
+
         $Output .= $LayoutObject->Output(
             TemplateFile => 'AdminSystemConfigurationView',
             Data         => {
-                View        => $View,
-                SettingList => \@SettingList,
+                DeploymentID => $DeploymentID,
+                View         => $SettingName,
+                SettingList  => \@SettingList,
                 %OutputData,
                 OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
             },
@@ -433,7 +445,9 @@ sub Run {
             for my $Name ( sort @Names ) {
 
                 my %Setting = $SysConfigObject->SettingGet(
-                    Name => $Name,
+                    Name            => $Name,
+                    OverriddenInXML => 1,
+                    UserID          => $Self->{UserID},
                 );
 
                 if (%Setting) {
@@ -491,7 +505,9 @@ sub Run {
             for my $SettingName ( sort @Result ) {
 
                 my %Setting = $SysConfigObject->SettingGet(
-                    Name => $SettingName,
+                    Name            => $SettingName,
+                    OverriddenInXML => 1,
+                    UserID          => $Self->{UserID},
                 );
 
                 $Setting{HTMLStrg} = $SysConfigObject->SettingRender(
@@ -560,7 +576,13 @@ sub Run {
         # Challenge token check for write action.
         $LayoutObject->ChallengeTokenCheck();
 
-        my $FormID = $ParamObject->GetParam( Param => 'FormID' ) || '';
+        if ( !$Kernel::OM->Get('Kernel::Config')->Get('ConfigImportAllowed') ) {
+            return $LayoutObject->FatalError(
+                Message => Translatable('Import not allowed!'),
+            );
+        }
+
+        my $FormID      = $ParamObject->GetParam( Param => 'FormID' ) || '';
         my %UploadStuff = $ParamObject->GetUploadAll(
             Param  => 'FileUpload',
             Source => 'string',
@@ -577,7 +599,9 @@ sub Run {
 
             return $LayoutObject->ErrorScreen(
                 Message =>
-                    'System Configuration could not be imported due to a unknown error, please check OTRS logs for more information',
+                    Translatable(
+                    'System Configuration could not be imported due to an unknown error, please check OTRS logs for more information.'
+                    ),
             );
         }
         elsif ( $ConfigurationLoad && $ConfigurationLoad eq '-1' ) {
@@ -636,10 +660,10 @@ sub _GetCategoriesStrg {
     my $CategoriesStrg = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->BuildSelection(
         Data         => \%CategoryData,
         Name         => 'Category',
-        SelectedID   => $Category || 'All',
+        SelectedID   => $Category || Translatable('All'),
         PossibleNone => 0,
         Translation  => 1,
-        Sort         => 'AlfaNumericKey',
+        Sort         => 'AlphaNumericKey',
         Class        => 'Modernize',
         Title        => $Kernel::OM->Get('Kernel::Language')->Translate('Category Search'),
     );

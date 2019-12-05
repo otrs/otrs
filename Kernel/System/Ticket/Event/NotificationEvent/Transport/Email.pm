@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Ticket::Event::NotificationEvent::Transport::Email;
@@ -119,9 +119,6 @@ sub SendNotification {
 
     return if $IsLocalAddress;
 
-    # create new array to prevent attachment growth (see bug#5114)
-    my @Attachments = @{ $Param{Attachments} };
-
     my %Notification = %{ $Param{Notification} };
 
     # get ticket object
@@ -139,6 +136,18 @@ sub SendNotification {
         if ( !-r "$TemplateDir/$EmailTemplate.tt" && !-r "$CustomTemplateDir/$EmailTemplate.tt" ) {
             $EmailTemplate = 'Default';
         }
+
+        my $RecipientLanugageObject = $LayoutObject->{LanguageObject};
+
+        if ( $Recipient{UserLanguage} ) {
+
+            # Create new language object to include recipient language preference if applicable.
+            $RecipientLanugageObject = Kernel::Language->new(
+                UserLanguage => $Recipient{UserLanguage},
+            );
+        }
+
+        local $LayoutObject->{LanguageObject} = $RecipientLanugageObject;
 
         # generate HTML
         $Notification{Body} = $LayoutObject->Output(
@@ -276,7 +285,7 @@ sub SendNotification {
         );
         return if !$SecurityOptions;
 
-        my $IsVisibleForCustomer = 1;
+        my $IsVisibleForCustomer = 0;
         if ( defined $Notification{Data}->{IsVisibleForCustomer} ) {
             $IsVisibleForCustomer = $Notification{Data}->{IsVisibleForCustomer}->[0];
         }
@@ -354,19 +363,28 @@ sub GetTransportRecipients {
                 Field  => $RecipientEmail,
             );
 
-            my %Recipient;
-            $Recipient{Realname}  = '';
-            $Recipient{Type}      = 'Customer';
-            $Recipient{UserEmail} = $RecipientEmail;
+            my @RecipientEmails;
 
-            # check if we have a specified article type
-            if ( $Param{Notification}->{Data}->{IsVisibleForCustomer} ) {
-                $Recipient{IsVisibleForCustomer} = 1;
+            if ( !IsArrayRefWithData($RecipientEmail) ) {
+
+                # Split multiple recipients on known delimiters: comma and semi-colon.
+                #   Do this after the OTRS tags were replaced.
+                @RecipientEmails = split /[;,\s]+/, $RecipientEmail;
+            }
+            else {
+                @RecipientEmails = @{$RecipientEmail};
             }
 
-            # check recipients
-            if ( $Recipient{UserEmail} && $Recipient{UserEmail} =~ /@/ ) {
-                push @Recipients, \%Recipient;
+            # Include only valid email recipients.
+            for my $Recipient (@RecipientEmails) {
+                if ( $Recipient && $Recipient =~ /@/ ) {
+                    push @Recipients, {
+                        Realname             => '',
+                        Type                 => 'Customer',
+                        UserEmail            => $Recipient,
+                        IsVisibleForCustomer => $Param{Notification}->{Data}->{IsVisibleForCustomer},
+                    };
+                }
             }
         }
     }
@@ -414,7 +432,7 @@ sub TransportSettingsDisplayGet {
         Data        => \%Templates,
         Name        => 'TransportEmailTemplate',
         Translation => 0,
-        SelectedID  => $Param{Data}->{TransportEmailTemplate},
+        SelectedID  => $Param{Data}->{TransportEmailTemplate} || 'Default',
         Class       => 'Modernize W50pc',
     );
 
@@ -439,7 +457,7 @@ sub TransportSettingsDisplayGet {
 
     # set security settings enabled
     $Param{EmailSecuritySettings} = ( $Param{Data}->{EmailSecuritySettings} ? 'checked="checked"' : '' );
-    $Param{SecurityDisabled} = 0;
+    $Param{SecurityDisabled}      = 0;
 
     if ( $Param{EmailSecuritySettings} eq '' ) {
         $Param{SecurityDisabled} = 1;
@@ -528,7 +546,7 @@ sub TransportParamSettingsGet {
 
     PARAMETER:
     for my $Parameter (
-        qw(RecipientEmail NotificationArticleTypeID TransportEmailTemplate
+        qw(RecipientEmail TransportEmailTemplate
         EmailSigningCrypting EmailMissingSigningKeys EmailMissingCryptingKeys
         EmailSecuritySettings)
         )
@@ -600,13 +618,15 @@ sub SecurityOptionsGet {
             Search => $NotificationSenderEmail,
         );
 
-        # take just valid keys
+        # Take just valid keys.
         @SignKeys = grep { $_->{Status} eq 'good' } @SignKeys;
 
-        # get public keys
         @EncryptKeys = $PGPObject->PublicKeySearch(
             Search => $Param{Recipient}->{UserEmail},
         );
+
+        # Take just valid keys.
+        @EncryptKeys = grep { $_->{Status} eq 'good' } @EncryptKeys;
 
         # Get PGP method (Detached or In-line).
         if ( !$Kernel::OM->Get('Kernel::Output::HTML::Layout')->{BrowserRichText} ) {
@@ -628,12 +648,16 @@ sub SecurityOptionsGet {
             return;
         }
 
-        @SignKeys = $Kernel::OM->Get('Kernel::System::Crypt::SMIME')->PrivateSearch(
+        # Take just valid keys.
+        @SignKeys = $SMIMEObject->PrivateSearch(
             Search => $NotificationSenderEmail,
+            Valid  => 1,
         );
 
-        @EncryptKeys = $Kernel::OM->Get('Kernel::System::Crypt::SMIME')->CertificateSearch(
+        # Take just valid keys.
+        @EncryptKeys = $SMIMEObject->CertificateSearch(
             Search => $Param{Recipient}->{UserEmail},
+            Valid  => 1,
         );
 
         $SecurityOptions{Backend} = 'SMIME';
@@ -760,10 +784,10 @@ sub SecurityOptionsGet {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -22,8 +22,16 @@ my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 $Selenium->RunTest(
     sub {
 
-        my $Helper     = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-        my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+        my $Helper       = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+        # Change "Move" action to be a link instead of dropdown, since there is an issue to click
+        # on the "Customer" action (dropdown can be on top is some cases).
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'Ticket::Frontend::MoveType',
+            Value => 'link',
+        );
 
         my $Language      = 'de';
         my $TestUserLogin = $Helper->TestUserCreate(
@@ -31,7 +39,7 @@ $Selenium->RunTest(
             Groups   => [ 'admin', 'users' ],
         ) || die "Did not get test user";
 
-        my $TestUserID = $UserObject->UserLookup(
+        my $TestUserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
             UserLogin => $TestUserLogin,
         );
 
@@ -41,7 +49,7 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
+        my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketPhone");
 
         # Provoke an ajax error caused by unexpected result (404), should show no dialog, but an regular alert.
@@ -49,23 +57,45 @@ $Selenium->RunTest(
             "Core.AJAX.FunctionCall(Core.Config.Get('CGIHandle') + ':12345', null, function () {});"
         );
 
-        $Selenium->WaitFor( AlertPresent => 1 );
+        $Selenium->WaitFor( JavaScript => "return \$('.NoConnection:visible').length;" );
 
-        # Accept main alert.
-        $Selenium->accept_alert();
+        my $LanguageObject = Kernel::Language->new(
+            UserLanguage => $Language,
+        );
+
+        # Another alert dialog opens with the detail message.
+        $Self->Is(
+            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .NoConnection p').text().trim();"),
+            $LanguageObject->Translate(
+                '%s detected possible network issues. You could either try reloading this page manually or wait until your browser has re-established the connection on its own.',
+                $ConfigObject->Get('Product'),
+            ),
+            'Check for opened alert text',
+        );
+
+        # Close dialog.
+        $Selenium->find_element( '#DialogButton2', 'css' )->click();
+
+        # Wait until modal dialog has closed.
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && !$(".Dialog.Modal").length;'
+        );
 
         # Wait until all AJAX calls finished.
         $Selenium->WaitFor( JavaScript => "return \$.active == 0" );
 
         # Change the queue to trigger an ajax call.
-        $Selenium->execute_script("\$('#Dest').val('2||Raw').trigger('redraw.InputField').trigger('change');");
+        $Selenium->InputFieldValueSet(
+            Element => '#Dest',
+            Value   => '2||Raw',
+        );
 
         # Wait until all AJAX calls finished.
         $Selenium->WaitFor( JavaScript => "return \$.active == 0" );
 
         # There should be no error dialog yet.
         $Self->Is(
-            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .NoConnection:visible').length"),
+            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .NoConnection:visible').length;"),
             0,
             "Error dialog not visible yet"
         );
@@ -79,18 +109,23 @@ window.AjaxOriginal = \$.ajax;
     Core.Exception.HandleFinalError(new Core.Exception.ApplicationError("Error during AJAX communication. Status: " + Status + ", Error: " + Error, 'ConnectionError'));
     return false;
 };
+\$.ajax();
 JAVASCRIPT
-        $Selenium->execute_script($AjaxOverloadJSError);
 
         # Trigger faked ajax request.
-        $Selenium->execute_script('return $.ajax();');
+        $Selenium->execute_script($AjaxOverloadJSError);
 
         # Wait until all AJAX calls finished.
         $Selenium->WaitFor( JavaScript => "return \$.active == 0" );
 
+        # Wait until modal dialog has open.
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $(".Dialog.Modal").length;'
+        );
+
         # Now check if we see a connection error popup.
         $Self->Is(
-            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .NoConnection:visible').length"),
+            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .NoConnection:visible').length;"),
             1,
             "Error dialog visible - first try"
         );
@@ -99,68 +134,83 @@ JAVASCRIPT
         my $AjaxOverloadJSSuccess = <<"JAVASCRIPT";
 \$.ajax = window.AjaxOriginal;
 Core.AJAX.FunctionCall(Core.Config.Get('CGIHandle'), null, function () {}, 'html');
+\$.ajax();
 JAVASCRIPT
-        $Selenium->execute_script($AjaxOverloadJSSuccess);
 
         # Trigger faked ajax request.
-        $Selenium->execute_script('return $.ajax();');
+        $Selenium->execute_script($AjaxOverloadJSSuccess);
 
         # Wait until all AJAX calls finished.
         $Selenium->WaitFor( JavaScript => "return \$.active == 0" );
 
+        # Wait until modal dialog has open.
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $(".Dialog.Modal").length;'
+        );
+
         # The dialog should show the re-established message now.
         $Self->Is(
-            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .ConnectionReEstablished:visible').length"),
+            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .ConnectionReEstablished:visible').length;"),
             1,
             "ConnectionReEstablished dialog visible"
         );
 
         # Close the dialog.
-        $Selenium->execute_script(
-            "\$('.Dialog:visible').find('.ContentFooter').find('button:nth-child(2)').trigger('click')"
+        $Selenium->find_element( '#DialogButton2', 'css' )->click();
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && !$(".Dialog.Modal").length;'
         );
 
         # Trigger faked ajax request again.
         $Selenium->execute_script($AjaxOverloadJSError);
-        $Selenium->execute_script('return $.ajax();');
 
         # Wait until all AJAX calls finished.
         $Selenium->WaitFor( JavaScript => "return \$.active == 0" );
 
+        # Wait until modal dialog has open.
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $(".Dialog.Modal").length;'
+        );
+
         # Now check if we see a connection error popup.
         $Self->Is(
-            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .NoConnection:visible').length"),
+            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .NoConnection:visible').length;"),
             1,
             "Error dialog visible - second try"
         );
 
         # Now we close the dialog manually.
-        $Selenium->execute_script(
-            "\$('.Dialog:visible').find('.ContentFooter').find('button:nth-child(2)').trigger('click')"
+        $Selenium->find_element( '#DialogButton2', 'css' )->click();
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && !$(".Dialog.Modal").length;'
         );
 
         # The dialog should be gone.
         $Self->Is(
-            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .NoConnection:visible').length"),
+            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .NoConnection:visible').length;"),
             0,
             "Error dialog closed"
         );
 
         # Now act as if the connection had been re-established.
         $Selenium->execute_script($AjaxOverloadJSSuccess);
-        $Selenium->execute_script('return $.ajax();');
 
         # Wait until all AJAX calls finished.
         $Selenium->WaitFor( JavaScript => "return \$.active == 0" );
 
+        # Wait until modal dialog has open.
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $(".Dialog.Modal").length;'
+        );
+
         # The dialog should show the re-established message now.
         $Self->Is(
-            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .ConnectionReEstablished:visible').length"),
+            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .ConnectionReEstablished:visible').length;"),
             1,
             "ConnectionReEstablished dialog visible"
         );
 
-        # Vreate a test ticket to see if the dialogs work in popups, too.
+        # Create a test ticket to see if the dialogs work in popups, too.
         my $TestCustomerUser = $Helper->TestCustomerUserCreate(
         ) || die "Did not get test customer user";
 
@@ -192,7 +242,7 @@ JAVASCRIPT
 
         # Open the owner change dialog.
         $Selenium->execute_script("\$('.Cluster ul ul').addClass('ForceVisible');");
-        $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketOwner' )]")->VerifiedClick();
+        $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketOwner' )]")->click();
 
         $Selenium->WaitFor( WindowCount => 2 );
         my $Handles = $Selenium->get_window_handles();
@@ -208,41 +258,71 @@ JAVASCRIPT
 
         # Trigger faked ajax request again.
         $Selenium->execute_script($AjaxOverloadJSError);
-        $Selenium->execute_script('return $.ajax();');
 
         # Wait until all AJAX calls finished.
         $Selenium->WaitFor( JavaScript => "return \$.active == 0" );
 
+        # Wait until modal dialog has open.
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $(".Dialog.Modal").length;'
+        );
+
         # Now check if we see a connection error popup.
         $Self->Is(
-            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .NoConnection:visible').length"),
+            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .NoConnection:visible').length;"),
             1,
             "Error dialog visible -  in popup"
         );
 
         # Now act as if the connection had been re-established.
         $Selenium->execute_script($AjaxOverloadJSSuccess);
-        $Selenium->execute_script('return $.ajax();');
 
         # Wait until all AJAX calls finished.
         $Selenium->WaitFor( JavaScript => "return \$.active == 0" );
 
+        # Wait until modal dialog has open.
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $(".Dialog.Modal").length;'
+        );
+
         # The dialog should show the re-established message now.
         $Self->Is(
-            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .ConnectionReEstablished:visible').length"),
+            $Selenium->execute_script("return \$('#AjaxErrorDialogInner .ConnectionReEstablished:visible').length;"),
             1,
             "ConnectionReEstablished dialog visible"
         );
+
+        $Selenium->find_element( '#DialogButton2', 'css' )->click();
+
+        # Wait until modal dialog has closed.
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && !$(".Dialog.Modal").length;'
+        );
+
+        $Selenium->find_element( '.CancelClosePopup', 'css' )->click();
+        $Selenium->WaitFor( WindowCount => 1 );
 
         # Delete created test tickets.
         my $Success = $TicketObject->TicketDelete(
             TicketID => $TicketID,
             UserID   => 1,
         );
+
+        # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+        if ( !$Success ) {
+            sleep 3;
+            $Success = $TicketObject->TicketDelete(
+                TicketID => $TicketID,
+                UserID   => 1,
+            );
+        }
         $Self->True(
             $Success,
             "Ticket with ticket ID $TicketID is deleted"
         );
+
+        # Make sure the cache is correct.
+        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'Ticket' );
     }
 );
 

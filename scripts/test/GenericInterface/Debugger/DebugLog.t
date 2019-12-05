@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -12,7 +12,7 @@ use utf8;
 
 use vars (qw($Self));
 
-# get webservice object
+# get web service object
 my $WebserviceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice');
 
 # get helper object
@@ -37,7 +37,7 @@ my $WebserviceID = $WebserviceObject->WebserviceAdd(
             },
         },
     },
-    Name    => "$RandomID webservice",
+    Name    => "$RandomID web service",
     ValidID => 1,
     UserID  => 1,
 );
@@ -466,20 +466,20 @@ for my $Test (@Tests) {
 
 # check if search contains exactly communication ids
 my %DebugLogIDCheck = map { $_ => 1 } @DebugLogIDs;
-my $AllEntries = $DebugLogObject->LogSearch(
+my $AllEntries      = $DebugLogObject->LogSearch(
     WebserviceID => $WebserviceID,
 );
 for my $Entry ( @{$AllEntries} ) {
     $Self->True(
         $DebugLogIDCheck{ $Entry->{CommunicationID} },
-        "LogSearch() for webservice found CommunicationID $Entry->{CommunicationID}",
+        "LogSearch() for web service found CommunicationID $Entry->{CommunicationID}",
     );
     delete $DebugLogIDCheck{ $Entry->{CommunicationID} };
 }
 for my $CommunicationID ( sort keys %DebugLogIDCheck ) {
     $Self->False(
         $CommunicationID,
-        "LogSearch() for webservice found CommunicationID $CommunicationID",
+        "LogSearch() for web service found CommunicationID $CommunicationID",
     );
 }
 

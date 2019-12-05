@@ -1,21 +1,19 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU AFFERO General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# any later version.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-# or see http://www.gnu.org/licenses/agpl.txt.
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -51,21 +49,26 @@ my ( $Help, $DryRun, $SkipArticleDir, @SkipRegex, $OtrsUserID, $WebGroupID, $Adm
 
 sub PrintUsage {
     print <<EOF;
-bin/otrs.SetPermissions.pl - set OTRS file permissions
-Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
 
-Usage: otrs.SetPermissions.pl
-    [--otrs-user=<OTRS_USER>]       # OTRS user, defaults to 'otrs'
-    [--web-group=<WEB_GROUP>]       # web server group ('_www', 'www-data' or similar), tries to find a default
-    [--admin-group=<ADMIN_GROUP>]   # admin group, defaults to 'root'
-    [--skip-article-dir]            # Skip var/article as it might take too long on some systems.
-    [--skip-regex="..."]            # Add another skip regex like "^/var/my/directory".
-                                    # Paths start with / but are relative to the OTRS directory.
-                                    # --skip-regex can be specified multiple times.
-    [--dry-run]                     # only report, don't change
-    [--help]
+Set OTRS file permissions.
 
-Example: otrs.SetPermissions.pl --web-group=www-data
+Usage:
+ otrs.SetPermissions.pl [--otrs-user=<OTRS_USER>] [--web-group=<WEB_GROUP>] [--admin-group=<ADMIN_GROUP>] [--skip-article-dir] [--skip-regex="REGEX"] [--dry-run]
+
+Options:
+ [--otrs-user=<OTRS_USER>]     - OTRS user, defaults to 'otrs'.
+ [--web-group=<WEB_GROUP>]     - Web server group ('_www', 'www-data' or similar), try to find a default.
+ [--admin-group=<ADMIN_GROUP>] - Admin group, defaults to 'root'.
+ [--skip-article-dir]          - Skip var/article as it might take too long on some systems.
+ [--skip-regex="REGEX"]        - Add another skip regex like "^/var/my/directory". Paths start with / but are relative to the OTRS directory. --skip-regex can be specified multiple times.
+ [--dry-run]                   - Only report, don't change.
+ [--help]                      - Display help for this command.
+
+Help:
+Using this script without any options it will try to detect the correct user and group settings needed for your setup.
+
+ otrs.SetPermissions.pl
+
 EOF
     return;
 }
@@ -84,7 +87,7 @@ my @IgnoreFiles = (
 # Files to be marked as executable.
 my @ExecutableFiles = (
     qr{\.(?:pl|psgi|sh)$}smx,
-    qr{^/scripts/suse-rcotrs$}smx,
+    qr{^/var/git/hooks/(?:pre|post)-receive$}smx,
 );
 
 # Special files that must not be written by web server user.
@@ -96,11 +99,6 @@ my @ProtectedFiles = (
 my $ExitStatus = 0;
 
 sub Run {
-    if ( !@ARGV ) {
-        PrintUsage();
-        exit 0;
-    }
-
     Getopt::Long::GetOptions(
         'help'             => \$Help,
         'otrs-user=s'      => \$OtrsUser,
@@ -214,7 +212,7 @@ sub SetFilePermissions {
         for my $ProtectedRegex (@ProtectedFiles) {
             if ( $RelativeFile =~ $ProtectedRegex ) {
                 $TargetPermission = -d $File ? 0750 : 0640;
-                $TargetGroupID = $AdminGroupID;
+                $TargetGroupID    = $AdminGroupID;
                 last PROTECTED_REGEX;
             }
         }

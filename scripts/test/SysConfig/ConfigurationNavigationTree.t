@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -40,8 +40,8 @@ my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
                 DisplayName => 'All Settings',
                 Files       => [],
             },
-            OTRSFree => {
-                DisplayName => 'OTRS Free',
+            OTRS => {
+                DisplayName => 'OTRS',
                 Files       => [
                     'Calendar.xml', 'CloudServices.xml', 'Daemon.xml', 'Framework.xml',
                     'GenericInterface.xml', 'ProcessManagement.xml', 'Ticket.xml',
@@ -75,21 +75,57 @@ my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
             },
             ExpectedResult => {
                 'Core' => {
-                    'Core::CustomerUser' => {},
-                    'Core::Ticket'       => {},
-                },
-                'Frontend' => {
-                    'Frontend::Agent' => {
-                        'Frontend::Agent::Dashboard'          => {},
-                        'Frontend::Agent::ModuleRegistration' => {},
-                        'Frontend::Agent::Ticket'             => {
-                            'Frontend::Agent::Ticket::ViewPriority'    => {},
-                            'Frontend::Agent::Ticket::ViewResponsible' => {},
+                    'Count'    => 0,
+                    'Subitems' => {
+                        'Core::CustomerUser' => {
+                            'Subitems' => {},
+                            'Count'    => 4,
+                        },
+                        'Core::Ticket' => {
+                            'Subitems' => {},
+                            'Count'    => 3,
                         },
                     },
-                    'Frontend::Agentß∂čćžšđ' => {
-                        'Frontend::Agentß∂čćžšđ::ModuleRegistration' => {},
-                        }
+                },
+                'Frontend' => {
+                    'Count'    => 0,
+                    'Subitems' => {
+                        'Frontend::Agent' => {
+                            'Count'    => 0,
+                            'Subitems' => {
+                                'Frontend::Agent::Dashboard' => {
+                                    'Subitems' => {},
+                                    'Count'    => 1,
+                                },
+                                'Frontend::Agent::ModuleRegistration' => {
+                                    'Subitems' => {},
+                                    'Count'    => 2,
+                                },
+                                'Frontend::Agent::Ticket' => {
+                                    'Count'    => 0,
+                                    'Subitems' => {
+                                        'Frontend::Agent::Ticket::ViewPriority' => {
+                                            'Subitems' => {},
+                                            'Count'    => 3,
+                                        },
+                                        'Frontend::Agent::Ticket::ViewResponsible' => {
+                                            'Subitems' => {},
+                                            'Count'    => 1,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        'Frontend::Agentß∂čćžšđ' => {
+                            'Count'    => 0,
+                            'Subitems' => {
+                                'Frontend::Agentß∂čćžšđ::ModuleRegistration' => {
+                                    'Subitems' => {},
+                                    'Count'    => 1,
+                                },
+                            },
+                        },
+                    },
                 },
             },
         },
@@ -100,11 +136,26 @@ my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
                 RootNavigation => 'Frontend::Agent',
             },
             ExpectedResult => {
-                'Frontend::Agent::Dashboard'          => {},
-                'Frontend::Agent::ModuleRegistration' => {},
-                'Frontend::Agent::Ticket'             => {
-                    'Frontend::Agent::Ticket::ViewPriority'    => {},
-                    'Frontend::Agent::Ticket::ViewResponsible' => {},
+                'Frontend::Agent::Dashboard' => {
+                    'Subitems' => {},
+                    'Count'    => 1,
+                },
+                'Frontend::Agent::ModuleRegistration' => {
+                    'Subitems' => {},
+                    'Count'    => 2,
+                },
+                'Frontend::Agent::Ticket' => {
+                    'Count'    => 0,
+                    'Subitems' => {
+                        'Frontend::Agent::Ticket::ViewPriority' => {
+                            'Subitems' => {},
+                            'Count'    => 3,
+                        },
+                        'Frontend::Agent::Ticket::ViewResponsible' => {
+                            'Subitems' => {},
+                            'Count'    => 1,
+                        },
+                    },
                 },
             },
         },
@@ -115,7 +166,10 @@ my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
                 RootNavigation => 'Frontend::Agentß∂čćžšđ',
             },
             ExpectedResult => {
-                'Frontend::Agentß∂čćžšđ::ModuleRegistration' => {},
+                'Frontend::Agentß∂čćžšđ::ModuleRegistration' => {
+                    'Subitems' => {},
+                    'Count'    => 1,
+                },
             },
         },
     );
@@ -143,8 +197,8 @@ my $String = '<?xml version="1.0" encoding="utf-8" ?>
   <Name>TestPackage1</Name>
   <Version>0.0.1</Version>
   <Vendor>OTRS AG</Vendor>
-  <URL>http://otrs.org/</URL>
-  <License>GNU GENERAL PUBLIC LICENSE Version 2, June 1991</License>
+  <URL>https://otrs.com/</URL>
+  <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
   <ChangeLog>2005-11-10 New package (some test &lt; &gt; &amp;).</ChangeLog>
   <Description Lang="en">A test package (some test &lt; &gt; &amp;).</Description>
   <BuildDate>2005-11-10 21:17:16</BuildDate>
@@ -182,8 +236,17 @@ my @Tests = (
         },
         ExpectedResult => {
             'Core' => {
-                'Core::TestPackage' => {
-                    'Core::TestPackage::Other' => {},
+                'Count'    => 0,
+                'Subitems' => {
+                    'Core::TestPackage' => {
+                        'Count'    => 1,
+                        'Subitems' => {
+                            'Core::TestPackage::Other' => {
+                                'Subitems' => {},
+                                'Count'    => 2,
+                            },
+                        },
+                    },
                 },
             },
         },
@@ -196,8 +259,17 @@ my @Tests = (
         },
         ExpectedResult => {
             'Core' => {
-                'Core::TestPackage' => {
-                    'Core::TestPackage::Other' => {},
+                'Count'    => 0,
+                'Subitems' => {
+                    'Core::TestPackage' => {
+                        'Count'    => 0,
+                        'Subitems' => {
+                            'Core::TestPackage::Other' => {
+                                'Subitems' => {},
+                                'Count'    => 1,
+                            },
+                        },
+                    },
                 },
             },
         },

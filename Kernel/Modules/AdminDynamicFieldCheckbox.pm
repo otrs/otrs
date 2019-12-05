@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminDynamicFieldCheckbox;
@@ -95,6 +95,8 @@ sub _Add {
         %Param,
         %GetParam,
         Mode           => 'Add',
+        BreadcrumbText => $LayoutObject->{LanguageObject}
+            ->Translate( 'Add %s field', $LayoutObject->{LanguageObject}->Translate($FieldTypeName) ),
         ObjectTypeName => $ObjectTypeName,
         FieldTypeName  => $FieldTypeName,
     );
@@ -131,7 +133,7 @@ sub _AddAction {
             $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldList(
                 Valid      => 0,
                 ResultType => 'HASH',
-                )
+            )
         };
 
         %DynamicFieldsList = reverse %DynamicFieldsList;
@@ -263,6 +265,8 @@ sub _Change {
         %Config,
         ID             => $FieldID,
         Mode           => 'Change',
+        BreadcrumbText => $LayoutObject->{LanguageObject}
+            ->Translate( 'Change %s field', $LayoutObject->{LanguageObject}->Translate($FieldTypeName) ),
         ObjectTypeName => $ObjectTypeName,
         FieldTypeName  => $FieldTypeName,
     );
@@ -284,7 +288,7 @@ sub _ChangeAction {
     }
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $FieldID = $ParamObject->GetParam( Param => 'ID' );
+    my $FieldID      = $ParamObject->GetParam( Param => 'ID' );
     if ( !$FieldID ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('Need ID'),
@@ -322,7 +326,7 @@ sub _ChangeAction {
             $DynamicField->DynamicFieldList(
                 Valid      => 0,
                 ResultType => 'HASH',
-                )
+            )
         };
 
         %DynamicFieldsList = reverse %DynamicFieldsList;
@@ -542,7 +546,7 @@ sub _ShowScreen {
         if ( $DynamicfieldNamesList{$OrderNumber} && $OrderNumber ne $Param{FieldOrder} ) {
             $OrderNamesList{$OrderNumber} = $OrderNumber . ' - '
                 . $CurrentlyText
-                . $DynamicfieldNamesList{$OrderNumber}
+                . $DynamicfieldNamesList{$OrderNumber};
         }
     }
 
@@ -607,7 +611,7 @@ sub _ShowScreen {
 
     my @IsDynamicFieldInSysConfig = $SysConfigObject->ConfigurationEntityCheck(
         EntityType => 'DynamicField',
-        EntityName => $DynamicFieldName,
+        EntityName => $DynamicFieldName // '',
     );
 
     if (@IsDynamicFieldInSysConfig) {
@@ -649,7 +653,7 @@ sub _ShowScreen {
             DynamicFieldOrderStrg => $DynamicFieldOrderStrg,
             DefaultValueStrg      => $DefaultValueStrg,
             ReadonlyInternalField => $ReadonlyInternalField,
-            }
+        }
     );
 
     $Output .= $LayoutObject->Footer();

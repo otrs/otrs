@@ -1,42 +1,50 @@
 package Selenium::Firefox;
-$Selenium::Firefox::VERSION = '1.11';
+$Selenium::Firefox::VERSION = '1.36';
+use strict;
+use warnings;
+
 # ABSTRACT: Use FirefoxDriver without a Selenium server
 use Moo;
 use Carp;
 use Selenium::Firefox::Binary qw/firefox_path/;
-use Selenium::CanStartBinary::FindBinary qw/coerce_simple_binary coerce_firefox_binary/;
+use Selenium::CanStartBinary::FindBinary
+  qw/coerce_simple_binary coerce_firefox_binary/;
 extends 'Selenium::Remote::Driver';
 
 
 has '+browser_name' => (
-    is => 'ro',
+    is      => 'ro',
     default => sub { 'firefox' }
 );
 
 
 has 'binary' => (
-    is => 'lazy',
-    coerce => \&coerce_simple_binary,
-    default => sub { 'geckodriver' },
+    is        => 'lazy',
+    coerce    => \&coerce_simple_binary,
+    default   => sub { 'geckodriver' },
     predicate => 1
 );
 
 
 has 'binary_port' => (
-    is => 'lazy',
+    is      => 'lazy',
     default => sub { 9090 }
 );
 
 
 has '_binary_args' => (
-    is => 'lazy',
+    is      => 'lazy',
     builder => sub {
         my ($self) = @_;
 
         if ( $self->marionette_enabled ) {
-            my $args = ' --port ' . $self->port
-              . ' --marionette-port ' . $self->marionette_binary_port
-              . ' --binary "' . $self->firefox_binary . '"';
+            my $args =
+                ' --port '
+              . $self->port
+              . ' --marionette-port '
+              . $self->marionette_port
+              . ' --binary "'
+              . $self->firefox_binary . '"';
 
             return $args;
         }
@@ -47,11 +55,11 @@ has '_binary_args' => (
 );
 
 has '+wd_context_prefix' => (
-    is => 'ro',
+    is      => 'ro',
     default => sub {
         my ($self) = @_;
 
-        if ($self->marionette_enabled) {
+        if ( $self->marionette_enabled ) {
             return '';
         }
         else {
@@ -63,22 +71,27 @@ has '+wd_context_prefix' => (
 
 
 has 'marionette_binary_port' => (
-    is => 'lazy',
+    is      => 'lazy',
     default => sub { 2828 }
 );
 
 
 has 'marionette_enabled' => (
-    is => 'lazy',
+    is      => 'lazy',
     default => 1
 );
 
 
 has 'firefox_binary' => (
-    is => 'lazy',
-    coerce => \&coerce_firefox_binary,
+    is        => 'lazy',
+    coerce    => \&coerce_firefox_binary,
     predicate => 1,
-    builder => 'firefox_path'
+    builder   => 'firefox_path'
+);
+
+has '_execute_script_suffix' => (
+    is      => 'lazy',
+    default => 'Gecko'
 );
 
 
@@ -126,18 +139,20 @@ Selenium::Firefox - Use FirefoxDriver without a Selenium server
 
 =head1 VERSION
 
-version 1.11
+version 1.36
 
 =head1 SYNOPSIS
 
     # These two are the same, and will only work with Firefox 48+
     my $driver = Selenium::Firefox->new;
-    my $driver = Selenium::Firefox->new( marionette_enabled => 1 );
-    ...
+    $driver = Selenium::Firefox->new( marionette_enabled => 1 );
+
+    #Do stuff...
+
     $driver->shutdown_binary;
 
     # For Firefox 47 and older, disable marionette:
-    my $driver = Selenium::Firefox->new( marionette_enabled => 0 );
+    $driver = Selenium::Firefox->new( marionette_enabled => 0 );
     $driver->shutdown_binary;
 
 =head1 DESCRIPTION
@@ -227,9 +242,8 @@ not do anything useful.
 Optional: specify whether
 L<marionette|https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette>
 should be enabled or not. By default, marionette is enabled, which
-assumes you are running with Firefox 48 or newer. To use this module
-to start Firefox 47 or older, you must pass C<<<marionette_enabled =>
-0>>>.
+assumes you are running with Firefox 48 or newer. To use this module to
+start Firefox 47 or older, you must pass C<< marionette_enabled => 0 >>.
 
     my $ff48 = Selenium::Firefox->new( marionette_enabled => 1 ); # defaults to 1
     my $ff47 = Selenium::Firefox->new( marionette_enabled => 0 );
@@ -296,6 +310,10 @@ It doesn't take any arguments, and it doesn't return anything.
 We do our best to call this when the C<$driver> option goes out of
 scope, but if that happens during global destruction, there's nothing
 we can do.
+
+=for Pod::Coverage has_binary
+
+=for Pod::Coverage has_firefox_binary
 
 =head1 BREAKING CHANGES
 
@@ -379,7 +397,7 @@ L<Selenium::Remote::Driver|Selenium::Remote::Driver>
 =head1 BUGS
 
 Please report any bugs or feature requests on the bugtracker website
-https://github.com/gempesaw/Selenium-Remote-Driver/issues
+L<https://github.com/teodesian/Selenium-Remote-Driver/issues>
 
 When submitting a bug or request, please include a test-file or a
 patch to an existing test-file that illustrates the bug or desired
@@ -429,7 +447,7 @@ Aditya Ivaturi <ivaturi@gmail.com>
 
 Copyright (c) 2010-2011 Aditya Ivaturi, Gordon Child
 
-Copyright (c) 2014-2016 Daniel Gempesaw
+Copyright (c) 2014-2017 Daniel Gempesaw
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

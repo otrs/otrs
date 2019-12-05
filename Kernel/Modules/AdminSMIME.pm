@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminSMIME;
@@ -65,7 +65,7 @@ sub Run {
 
         $Output .= $LayoutObject->Notify(
             Priority => 'Error',
-            Data     => Translatable("S/MIME environment is not working. Please check log for more info!"),
+            Info     => Translatable("S/MIME environment is not working. Please check log for more info!"),
             Link     => $LayoutObject->{Baselink} . 'Action=AdminLog',
         );
 
@@ -134,7 +134,7 @@ sub Run {
         # remove certificate and private key if exists
         else {
             my $Certificate = $SMIMEObject->CertificateGet( Filename => $Filename );
-            my %Attributes = $SMIMEObject->CertificateAttributes(
+            my %Attributes  = $SMIMEObject->CertificateAttributes(
                 Certificate => $Certificate,
             );
 
@@ -344,7 +344,7 @@ sub Run {
         $Hash =~ s{(.+)\.\d}{$1}xms;
 
         my $Certificate = $SMIMEObject->CertificateGet( Filename => $Filename );
-        my %Attributes = $SMIMEObject->CertificateAttributes( Certificate => $Certificate );
+        my %Attributes  = $SMIMEObject->CertificateAttributes( Certificate => $Certificate );
         return $LayoutObject->Attachment(
             ContentType => 'text/plain',
             Content     => $Attributes{Fingerprint},
@@ -396,7 +396,7 @@ sub Run {
 
         # look for needed parameters
         my $CertFingerprint = $ParamObject->GetParam( Param => 'Fingerprint' ) || '';
-        my $Output = $Self->_SignerCertificateOverview( CertFingerprint => $CertFingerprint );
+        my $Output          = $Self->_SignerCertificateOverview( CertFingerprint => $CertFingerprint );
 
         return $Output;
     }
@@ -656,6 +656,11 @@ sub _Overview {
                 $Attributes->{Type}    = 'Invalid';
                 $Attributes->{Subject} = "The file: '$Attributes->{Filename}' is invalid";
             }
+
+            if ( defined $Attributes->{EndDate} && $SMIMEObject->KeyExpiredCheck( EndDate => $Attributes->{EndDate} ) )
+            {
+                $Attributes->{Expired} = 1;
+            }
             $LayoutObject->Block(
                 Name => 'Row',
                 Data => $Attributes,
@@ -796,7 +801,7 @@ sub _SignerCertificateOverview {
         TemplateFile => 'AdminSMIME',
         Data         => {
             %Param,
-            Subtitle => 'Handle Private Certificate Relations',
+            Subtitle => Translatable('Handle Private Certificate Relations'),
         },
     );
     $Output .= $LayoutObject->Footer();

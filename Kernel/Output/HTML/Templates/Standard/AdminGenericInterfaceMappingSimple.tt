@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst AdminGenericInterfaceMappingSimple">
     <h1 class="InvisibleText">[% Translate("GenericInterface Web Service Management") | html %]</h1>
@@ -68,6 +68,9 @@
 [% RenderBlockStart("KeyCounter") %]
                     <input type="hidden" name="KeyCounter" id="KeyCounter" value="[% Data.KeyIndex | html %]" />
 [% RenderBlockEnd("KeyCounter") %]
+                    [% IF Data.Subaction == 'Change' %]
+                        <input type="hidden" name="ContinueAfterSave" id="ContinueAfterSave" value=""/>
+                    [% END %]
                     <fieldset class="TableLike  SpacingTop">
                         <label for="DefaultKeyType">[% Translate("Default rule for unmapped keys") | html %]:</label>
                         <div class="Field">
@@ -112,7 +115,7 @@
                         <label for="AddKeyMapping">[% Translate("New key map") | html %]:</label>
                         <div class="Field">
                             <div class="NewRule">
-                                <a href="" id="AddKeyMapping" class="AddButton" value="Add key mapping"><i class="fa fa-plus-square-o"></i><span class="InvisibleText">[% Translate("Add key mapping") | html %]</span></a>
+                                <a href="" id="AddKeyMapping" class="AddButton" value="[% Translate("Add key mapping") | html %]"><i class="fa fa-plus-square-o"></i><span class="InvisibleText">[% Translate("Add key mapping") | html %]</span></a>
                             </div>
                         </div>
                         <div class="Clear Spacing"></div>
@@ -123,11 +126,11 @@
                         <div class="WidgetSimple Expanded WidgetKey [% Data.Classes | html %]">
                             <div class="Header">
                                 <div class="WidgetAction Toggle">
-                                    <a href="#" title=[% Translate("Show or hide the content") | JSON %]><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a>
+                                    <a href="#" title="[% Translate("Show or hide the content") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a>
                                 </div>
                                 <h3 class="Title">[% Translate("Mapping for Key ") | html %] [% Data.KeyMapNew | html %]</h3>
                                 <div class="AdditionalInformation">
-                                    <a href="" id="RemoveKeyMapping[% Data.KeyIndex | html %]" class="RemoveButton KeyMapRemove" value="Remove key mapping"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove key mapping") | html %]</span></a>
+                                    <a href="" id="RemoveKeyMapping[% Data.KeyIndex | html %]" class="RemoveButton KeyMapRemove" value="[% Translate("Remove key mapping") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove key mapping") | html %]</span></a>
                                 </div>
                             </div>
                             <div class="Content">
@@ -200,7 +203,7 @@
                                             <div id="ValueMapNew[% Data.KeyIndex | html %]_[% Data.ValueIndex | html %]ServerError" class="TooltipErrorMessage">
                                                 <p>[% Translate("This field is required.") | html %]</p>
                                             </div>
-                                            <a href="" id="RemoveValueMapping[% Data.KeyIndex | html %]_[% Data.ValueIndex | html %]" class="RemoveButton ValueRemove" value="Remove value mapping"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove value mapping") | html %]</span></a>
+                                            <a href="" id="RemoveValueMapping[% Data.KeyIndex | html %]_[% Data.ValueIndex | html %]" class="RemoveButton ValueRemove" value="[% Translate("Remove value mapping") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove value mapping") | html %]</span></a>
                                         </div>
 [% RenderBlockEnd("ValueTemplateRow") %]
                                     </div>
@@ -210,7 +213,7 @@
                                         <label for="AddValueMapping[% Data.KeyIndex | html %]" class="AddValueMapping">[% Translate("New value map") | html %]:</label>
                                         <div class="Field">
                                             <div class="NewValueMap">
-                                                <a href="" id="AddValueMapping[% Data.KeyIndex | html %]" class="AddButton ValueAdd" value="Add Value mapping"><i class="fa fa-plus-square-o"></i><span class="InvisibleText">[% Translate("Add value mapping") | html %]</span></a>
+                                                <a href="" id="AddValueMapping[% Data.KeyIndex | html %]" class="AddButton ValueAdd" value="[% Translate("Add value mapping") | html %]"><i class="fa fa-plus-square-o"></i><span class="InvisibleText">[% Translate("Add value mapping") | html %]</span></a>
                                             </div>
                                         </div>
                                     </fieldset>
@@ -249,20 +252,24 @@
                             <div id="ValueMapNewServerError" class="TooltipErrorMessage">
                                 <p>[% Translate("This field is required.") | html %]</p>
                             </div>
-                            <a href="#" id="RemoveValueMapping" class="RemoveButton ValueRemove" value="Spacing Remove value mapping"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove value mapping") | html %]</span></a>
+                            <a href="#" id="RemoveValueMapping" class="RemoveButton ValueRemove" value="[% Translate("Remove value mapping") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove value mapping") | html %]</span></a>
                         </div>
 [% RenderBlockEnd("ValueTemplate") %]
 
                     </div>
                     <fieldset class="TableLike">
-                        <div class="Field Spacing">
-                            <button class="Primary CallForAction" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
+                        <div class="Field SpacingTop">
+                            [% IF Data.Subaction == 'Change' %]
+                                <button class="CallForAction Primary" id="SubmitAndContinue" type="button" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
+                                [% Translate("or") | html %]
+                                <button class="CallForAction Primary" id="Submit" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save and finish") | html %]</span></button>
+                            [% ELSE %]
+                                <button class="CallForAction Primary" id="Submit" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
+                            [% END %]
                             [% Translate("or") | html %]
-                            <button class="CallForAction" type="submit" id="SaveAndFinishButton" value="[% Translate("Save and finish") | html %]"><span>[% Translate("Save and finish") | html %]</span></button>
-                            <input autocomplete="off" type="hidden" name="ReturnToAction" id="ReturnToAction" value="" />
-                            [% Translate("or") | html %]
-                            <a href="[% Env("Baselink") %]Action=[% Data.ActionFrontendModule | uri %];Subaction=Change;[% Data.ActionType | uri %]=[% Data.Action | uri %];WebserviceID=[% Data.WebserviceID | uri %]">[% Translate("Cancel") | html %]</a>
+                            <a href="[% Env("Baselink") %]Action=[% Data.ActionFrontendModule | uri %];Subaction=Change;[% Data.ActionType | uri %]=[% Data.Action | uri %];WebserviceID=[% Data.WebserviceID | uri %]"><span>[% Translate("Cancel") | html %]</span></a>
                         </div>
+                        <div class="Clear"></div>
                     </fieldset>
                     <div class="Clear"></div>
                 </form>

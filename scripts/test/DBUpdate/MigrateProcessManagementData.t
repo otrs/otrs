@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -229,13 +229,12 @@ $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
                     'Description',
                 Fields => {
                     Article => {
-                        CommunicationChannel => 'Internal',
-                        IsVisibleForCustomer => 1,
-                        DescriptionLong      => 'A long description',
-                        DefaultValue         => '',
-                        DescriptionShort     => '.',
-                        Config               => {
-                            TimeUnits => '1',
+                        DescriptionLong  => 'A long description',
+                        DefaultValue     => '',
+                        DescriptionShort => '.',
+                        Config           => {
+                            ArticleType => 'note-external',
+                            TimeUnits   => '1',
                         },
                         Display => '1',
                     },
@@ -252,13 +251,13 @@ $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
         },
         ExpectedConfigResult => {
             Article => {
-                CommunicationChannel => 'Internal',
-                IsVisibleForCustomer => 1,
-                DescriptionLong      => 'A long description',
-                DefaultValue         => '',
-                DescriptionShort     => '.',
-                Config               => {
-                    TimeUnits => '1',
+                DescriptionLong  => 'A long description',
+                DefaultValue     => '',
+                DescriptionShort => '.',
+                Config           => {
+                    IsVisibleForCustomer => 1,
+                    CommunicationChannel => 'Internal',
+                    TimeUnits            => '1',
                 },
                 Display => '1',
             },
@@ -281,13 +280,12 @@ $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
                     'Description',
                 Fields => {
                     Article => {
-                        CommunicationChannel => 'Email',
-                        IsVisibleForCustomer => 0,
-                        DescriptionLong      => 'A long description',
-                        DefaultValue         => '',
-                        DescriptionShort     => '.',
-                        Config               => {
-                            TimeUnits => '1',
+                        DescriptionLong  => 'A long description',
+                        DefaultValue     => '',
+                        DescriptionShort => '.',
+                        Config           => {
+                            ArticleType => 'email-internal',
+                            TimeUnits   => '1',
                         },
                         Display => '1',
                     },
@@ -304,13 +302,13 @@ $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
         },
         ExpectedConfigResult => {
             Article => {
-                CommunicationChannel => 'Email',
-                IsVisibleForCustomer => 0,
-                DescriptionLong      => 'A long description',
-                DefaultValue         => '',
-                DescriptionShort     => '.',
-                Config               => {
-                    TimeUnits => '1',
+                DescriptionLong  => 'A long description',
+                DefaultValue     => '',
+                DescriptionShort => '.',
+                Config           => {
+                    CommunicationChannel => 'Email',
+                    IsVisibleForCustomer => 0,
+                    TimeUnits            => '1',
                 },
                 Display => '1',
             },

@@ -5,6 +5,9 @@ use strict;
 use warnings;
 no warnings 'redefine';
 use utf8;
+
+## nofilter(TidyAll::Plugin::OTRS::Perl::PerlTidy)
+
 sub Load {
     my ($File, $Self) = @_;
 
@@ -116,6 +119,8 @@ $Self->{'Ticket::Frontend::CustomerTicketSearch'}->{'SearchCSVDynamicField'} =  
 $Self->{'Ticket::Frontend::CustomerTicketSearch'}->{'DynamicField'} =  {};
 $Self->{'Ticket::Frontend::AgentTicketSearch'}->{'SearchCSVDynamicField'} =  {};
 $Self->{'Ticket::Frontend::AgentTicketSearch'}->{'Defaults'}->{'DynamicField'} =  {};
+# disable a setting with two sub levels
+delete $Self->{'Ticket::Frontend::AgentTicketSearch'}->{'Defaults'}->{'Fulltext'};
 $Self->{'Ticket::Frontend::CustomerTicketZoom'}->{'FollowUpDynamicField'} =  {};
 # hash with module
 $Self->{'DynamicFields::Driver'}->{'Multiselect'} =  {
@@ -164,7 +169,8 @@ $Self->{'PreferencesGroups'}->{'DynamicFieldsOverviewPageShown'} =  {
 $Self->{'Frontend::Module'}->{'AdminDynamicField'} =  {
   'Description' => 'This module is part of the admin area of OTRS.',
   'Group' => [
-    'admin'
+    'admin',
+    'users'
   ],
   'Loader' => {
     'CSS' => [
@@ -174,15 +180,80 @@ $Self->{'Frontend::Module'}->{'AdminDynamicField'} =  {
       'Core.Agent.Admin.DynamicField.js'
     ]
   },
+  'NavBar' => [
+    {
+      'AccessKey' => '',
+      'Block' => 'ItemArea',
+      'Description' => 'Changed the dynamic field.',
+      'Link' => 'Action=AdminDynamicField;Nav=Agent',
+      'LinkOption' => '',
+      'Name' => 'Dynamic Field Administration',
+      'NavBar' => 'Ticket',
+      'Prio' => '9000',
+      'Type' => ''
+    }
+  ],
   'NavBarModule' => {
     'Block' => 'Ticket',
-    'Description' => 'Create and manage dynamic fields.',
+    'Description' => 'Create and manage dynamic fields (other description).',
     'Module' => 'Kernel::Output::HTML::NavBar::ModuleAdmin',
     'Name' => 'Dynamic Fields',
     'Prio' => '1000'
   },
   'NavBarName' => 'Admin',
   'Title' => 'Dynamic Fields GUI'
+};
+# frontend module with disabled nav bar item
+$Self->{'Frontend::Module'}->{'AgentTicketEscalationView'} =  {
+  'Description' => 'Overview of all escalated tickets.',
+  'Loader' => {
+    'CSS' => [
+      'Core.AllocationList.css'
+    ],
+    'JavaScript' => [
+      'Core.UI.AllocationList.js',
+      'Core.Agent.TableFilters.js'
+    ]
+  },
+  'NavBar' => [],
+  'NavBarName' => 'Ticket',
+  'Title' => 'Escalation view'
+};
+# frontend module with already changed nav bar module
+$Self->{'Frontend::Module'}->{'AdminCustomerUser'} =  {
+  'Description' => 'Edit Customer Users.',
+  'Group' => [
+    'admin',
+    'users'
+  ],
+  'GroupRo' => [],
+  'Loader' => {
+    'JavaScript' => [
+      'Core.Agent.TicketAction.js'
+    ]
+  },
+  'NavBar' => [
+    {
+      'AccessKey' => '',
+      'Block' => 'ItemArea',
+      'Description' => 'Changed the description.',
+      'Link' => 'Action=AdminCustomerUser;Nav=Agent',
+      'LinkOption' => '',
+      'Name' => 'Customer User Administration',
+      'NavBar' => 'Customers',
+      'Prio' => '9000',
+      'Type' => ''
+    }
+  ],
+  'NavBarModule' => {
+    'Block' => 'Customer',
+    'Description' => 'Create and manage customer users.',
+    'Module' => 'Kernel::Output::HTML::NavBar::ModuleAdmin',
+    'Name' => 'Customer User',
+    'Prio' => '300'
+  },
+  'NavBarName' => 'Customers',
+  'Title' => 'Customer Users'
 };
 # yes/no
 $Self->{'Ticket::Frontend::ZoomRichTextForce'} =  '1';
@@ -471,15 +542,14 @@ $Self->{'Loader::Customer::CommonJS'}->{'000-Framework'} =  [
   'Core.Customer.js',
   'Core.Customer.Responsive.js'
 ];
-# renamed to 'Ticket::EventModulePost###2000-ArticleSearchIndex'
-$Self->{'Ticket::EventModulePost'}->{'098-ArticleSearchIndex'} =  {
-  'Event' => '(ArticleCreate|ArticleUpdate)',
-  'Module' => 'Kernel::System::Ticket::Event::ArticleSearchIndex'
-};
 # renamed to 'Frontend::NotifyModule###8000-Daemon-Check'
 $Self->{'Frontend::NotifyModule'}->{'800-Daemon-Check'} =  {
   'Module' => 'Kernel::Output::HTML::Notification::DaemonCheck'
 };
+# renamed setting in package to 'SessionAgentOnlineThreshold'
+$Self->{'ChatEngine::AgentOnlineThreshold'} =  '10';
+# disabled
+delete $Self->{'PreferencesGroups'}->{'Comment'};
 # deleted
 delete $Self->{'PreferencesGroups'}->{'SpellDict'};
 # calendar
@@ -585,8 +655,224 @@ $Self->{'TimeVacationDays::Calendar9'} =  {
 };
 $Self->{'CalendarWeekDayStart::Calendar9'} =  '1';
 $Self->{'TimeZone::Calendar9'} =  '0';
-$Self->{'TimeZone::Calendar9Name'} =  'Calendar Name 9';
-##+;
+$Self->{'TimeZone::Calendar9Name'} =  'カレンダー9';
+$Self->{'CustomerCompany::EventModulePost'}->{'100-UpdateCustomerUsers'} =  {
+  'Event' => 'CustomerCompanyUpdate',
+  'Module' => 'Kernel::System::CustomerCompany::Event::CustomerUserUpdate',
+  'Transaction' => '0'
+};
+$Self->{'CustomerCompany::EventModulePost'}->{'110-UpdateTickets'} =  {
+  'Event' => 'CustomerCompanyUpdate',
+  'Module' => 'Kernel::System::CustomerCompany::Event::TicketUpdate',
+  'Transaction' => '0'
+};
+$Self->{'CustomerCompany::EventModulePost'}->{'1000-GenericInterface'} =  {
+  'Event' => '',
+  'Module' => 'Kernel::GenericInterface::Event::Handler',
+  'Transaction' => '1'
+};
+$Self->{'CustomerUser::EventModulePost'}->{'100-UpdateSearchProfiles'} =  {
+  'Event' => 'CustomerUserUpdate',
+  'Module' => 'Kernel::System::CustomerUser::Event::SearchProfileUpdate',
+  'Transaction' => '0'
+};
+$Self->{'CustomerUser::EventModulePost'}->{'100-UpdateServiceMembership'} =  {
+  'Event' => 'CustomerUserUpdate',
+  'Module' => 'Kernel::System::CustomerUser::Event::ServiceMemberUpdate',
+  'Transaction' => '0'
+};
+$Self->{'CustomerUser::EventModulePost'}->{'1000-GenericInterface'} =  {
+  'Event' => '',
+  'Module' => 'Kernel::GenericInterface::Event::Handler',
+  'Transaction' => '1'
+};
+$Self->{'Frontend::NotifyModule'}->{'100-CloudServicesDisabled'} =  {
+  'Group' => 'admin',
+  'Module' => 'Kernel::Output::HTML::Notification::AgentCloudServicesDisabled'
+};
+$Self->{'Frontend::NotifyModule'}->{'100-OTRSBusiness'} =  {
+  'Group' => 'admin',
+  'Module' => 'Kernel::Output::HTML::Notification::AgentOTRSBusiness'
+};
+$Self->{'Frontend::NotifyModule'}->{'200-UID-Check'} =  {
+  'Module' => 'Kernel::Output::HTML::Notification::UIDCheck'
+};
+$Self->{'Frontend::NotifyModule'}->{'250-AgentSessionLimit'} =  {
+  'Module' => 'Kernel::Output::HTML::Notification::AgentSessionLimit'
+};
+$Self->{'Frontend::NotifyModule'}->{'500-OutofOffice-Check'} =  {
+  'Module' => 'Kernel::Output::HTML::Notification::OutofOfficeCheck'
+};
+$Self->{'Frontend::NotifyModule'}->{'600-SystemMaintenance-Check'} =  {
+  'Module' => 'Kernel::Output::HTML::Notification::SystemMaintenanceCheck'
+};
+delete $Self->{'Ticket::EventModulePost'}->{'900-GenericAgent'};
+$Self->{'Frontend::ToolBarModule'}->{'1-Ticket::AgentTicketQueue'} =  {
+  'AccessKey' => 'q',
+  'Action' => 'AgentTicketQueue',
+  'CssClass' => 'QueueView',
+  'Icon' => 'fa fa-folder',
+  'Link' => 'Action=AgentTicketQueue',
+  'Module' => 'Kernel::Output::HTML::ToolBar::Link',
+  'Name' => 'Queue view',
+  'Priority' => '1010010'
+};
+$Self->{'Frontend::ToolBarModule'}->{'2-Ticket::AgentTicketStatus'} =  {
+  'AccessKey' => 'o',
+  'Action' => 'AgentTicketStatusView',
+  'CssClass' => 'StatusView',
+  'Icon' => 'fa fa-list-ol',
+  'Link' => 'Action=AgentTicketStatusView',
+  'Module' => 'Kernel::Output::HTML::ToolBar::Link',
+  'Name' => 'Status view',
+  'Priority' => '1010020'
+};
+$Self->{'Frontend::ToolBarModule'}->{'3-Ticket::AgentTicketEscalation'} =  {
+  'AccessKey' => 'w',
+  'Action' => 'AgentTicketEscalationView',
+  'CssClass' => 'EscalationView',
+  'Icon' => 'fa fa-exclamation',
+  'Link' => 'Action=AgentTicketEscalationView',
+  'Module' => 'Kernel::Output::HTML::ToolBar::Link',
+  'Name' => 'Escalation view',
+  'Priority' => '1010030'
+};
+$Self->{'Frontend::ToolBarModule'}->{'4-Ticket::AgentTicketPhone'} =  {
+  'AccessKey' => '',
+  'Action' => 'AgentTicketPhone',
+  'CssClass' => 'PhoneTicket',
+  'Icon' => 'fa fa-phone',
+  'Link' => 'Action=AgentTicketPhone',
+  'Module' => 'Kernel::Output::HTML::ToolBar::Link',
+  'Name' => 'New phone ticket',
+  'Priority' => '1020010'
+};
+$Self->{'Frontend::ToolBarModule'}->{'5-Ticket::AgentTicketEmail'} =  {
+  'AccessKey' => 'l',
+  'Action' => 'AgentTicketEmail',
+  'CssClass' => 'EmailTicket',
+  'Icon' => 'fa fa-envelope',
+  'Link' => 'Action=AgentTicketEmail',
+  'Module' => 'Kernel::Output::HTML::ToolBar::Link',
+  'Name' => 'New email ticket',
+  'Priority' => '1020020'
+};
+$Self->{'Frontend::ToolBarModule'}->{'6-Ticket::AgentTicketProcess'} =  {
+  'AccessKey' => '',
+  'Action' => 'AgentTicketProcess',
+  'CssClass' => 'ProcessTicket',
+  'Icon' => 'fa fa-th-large',
+  'Link' => 'Action=AgentTicketProcess',
+  'Module' => 'Kernel::Output::HTML::ToolBar::Link',
+  'Name' => 'New process ticket',
+  'Priority' => '1020030'
+};
+$Self->{'Frontend::ToolBarModule'}->{'7-Ticket::TicketResponsible'} =  {
+  'AccessKey' => 'r',
+  'AccessKeyNew' => '',
+  'AccessKeyReached' => '',
+  'CssClass' => 'Responsible',
+  'CssClassNew' => 'Responsible New',
+  'CssClassReached' => 'Responsible Reached',
+  'Icon' => 'fa fa-user',
+  'IconNew' => 'fa fa-user',
+  'IconReached' => 'fa fa-user',
+  'Module' => 'Kernel::Output::HTML::ToolBar::TicketResponsible',
+  'Priority' => '1030010'
+};
+$Self->{'Frontend::ToolBarModule'}->{'8-Ticket::TicketWatcher'} =  {
+  'AccessKey' => '',
+  'AccessKeyNew' => '',
+  'AccessKeyReached' => '',
+  'CssClass' => 'Watcher',
+  'CssClassNew' => 'Watcher New',
+  'CssClassReached' => 'Watcher Reached',
+  'Icon' => 'fa fa-eye',
+  'IconNew' => 'fa fa-eye',
+  'IconReached' => 'fa fa-eye',
+  'Module' => 'Kernel::Output::HTML::ToolBar::TicketWatcher',
+  'Priority' => '1030020'
+};
+$Self->{'Frontend::ToolBarModule'}->{'9-Ticket::TicketLocked'} =  {
+  'AccessKey' => 'k',
+  'AccessKeyNew' => '',
+  'AccessKeyReached' => '',
+  'CssClass' => 'Locked',
+  'CssClassNew' => 'Locked New',
+  'CssClassReached' => 'Locked Reached',
+  'Icon' => 'fa fa-lock',
+  'IconNew' => 'fa fa-lock',
+  'IconReached' => 'fa fa-lock',
+  'Module' => 'Kernel::Output::HTML::ToolBar::TicketLocked',
+  'Priority' => '1030030'
+};
+$Self->{'Frontend::ToolBarModule'}->{'10-Ticket::AgentTicketService'} =  {
+  'CssClass' => 'ServiceView',
+  'Icon' => 'fa fa-wrench',
+  'Module' => 'Kernel::Output::HTML::ToolBar::TicketService',
+  'Priority' => '1030035'
+};
+$Self->{'Frontend::ToolBarModule'}->{'11-Ticket::TicketSearchProfile'} =  {
+  'Module' => 'Kernel::Output::HTML::ToolBar::TicketSearchProfile',
+  'Name' => 'Search template',
+  'MaxWidth' =>40,
+  'Priority' => '1990010'
+};
+$Self->{'Frontend::ToolBarModule'}->{'12-Ticket::TicketSearchFulltext'} =  {
+  'Module' => 'Kernel::Output::HTML::ToolBar::Generic',
+  'Name' => 'Fulltext search',
+  'Block'=> 'ToolBarSearchFulltext',
+  'Size' => 10,
+  'CSS' =>'Core.Agent.Toolbar.FulltextSearch.css',
+  'Priority' => '1990010'
+};
+$Self->{'Frontend::ToolBarModule'}->{'13-CICSearchCustomerID'} =  {
+  'Module' => 'Kernel::Output::HTML::ToolBar::Generic',
+  'Name' => 'CustomerID search',
+  'Block'=> 'ToolBarCICSearchCustomerID',
+  'Size' => 10,
+  'CSS' =>'Core.Agent.Toolbar.CICSearch.css',
+  'Priority' => '1990030'
+};
+$Self->{'Frontend::ToolBarModule'}->{'14-CICSearchCustomerUser'} =  {
+  'Module' => 'Kernel::Output::HTML::ToolBar::Generic',
+  'Name' => 'Customer user search',
+  'Block'=> 'ToolBarCICSearchCustomerUser',
+  'Size' => 10,
+  'CSS' =>'Core.Agent.Toolbar.CICSearch.css',
+  'Priority' => '1990040'
+};
+$Self->{'Ticket::Frontend::OverviewSmall'}->{'ColumnHeader'} =  'LastCustomerSubject';
+$Self->{'PostMaster::PreFilterModule'}->{'1-Match'} =  {
+  'Match' => {
+    'From' => 'noreply@'
+  },
+  'Module' => 'Kernel::System::PostMaster::Filter::Match',
+  'Set' => {
+    'X-OTRS-ArticleType' => 'email-internal',
+    'X-OTRS-FollowUp-ArticleType' => 'email-external',
+    'X-OTRS-Ignore' => 'yes'
+  },
+};
+$Self->{'PostMaster::PreCreateFilterModule'}->{'000-FollowUpArticleTypeCheck'} =  {
+  'ArticleType' => 'email-internal',
+  'Module' => 'Kernel::System::PostMaster::Filter::FollowUpArticleTypeCheck',
+  'SenderType' => 'customer',
+  'X-OTRS-ArticleType' => 'email-internal',
+  'X-OTRS-FollowUp-ArticleType' => 'email-external'
+};
+$Self->{'PostMaster::CheckFollowUpModule'}->{'0100-Subject'} =  {
+  'ArticleType' => 'email-external',
+  'Module' => 'Kernel::System::PostMaster::FollowUpCheck::Subject',
+  'SenderType' => 'customer',
+  'X-OTRS-ArticleType' => 'email-internal',
+  'X-OTRS-FollowUp-ArticleType' => 'email-external'
+};
+
+$Self->{'Ticket::Frontend::AgentTicketQueue'}->{'HighlightAge1'} = '1234';
+
+$Self->{'Test'}->{'HighlightAge2'} = '5678';
 
 }
+
 1;

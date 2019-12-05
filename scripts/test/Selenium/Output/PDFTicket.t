@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -116,35 +116,20 @@ $Selenium->RunTest(
 
         # Create Users.
         my $UserObject = $Kernel::OM->Get('Kernel::System::User');
-        my @Users      = (
-            {
-                FirstName => 'UserFirstName1' . $RandomID,
-                LastName  => 'UserLastName1' . $RandomID,
-                Login     => 'UserLogin1' . $RandomID,
-                Email     => 'User1' . $RandomID . '@example.com',
-            },
-            {
-                FirstName => 'UserFirstName2' . $RandomID,
-                LastName  => 'UserLastName2' . $RandomID,
-                Login     => 'UserLogin2' . $RandomID,
-                Email     => 'User2' . $RandomID . '@example.com',
-            },
-        );
-        my @UserIDs;
-        for my $User (@Users) {
-            my $UserID = $UserObject->UserAdd(
-                UserFirstname => $User->{FirstName},
-                UserLastname  => $User->{LastName},
-                UserLogin     => $User->{Login},
-                UserEmail     => $User->{Email},
-                ValidID       => 1,
-                ChangeUserID  => 1,
+        my @Users;
+        for my $UserCount ( 1 .. 2 ) {
+
+            # Create test User and login.
+            my $TestUserLogin = $Helper->TestUserCreate(
+                Groups => ['users'],
+            ) || die "Did not get test user";
+
+            # Get user data.
+            my %UserData = $UserObject->GetUserData(
+                User => $TestUserLogin,
             );
-            $Self->True(
-                $UserID,
-                "Created UserID $UserID"
-            );
-            push @UserIDs, $UserID;
+
+            push @Users, \%UserData;
         }
 
         # Create Customer Company.
@@ -212,8 +197,8 @@ $Selenium->RunTest(
                 SLAID         => $SLAID,
                 CustomerID    => $CustomerCompanyID,
                 CustomerUser  => $CustomerUserID,
-                OwnerID       => $UserIDs[0],
-                ResponsibleID => $UserIDs[1],
+                OwnerID       => $Users[0]->{UserID},
+                ResponsibleID => $Users[1]->{UserID},
 
             );
             my $TicketID = $TicketObject->TicketCreate(
@@ -297,7 +282,7 @@ $Selenium->RunTest(
         }
 
         # Create Dynamic Fields.
-        my $RandomNumber = substr $Helper->GetRandomNumber(), -7;
+        my $RandomNumber  = substr $Helper->GetRandomNumber(), -7;
         my %DynamicFields = (
             Dropdown => {
                 Name       => 'DFDropdown' . $RandomNumber,
@@ -608,17 +593,17 @@ $Selenium->RunTest(
                 Interface => 'All',
             },
             {
-                Value     => $Users[0]->{Login},
+                Value     => $Users[0]->{UserLogin},
                 Message   => 'Owner first row value is correct',
                 Interface => 'All',
             },
             {
-                Value     => '(' . $Users[0]->{FirstName},
+                Value     => '(' . $Users[0]->{UserFirstname},
                 Message   => 'Owner second row value is correct',
                 Interface => 'Agent',
             },
             {
-                Value     => $Users[0]->{LastName} . ')',
+                Value     => $Users[0]->{UserLastname} . ')',
                 Message   => 'Owner third row value is correct',
                 Interface => 'Agent',
             },
@@ -628,17 +613,17 @@ $Selenium->RunTest(
                 Interface => 'All',
             },
             {
-                Value     => $Users[1]->{Login},
+                Value     => $Users[1]->{UserLogin},
                 Message   => 'Responsible first row value is correct',
                 Interface => 'All',
             },
             {
-                Value     => '(' . $Users[1]->{FirstName},
+                Value     => '(' . $Users[1]->{UserFirstname},
                 Message   => 'Responsible second row value is correct',
                 Interface => 'Agent',
             },
             {
-                Value     => $Users[1]->{LastName} . ')',
+                Value     => $Users[1]->{UserLastname} . ')',
                 Message   => 'Responsible third row value is correct',
                 Interface => 'Agent',
             },
@@ -1027,6 +1012,15 @@ $Selenium->RunTest(
                 TicketID => $Ticket->{ID},
                 UserID   => 1,
             );
+
+            # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+            if ( !$Success ) {
+                sleep 3;
+                $Success = $TicketObject->TicketDelete(
+                    TicketID => $Ticket->{ID},
+                    UserID   => 1,
+                );
+            }
             $Self->True(
                 $Success,
                 "TicketID $Ticket->{ID} is deleted",
@@ -1057,26 +1051,6 @@ $Selenium->RunTest(
                 SQL     => "DELETE FROM customer_company WHERE customer_id = ?",
                 Bind    => $CustomerCompanyID,
                 Message => "CustomerCompanyID $CustomerCompanyID is deleted",
-            },
-            {
-                SQL     => "DELETE FROM user_preferences WHERE user_id = ?",
-                Bind    => $UserIDs[1],
-                Message => "User preferences for $UserIDs[1] is deleted",
-            },
-            {
-                SQL     => "DELETE FROM users WHERE id = ?",
-                Bind    => $UserIDs[1],
-                Message => "UserID $UserIDs[1] is deleted",
-            },
-            {
-                SQL     => "DELETE FROM user_preferences WHERE user_id = ?",
-                Bind    => $UserIDs[0],
-                Message => "User preferences for $UserIDs[0] is deleted",
-            },
-            {
-                SQL     => "DELETE FROM users WHERE id = ?",
-                Bind    => $UserIDs[0],
-                Message => "UserID $UserIDs[0] is deleted",
             },
             {
                 SQL     => "DELETE FROM ticket_type WHERE id = ?",

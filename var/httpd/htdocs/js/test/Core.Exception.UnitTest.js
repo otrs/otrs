@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 "use strict";
@@ -17,10 +17,10 @@ Core.Exception = (function (Namespace) {
         // ApplicationError
         QUnit.test('Core.Exception.ApplicationError()', function(Assert){
             var ErrorMessage = 'Test error message',
-                ErrorTypes = ['Error', 'InternalError', 'TypeError', 'CommunicationError'],
+                ErrorTypes = ['Error', 'InternalError', 'TypeError', 'CommunicationError', 'ConnectionError'],
                 ExceptionObject;
 
-            Assert.expect(12);
+            Assert.expect(15);
 
             Core.Exception.HandleFinalError = function (Exception, ErrorType) {
                 Assert.equal(Exception.GetType(), ErrorType, "Handle error type - " + ErrorType + ', error message - ' + ErrorMessage);

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::NotificationEvent;
@@ -457,8 +457,9 @@ update a notification in database
 sub NotificationUpdate {
     my ( $Self, %Param ) = @_;
 
-    # check needed stuff
-    for my $Argument (qw(ID Name Data Message ValidID UserID)) {
+    # Check needed stuff.
+    for my $Argument (qw(ID Name Data ValidID UserID)) {
+
         if ( !$Param{$Argument} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -468,8 +469,13 @@ sub NotificationUpdate {
         }
     }
 
-    # check message parameter
-    if ( !IsHashRefWithData( $Param{Message} ) ) {
+    # Check message parameter.
+    if (
+        !$Param{PossibleEmptyMessage}
+        && !IsHashRefWithData( $Param{Message} )
+        )
+    {
+
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Need Message!",
@@ -477,12 +483,12 @@ sub NotificationUpdate {
         return;
     }
 
-    # check each argument for each message language
-    for my $Language ( sort keys %{ $Param{Message} } ) {
+    # Check each argument for each message language.
+    for my $Language ( sort keys %{ $Param{Message} // {} } ) {
 
         for my $Argument (qw(Subject Body ContentType)) {
 
-            # error if message data is incomplete
+            # Error if message data is incomplete.
             if ( !$Param{Message}->{$Language}->{$Argument} ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
@@ -491,15 +497,14 @@ sub NotificationUpdate {
                 return;
             }
 
-            # fix some bad stuff from some browsers (Opera)!
+            # Fix some bad stuff from some browsers (Opera)!
             $Param{Message}->{$Language}->{Body} =~ s/(\n\r|\r\r\n|\r\n|\r)/\n/g;
         }
     }
 
-    # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    # update data in db
+    # Update data in db/
     return if !$DBObject->Do(
         SQL => '
             UPDATE notification_event
@@ -512,13 +517,13 @@ sub NotificationUpdate {
         ],
     );
 
-    # delete existing notification event item data
+    # Delete existing notification event item data.
     $DBObject->Do(
         SQL  => 'DELETE FROM notification_event_item WHERE notification_id = ?',
         Bind => [ \$Param{ID} ],
     );
 
-    # add new notification event item data
+    # Add new notification event item data.
     for my $Key ( sort keys %{ $Param{Data} } ) {
 
         ITEM:
@@ -541,14 +546,14 @@ sub NotificationUpdate {
         }
     }
 
-    # delete existing notification event message data
+    # Delete existing notification event message data.
     $DBObject->Do(
         SQL  => 'DELETE FROM notification_event_message WHERE notification_id = ?',
         Bind => [ \$Param{ID} ],
     );
 
-    # insert new notification event message data
-    for my $Language ( sort keys %{ $Param{Message} } ) {
+    # Insert new notification event message data.
+    for my $Language ( sort keys %{ $Param{Message} // {} } ) {
 
         my %Message = %{ $Param{Message}->{$Language} };
 
@@ -698,7 +703,7 @@ sub NotificationEventCheck {
     my $DBObject    = $Kernel::OM->Get('Kernel::System::DB');
     my $ValidObject = $Kernel::OM->Get('Kernel::System::Valid');
 
-    my @ValidIDs = $ValidObject->ValidIDsGet();
+    my @ValidIDs      = $ValidObject->ValidIDsGet();
     my $ValidIDString = join ', ', @ValidIDs;
 
     $DBObject->Prepare(
@@ -725,7 +730,7 @@ sub NotificationEventCheck {
 
 import an Notification YAML file/content
 
-    my $NotificationImport = $NotificationObject->NotificationImport(
+    my $NotificationImport = $NotificationEventObject->NotificationImport(
         Content                   => $YAMLContent, # mandatory, YAML format
         OverwriteExistingNotifications => 0,            # 0 || 1
         UserID                    => 1,            # mandatory
@@ -772,6 +777,22 @@ sub NotificationImport {
             Message =>
                 Translatable("Couldn't read Notification configuration file. Please make sure the file is valid."),
         };
+    }
+
+    # Check notification message length for every language.
+    for my $Language ( sort keys %{ $NotificationData->[0]->{Message} } ) {
+        my $Check = $Self->NotificationBodyCheck(
+            Content => $NotificationData->[0]->{Message}->{$Language}->{Body},
+            UserID  => $Param{UserID},
+        );
+
+        if ( !$Check ) {
+            return {
+                Success => 0,
+                Message =>
+                    Translatable('Imported notification has body text with more than 4000 characters.'),
+            };
+        }
     }
 
     my @UpdatedNotifications;
@@ -829,14 +850,58 @@ sub NotificationImport {
     };
 }
 
+=head2 NotificationBodyCheck()
+
+Check if body has a proper length depending on DB type.
+
+    my $Ok = $NotificationEventObject->NotificationBodyCheck(
+        Content => $BodyContent, # mandatory
+        UserID  => 1,            # mandatory
+    );
+
+=cut
+
+sub NotificationBodyCheck {
+    my ( $Self, %Param ) = @_;
+
+    # Check needed stuff.
+    if ( !$Param{Content} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need Content!",
+        );
+        return;
+    }
+
+    my $DBType = $Kernel::OM->Get('Kernel::System::DB')->{'DB::Type'};
+
+    # Body field length in the database is strictly set to 4000 characters for both PostgreSQL and Oracle backends.
+    #   Since this restriction was not enforced for MySQL previously, it was possible to enter longer texts in the
+    #   table. Because of this, we must now for reasons on backwards compatibility limit the body size only for those
+    #   backends, at least until the next major version and planned field size change.
+    #   Please see both bug#12843 (original semi-reverted fix) and bug#13281 for more information.
+    if (
+        (
+            $DBType eq 'postgresql'
+            || $DBType eq 'oracle'
+        )
+        && length $Param{Content} > 4000
+        )
+    {
+        return 0;
+    }
+
+    return 1;
+}
+
 1;
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

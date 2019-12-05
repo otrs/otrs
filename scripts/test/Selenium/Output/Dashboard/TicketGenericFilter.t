@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -119,7 +119,11 @@ $Selenium->RunTest(
         else {
 
             # Click on column setting filter for the first customer in TicketNew generic dashboard overview.
-            $Selenium->find_element("//a[contains(\@title, \'Customer User ID\' )]")->VerifiedClick();
+            $Selenium->find_element("//a[contains(\@title, \'Customer User ID\' )]")->click();
+            $Selenium->WaitFor(
+                JavaScript =>
+                    'return $("div.ColumnSettingsBox").length'
+            );
 
             # Select the first test 'Customer User ID' as filter for TicketNew generic dashboard overview.
             my $ParentElement = $Selenium->find_element( "div.ColumnSettingsBox", 'css' );
@@ -158,7 +162,7 @@ $Selenium->RunTest(
             );
 
             # Click on column setting filter for 'Customer User ID' in TicketNew generic dashboard overview.
-            $Selenium->find_element("//a[contains(\@title, \'Customer User ID\' )]")->VerifiedClick();
+            $Selenium->find_element("//a[contains(\@title, \'Customer User ID\' )]")->click();
             sleep 1;
 
             # Wait for AJAX to finish.
@@ -168,7 +172,7 @@ $Selenium->RunTest(
             );
 
             # Delete the current filter.
-            $Selenium->find_element( "a.DeleteFilter", 'css' )->VerifiedClick();
+            $Selenium->find_element( "a.DeleteFilter", 'css' )->click();
 
             # Wait for AJAX to finish.
             $Selenium->WaitFor(
@@ -177,7 +181,11 @@ $Selenium->RunTest(
             );
 
             # Click on column setting filter for 'Customer User ID' in TicketNew generic dashboard overview.
-            $Selenium->find_element("//a[contains(\@title, \'Customer User ID\' )]")->VerifiedClick();
+            $Selenium->find_element("//a[contains(\@title, \'Customer User ID\' )]")->click();
+            $Selenium->WaitFor(
+                JavaScript =>
+                    'return $("div.ColumnSettingsBox").length'
+            );
 
             # Select test 'Customer User ID' as filter for TicketNew generic dashboard overview.
             $ParentElement = $Selenium->find_element( "div.ColumnSettingsBox", 'css' );
@@ -217,7 +225,7 @@ $Selenium->RunTest(
 
             # Cleanup
             # Click on column setting filter for 'Customer User ID' in TicketNew generic dashboard overview.
-            $Selenium->find_element("//a[contains(\@title, \'Customer User ID\' )]")->VerifiedClick();
+            $Selenium->find_element("//a[contains(\@title, \'Customer User ID\' )]")->click();
             sleep 1;
 
             # wait for AJAX to finish
@@ -227,7 +235,7 @@ $Selenium->RunTest(
             );
 
             # Delete the current filter.
-            $Selenium->find_element( "a.DeleteFilter", 'css' )->VerifiedClick();
+            $Selenium->find_element( "a.DeleteFilter", 'css' )->click();
 
             # Wait for AJAX to finish.
             $Selenium->WaitFor(
@@ -272,7 +280,11 @@ $Selenium->RunTest(
         else {
 
             # Click on column setting filter for the first customer in TicketNew generic dashboard overview.
-            $Selenium->find_element("//a[contains(\@title, \'Customer ID\' )]")->VerifiedClick();
+            $Selenium->find_element("//a[contains(\@title, \'Customer ID\' )]")->click();
+            $Selenium->WaitFor(
+                JavaScript =>
+                    'return $("div.ColumnSettingsBox").length'
+            );
 
             # Select the third test Customer ID as filter for TicketNew generic dashboard overview.
             my $ParentElement = $Selenium->find_element( "div.ColumnSettingsBox", 'css' );
@@ -311,7 +323,7 @@ $Selenium->RunTest(
             );
 
             # Click on column setting filter for CustomerID in TicketNew generic dashboard overview.
-            $Selenium->find_element("//a[contains(\@title, \'Customer ID\' )]")->VerifiedClick();
+            $Selenium->find_element("//a[contains(\@title, \'Customer ID\' )]")->click();
             sleep 1;
 
             # Wait for AJAX to finish.
@@ -321,7 +333,7 @@ $Selenium->RunTest(
             );
 
             # Delete the current filter.
-            $Selenium->find_element( "a.DeleteFilter", 'css' )->VerifiedClick();
+            $Selenium->find_element( "a.DeleteFilter", 'css' )->click();
 
             # Wait for AJAX to finish.
             $Selenium->WaitFor(
@@ -337,6 +349,15 @@ $Selenium->RunTest(
                 TicketID => $Ticket->{TicketID},
                 UserID   => 1,
             );
+
+            # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+            if ( !$Success ) {
+                sleep 3;
+                $Success = $TicketObject->TicketDelete(
+                    TicketID => $Ticket->{TicketID},
+                    UserID   => 1,
+                );
+            }
             $Self->True(
                 $Success,
                 "Ticket ID $Ticket->{TicketID} - deleted"

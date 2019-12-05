@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -44,7 +44,7 @@ $Helper->ConfigSettingChange(
 
 # Disable default Vacation days.
 $Helper->ConfigSettingChange(
-    Key   => 'TimeVacationDays',
+    Key   => 'TimeVacationDays::Calendar1',
     Value => {},
 );
 
@@ -118,7 +118,8 @@ $Self->True(
     "SLA $SLAID has been created.",
 );
 
-for my $Item ( 1 .. 5 ) {
+my @TicketIDs;
+for my $Item ( 1 .. 6 ) {
 
     my $TicketID = $TicketObject->TicketCreate(
         Title        => 'Ticket One Title',
@@ -133,11 +134,11 @@ for my $Item ( 1 .. 5 ) {
         OwnerID      => 1,
         UserID       => 1,
     );
-
     $Self->True(
         $TicketID,
-        "TicketCreate() successful for Ticket One ID $TicketID",
+        "TicketCreate() successful for Ticket ID $TicketID",
     );
+    push @TicketIDs, $TicketID;
 
     my $TestFieldConfig = $DynamicFieldObject->DynamicFieldGet(
         ID => $FieldID,
@@ -183,56 +184,68 @@ for my $Item ( 1 .. 5 ) {
 
     $Helper->FixedTimeAddSeconds( $Item * 60 );
 
-    $Success = $TicketObject->TicketStateSet(
-        StateID            => 2,
-        TicketID           => $TicketID,
-        SendNoNotification => 0,
-        UserID             => 1,
-    );
-
-    $Self->True(
-        $Success,
-        "TicketStateSet() successful set state 'close successful' for ticket $TicketID",
-    );
-
+    # Close all ticket's except the last one.
+    if ( $Item != 6 ) {
+        $Success = $TicketObject->TicketStateSet(
+            StateID            => 2,
+            TicketID           => $TicketID,
+            SendNoNotification => 0,
+            UserID             => 1,
+        );
+        $Self->True(
+            $Success,
+            "TicketStateSet() successful set state 'close successful' for ticket $TicketID",
+        );
+    }
 }
+
+# Merge two last created test tickets.
+my $MergeSuccess = $TicketObject->TicketMerge(
+    MainTicketID  => $TicketIDs[4],
+    MergeTicketID => $TicketIDs[5],
+    UserID        => 1,
+);
+$Self->True(
+    $MergeSuccess,
+    "TicketMerge() successful merged TicketID $TicketIDs[4] with TicketID $TicketIDs[5]"
+);
 
 my @Tests = (
     {
         KindsOfReporting => 'SolutionAverageAllOver',
-        ExpectedResult   => '0h 9m',
+        ExpectedResult   => '8 m',
     },
     {
         KindsOfReporting => 'SolutionMinTimeAllOver',
-        ExpectedResult   => '0h 3m',
+        ExpectedResult   => '3 m',
     },
     {
         KindsOfReporting => 'SolutionMaxTimeAllOver',
-        ExpectedResult   => '0h 15m',
+        ExpectedResult   => '15 m',
     },
     {
         KindsOfReporting => 'SolutionAverage',
-        ExpectedResult   => '0h 9m',
+        ExpectedResult   => '9 m',
     },
     {
         KindsOfReporting => 'SolutionMinTime',
-        ExpectedResult   => '0h 3m',
+        ExpectedResult   => '3 m',
     },
     {
         KindsOfReporting => 'SolutionMaxTime',
-        ExpectedResult   => '0h 15m',
+        ExpectedResult   => '15 m',
     },
     {
         KindsOfReporting => 'SolutionWorkingTimeAverage',
-        ExpectedResult   => '0h 9m',
+        ExpectedResult   => '9 m',
     },
     {
         KindsOfReporting => 'SolutionMinWorkingTime',
-        ExpectedResult   => '0h 3m',
+        ExpectedResult   => '3 m',
     },
     {
         KindsOfReporting => 'SolutionMaxWorkingTime',
-        ExpectedResult   => '0h 15m',
+        ExpectedResult   => '15 m',
     },
     {
         KindsOfReporting => 'NumberOfTickets',
@@ -240,23 +253,23 @@ my @Tests = (
     },
     {
         KindsOfReporting => 'ResponseAverage',
-        ExpectedResult   => '0h 6m',
+        ExpectedResult   => '6 m',
     },
     {
         KindsOfReporting => 'ResponseMinTime',
-        ExpectedResult   => '0h 2m',
+        ExpectedResult   => '2 m',
     },
     {
         KindsOfReporting => 'ResponseWorkingTimeAverage',
-        ExpectedResult   => '0h 6m',
+        ExpectedResult   => '6 m',
     },
     {
         KindsOfReporting => 'ResponseMinWorkingTime',
-        ExpectedResult   => '0h 2m',
+        ExpectedResult   => '2 m',
     },
     {
         KindsOfReporting => 'ResponseMaxWorkingTime',
-        ExpectedResult   => '0h 10m',
+        ExpectedResult   => '10 m',
     },
 );
 

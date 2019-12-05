@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::GenericAgent;
@@ -250,7 +250,7 @@ sub JobRun {
         #   but don't overwrite existing keys
         for my $Counter ( 1 .. 6 ) {
             if ( $Job{New}->{"ParamKey$Counter"} ) {
-                $Job{New}->{ $Job{New}->{"ParamKey$Counter"} } //= $Job{New}->{"ParamValue$Counter"}
+                $Job{New}->{ $Job{New}->{"ParamKey$Counter"} } //= $Job{New}->{"ParamValue$Counter"};
             }
         }
 
@@ -1030,7 +1030,7 @@ sub _JobRunTicket {
             Subject => $Param{Config}->{New}->{Note}->{Subject}
                 || $Param{Config}->{New}->{NoteSubject}
                 || 'Note',
-            Body => $Param{Config}->{New}->{Note}->{Body} || $Param{Config}->{New}->{NoteBody},
+            Body           => $Param{Config}->{New}->{Note}->{Body} || $Param{Config}->{New}->{NoteBody},
             MimeType       => $ContentType,
             Charset        => 'utf-8',
             UserID         => $Param{UserID},
@@ -1129,6 +1129,14 @@ sub _JobRunTicket {
 
     # set customer id and customer user
     if ( $Param{Config}->{New}->{CustomerID} || $Param{Config}->{New}->{CustomerUserLogin} ) {
+
+        # If CustomerID or CustomerUserID is updated but not both in same call,
+        # keep original values for non updated ones. See bug#14864 (https://bugs.otrs.org/show_bug.cgi?id=14864).
+        my %Ticket = $TicketObject->TicketGet(
+            TicketID      => $Param{TicketID},
+            DynamicFields => 0,
+        );
+
         if ( $Param{Config}->{New}->{CustomerID} ) {
             if ( $Self->{NoticeSTDOUT} ) {
                 print
@@ -1143,8 +1151,8 @@ sub _JobRunTicket {
         }
         $TicketObject->TicketCustomerSet(
             TicketID => $Param{TicketID},
-            No       => $Param{Config}->{New}->{CustomerID} || '',
-            User     => $Param{Config}->{New}->{CustomerUserLogin} || '',
+            No       => $Param{Config}->{New}->{CustomerID} || $Ticket{CustomerID} || '',
+            User     => $Param{Config}->{New}->{CustomerUserLogin} || $Ticket{CustomerUserID} || '',
             UserID   => $Param{UserID},
         );
     }
@@ -1374,7 +1382,10 @@ sub _JobRunTicket {
     }
 
     # run module
-    if ( $Param{Config}->{New}->{Module} ) {
+    my $AllowCustomModuleExecution
+        = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::GenericAgentAllowCustomModuleExecution') || 0;
+
+    if ( $Param{Config}->{New}->{Module} && $AllowCustomModuleExecution ) {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - Use module ($Param{Config}->{New}->{Module}) for Ticket $Ticket.\n";
         }
@@ -1413,6 +1424,15 @@ sub _JobRunTicket {
             }
         }
     }
+    elsif ( $Param{Config}->{New}->{Module} && !$AllowCustomModuleExecution ) {
+        if ( $Self->{NoticeSTDOUT} ) {
+            print "  - Use module ($Param{Config}->{New}->{Module}) is not allowed by the system configuration.\n";
+        }
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Use module ($Param{Config}->{New}->{Module}) is not allowed by the system configuration.",
+        );
+    }
 
     # set new archive flag
     if (
@@ -1432,7 +1452,10 @@ sub _JobRunTicket {
     }
 
     # cmd
-    if ( $Param{Config}->{New}->{CMD} ) {
+    my $AllowCustomScriptExecution
+        = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::GenericAgentAllowCustomScriptExecution') || 0;
+
+    if ( $Param{Config}->{New}->{CMD} && $AllowCustomScriptExecution ) {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - Execute '$Param{Config}->{New}->{CMD}' for Ticket $Ticket.\n";
         }
@@ -1448,6 +1471,15 @@ sub _JobRunTicket {
                 Message  => "Command returned a nonzero return code: rc=$?, err=$!",
             );
         }
+    }
+    elsif ( $Param{Config}->{New}->{CMD} && !$AllowCustomScriptExecution ) {
+        if ( $Self->{NoticeSTDOUT} ) {
+            print "  - Execute '$Param{Config}->{New}->{CMD}' is not allowed by the system configuration..\n";
+        }
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Execute '$Param{Config}->{New}->{CMD}' is not allowed by the system configuration..",
+        );
     }
 
     # delete ticket
@@ -1520,10 +1552,10 @@ sub _JobUpdateRunTime {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

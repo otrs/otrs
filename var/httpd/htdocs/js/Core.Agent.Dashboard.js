@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 "use strict";
@@ -119,59 +119,55 @@ Core.Agent.Dashboard = (function (TargetNS) {
         // Initializes dashboard ticket generic widgets functionality
         TargetNS.InitTicketGeneric();
 
-        // Disable drag and drop of dashboard widgets on mobile / touch devices
-        // to prevent accidentally moved widgets while tabbing/swiping
-        if (!Core.App.Responsive.IsTouchDevice()) {
-            Core.UI.DnD.Sortable(
-                $('.SidebarColumn'),
-                {
-                    Handle: '.Header h2',
-                    Items: '.CanDrag',
-                    Placeholder: 'DropPlaceholder',
-                    Tolerance: 'pointer',
-                    Distance: 15,
-                    Opacity: 0.6,
-                    Update: function () {
-                        var url = 'Action=' + Core.Config.Get('Action') + ';Subaction=UpdatePosition;';
-                        $('.CanDrag').each(
-                            function () {
-                                url = url + ';Backend=' + $(this).attr('id');
-                            }
-                        );
-                        Core.AJAX.FunctionCall(
-                            Core.Config.Get('CGIHandle'),
-                            url,
-                            function () {}
-                        );
-                    }
+        Core.UI.DnD.Sortable(
+            $('.SidebarColumn'),
+            {
+                Handle: '.Header h2',
+                Items: '.CanDrag',
+                Placeholder: 'DropPlaceholder',
+                Tolerance: 'pointer',
+                Distance: 15,
+                Opacity: 0.6,
+                Update: function () {
+                    var url = 'Action=' + Core.Config.Get('Action') + ';Subaction=UpdatePosition;';
+                    $('.CanDrag').each(
+                        function () {
+                            url = url + ';Backend=' + $(this).attr('id');
+                        }
+                    );
+                    Core.AJAX.FunctionCall(
+                        Core.Config.Get('CGIHandle'),
+                        url,
+                        function () {}
+                    );
                 }
-            );
+            }
+        );
 
-            Core.UI.DnD.Sortable(
-                $('.ContentColumn'),
-                {
-                    Handle: '.Header h2',
-                    Items: '.CanDrag',
-                    Placeholder: 'DropPlaceholder',
-                    Tolerance: 'pointer',
-                    Distance: 15,
-                    Opacity: 0.6,
-                    Update: function () {
-                        var url = 'Action=' + Core.Config.Get('Action') + ';Subaction=UpdatePosition;';
-                        $('.CanDrag').each(
-                            function () {
-                                url = url + ';Backend=' + $(this).attr('id');
-                            }
-                        );
-                        Core.AJAX.FunctionCall(
-                            Core.Config.Get('CGIHandle'),
-                            url,
-                            function () {}
-                        );
-                    }
+        Core.UI.DnD.Sortable(
+            $('.ContentColumn'),
+            {
+                Handle: '.Header h2',
+                Items: '.CanDrag',
+                Placeholder: 'DropPlaceholder',
+                Tolerance: 'pointer',
+                Distance: 15,
+                Opacity: 0.6,
+                Update: function () {
+                    var url = 'Action=' + Core.Config.Get('Action') + ';Subaction=UpdatePosition;';
+                    $('.CanDrag').each(
+                        function () {
+                            url = url + ';Backend=' + $(this).attr('id');
+                        }
+                    );
+                    Core.AJAX.FunctionCall(
+                        Core.Config.Get('CGIHandle'),
+                        url,
+                        function () {}
+                    );
                 }
-            );
-        }
+            }
+        );
 
         $('.SettingsWidget').find('label').each(function() {
             if ($(this).find('input').prop('checked')) {
@@ -743,7 +739,7 @@ Core.Agent.Dashboard = (function (TargetNS) {
                     'svg.GraphWidget' + StatsData.Name,
                     {
                         PreferencesKey: 'GraphWidget' + StatsData.Name,
-                        PreferencesData: StatsData.Preferences,
+                        PreferencesData: Core.JSON.Parse(StatsData.Preferences),
                         Duration: 250
                     }
                 );
@@ -751,12 +747,7 @@ Core.Agent.Dashboard = (function (TargetNS) {
 
         }());
 
-        $('#DownloadSVG' + Core.App.EscapeSelector(StatsData.Name)).off('click').on('click', function() {
-            this.href = Core.UI.AdvancedChart.ConvertSVGtoBase64($('#GraphWidgetContainer' + Core.App.EscapeSelector(StatsData.Name)));
-        });
-        $('#DownloadPNG' + Core.App.EscapeSelector(StatsData.Name)).off('click').on('click', function() {
-            this.href = Core.UI.AdvancedChart.ConvertSVGtoPNG($('#GraphWidgetContainer' + Core.App.EscapeSelector(StatsData.Name)));
-        });
+
 
         $('#GraphWidgetLink' + Core.App.EscapeSelector(StatsData.Name)).prependTo($('#GraphWidget' + Core.App.EscapeSelector(StatsData.Name)).closest('.WidgetSimple').find('.ActionMenu'));
         $('#GraphWidgetLink' + Core.App.EscapeSelector(StatsData.Name)).find('a.TriggerTooltip').off('click').on('click', function(){
@@ -768,6 +759,13 @@ Core.Agent.Dashboard = (function (TargetNS) {
         });
         $('#GraphWidgetLink' + Core.App.EscapeSelector(StatsData.Name)).closest('.Header').on('mouseleave.WidgetTooltip', function(){
             $('#GraphWidgetLink' + Core.App.EscapeSelector(StatsData.Name)).find('.WidgetTooltip').addClass('Hidden');
+        });
+
+        $('#DownloadSVG' + Core.App.EscapeSelector(StatsData.Name)).off('click').on('click', function() {
+            this.href = Core.UI.AdvancedChart.ConvertSVGtoBase64($('#GraphWidgetContainer' + Core.App.EscapeSelector(StatsData.Name)));
+        });
+        $('#DownloadPNG' + Core.App.EscapeSelector(StatsData.Name)).off('click').on('click', function() {
+            this.href = Core.UI.AdvancedChart.ConvertSVGtoPNG($('#GraphWidgetContainer' + Core.App.EscapeSelector(StatsData.Name)));
         });
 
         Core.Config.Set('StatsMaxXaxisAttributes', parseInt(StatsData.MaxXaxisAttributes, 10));
@@ -975,6 +973,12 @@ Core.Agent.Dashboard = (function (TargetNS) {
             DashboardTicketWidgetFilter(WidgetContainer);
         }
 
+        // Reinitialize events for Customer Users table on update.
+        // See bug#14737 for more details (https://bugs.otrs.org/show_bug.cgi?id=14737).
+        if (!$.isEmptyObject(Core.Agent.SwitchToCustomerAction)) {
+            Core.Agent.SwitchToCustomerAction.Init();
+        }
+
         Core.UI.InitMasterAction();
     }
 
@@ -1011,7 +1015,7 @@ Core.Agent.Dashboard = (function (TargetNS) {
             });
 
             $('#Dashboard' + Core.App.EscapeSelector(HeaderMeta.Name) + '-box').addClass('Loading');
-            Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(HeaderMeta.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + HeaderMeta.Name + ';AdditionalFilter=' + AdditionalFilter + ';Filter=' + Filter + ';' + LinkPage + ';CustomerID=' + CustomerID + ';CustomerUserID=' + CustomerUserID + ';SortBy=' + HeaderMeta.HeaderColumnName + ';OrderBy=' + HeaderMeta.OrderBy, function () {
+            Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(HeaderMeta.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + HeaderMeta.Name + ';AdditionalFilter=' + AdditionalFilter + ';Filter=' + Filter + ';' + LinkPage + ';CustomerID=' + CustomerID + ';CustomerUserID=' + CustomerUserID + ';SortBy=' + HeaderMeta.HeaderColumnName + ';OrderBy=' + HeaderMeta.OrderBy + ';SortingColumn=' + HeaderMeta.SortingColumn, function () {
                 $('#Dashboard' + Core.App.EscapeSelector(HeaderMeta.Name) + '-box').removeClass('Loading');
             });
             Event.preventDefault();
@@ -1380,7 +1384,7 @@ Core.Agent.Dashboard = (function (TargetNS) {
                 }
 
                 $('#Dashboard' + Core.App.EscapeSelector(WidgetRefreshData.Name) + '-box').addClass('Loading');
-                Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(WidgetRefreshData.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + WidgetRefreshData.Name + ';AdditionalFilter=' + AdditionalFilter + ';Filter=' + Filter + ';CustomerID=' + WidgetRefreshData.CustomerID + ';SortBy=' + SortBy + ';OrderBy=' + OrderBy, function () {
+                Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector(WidgetRefreshData.Name)), Core.Config.Get('Baselink') + 'Action=' + Core.Config.Get('Action') + ';Subaction=Element;Name=' + WidgetRefreshData.Name + ';AdditionalFilter=' + AdditionalFilter + ';Filter=' + Filter + ';CustomerID=' + WidgetRefreshData.CustomerID + ';CustomerUserID=' + WidgetRefreshData.CustomerUserID + ';SortBy=' + SortBy + ';OrderBy=' + OrderBy, function () {
                     $('#Dashboard' + Core.App.EscapeSelector(WidgetRefreshData.Name) + '-box').removeClass('Loading');
                 });
                 clearTimeout(Core.Config.Get('Timer_' + WidgetRefreshData.NameHTML));

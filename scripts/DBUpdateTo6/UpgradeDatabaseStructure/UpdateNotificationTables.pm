@@ -1,15 +1,16 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package scripts::DBUpdateTo6::UpgradeDatabaseStructure::UpdateNotificationTables;    ## no critic
 
 use strict;
 use warnings;
+use utf8;
 
 use parent qw(scripts::DBUpdateTo6::Base);
 
@@ -153,7 +154,7 @@ sub Run {
             '<Insert Table="notification_event_message">
                 <Data Key="id" Type="AutoIncrement">110</Data>
                 <Data Key="notification_id">' . $NotificationID . '</Data>
-                <Data Key="content_type" Type="Quote">text/html</Data>
+                <Data Key="content_type" Type="Quote">text/plain</Data>
                 <Data Key="language" Type="Quote">en</Data>
                 <Data Key="subject" Type="Quote"><![CDATA[Email Delivery Failure]]></Data>
                 <Data Key="text" Type="Quote"><![CDATA[Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
@@ -161,6 +162,24 @@ sub Run {
 Please note, that the delivery of an email article of [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] has failed. Please check the email address of your recipient for mistakes and try again. You can manually resend the article from the ticket if required.
 
 Error Message:
+<OTRS_AGENT_TransmissionStatusMessage>
+
+<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>;ArticleID=<OTRS_AGENT_ArticleID>
+
+-- <OTRS_CONFIG_NotificationSenderName>]]></Data>
+            </Insert>',
+
+            '<Insert Table="notification_event_message">
+                <Data Key="id" Type="AutoIncrement">111</Data>
+                <Data Key="notification_id">' . $NotificationID . '</Data>
+                <Data Key="content_type" Type="Quote">text/plain</Data>
+                <Data Key="language" Type="Quote">hu</Data>
+                <Data Key="subject" Type="Quote"><![CDATA[E-mail kézbesítési hiba]]></Data>
+                <Data Key="text" Type="Quote"><![CDATA[Kedves <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>!
+
+Felhívjuk a figyelmét, hogy a(z) [<OTRS_CONFIG_Ticket::Hook><OTRS_CONFIG_Ticket::HookDivider><OTRS_TICKET_TicketNumber>] jegy e-mail bejegyzésének kézbesítése nem sikerült. Ellenőrizze, hogy nincs-e a címzett e-mail címében hiba, és próbálja meg újra. Kézileg is újraküldheti a bejegyzést a jegyből, ha szükséges.
+
+Hibaüzenet:
 <OTRS_AGENT_TransmissionStatusMessage>
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>;ArticleID=<OTRS_AGENT_ArticleID>
@@ -181,10 +200,10 @@ Error Message:
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

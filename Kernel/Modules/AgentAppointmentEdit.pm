@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentAppointmentEdit;
@@ -320,6 +320,7 @@ sub Run {
                             $Rule->{$Type} eq 'FirstResponseTime'
                             || $Rule->{$Type} eq 'UpdateTime'
                             || $Rule->{$Type} eq 'SolutionTime'
+                            || $Rule->{$Type} eq 'PendingTime'
                             )
                         {
                             $GetParam{ReadOnlyStart}    = 1 if $Type eq 'StartDate';
@@ -922,7 +923,7 @@ sub Run {
         $Appointment{NotificationCustom} ||= '';
 
         if ( $Appointment{NotificationCustom} eq 'datetime' ) {
-            $Param{NotificationCustomDateTimeInputRadio} = 'checked="checked"'
+            $Param{NotificationCustomDateTimeInputRadio} = 'checked="checked"';
         }
         elsif ( $Appointment{NotificationCustom} eq 'relative' ) {
             $Param{NotificationCustomRelativeInputRadio} = 'checked="checked"';
@@ -1490,7 +1491,47 @@ sub Run {
         # pass current user ID
         $GetParam{UserID} = $Self->{UserID};
 
+        # Get passed plugin parameters.
+        my @PluginParams = grep { $_ =~ /^Plugin_/ } keys %GetParam;
+
         if (%Appointment) {
+
+            # Continue only if coming from edit screen
+            #   (there is at least one passed plugin parameter).
+            if (@PluginParams) {
+
+                # Get all related appointments before the update.
+                my @RelatedAppointments  = ( $Appointment{AppointmentID} );
+                my @CalendarAppointments = $AppointmentObject->AppointmentList(
+                    CalendarID => $Appointment{CalendarID},
+                );
+
+                # If we are dealing with a parent, include any child appointments.
+                push @RelatedAppointments,
+                    map {
+                    $_->{AppointmentID}
+                    }
+                    grep {
+                    defined $_->{ParentID}
+                        && $_->{ParentID} eq $Appointment{AppointmentID}
+                    } @CalendarAppointments;
+
+                # Remove all existing links.
+                for my $CurrentAppointmentID (@RelatedAppointments) {
+                    my $Success = $PluginObject->PluginLinkDelete(
+                        AppointmentID => $CurrentAppointmentID,
+                        UserID        => $Self->{UserID},
+                    );
+
+                    if ( !$Success ) {
+                        $Kernel::OM->Get('Kernel::System::Log')->Log(
+                            Priority => 'error',
+                            Message  => "Links could not be deleted for appointment $CurrentAppointmentID!",
+                        );
+                    }
+                }
+            }
+
             $Success = $AppointmentObject->AppointmentUpdate(
                 %Appointment,
                 %GetParam,
@@ -1506,27 +1547,30 @@ sub Run {
 
         if ($AppointmentID) {
 
-            # Get passed plugin parameters.
-            my @PluginParams = grep { $_ =~ /^Plugin_/ } keys %GetParam;
-
             # Continue only if coming from edit screen
             #   (there is at least one passed plugin parameter).
             if (@PluginParams) {
 
-                # Remove all existing links.
-                if ( $GetParam{AppointmentID} ) {
-                    my $Success = $PluginObject->PluginLinkDelete(
-                        AppointmentID => $AppointmentID,
-                        UserID        => $Self->{UserID},
-                    );
+                # Get fresh appointment data.
+                %Appointment = $AppointmentObject->AppointmentGet(
+                    AppointmentID => $AppointmentID,
+                );
 
-                    if ( !$Success ) {
-                        $Kernel::OM->Get('Kernel::System::Log')->Log(
-                            Priority => 'error',
-                            Message  => Translatable('Links could not be deleted!'),
-                        );
+                # Process all related appointments.
+                my @RelatedAppointments  = ($AppointmentID);
+                my @CalendarAppointments = $AppointmentObject->AppointmentList(
+                    CalendarID => $Appointment{CalendarID},
+                );
+
+                # If we are dealing with a parent, include any child appointments as well.
+                push @RelatedAppointments,
+                    map {
+                    $_->{AppointmentID}
                     }
-                }
+                    grep {
+                    defined $_->{ParentID}
+                        && $_->{ParentID} eq $AppointmentID
+                    } @CalendarAppointments;
 
                 # Process passed plugin parameters.
                 for my $PluginParam (@PluginParams) {
@@ -1539,18 +1583,20 @@ sub Run {
                     # Execute link add method of the plugin.
                     if ( IsArrayRefWithData($PluginData) ) {
                         for my $LinkID ( @{$PluginData} ) {
-                            my $Link = $PluginObject->PluginLinkAdd(
-                                AppointmentID => $AppointmentID,
-                                PluginKey     => $PluginKey,
-                                PluginData    => $LinkID,
-                                UserID        => $Self->{UserID},
-                            );
-
-                            if ( !$Link ) {
-                                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                                    Priority => 'error',
-                                    Message  => Translatable('Link could not be created!'),
+                            for my $CurrentAppointmentID (@RelatedAppointments) {
+                                my $Link = $PluginObject->PluginLinkAdd(
+                                    AppointmentID => $CurrentAppointmentID,
+                                    PluginKey     => $PluginKey,
+                                    PluginData    => $LinkID,
+                                    UserID        => $Self->{UserID},
                                 );
+
+                                if ( !$Link ) {
+                                    $Kernel::OM->Get('Kernel::System::Log')->Log(
+                                        Priority => 'error',
+                                        Message  => "Link could not be created for appointment $CurrentAppointmentID!",
+                                    );
+                                }
                             }
                         }
                     }
@@ -1561,7 +1607,7 @@ sub Run {
         # build JSON output
         $JSON = $LayoutObject->JSONEncode(
             Data => {
-                Success => $Success ? 1 : 0,
+                Success       => $Success ? 1 : 0,
                 AppointmentID => $AppointmentID,
             },
         );
@@ -1585,17 +1631,42 @@ sub Run {
                 $Error = Translatable('Cannot delete ticket appointment!');
             }
             else {
-                $Success = $PluginObject->PluginLinkDelete(
-                    AppointmentID => $GetParam{AppointmentID},
-                    UserID        => $Self->{UserID},
+
+                # Get all related appointments before the deletion.
+                my @RelatedAppointments  = ( $Appointment{AppointmentID} );
+                my @CalendarAppointments = $AppointmentObject->AppointmentList(
+                    CalendarID => $Appointment{CalendarID},
                 );
 
-                if ($Success) {
-                    $Success = $AppointmentObject->AppointmentDelete(
-                        %GetParam,
-                        UserID => $Self->{UserID},
+                # If we are dealing with a parent, include any child appointments.
+                push @RelatedAppointments,
+                    map {
+                    $_->{AppointmentID}
+                    }
+                    grep {
+                    defined $_->{ParentID}
+                        && $_->{ParentID} eq $Appointment{AppointmentID}
+                    } @CalendarAppointments;
+
+                # Remove all existing links.
+                for my $CurrentAppointmentID (@RelatedAppointments) {
+                    my $Success = $PluginObject->PluginLinkDelete(
+                        AppointmentID => $CurrentAppointmentID,
+                        UserID        => $Self->{UserID},
                     );
+
+                    if ( !$Success ) {
+                        $Kernel::OM->Get('Kernel::System::Log')->Log(
+                            Priority => 'error',
+                            Message  => "Links could not be deleted for appointment $CurrentAppointmentID!",
+                        );
+                    }
                 }
+
+                $Success = $AppointmentObject->AppointmentDelete(
+                    %GetParam,
+                    UserID => $Self->{UserID},
+                );
 
                 if ( !$Success ) {
                     $Error = Translatable('No permissions!');

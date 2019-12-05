@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Console::Command::Maint::Ticket::EscalationCheck;
@@ -24,7 +24,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Triggers ticket escalation events and notification events for escalation.');
+    $Self->Description('Trigger ticket escalation events and notification events for escalation.');
 
     return;
 }
@@ -81,7 +81,7 @@ sub Run {
     # Find all tickets which will escalate within the next five days.
     my @Tickets = $TicketObject->TicketSearch(
         Result                           => 'ARRAY',
-        Limit                            => 100,
+        Limit                            => 1000,
         TicketEscalationTimeOlderMinutes => -( 5 * 24 * 60 ),
         Permission                       => 'rw',
         UserID                           => 1,
@@ -107,8 +107,8 @@ sub Run {
 
         my $BusinessStopDTObject = $Kernel::OM->Create('Kernel::System::DateTime');
 
-        my $CountedTime = $BusinessStopDTObject->Delta(
-            DateTimeObject => $BusinessStartDTObject,
+        my $CountedTime = $BusinessStartDTObject->Delta(
+            DateTimeObject => $BusinessStopDTObject,
             ForWorkingTime => 1,
             Calendar       => $Calendar,
         );

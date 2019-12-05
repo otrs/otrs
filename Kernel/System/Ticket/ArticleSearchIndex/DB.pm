@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Ticket::ArticleSearchIndex::DB;
@@ -80,7 +80,8 @@ sub ArticleSearchIndexBuild {
         return;
     }
 
-    my $FilterStopWords = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::SearchIndex::FilterStopWords') // 1;
+    my $ForceUnfilteredStorage = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::SearchIndex::ForceUnfilteredStorage')
+        // 0;
 
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
@@ -115,7 +116,7 @@ sub ArticleSearchIndexBuild {
     for my $FieldKey ( sort keys %ArticleSearchableContent ) {
 
         if (
-            $FilterStopWords
+            !$ForceUnfilteredStorage
             && $ArticleSearchableContent{$FieldKey}->{Filterable}
             )
         {
@@ -299,7 +300,7 @@ sub ArticleSearchIndexWhereCondition {
         if ( $Param{SearchParams}->{ConditionInline} ) {
 
             $SQLQuery .= $DBObject->QueryCondition(
-                Key => $Field eq 'Fulltext' ? 'ArticleFulltext.article_value' : "$Field.article_value",
+                Key => $Field eq 'Fulltext' ? [ 'ArticleFulltext.article_value', 'st.title' ] : "$Field.article_value",
                 Value         => lc $Param{SearchParams}->{$Field},
                 SearchPrefix  => $Param{SearchParams}->{ContentSearchPrefix},
                 SearchSuffix  => $Param{SearchParams}->{ContentSearchSuffix},
@@ -328,6 +329,10 @@ sub ArticleSearchIndexWhereCondition {
             $Value = lc $DBObject->Quote( $Value, 'Like' );
 
             $SQLQuery .= " $Label.article_value LIKE '$Value'";
+
+            if ( $Field eq 'Fulltext' ) {
+                $SQLQuery .= " OR st.title LIKE '$Value'";
+            }
         }
     }
 
@@ -483,7 +488,7 @@ sub _ArticleSearchIndexString {
                 $IndexString .= ' ';
             }
 
-            $IndexString .= $Word
+            $IndexString .= $Word;
         }
     }
 

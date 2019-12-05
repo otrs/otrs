@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -48,10 +48,9 @@ $Selenium->RunTest(
         );
 
         # Create test user.
-        my $TestUserLogin = $Helper->TestUserCreate(
+        my ( $TestUserLogin, $UserID ) = $Helper->TestUserCreate(
             Groups => [$GroupName],
-        ) || die 'Did not get test user';
-        my $UserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup( UserLogin => $TestUserLogin );
+        );
         $Self->True(
             $UserID,
             "Created test user - $UserID",
@@ -152,9 +151,6 @@ $Selenium->RunTest(
             $Appointment->{AppointmentID} = $AppointmentID;
         }
 
-        # Change resolution (desktop mode).
-        $Selenium->set_window_size( 768, 1050 );
-
         # Login as test user.
         $Selenium->Login(
             Type     => 'Agent',
@@ -163,12 +159,7 @@ $Selenium->RunTest(
         );
 
         # Verify widget is present.
-        my $DashboardWidget = $Selenium->find_element( "#Dashboard$DashboardConfigKey", 'css' );
-        $Selenium->mouse_move_to_location(
-            element => $DashboardWidget,
-            xoffset => 0,
-            yoffset => 0,
-        );
+        $Selenium->find_element( "#Dashboard$DashboardConfigKey", 'css' );
 
         # Check appointments.
         my %FilterCount;
@@ -180,15 +171,10 @@ $Selenium->RunTest(
             $FilterCount{ $Appointment->{Filter} } += 1;
 
             # Switch filter.
-            $Selenium->execute_script(
-                "\$('a#Dashboard${DashboardConfigKey}$Appointment->{Filter}').trigger('click');"
-            );
+            $Selenium->find_element("//a[\@id='Dashboard${DashboardConfigKey}$Appointment->{Filter}']")->click();
 
-            # Wait until appointment is loaded.
-            $Selenium->WaitFor(
-                JavaScript =>
-                    "return typeof(\$) === 'function' && \$('#Dashboard$DashboardConfigKey a[href*=\"AppointmentID=$AppointmentID\"]').length === 1;"
-            );
+            # Wait until all AJAX calls finished.
+            $Selenium->WaitFor( JavaScript => "return \$.active == 0" );
 
             # Verify appointment is visible.
             $Selenium->find_element("//a[contains(\@href, \'AppointmentID=$Appointment->{AppointmentID}\')]");
@@ -234,9 +220,11 @@ $Selenium->RunTest(
             );
         }
 
+        my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
         # Make sure cache is correct.
         for my $Cache (qw(Calendar Appointment)) {
-            $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => $Cache );
+            $CacheObject->CleanUp( Type => $Cache );
         }
     },
 );

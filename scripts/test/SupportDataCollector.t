@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -84,8 +84,8 @@ for my $PluginFile (@PluginFiles) {
 }
 
 $Self->True(
-    $TimeElapsed < 180,
-    "CollectAsynchronous() - Should take less than 120 seconds, it took $TimeElapsed"
+    $TimeElapsed < 240,
+    "CollectAsynchronous() - Should take less than 240 seconds, it took $TimeElapsed"
 );
 
 # test the support data collect function
@@ -96,7 +96,7 @@ $CacheObject->CleanUp(
 $TimeStart = [ Time::HiRes::gettimeofday() ];
 
 %Result = $SupportDataCollectorObject->Collect(
-    WebTimeout => 60,
+    WebTimeout => 240,
     Hostname   => $Helper->GetTestHTTPHostname(),
 );
 
@@ -175,8 +175,8 @@ $Self->IsDeeply(
 );
 
 $Self->True(
-    $TimeElapsed < 60,
-    "Collect() - Should take less than 60 seconds, it took $TimeElapsed"
+    $TimeElapsed < 240,
+    "Collect() - Should take less than 240 seconds, it took $TimeElapsed"
 );
 
 my $TimeStartCache = [ Time::HiRes::gettimeofday() ];

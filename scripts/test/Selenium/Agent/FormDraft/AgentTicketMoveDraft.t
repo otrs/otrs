@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -12,13 +12,13 @@ use utf8;
 
 use vars (qw($Self));
 
-# Get selenium object.
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $Helper       = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
         # Disable check email addresses.
         $Helper->ConfigSettingChange(
@@ -46,9 +46,6 @@ $Selenium->RunTest(
             Key   => "Ticket::Frontend::AgentTicketMove###FormDraft",
             Value => 1
         );
-
-        # Get ticket object.
-        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
         # Create test ticket.
         my $TicketID = $TicketObject->TicketCreate(
@@ -81,7 +78,6 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        # Get script alias.
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
         # Navigate to zoom view of created test ticket.
@@ -105,10 +101,12 @@ $Selenium->RunTest(
             },
         };
 
-        # Click on Queue and switch window.
-        $Selenium->find_element(
-            "//a[contains(\@href, \'Action=AgentTicket$FormDraftCase->{Module};TicketID=$TicketID' )]"
-        )->VerifiedClick();
+        $Selenium->WaitForjQueryEventBound(
+            CSSSelector => "a[title='Change Queue']",
+        );
+
+        # Click on 'Move' and switch window.
+        $Selenium->find_element("//a[\@title='Change Queue']")->click();
 
         $Selenium->WaitFor( WindowCount => 2 );
         my $Handles = $Selenium->get_window_handles();
@@ -122,16 +120,25 @@ $Selenium->RunTest(
 
         # Select FormDraft values.
         for my $Field ( sort keys %{ $FormDraftCase->{Fields} } ) {
-            $Selenium->execute_script(
-                "\$('#$FormDraftCase->{Fields}->{$Field}->{ID}').val('$FormDraftCase->{Fields}->{$Field}->{Value}').trigger('redraw.InputField').trigger('change');"
+            my $ID    = $FormDraftCase->{Fields}->{$Field}->{ID};
+            my $Value = $FormDraftCase->{Fields}->{$Field}->{Value};
+
+            $Selenium->InputFieldValueSet(
+                Element => "#$ID",
+                Value   => $Value,
             );
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return typeof(\$) === 'function' && \$('#$ID').val() == '$Value'"
+            );
+            sleep 2;
         }
 
         # Create FormDraft and submit.
-        $Selenium->find_element( "#FormDraftSave", 'css' )->VerifiedClick();
+        $Selenium->execute_script("\$('#FormDraftSave').click();");
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#FormDraftTitle").length;'
+                'return typeof($) === "function" && $("#FormDraftTitle").length && $("#SaveFormDraft").length;'
         );
         $Selenium->find_element( "#FormDraftTitle", 'css' )->send_keys($Title);
         $Selenium->find_element( "#SaveFormDraft",  'css' )->click();
@@ -145,7 +152,7 @@ $Selenium->RunTest(
 
         # Verify FormDraft is created in zoom screen.
         $Self->True(
-            index( $Selenium->get_page_source(), $Title ) > -1,
+            $Selenium->execute_script("return \$('.DraftName:contains($Title)').length === 1"),
             "FormDraft for $FormDraftCase->{Module} $Title is found",
         );
 
@@ -159,22 +166,34 @@ $Selenium->RunTest(
         # Wait until page has loaded, if necessary.
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#submitRichText").length;'
+                'return typeof($) === "function" && $("#FormDraftSave").length;'
         );
 
         # Select FormDraft values.
         for my $Field ( sort keys %{ $FormDraftCase->{Fields} } ) {
-            $Selenium->execute_script(
-                "\$('#$FormDraftCase->{Fields}->{$Field}->{ID}').val('$FormDraftCase->{Fields}->{$Field}->{Value}').trigger('redraw.InputField').trigger('change');"
-            );
+            my $ID    = $FormDraftCase->{Fields}->{$Field}->{ID};
+            my $Value = $FormDraftCase->{Fields}->{$Field}->{Value};
 
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return typeof(\$) === 'function' && \$('#$ID').length"
+            );
+            $Selenium->InputFieldValueSet(
+                Element => "#$ID",
+                Value   => $Value,
+            );
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return typeof(\$) === 'function' && \$('#$ID').val() == '$Value'"
+            );
+            sleep 2;
         }
 
         # Try to create FormDraft with same name, expecting error.
-        $Selenium->find_element( "#FormDraftSave", 'css' )->VerifiedClick();
+        $Selenium->execute_script("\$('#FormDraftSave').click();");
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#FormDraftTitle").length;'
+                'return typeof($) === "function" && $("#FormDraftTitle").length && $("#SaveFormDraft").length;'
         );
         $Selenium->find_element( "#FormDraftTitle", 'css' )->send_keys($Title);
         $Selenium->find_element( "#SaveFormDraft",  'css' )->click();
@@ -183,24 +202,21 @@ $Selenium->RunTest(
         $Selenium->WaitFor( AlertPresent => 1 ) || die 'Alert not found';
 
         # Check alert dialog message.
-        my $ExpectedAlertText = "FormDraft name $Title is already in use!";
         $Self->True(
-            ( $Selenium->get_alert_text() =~ /$ExpectedAlertText/ ),
+            index( $Selenium->get_alert_text(), "FormDraft name $Title is already in use!" ) > -1,
             "Check alert message text.",
         );
 
         # Accept alert.
         $Selenium->accept_alert();
+        sleep 1;
 
         # Close screen and switch back window.
         $Selenium->close();
-
-        # Switch back window.
         $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
-        # Get article object.
-        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+        my $ArticleObject        = $Kernel::OM->Get('Kernel::System::Ticket::Article');
         my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Phone' );
 
         # Create test email Article.
@@ -227,7 +243,7 @@ $Selenium->RunTest(
         # Click on test created FormDraft and switch window.
         $Selenium->find_element(
             "//a[contains(\@href, \'Action=AgentTicket$FormDraftCase->{Module};TicketID=$TicketID;LoadFormDraft=1' )]"
-        )->VerifiedClick();
+        )->click();
 
         $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
@@ -236,12 +252,12 @@ $Selenium->RunTest(
         # Wait until page has loaded, if necessary.
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#submitRichText").length;'
+                'return typeof($) === "function" && $("#FormDraftUpdate").length;'
         );
 
-        # Make sure that outdated notification is present.
+        # Make sure that draft loaded notification is present.
         $Self->True(
-            index( $Selenium->get_page_source(), "You have loaded the draft \"$Title\"" ) > 0,
+            index( $Selenium->get_page_source(), "You have loaded the draft \"$Title\"" ) > -1,
             'Draft loaded notification is present',
         );
 
@@ -250,21 +266,32 @@ $Selenium->RunTest(
             index(
                 $Selenium->get_page_source(),
                 "Please note that this draft is outdated because the ticket was modified since this draft was created."
-                ) > 0,
+            ) > -1,
             'Outdated notification is present',
         );
 
         # Verify FormDraft values.
         for my $FieldValue ( sort keys %{ $FormDraftCase->{Fields} } ) {
+
+            my $ID     = $FormDraftCase->{Fields}->{$FieldValue}->{ID};
+            my $Value  = $FormDraftCase->{Fields}->{$FieldValue}->{Value};
+            my $Update = $FormDraftCase->{Fields}->{$FieldValue}->{Update};
+
             $Self->Is(
-                $Selenium->execute_script("return \$('#$FormDraftCase->{Fields}->{$FieldValue}->{ID}').val()"),
-                $FormDraftCase->{Fields}->{$FieldValue}->{Value},
-                "Initial FormDraft value for $FormDraftCase->{Module} field $FieldValue is correct"
+                $Selenium->execute_script("return \$('#$ID').val()"),
+                $Value,
+                "Initial FormDraft value for $FormDraftCase->{Module} field $FieldValue is correct - $Value"
             );
 
-            $Selenium->execute_script(
-                "\$('#$FormDraftCase->{Fields}->{$FieldValue}->{ID}').val('$FormDraftCase->{Fields}->{$FieldValue}->{Update}').trigger('redraw.InputField').trigger('change');"
+            $Selenium->InputFieldValueSet(
+                Element => "#$ID",
+                Value   => $Update,
             );
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return typeof(\$) === 'function' && \$('#$ID').val() == '$Update'"
+            );
+            sleep 2;
         }
 
         $Selenium->find_element( "#FormDraftUpdate", 'css' )->click();
@@ -276,50 +303,69 @@ $Selenium->RunTest(
         # Refresh screen.
         $Selenium->VerifiedRefresh();
 
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return typeof(\$) === 'function' && \$('a[href*=\"Action=AgentTicket$FormDraftCase->{Module};TicketID=$TicketID;LoadFormDraft=1\"]').length"
+        );
+
         # Click on test created FormDraft and switch window.
         $Selenium->find_element(
             "//a[contains(\@href, \'Action=AgentTicket$FormDraftCase->{Module};TicketID=$TicketID;LoadFormDraft=1' )]"
-        )->VerifiedClick();
+        )->click();
 
         $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
-        # Wait until page has loaded, if necessary.
+        # Wait until page has completely loaded, if necessary.
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#submitRichText").length;'
+                'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete'
+        );
+
+        # Wait until input field object has completely loaded, if necessary.
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof(Core) == "object" && typeof(Core.UI) == "object" && Core.UI.InputFields'
         );
 
         # Verify updated FormDraft values.
         for my $FieldValue ( sort keys %{ $FormDraftCase->{Fields} } ) {
+
+            my $ID           = $FormDraftCase->{Fields}->{$FieldValue}->{ID};
+            my $UpdatedValue = $FormDraftCase->{Fields}->{$FieldValue}->{Update};
+
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return typeof(\$) === 'function' && \$('#$ID').val() == $UpdatedValue;"
+            );
+
             $Self->Is(
-                $Selenium->execute_script("return \$('#$FormDraftCase->{Fields}->{$FieldValue}->{ID}').val()"),
-                $FormDraftCase->{Fields}->{$FieldValue}->{Update},
-                "Updated FormDraft value for $FormDraftCase->{Module} field $FieldValue is correct"
+                $Selenium->execute_script("return \$('#$ID').val()"),
+                $UpdatedValue,
+                "Updated FormDraft value for $FormDraftCase->{Module} field $FieldValue is correct - $UpdatedValue"
             );
         }
 
+        # Close and switch back to main window.
         $Selenium->close();
-
-        # switch back window
         $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
         # Refresh screen.
         $Selenium->VerifiedRefresh();
 
-        # Delete draft
-        $Selenium->find_element( ".FormDraftDelete", 'css' )->VerifiedClick();
+        # Delete draft.
+        $Selenium->find_element( ".FormDraftDelete", 'css' )->click();
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#DeleteConfirm").length;'
         );
-        $Selenium->find_element( "#DeleteConfirm", 'css' )->VerifiedClick();
+        $Selenium->find_element( "#DeleteConfirm", 'css' )->click();
 
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $(".FormDraftDelete").length==0;'
+                'return typeof($) === "function" && $(".FormDraftDelete").length == 0;'
         ) || die 'FormDraft was not deleted!';
 
         # Delete created test ticket.
@@ -327,10 +373,25 @@ $Selenium->RunTest(
             TicketID => $TicketID,
             UserID   => 1,
         );
+
+        # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+        if ( !$Success ) {
+            sleep 3;
+            $Success = $TicketObject->TicketDelete(
+                TicketID => $TicketID,
+                UserID   => 1,
+            );
+        }
         $Self->True(
             $Success,
             "Ticket ID $TicketID is deleted"
         );
+
+        # Make sure the cache is correct.
+        my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+        for my $Cache (qw(Ticket Article)) {
+            $CacheObject->CleanUp( Type => $Cache );
+        }
     }
 );
 

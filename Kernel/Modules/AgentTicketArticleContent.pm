@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentTicketArticleContent;
@@ -80,7 +80,7 @@ sub Run {
 
     if ( !$ArticleContent ) {
         $LogObject->Log(
-            Message  => "No such attacment! May be an attack!!!",
+            Message  => 'No such article!',
             Priority => 'error',
         );
         return $LayoutObject->ErrorScreen();
@@ -95,10 +95,10 @@ sub Run {
 
     my %Data = (
         Content            => $Content,
-        ContentAlternative => "",
-        ContentID          => "",
-        ContentType        => "text/html; charset=\"utf-8\"",
-        Disposition        => "inline",
+        ContentAlternative => '',
+        ContentID          => '',
+        ContentType        => 'text/html; charset="utf-8"',
+        Disposition        => 'inline',
         FilesizeRaw        => bytes::length($Content),
     );
 
@@ -111,25 +111,8 @@ sub Run {
         Value => 'inline'
     );
 
-    # just return for non-html attachment (e. g. images)
-    if ( $Data{ContentType} !~ /text\/html/i ) {
-        return $LayoutObject->Attachment(
-            %Data,
-            Sandbox => 1,
-        );
-    }
-
     # set filename for inline viewing
     $Data{Filename} = "Ticket-$TicketNumber-ArticleID-$Article{ArticleID}.html";
-
-    my $LoadExternalImages = $ParamObject->GetParam(
-        Param => 'LoadExternalImages'
-    ) || 0;
-
-    # safety check only on customer article
-    if ( !$LoadExternalImages && $Article{SenderType} ne 'customer' ) {
-        $LoadExternalImages = 1;
-    }
 
     # generate base url
     my $URL = 'Action=AgentTicketAttachment;Subaction=HTMLView'
@@ -139,6 +122,22 @@ sub Run {
     my %AtmBox = $ArticleBackendObject->ArticleAttachmentIndex(
         ArticleID => $ArticleID,
     );
+
+    # Do not load external images if 'BlockLoadingRemoteContent' is enabled.
+    my $LoadExternalImages;
+    if ( $ConfigObject->Get('Ticket::Frontend::BlockLoadingRemoteContent') ) {
+        $LoadExternalImages = 0;
+    }
+    else {
+        $LoadExternalImages = $ParamObject->GetParam(
+            Param => 'LoadExternalImages'
+        ) || 0;
+
+        # Safety check only on customer article.
+        if ( !$LoadExternalImages && $Article{SenderType} ne 'customer' ) {
+            $LoadExternalImages = 1;
+        }
+    }
 
     # reformat rich text document to have correct charset and links to
     # inline documents

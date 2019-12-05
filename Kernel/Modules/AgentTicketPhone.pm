@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentTicketPhone;
@@ -86,9 +86,9 @@ sub Run {
     if ($CustomersNumber) {
         my $CustomerCounter = 1;
         for my $Count ( 1 ... $CustomersNumber ) {
-            my $CustomerElement = $ParamObject->GetParam( Param => 'CustomerTicketText_' . $Count );
+            my $CustomerElement  = $ParamObject->GetParam( Param => 'CustomerTicketText_' . $Count );
             my $CustomerSelected = ( $Selected eq $Count ? 'checked="checked"' : '' );
-            my $CustomerKey = $ParamObject->GetParam( Param => 'CustomerKey_' . $Count )
+            my $CustomerKey      = $ParamObject->GetParam( Param => 'CustomerKey_' . $Count )
                 || '';
 
             if ($CustomerElement) {
@@ -257,7 +257,7 @@ sub Run {
         if (
             $Self->{LastScreenOverview}
             && $Self->{LastScreenOverview} !~ /Action=AgentTicketPhone/
-            && $Self->{RequestedURL} !~ /Action=AgentTicketPhone.*LinkTicketID=/
+            && $Self->{RequestedURL}       !~ /Action=AgentTicketPhone.*LinkTicketID=/
             )
         {
             $Kernel::OM->Get('Kernel::System::AuthSession')->UpdateSessionID(
@@ -272,6 +272,7 @@ sub Run {
         my %Article;
         my %CustomerData;
         my $ArticleFrom = '';
+        my %SplitTicketData;
         if ( $GetParam{ArticleID} ) {
 
             my $Access = $TicketObject->TicketPermission(
@@ -288,7 +289,7 @@ sub Run {
             }
 
             # Get information from original ticket (SplitTicket).
-            my %SplitTicketData = $TicketObject->TicketGet(
+            %SplitTicketData = $TicketObject->TicketGet(
                 TicketID      => $Self->{TicketID},
                 DynamicFields => 1,
                 UserID        => $Self->{UserID},
@@ -348,7 +349,6 @@ sub Run {
                 if ( !defined $QueueLookup{ $Article{To} } && defined $SystemAddressLookup{$SystemAddressEmail} ) {
                     $ArticleFrom = $Article{To};
                 }
-
             }
 
             # body preparation for plain text processing
@@ -365,6 +365,21 @@ sub Run {
             else {
                 $Article{ContentType} = 'text/plain';
             }
+
+            my %SafetyCheckResult = $Kernel::OM->Get('Kernel::System::HTMLUtils')->Safety(
+                String => $Article{Body},
+
+                # Strip out external content if BlockLoadingRemoteContent is enabled.
+                NoExtSrcLoad => $ConfigObject->Get('Ticket::Frontend::BlockLoadingRemoteContent'),
+
+                # Disallow potentially unsafe content.
+                NoApplet     => 1,
+                NoObject     => 1,
+                NoEmbed      => 1,
+                NoSVG        => 1,
+                NoJavaScript => 1,
+            );
+            $Article{Body} = $SafetyCheckResult{String};
 
             # show customer info
             if ( $ConfigObject->Get('Ticket::Frontend::CustomerInfoCompose') ) {
@@ -405,7 +420,7 @@ sub Run {
             my $CustomerError    = '';
             my $CustomerErrorMsg = 'CustomerGenericServerErrorMsg';
             my $CustomerDisabled = '';
-            my $CustomerSelected = ( $CountFrom eq '1' ? 'checked="checked"' : '' );
+            my $CustomerSelected = $CountFrom eq '1' ? 'checked="checked"' : '';
             my $EmailAddress     = $Email->address();
             if ( !$CheckItemObject->CheckEmail( Address => $EmailAddress ) )
             {
@@ -425,6 +440,11 @@ sub Run {
                 $CountAux         = $CountFrom . 'Error';
             }
 
+            my $Phrase = '';
+            if ( $Email->phrase() ) {
+                $Phrase = $Email->phrase();
+            }
+
             my $CustomerKey = '';
             if (
                 defined $CustomerDataFrom{UserEmail}
@@ -433,10 +453,29 @@ sub Run {
             {
                 $CustomerKey = $Article{CustomerUserID};
             }
+            elsif ($EmailAddress) {
+                my %List = $CustomerUserObject->CustomerSearch(
+                    PostMasterSearch => $EmailAddress,
+                );
+
+                for my $UserLogin ( sort keys %List ) {
+
+                    # Set right one if there is more than one customer user with the same email address.
+                    if ( $Phrase && $List{$UserLogin} =~ /$Phrase/ ) {
+                        $CustomerKey = $UserLogin;
+                    }
+                }
+            }
 
             my $CustomerElement = $EmailAddress;
-            if ( $Email->phrase() ) {
-                $CustomerElement = $Email->phrase() . " <$EmailAddress>";
+            if ($Phrase) {
+                $CustomerElement = $Phrase . " <$EmailAddress>";
+            }
+
+            if ( $CustomerSelected && $CustomerKey ) {
+                %CustomerData = $CustomerUserObject->CustomerUserDataGet(
+                    User => $CustomerKey,
+                );
             }
 
             push @MultipleCustomer, {
@@ -733,13 +772,19 @@ sub Run {
                 %ACLCompatGetParam,
                 %SplitTicketParam,
                 CustomerUserID => $CustomerData{UserLogin} || '',
-                QueueID => $Self->{QueueID},
+                QueueID        => $Self->{QueueID},
+            ),
+            TimeUnits => $Self->_GetTimeUnits(
+                %GetParam,
+                %ACLCompatGetParam,
+                %SplitTicketParam,
+                ArticleID => $Article{ArticleID},
             ),
             From         => $Article{From},
             Subject      => $Subject,
             Body         => $Body,
-            CustomerID   => $Article{CustomerID},
-            CustomerUser => $Article{CustomerUserID},
+            CustomerUser => $SplitTicketData{CustomerUserID},
+            CustomerID   => $SplitTicketData{CustomerID},
             CustomerData => \%CustomerData,
             Attachments  => \@Attachments,
             LinkTicketID => $GetParam{LinkTicketID} || '',
@@ -782,13 +827,15 @@ sub Run {
         }
 
         my ( $NewQueueID, $To ) = split( /\|\|/, $Dest );
+        $GetParam{QueueID} = $NewQueueID;
+
         my $CustomerUser = $ParamObject->GetParam( Param => 'CustomerUser' )
             || $ParamObject->GetParam( Param => 'PreSelectedCustomerUser' )
             || $ParamObject->GetParam( Param => 'SelectedCustomerUser' )
             || '';
         my $SelectedCustomerUser = $ParamObject->GetParam( Param => 'SelectedCustomerUser' )
             || '';
-        my $CustomerID = $ParamObject->GetParam( Param => 'CustomerID' ) || '';
+        my $CustomerID         = $ParamObject->GetParam( Param => 'CustomerID' ) || '';
         my $ExpandCustomerName = $ParamObject->GetParam( Param => 'ExpandCustomerName' )
             || 0;
         my %FromExternalCustomer;
@@ -1189,20 +1236,20 @@ sub Run {
                     %GetParam,
                     %ACLCompatGetParam,
                     CustomerUserID => $CustomerUser || $SelectedCustomerUser || '',
-                    QueueID => $NewQueueID || 1,
+                    QueueID        => $NewQueueID   || 1,
                 ),
                 NextState  => $NextState,
                 Priorities => $Self->_GetPriorities(
                     %GetParam,
                     %ACLCompatGetParam,
                     CustomerUserID => $CustomerUser || $SelectedCustomerUser || '',
-                    QueueID => $NewQueueID || 1,
+                    QueueID        => $NewQueueID   || 1,
                 ),
                 Types => $Self->_GetTypes(
                     %GetParam,
                     %ACLCompatGetParam,
                     CustomerUserID => $CustomerUser || $SelectedCustomerUser || '',
-                    QueueID => $NewQueueID || 1,
+                    QueueID        => $NewQueueID   || 1,
                 ),
                 Services          => $Services,
                 SLAs              => $SLAs,
@@ -1627,7 +1674,7 @@ sub Run {
         my $Dest           = $ParamObject->GetParam( Param => 'Dest' ) || '';
         my $CustomerUser   = $ParamObject->GetParam( Param => 'SelectedCustomerUser' );
         my $ElementChanged = $ParamObject->GetParam( Param => 'ElementChanged' ) || '';
-        my $QueueID        = '';
+        my $QueueID = '';
         if ( $Dest =~ /^(\d{1,100})\|\|.+?$/ ) {
             $QueueID = $1;
         }
@@ -1642,7 +1689,7 @@ sub Run {
             %GetParam,
             %ACLCompatGetParam,
             CustomerUserID => $CustomerUser || '',
-            QueueID => $QueueID,
+            QueueID        => $QueueID,
         );
 
         my $NewTos;
@@ -1731,7 +1778,7 @@ sub Run {
                 %ACLCompatGetParam,
                 CustomerUserID => $CustomerUser || '',
                 Action         => $Self->{Action},
-                QueueID        => $QueueID      || 0,
+                QueueID        => $QueueID || 0,
                 ReturnType     => 'Ticket',
                 ReturnSubType  => 'DynamicField_' . $DynamicFieldConfig->{Name},
                 Data           => \%AclData,
@@ -1784,8 +1831,9 @@ sub Run {
 
                 # set template text, replace smart tags (limited as ticket is not created)
                 $TemplateText = $TemplateGenerator->Template(
-                    TemplateID => $GetParam{StandardTemplateID},
-                    UserID     => $Self->{UserID},
+                    TemplateID     => $GetParam{StandardTemplateID},
+                    UserID         => $Self->{UserID},
+                    CustomerUserID => $CustomerUser,
                 );
 
                 # create StdAttachmentObject
@@ -1977,7 +2025,7 @@ sub _GetUsers {
 
     # show all users who are owner or rw in the queue group
     elsif ( $Param{QueueID} ) {
-        my $GID = $Kernel::OM->Get('Kernel::System::Queue')->GetQueueGroupID( QueueID => $Param{QueueID} );
+        my $GID        = $Kernel::OM->Get('Kernel::System::Queue')->GetQueueGroupID( QueueID => $Param{QueueID} );
         my %MemberList = $Kernel::OM->Get('Kernel::System::Group')->PermissionGroupGet(
             GroupID => $GID,
             Type    => 'owner',
@@ -2040,7 +2088,7 @@ sub _GetResponsibles {
 
     # show all users who are responsible or rw in the queue group
     elsif ( $Param{QueueID} ) {
-        my $GID = $Kernel::OM->Get('Kernel::System::Queue')->GetQueueGroupID( QueueID => $Param{QueueID} );
+        my $GID        = $Kernel::OM->Get('Kernel::System::Queue')->GetQueueGroupID( QueueID => $Param{QueueID} );
         my %MemberList = $Kernel::OM->Get('Kernel::System::Group')->PermissionGroupGet(
             GroupID => $GID,
             Type    => 'responsible',
@@ -2217,17 +2265,42 @@ sub _GetTos {
     return \%NewTos;
 }
 
+sub _GetTimeUnits {
+    my ( $Self, %Param ) = @_;
+
+    my $AccountedTime = '';
+
+    # Get accounted time if AccountTime config item is enabled.
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::AccountTime') && defined $Param{ArticleID} ) {
+        $AccountedTime = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleAccountedTimeGet(
+            ArticleID => $Param{ArticleID},
+        );
+    }
+
+    return $AccountedTime ? $AccountedTime : '';
+}
+
 sub _GetStandardTemplates {
     my ( $Self, %Param ) = @_;
 
-    # get create templates
     my %Templates;
+    my $QueueID = $Param{QueueID} || '';
+
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $QueueObject  = $Kernel::OM->Get('Kernel::System::Queue');
+
+    if ( !$QueueID ) {
+        my $UserDefaultQueue = $ConfigObject->Get('Ticket::Frontend::UserDefaultQueue') || '';
+
+        if ($UserDefaultQueue) {
+            $QueueID = $QueueObject->QueueLookup( Queue => $UserDefaultQueue );
+        }
+    }
 
     # check needed
-    return \%Templates if !$Param{QueueID} && !$Param{TicketID};
+    return \%Templates if !$QueueID && !$Param{TicketID};
 
-    my $QueueID = $Param{QueueID} || '';
-    if ( !$Param{QueueID} && $Param{TicketID} ) {
+    if ( !$QueueID && $Param{TicketID} ) {
 
         # get QueueID from the ticket
         my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
@@ -2239,7 +2312,7 @@ sub _GetStandardTemplates {
     }
 
     # fetch all std. templates
-    my %StandardTemplates = $Kernel::OM->Get('Kernel::System::Queue')->QueueStandardTemplateMemberList(
+    my %StandardTemplates = $QueueObject->QueueStandardTemplateMemberList(
         QueueID       => $QueueID,
         TemplateTypes => 1,
     );
@@ -2434,9 +2507,9 @@ sub _MaskPhoneNew {
     # build type string
     if ( $ConfigObject->Get('Ticket::Type') ) {
         $Param{TypeStrg} = $LayoutObject->BuildSelection(
-            Class => 'Modernize Validate_Required' . ( $Param{Errors}->{TypeIDInvalid} || ' ' ),
-            Data  => $Param{Types},
-            Name  => 'TypeID',
+            Class        => 'Modernize Validate_Required' . ( $Param{Errors}->{TypeIDInvalid} || ' ' ),
+            Data         => $Param{Types},
+            Name         => 'TypeID',
             SelectedID   => $Param{TypeID},
             PossibleNone => 1,
             Sort         => 'AlphanumericValue',
@@ -2502,10 +2575,10 @@ sub _MaskPhoneNew {
     # build text template string
     if ( IsHashRefWithData( \%StandardTemplates ) ) {
         $Param{StandardTemplateStrg} = $LayoutObject->BuildSelection(
-            Data       => $Param{StandardTemplates}  || {},
-            Name       => 'StandardTemplateID',
-            SelectedID => $Param{StandardTemplateID} || '',
-            Class      => 'Modernize',
+            Data         => $Param{StandardTemplates} || {},
+            Name         => 'StandardTemplateID',
+            SelectedID   => $Param{StandardTemplateID} || '',
+            Class        => 'Modernize',
             PossibleNone => 1,
             Sort         => 'AlphanumericValue',
             Translation  => 1,

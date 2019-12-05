@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -486,8 +486,6 @@ for my $Test (@Tests) {
         delete $Setting{ChangeTime};
         delete $Setting{CreateTime};
         delete $Setting{SettingUID};
-        $Kernel::OM->Get('Kernel::System::Log')
-            ->Dumper( 'N', $Test->{Name}, 'is', \%Setting, 'should', $Test->{ExpectedValue} );
     }
 
     if ( !$Test->{Success} ) {
@@ -856,9 +854,9 @@ for my $Test (@Tests) {
                                 'ValueRegex' => '.*',
                                 'ValueType'  => 'String',
                             }
-                            ]
+                        ]
                     }
-                    ]
+                ]
             },
         },
     },
@@ -1304,7 +1302,6 @@ for my $Test (@Tests) {
             ChangeBy     => 1,
         },
     },
-
 );
 
 my @SettingDirtyNames;

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -12,6 +12,20 @@ use warnings;
 use utf8;
 
 use vars (qw($Self));
+
+# Broken on certain Perl 5.28 versions due to a Perl crash that we can't work around.
+my @BlacklistPerlVersions = (
+    v5.26.3,
+    v5.28.1,
+    v5.28.2,
+    v5.30.0,
+    v5.30.1,
+);
+
+if ( grep { $^V eq $_ } @BlacklistPerlVersions ) {
+    $Self->True( 1, "Current Perl version $^V is known to be buggy for this test, skipping." );
+    return 1;
+}
 
 my $SystemTime = $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch();
 
@@ -765,7 +779,7 @@ for my $Test (@Tests) {
         Config => {
             ScheduleMinutes => [20],
             ScheduleHours   => [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 ],
-            ScheduleDays => [ 0, 1, 2, 3, 4, 5, 6 ]
+            ScheduleDays    => [ 0, 1, 2, 3, 4, 5, 6 ]
         },
         ExpectedValue => '20 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23 * * 1,2,3,4,5,6,7',
         Success       => 1,
@@ -775,7 +789,7 @@ for my $Test (@Tests) {
         Config => {
             ScheduleMinutes => [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
             ScheduleHours   => [13],
-            ScheduleDays => [ 0, 1, 2, 3, 4, 5, 6 ]
+            ScheduleDays    => [ 0, 1, 2, 3, 4, 5, 6 ]
         },
         ExpectedValue => '1,2,3,4,5,6,7,8,9,10 13 * * 1,2,3,4,5,6,7',
         Success       => 1,

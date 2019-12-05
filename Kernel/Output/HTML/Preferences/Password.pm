@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::Preferences::Password;
@@ -57,24 +57,27 @@ sub Param {
         @Params,
         {
             %Param,
-            Key   => Translatable('Current password'),
-            Name  => 'CurPw',
-            Raw   => 1,
-            Block => 'Password'
+            Key          => Translatable('Current password'),
+            Name         => 'CurPw',
+            Raw          => 1,
+            Block        => 'Password',
+            Autocomplete => 'current-password',
         },
         {
             %Param,
-            Key   => Translatable('New password'),
-            Name  => 'NewPw',
-            Raw   => 1,
-            Block => 'Password'
+            Key          => Translatable('New password'),
+            Name         => 'NewPw',
+            Raw          => 1,
+            Block        => 'Password',
+            Autocomplete => 'new-password',
         },
         {
             %Param,
-            Key   => Translatable('Verify password'),
-            Name  => 'NewPw1',
-            Raw   => 1,
-            Block => 'Password'
+            Key          => Translatable('Verify password'),
+            Name         => 'NewPw1',
+            Raw          => 1,
+            Block        => 'Password',
+            Autocomplete => 'current-password',
         },
     );
 
@@ -93,7 +96,7 @@ sub Param {
             Key   => '2 Factor Token',
             Name  => 'TwoFactorToken',
             Raw   => 1,
-            Block => 'Password',
+            Block => 'Input',
         };
 
         last COUNT;

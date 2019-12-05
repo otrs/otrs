@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::CustomerUser::LDAP;
@@ -135,7 +135,7 @@ sub new {
     $Self->{AlwaysFilter} = $Self->{CustomerUserMap}->{Params}->{AlwaysFilter} || '';
 
     $Self->{ExcludePrimaryCustomerID} = $Self->{CustomerUserMap}->{CustomerUserExcludePrimaryCustomerID} || 0;
-    $Self->{SearchPrefix} = $Self->{CustomerUserMap}->{CustomerUserSearchPrefix};
+    $Self->{SearchPrefix}             = $Self->{CustomerUserMap}->{CustomerUserSearchPrefix};
     if ( !defined $Self->{SearchPrefix} ) {
         $Self->{SearchPrefix} = '';
     }
@@ -343,7 +343,8 @@ sub CustomerName {
         push @NameParts, $NameParts{$CustomerUserNameField};
     }
 
-    my $Name = join ' ', @NameParts;
+    my $JoinCharacter = $Self->{CustomerUserMap}->{CustomerUserNameFieldsJoin} // ' ';
+    my $Name          = join $JoinCharacter, @NameParts;
 
     # cache request
     if ( $Self->{CacheObject} ) {
@@ -1146,7 +1147,7 @@ sub CustomerSearchDetail {
 sub CustomerIDList {
     my ( $Self, %Param ) = @_;
 
-    my $Valid = defined $Param{Valid} ? $Param{Valid} : 1;
+    my $Valid      = defined $Param{Valid} ? $Param{Valid} : 1;
     my $SearchTerm = $Param{SearchTerm} || '';
 
     my $CacheKey = "CustomerIDList::${Valid}::$SearchTerm";
@@ -1436,7 +1437,7 @@ sub CustomerUserDataGet {
             if ( $Field =~ /^targetaddress$/i ) {
                 $Value =~ s/SMTP:(.*)/$1/;
             }
-            push @UserMailStringParts, $Data{$Field};
+            push @UserMailStringParts, $Value;
         }
     }
     $UserMailString = join ' ', @UserMailStringParts;
@@ -1461,7 +1462,7 @@ sub CustomerUserDataGet {
             },
         );
 
-        $Preferences{UserLastLoginTimestamp} = $DateTimeObject->toString();
+        $Preferences{UserLastLoginTimestamp} = $DateTimeObject->ToString();
 
     }
 

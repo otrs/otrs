@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -86,9 +86,11 @@ $Self->True(
 
 # add system address
 my $SystemAddressNameRand = 'SystemAddress' . $HelperObject->GetRandomID();
+my $SystemAddressEmail    = $SystemAddressNameRand . '@example.com';
+my $SystemAddressRealname = "$SystemAddressNameRand, $SystemAddressNameRand";
 my $SystemAddressID       = $SystemAddressObject->SystemAddressAdd(
-    Name     => $SystemAddressNameRand . '@example.com',
-    Realname => $SystemAddressNameRand,
+    Name     => $SystemAddressEmail,
+    Realname => $SystemAddressRealname,
     ValidID  => 1,
     QueueID  => $QueueID,
     Comment  => 'Some Comment',
@@ -128,11 +130,11 @@ for my $TypeID ( sort keys %AutoResponseType ) {
             ContentType => 'text/html',
             ValidID     => 2,
         },
-        ExpextedData => {
+        ExpectedData => {
             AutoResponseID => '',
-            Address        => $SystemAddressNameRand . '@example.com',
-            Realname       => $SystemAddressNameRand,
-            }
+            Address        => $SystemAddressEmail,
+            Realname       => $SystemAddressRealname,
+        },
     );
 
     # add auto response
@@ -142,7 +144,7 @@ for my $TypeID ( sort keys %AutoResponseType ) {
     );
 
     # this will be used later to test function AutoResponseGetByTypeQueueID()
-    $Tests{ExpextedData}{AutoResponseID} = $AutoResponseID;
+    $Tests{ExpectedData}{AutoResponseID} = $AutoResponseID;
 
     $Self->True(
         $AutoResponseID,
@@ -160,14 +162,14 @@ for my $TypeID ( sort keys %AutoResponseType ) {
     }
 
     my %AutoResponseList = $AutoResponseObject->AutoResponseList( Valid => 0 );
-    my $List = grep { $_ eq $AutoResponseID } keys %AutoResponseList;
+    my $List             = grep { $_ eq $AutoResponseID } keys %AutoResponseList;
     $Self->True(
         $List,
         'AutoResponseList() - test Auto Response is in the list.',
     );
 
     %AutoResponseList = $AutoResponseObject->AutoResponseList( Valid => 1 );
-    $List = grep { $_ eq $AutoResponseID } keys %AutoResponseList;
+    $List             = grep { $_ eq $AutoResponseID } keys %AutoResponseList;
     $Self->True(
         $List,
         'AutoResponseList() - test Auto Response is in the list.',
@@ -216,7 +218,7 @@ for my $TypeID ( sort keys %AutoResponseType ) {
     for my $Item (qw/AutoResponseID Address Realname/) {
         $Self->Is(
             $AutoResponseData{$Item} || '',
-            $Tests{ExpextedData}{$Item},
+            $Tests{ExpectedData}{$Item},
             "AutoResponseGetByTypeQueueID() - $Item",
         );
     }
@@ -317,6 +319,12 @@ for my $TypeID ( sort keys %AutoResponseType ) {
             ],
             'Check AutoResponse recipients.'
         );
+
+        # Check From header line if it was quoted correctly, please see bug#13130 for more information.
+        $Self->True(
+            ( $MailQueueElement->{Message}->{Header} =~ m{^From:\s+"$Tests{ExpectedData}->{Realname}"}sm ) // 0,
+            'Check From header line quoting'
+        );
     }
 
     $AutoResponseQueue = $AutoResponseObject->AutoResponseQueue(
@@ -347,7 +355,7 @@ for my $TypeID ( sort keys %AutoResponseType ) {
     }
 
     %AutoResponseList = $AutoResponseObject->AutoResponseList( Valid => 1 );
-    $List = grep { $_ eq $AutoResponseID } keys %AutoResponseList;
+    $List             = grep { $_ eq $AutoResponseID } keys %AutoResponseList;
     $Self->False(
         $List,
         'AutoResponseList() - test Auto Response is not in the list of valid Auto Responses.',

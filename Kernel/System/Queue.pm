@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Queue;
@@ -750,7 +750,7 @@ add queue with attributes
         Name                => 'Some::Queue',
         ValidID             => 1,
         GroupID             => 1,
-        Calendar            => 'Calendar1', # (optional)
+        Calendar            => '1',         # (optional)
         FirstResponseTime   => 120,         # (optional)
         FirstResponseNotify => 60,          # (optional, notify agent if first response escalation is 60% reached)
         UpdateTime          => 180,         # (optional)
@@ -1331,7 +1331,7 @@ sub QueuePreferencesSet {
     my ( $Self, %Param ) = @_;
 
     # delete cache
-    my $Name = $Self->QueueLookup( QueueID => $Param{QueueID} );
+    my $Name      = $Self->QueueLookup( QueueID => $Param{QueueID} );
     my @CacheKeys = (
         'QueueGetID::' . $Param{QueueID},
         'QueueGetName::' . $Name,
@@ -1412,10 +1412,10 @@ sub NameExistsCheck {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

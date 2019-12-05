@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -78,11 +78,17 @@ $Selenium->RunTest(
         );
 
         # edit checked stored values
-        $Selenium->execute_script("\$('#UserRefreshTime').val('2').trigger('redraw.InputField').trigger('change');");
-        $Selenium->find_element( "#UserRefreshTime", 'css' )->VerifiedSubmit();
+        $Selenium->InputFieldValueSet(
+            Element => '#UserRefreshTime',
+            Value   => 2,
+        );
+        $Selenium->find_element( '#UserRefreshTimeUpdate', 'css' )->VerifiedClick();
 
-        $Selenium->execute_script("\$('#UserShowTickets').val('20').trigger('redraw.InputField').trigger('change');");
-        $Selenium->find_element( "#UserShowTickets", 'css' )->VerifiedSubmit();
+        $Selenium->InputFieldValueSet(
+            Element => '#UserShowTickets',
+            Value   => 20,
+        );
+        $Selenium->find_element( '#UserShowTicketsUpdate', 'css' )->VerifiedClick();
 
         # check edited values
         $Self->Is(
@@ -102,10 +108,11 @@ $Selenium->RunTest(
             )
         {
             # change CustomerPreference language
-            $Selenium->execute_script(
-                "\$('#UserLanguage').val('$Language').trigger('redraw.InputField').trigger('change');"
+            $Selenium->InputFieldValueSet(
+                Element => '#UserLanguage',
+                Value   => $Language,
             );
-            $Selenium->find_element( "#UserLanguage option[value='$Language']", 'css' )->VerifiedSubmit();
+            $Selenium->find_element( '#UserLanguageUpdate', 'css' )->VerifiedClick();
 
             # check edited language value
             $Self->Is(
@@ -135,16 +142,16 @@ $Selenium->RunTest(
         }
 
         # try updating the UserGoogleAuthenticatorSecret (which has a regex validation configured)
-        $Selenium->find_element( "#UserGoogleAuthenticatorSecretKey", 'css' )->send_keys('Invalid Key');
-        $Selenium->find_element( "#UserGoogleAuthenticatorSecretKey", 'css' )->VerifiedSubmit();
+        $Selenium->find_element( "#UserGoogleAuthenticatorSecretKey",       'css' )->send_keys('Invalid Key');
+        $Selenium->find_element( '#UserGoogleAuthenticatorSecretKeyUpdate', 'css' )->VerifiedClick();
         $Self->True(
             index( $Selenium->get_page_source(), $SharedSecretConfig->{'ValidateRegexMessage'} ) > -1,
             "Error message for invalid shared secret found on screen"
         );
 
         # now use a valid secret
-        $Selenium->find_element( "#UserGoogleAuthenticatorSecretKey", 'css' )->send_keys('ABCABCABCABCABC2');
-        $Selenium->find_element( "#UserGoogleAuthenticatorSecretKey", 'css' )->VerifiedSubmit();
+        $Selenium->find_element( "#UserGoogleAuthenticatorSecretKey",       'css' )->send_keys('ABCABCABCABCABC2');
+        $Selenium->find_element( '#UserGoogleAuthenticatorSecretKeyUpdate', 'css' )->VerifiedClick();
         $Self->True(
             index( $Selenium->get_page_source(), 'Preferences updated successfully!' ) > -1,
             "Success message found on screen"
@@ -160,7 +167,7 @@ $Selenium->RunTest(
                 })
             ).val('$MaliciousCode').trigger('redraw.InputField').trigger('change');"
         );
-        $Selenium->find_element( '#UserLanguage', 'css' )->VerifiedSubmit();
+        $Selenium->find_element( '#UserLanguageUpdate', 'css' )->VerifiedClick();
 
         # Check if malicious code was sanitized.
         $Self->True(

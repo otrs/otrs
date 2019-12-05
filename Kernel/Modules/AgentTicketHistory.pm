@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentTicketHistory;
@@ -117,7 +117,7 @@ sub Run {
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $Data->{CreateTime},
-                }
+            }
         )->ToEpoch();
 
         my $IsNewWidget;
@@ -156,7 +156,7 @@ sub Run {
             # Make sure that the order of the values is correct, because we're now
             #   also showing the old ticket type on 'TypeUpdate'.
             elsif ( $Data->{HistoryType} eq 'TypeUpdate' ) {
-                @Values = ( $Values[2], $Values[3], $Values[0], $Values[1] );
+                @Values = ( $Values[2] // '', $Values[3] // '', $Values[0], $Values[1] );
             }
 
             $Data->{Name} = $LayoutObject->{LanguageObject}->Translate(

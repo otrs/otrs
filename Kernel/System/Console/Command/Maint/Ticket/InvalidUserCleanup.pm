@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Console::Command::Maint::Ticket::InvalidUserCleanup;
@@ -26,7 +26,7 @@ sub Configure {
     my ( $Self, %Param ) = @_;
 
     $Self->Description(
-        'Deletes ticket/article seen flags and ticket watcher entries of users which have been invalid for more than a month, and unlocks tickets by invalid agents immedately.'
+        'Delete ticket/article seen flags and ticket watcher entries of users which have been invalid for more than a month, and unlocks tickets by invalid agents immedately.'
     );
     $Self->AddOption(
         Name        => 'micro-sleep',
@@ -136,12 +136,12 @@ sub _CleanupLocks {
             SendNoNotification => 1,
         );
         if ( my $NewState = $StateMap->{ $Ticket{StateType} } ) {
-            $TicketObject->TicketStateSet(
+            my $StateSet = $TicketObject->TicketStateSet(
                 TicketID => $TicketID,
                 State    => $NewState,
                 UserID   => 1,
             );
-            $StateCount++;
+            $StateCount++ if $StateSet;
         }
         Time::HiRes::usleep( $Param{MicroSleep} ) if $Param{MicroSleep};
     }
@@ -189,12 +189,12 @@ sub _CleanupFlags {
 
         my $Count = 0;
         for my $TicketID (@TicketIDs) {
-            $TicketObject->TicketFlagDelete(
+            my $Delete = $TicketObject->TicketFlagDelete(
                 TicketID => $TicketID,
                 Key      => 'Seen',
                 UserID   => $User->{UserID},
             );
-            $Count++;
+            $Count++ if $Delete;
             Time::HiRes::usleep( $Param{MicroSleep} ) if $Param{MicroSleep};
         }
 
@@ -205,7 +205,7 @@ sub _CleanupFlags {
 
         return if !$DBObject->Prepare(
             SQL => "
-                SELECT DISTINCT(article.id)
+                SELECT DISTINCT(article.id), article.ticket_id
                 FROM article
                     INNER JOIN ticket ON ticket.id = article.ticket_id
                     INNER JOIN article_flag ON article.id = article_flag.article_id
@@ -214,19 +214,24 @@ sub _CleanupFlags {
             Limit => 1_000_000,
         );
 
-        my @ArticleIDs;
+        my @IDs;
         while ( my @Row = $DBObject->FetchrowArray() ) {
-            push @ArticleIDs, $Row[0];
+            push @IDs,
+                {
+                ArticleID => $Row[0],
+                TicketID  => $Row[1],
+                };
         }
 
         $Count = 0;
-        for my $ArticleID (@ArticleIDs) {
-            $ArticleObject->ArticleFlagDelete(
-                ArticleID => $ArticleID,
+        for my $ID (@IDs) {
+            my $Delete = $ArticleObject->ArticleFlagDelete(
+                ArticleID => $ID->{ArticleID},
+                TicketID  => $ID->{TicketID},
                 Key       => 'Seen',
                 UserID    => $User->{UserID},
             );
-            $Count++;
+            $Count++ if $Delete;
             Time::HiRes::usleep( $Param{MicroSleep} ) if $Param{MicroSleep};
         }
 
@@ -256,12 +261,12 @@ sub _CleanupFlags {
             my $Count = 0;
             for my $TicketID (@TicketIDs) {
 
-                $TicketObject->TicketWatchUnsubscribe(
+                my $Unsubscribe = $TicketObject->TicketWatchUnsubscribe(
                     TicketID    => $TicketID,
                     WatchUserID => $User->{UserID},
                     UserID      => 1,
                 );
-                $Count++;
+                $Count++ if $Unsubscribe;
                 Time::HiRes::usleep( $Param{MicroSleep} ) if $Param{MicroSleep};
             }
 

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentTicketForward;
@@ -41,7 +41,7 @@ sub new {
     my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     for (
-        qw(From To Cc Bcc Subject Body InReplyTo References ComposeStateID IsVisibleForCustomerPresent
+        qw(To Cc Bcc Subject Body InReplyTo References ComposeStateID IsVisibleForCustomerPresent
         IsVisibleForCustomer ArticleID TimeUnits Year Month Day Hour Minute FormID FormDraftID Title)
         )
     {
@@ -107,7 +107,7 @@ sub Run {
     {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('Loading draft failed!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -186,25 +186,34 @@ sub Form {
     if ( $Config->{RequiredLock} ) {
         if ( !$TicketObject->TicketLockGet( TicketID => $Self->{TicketID} ) ) {
 
-            # set owner
-            $TicketObject->TicketOwnerSet(
-                TicketID  => $Self->{TicketID},
-                UserID    => $Self->{UserID},
-                NewUserID => $Self->{UserID},
-            );
-
-            # set lock
             my $Lock = $TicketObject->TicketLockSet(
                 TicketID => $Self->{TicketID},
                 Lock     => 'lock',
                 UserID   => $Self->{UserID}
             );
 
-            # show lock state
             if ($Lock) {
+
+                # Set new owner if ticket owner is different then logged user.
+                if ( $Ticket{OwnerID} != $Self->{UserID} ) {
+
+                    # Remember previous owner, which will be used to restore ticket owner on undo action.
+                    $Param{PreviousOwner} = $Ticket{OwnerID};
+
+                    $TicketObject->TicketOwnerSet(
+                        TicketID  => $Self->{TicketID},
+                        UserID    => $Self->{UserID},
+                        NewUserID => $Self->{UserID},
+                    );
+                }
+
+                # Show lock state.
                 $LayoutObject->Block(
                     Name => 'PropertiesLock',
-                    Data => { %Param, TicketID => $Self->{TicketID} },
+                    Data => {
+                        %Param,
+                        TicketID => $Self->{TicketID}
+                    },
                 );
             }
         }
@@ -270,10 +279,6 @@ sub Form {
         }
     }
     else {
-        %Data = $ArticleObject->ArticleLastCustomerArticle(
-            TicketID      => $Self->{TicketID},
-            DynamicFields => 1,
-        );
 
         # Get last customer article.
         my @Articles = $ArticleObject->ArticleList(
@@ -346,6 +351,21 @@ sub Form {
         UploadCacheObject  => $UploadCacheObject,
         AttachmentsInclude => 1,
     );
+
+    my %SafetyCheckResult = $Kernel::OM->Get('Kernel::System::HTMLUtils')->Safety(
+        String => $Data{Body},
+
+        # Strip out external content if BlockLoadingRemoteContent is enabled.
+        NoExtSrcLoad => $ConfigObject->Get('Ticket::Frontend::BlockLoadingRemoteContent'),
+
+        # Disallow potentially unsafe content.
+        NoApplet     => 1,
+        NoObject     => 1,
+        NoEmbed      => 1,
+        NoSVG        => 1,
+        NoJavaScript => 1,
+    );
+    $Data{Body} = $SafetyCheckResult{String};
 
     # If article is not a MIMEBase article, include sender name for correct quoting.
     if ( !$Data{From} ) {
@@ -491,6 +511,10 @@ sub Form {
 
     # run compose modules
     if ( ref( $ConfigObject->Get('Ticket::Frontend::ArticleComposeModule') ) eq 'HASH' ) {
+
+        # use ticket QueueID in compose modules
+        $GetParam{QueueID} = $Ticket{QueueID};
+
         my %Jobs = %{ $ConfigObject->Get('Ticket::Frontend::ArticleComposeModule') };
         for my $Job ( sort keys %Jobs ) {
 
@@ -515,7 +539,13 @@ sub Form {
             }
 
             # run module
-            $Object->Run( %Data, %GetParam, Config => $Jobs{$Job} );
+            my $NewParams = $Object->Run( %Data, %GetParam, Config => $Jobs{$Job} );
+
+            if ($NewParams) {
+                for my $Parameter ( $Object->Option( %GetParam, Config => $Jobs{$Job} ) ) {
+                    $GetParam{$Parameter} = $NewParams;
+                }
+            }
 
             # get errors
             %Error = ( %Error, $Object->Error( %GetParam, Config => $Jobs{$Job} ) );
@@ -691,7 +721,7 @@ sub SendEmail {
     if ( $FormDraftAction && !$Config->{FormDraft} ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('FormDraft functionality disabled!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -1118,7 +1148,7 @@ sub SendEmail {
     if (%Error) {
 
         my $QueueID = $TicketObject->TicketQueueID( TicketID => $Self->{TicketID} );
-        my $Output = $LayoutObject->Header(
+        my $Output  = $LayoutObject->Header(
             Type      => 'Small',
             BodyClass => 'Popup',
         );
@@ -1173,12 +1203,7 @@ sub SendEmail {
         ATTACHMENT:
         for my $Attachment (@AttachmentData) {
             my $ContentID = $Attachment->{ContentID};
-            if (
-                $ContentID
-                && ( $Attachment->{ContentType} =~ /image/i )
-                && ( $Attachment->{Disposition} eq 'inline' )
-                )
-            {
+            if ( $ContentID && ( $Attachment->{ContentType} =~ /image/i ) ) {
                 my $ContentIDHTMLQuote = $LayoutObject->Ascii2Html(
                     Text => $ContentID,
                 );
@@ -1187,8 +1212,15 @@ sub SendEmail {
                 my $ContentIDLinkEncode = $LayoutObject->LinkEncode($ContentID);
                 $GetParam{Body} =~ s/(ContentID=)$ContentIDLinkEncode/$1$ContentID/g;
 
-                # ignore attachment if not linked in body
-                next ATTACHMENT if $GetParam{Body} !~ /(\Q$ContentIDHTMLQuote\E|\Q$ContentID\E)/i;
+                # IF the image is referenced in the body set it as inline.
+                if ( $GetParam{Body} =~ /(\Q$ContentIDHTMLQuote\E|\Q$ContentID\E)/i ) {
+                    $Attachment->{Disposition} = 'inline';
+                }
+                elsif ( $Attachment->{Disposition} eq 'inline' ) {
+
+                    # Ignore attachment if not linked in body.
+                    next ATTACHMENT;
+                }
             }
 
             # remember inline images and normal attachments
@@ -1210,13 +1242,18 @@ sub SendEmail {
         if ($To) {
             $To .= ', ';
         }
-        $To .= $GetParam{$Key}
+        $To .= $GetParam{$Key};
     }
 
     my $IsVisibleForCustomer = $Config->{IsVisibleForCustomerDefault};
     if ( $GetParam{IsVisibleForCustomerPresent} ) {
         $IsVisibleForCustomer = $GetParam{IsVisibleForCustomer} ? 1 : 0;
     }
+
+    my $From = $Kernel::OM->Get('Kernel::System::TemplateGenerator')->Sender(
+        QueueID => $Ticket{QueueID},
+        UserID  => $Self->{UserID},
+    );
 
     my $EmailArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
         ChannelName => 'Email',
@@ -1228,7 +1265,7 @@ sub SendEmail {
         IsVisibleForCustomer => $IsVisibleForCustomer,
         HistoryType          => 'Forward',
         HistoryComment       => "\%\%$To",
-        From                 => $GetParam{From},
+        From                 => $From,
         To                   => $GetParam{To},
         Cc                   => $GetParam{Cc},
         Bcc                  => $GetParam{Bcc},
@@ -1321,7 +1358,7 @@ sub SendEmail {
     {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('Could not delete draft!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -1394,7 +1431,7 @@ sub AjaxUpdate {
 
             # get AJAX param values
             if ( $Object->can('GetParamAJAX') ) {
-                %GetParam = ( %GetParam, $Object->GetParamAJAX(%GetParam) )
+                %GetParam = ( %GetParam, $Object->GetParamAJAX(%GetParam) );
             }
 
             # get options that have to be removed from the selection visible
@@ -1853,10 +1890,12 @@ sub _Mask {
             $Attachment->{ContentID}
             && $LayoutObject->{BrowserRichText}
             && ( $Attachment->{ContentType} =~ /image/i )
-            && ( $Attachment->{Disposition} eq 'inline' )
             )
         {
-            next ATTACHMENT;
+            my $ContentIDLinkEncode = $LayoutObject->LinkEncode( $Attachment->{ContentID} );
+            if ( $Param{Body} =~ /ContentID=\Q$ContentIDLinkEncode\E/i ) {
+                next ATTACHMENT;
+            }
         }
 
         push @{ $Param{AttachmentList} }, $Attachment;
@@ -1922,16 +1961,6 @@ sub _Mask {
     }
 
     if ( IsHashRefWithData($LoadedFormDraft) ) {
-
-        my $DateTimeObject = $Kernel::OM->Create(
-            'Kernel::System::DateTime',
-            ObjectParams => {
-                String => $LoadedFormDraft->{ChangeTime},
-            },
-        );
-        my %RelativeTime = $LayoutObject->FormatRelativeTime( DateTimeObject => $DateTimeObject );
-        $LoadedFormDraft->{ChangeTimeRelative}
-            = $LayoutObject->{LanguageObject}->Translate( $RelativeTime{Message}, $RelativeTime{Value} );
 
         $LoadedFormDraft->{ChangeByName} = $Kernel::OM->Get('Kernel::System::User')->UserName(
             UserID => $LoadedFormDraft->{ChangeBy},
@@ -2009,9 +2038,9 @@ sub _GetExtendedParams {
     if ($CustomersNumber) {
         my $CustomerCounter = 1;
         for my $Count ( 1 ... $CustomersNumber ) {
-            my $CustomerElement = $ParamObject->GetParam( Param => 'CustomerTicketText_' . $Count );
+            my $CustomerElement  = $ParamObject->GetParam( Param => 'CustomerTicketText_' . $Count );
             my $CustomerSelected = ( $Selected eq $Count ? 'checked="checked"' : '' );
-            my $CustomerKey = $ParamObject->GetParam( Param => 'CustomerKey_' . $Count )
+            my $CustomerKey      = $ParamObject->GetParam( Param => 'CustomerKey_' . $Count )
                 || '';
             my $CustomerQueue = $ParamObject->GetParam( Param => 'CustomerQueue_' . $Count )
                 || '';

@@ -1,8 +1,10 @@
-/**
- * @project     OTRS (http://www.otrs.org) - Agent Frontend
- * @copyright   OTRS AG
- * @license     AGPL (http://www.gnu.org/licenses/agpl.txt)
- */
+/*
+Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+
+This software comes with ABSOLUTELY NO WARRANTY. For details, see
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
+*/
 
 /**
  * @package     Skin "Default"
@@ -420,7 +422,6 @@ thead .headerSortDown a {
 .TableSmall tbody tr.Active td,
 .DataTable tbody tr.Active td {
     color: #1A1A1A;
-    text-shadow: 1px 1px 1px #fff;
 }
 
 .DataTable tbody tr.Active td {
@@ -494,20 +495,9 @@ thead .headerSortDown a {
 }
 
 .TableSmall tbody td span.Direction.Incoming .fa-long-arrow-left,
-.DataTable tbody td span.Direction.Incoming .fa-long-arrow-left {
-    position: absolute;
-    left: auto;
-    right: 4px;
-    top: 4px;
-    color: #000;
-    font-size: 12px;
-}
-
+.DataTable tbody td span.Direction.Incoming .fa-long-arrow-left,
 .TableSmall tbody td span.Direction.Outgoing .fa-long-arrow-right,
 .DataTable tbody td span.Direction.Outgoing .fa-long-arrow-right {
-    position: absolute;
-    right: 2px;
-    top: 4px;
     color: #000;
     font-size: 12px;
 }
@@ -579,7 +569,8 @@ thead .headerSortDown a {
 }
 
 .TicketList .No {
-    width: 42px;
+    width: 30px;
+    text-align: center;
 }
 
 .TicketList .Attachments {
@@ -594,6 +585,14 @@ thead .headerSortDown a {
     background: -o-linear-gradient(top,  #f0f0f0 0%,#eaeaea 100%);
     background: -ms-linear-gradient(top,  #f0f0f0 0%,#eaeaea 100%);
     background: linear-gradient(to bottom,  #f0f0f0 0%,#eaeaea 100%);
+}
+
+#OverviewBody.Overview.TicketList {
+    overflow-x: auto;
+}
+
+#OverviewBody.Overview.TicketList table.TableSmall.NoCellspacing {
+    overflow: visible;
 }
 
 /**
@@ -646,6 +645,7 @@ thead .headerSortDown a {
     background-color: #eee;
     position: relative;
     z-index: 99;
+    text-align: center;
 }
 
 select.ColumnFilter {

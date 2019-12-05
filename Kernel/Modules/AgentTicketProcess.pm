@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentTicketProcess;
@@ -84,7 +84,7 @@ sub Run {
         $Self->{LinkTicketData} = \%TicketData;
 
         # set LinkTicketID param for showing on main form
-        $Param{LinkTicketID} = $Self->{LinkTicketID}
+        $Param{LinkTicketID} = $Self->{LinkTicketID};
     }
 
     # get the article information on link actions
@@ -197,25 +197,34 @@ sub Run {
                 }
                 else {
 
-                    # set lock
-                    $TicketObject->TicketLockSet(
+                    my %Ticket = $TicketObject->TicketGet(
+                        TicketID => $TicketID,
+                    );
+
+                    my $Lock = $TicketObject->TicketLockSet(
                         TicketID => $TicketID,
                         Lock     => 'lock',
-                        UserID   => $Self->{UserID},
+                        UserID   => $Self->{UserID}
                     );
 
-                    # set user id
-                    $TicketObject->TicketOwnerSet(
-                        TicketID  => $TicketID,
-                        UserID    => $Self->{UserID},
-                        NewUserID => $Self->{UserID},
-                    );
+                    # Set new owner if ticket owner is different then logged user.
+                    if ( $Lock && ( $Ticket{OwnerID} != $Self->{UserID} ) ) {
 
-                    # reload the parent window to show the updated lock state
-                    $Param{ParentReload} = 1;
+                        # Remember previous owner, which will be used to restore ticket owner on undo action.
+                        $Param{PreviousOwner} = $Ticket{OwnerID};
 
-                    # show lock state link
-                    $Param{RenderLocked} = 1;
+                        my $Success = $TicketObject->TicketOwnerSet(
+                            TicketID  => $TicketID,
+                            UserID    => $Self->{UserID},
+                            NewUserID => $Self->{UserID},
+                        );
+
+                        # Reload the parent window to show the updated lock state.
+                        $Param{ParentReload} = 1;
+
+                        # Show lock state link.
+                        $Param{RenderLocked} = 1;
+                    }
 
                     my $TicketNumber = $TicketObject->TicketNumberLookup(
                         TicketID => $TicketID,
@@ -267,7 +276,7 @@ sub Run {
     # fetch also FadeAway processes to continue working with existing tickets, but not to start new
     #    ones
     if ( !$Self->{IsMainWindow} && $Self->{Subaction} ) {
-        push @ProcessStates, 'FadeAway'
+        push @ProcessStates, 'FadeAway';
     }
 
     # create process object
@@ -277,7 +286,7 @@ sub Run {
             ActivityDialogObject   => $ActivityDialogObject,
             TransitionObject       => $Kernel::OM->Get('Kernel::System::ProcessManagement::Transition'),
             TransitionActionObject => $Kernel::OM->Get('Kernel::System::ProcessManagement::TransitionAction'),
-            }
+        }
     );
     my $ProcessObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::Process');
 
@@ -886,7 +895,7 @@ sub _GetParam {
             ActivityDialogObject   => $ActivityDialogObject,
             TransitionObject       => $Kernel::OM->Get('Kernel::System::ProcessManagement::Transition'),
             TransitionActionObject => $Kernel::OM->Get('Kernel::System::ProcessManagement::TransitionAction'),
-            }
+        }
     );
     my $ProcessObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::Process');
 
@@ -1142,14 +1151,15 @@ sub _GetParam {
                 )
             {
 
-                my %DateParam = ( Prefix => $Prefix );
-
                 # map the GetParam's Date Values to our DateParamHash
-                %DateParam = map {
-                    ( $Prefix . $_ )
-                        => $ParamObject->GetParam( Param => ( $Prefix . $_ ) )
-                    }
-                    qw(Year Month Day Hour Minute);
+                my %DateParam = (
+                    Prefix => $Prefix,
+                    map {
+                        ( $Prefix . $_ )
+                            => $ParamObject->GetParam( Param => ( $Prefix . $_ ) )
+                        }
+                        qw(Year Month Day Hour Minute)
+                );
 
                 # if all values are present
                 if (
@@ -1329,7 +1339,7 @@ sub _OutputActivityDialog {
             ActivityDialogObject   => $ActivityDialogObject,
             TransitionObject       => $Kernel::OM->Get('Kernel::System::ProcessManagement::Transition'),
             TransitionActionObject => $Kernel::OM->Get('Kernel::System::ProcessManagement::TransitionAction'),
-            }
+        }
     );
     my $ProcessObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::Process');
 
@@ -1488,7 +1498,7 @@ sub _OutputActivityDialog {
                 Name =>
                     $LayoutObject->{LanguageObject}->Translate( $ActivityDialog->{Name} )
                     || '',
-                }
+            }
         );
     }
     elsif (
@@ -2575,7 +2585,7 @@ sub _RenderTitle {
         $Title = $Ticket{Title};
     }
 
-    $Param{GetParam}->{Title} = $Title;
+    $Param{GetParam}->{Title} //= $Title;
 
     my %Data = (
         Label            => $LayoutObject->{LanguageObject}->Translate("Title"),
@@ -2640,8 +2650,8 @@ sub _RenderTitle {
 sub _RenderArticle {
     my ( $Self, %Param ) = @_;
 
-    # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     for my $Needed (qw(FormID Ticket)) {
         if ( !$Param{$Needed} ) {
@@ -2660,7 +2670,7 @@ sub _RenderArticle {
         };
     }
 
-    if ( $Self->{LinkArticleData} ) {
+    if ( IsHashRefWithData( $Self->{LinkArticleData} ) ) {
         my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
         my $TicketNumber = $TicketObject->TicketNumberLookup(
             TicketID => $Self->{LinkArticleData}->{TicketID},
@@ -2680,6 +2690,42 @@ sub _RenderArticle {
             UploadCacheObject  => $Kernel::OM->Get('Kernel::System::Web::UploadCache'),
             AttachmentsInclude => 1,
         );
+
+        my %SafetyCheckResult = $Kernel::OM->Get('Kernel::System::HTMLUtils')->Safety(
+            String => $Param{GetParam}->{Body},
+
+            # Strip out external content if BlockLoadingRemoteContent is enabled.
+            NoExtSrcLoad => $ConfigObject->Get('Ticket::Frontend::BlockLoadingRemoteContent'),
+
+            # Disallow potentially unsafe content.
+            NoApplet     => 1,
+            NoObject     => 1,
+            NoEmbed      => 1,
+            NoSVG        => 1,
+            NoJavaScript => 1,
+        );
+        $Param{GetParam}->{Body} = $SafetyCheckResult{String};
+    }
+
+    # get all attachments meta data
+    my @Attachments = $Kernel::OM->Get('Kernel::System::Web::UploadCache')->FormIDGetAllFilesMeta(
+        FormID => $Self->{FormID},
+    );
+
+    # show attachments
+    ATTACHMENT:
+    for my $Attachment (@Attachments) {
+        if (
+            $Attachment->{ContentID}
+            && $LayoutObject->{BrowserRichText}
+            && ( $Attachment->{ContentType} =~ /image/i )
+            && ( $Attachment->{Disposition} eq 'inline' )
+            )
+        {
+            next ATTACHMENT;
+        }
+
+        push @{ $Param{AttachmentList} }, $Attachment;
     }
 
     my %Data = (
@@ -2692,6 +2738,7 @@ sub _RenderArticle {
             || $LayoutObject->{LanguageObject}->Translate("Subject"),
         LabelBody => $Param{ActivityDialogField}->{Config}->{LabelBody}
             || $LayoutObject->{LanguageObject}->Translate("Text"),
+        AttachmentList => $Param{AttachmentList},
     );
 
     # If field is required put in the necessary variables for
@@ -2767,7 +2814,7 @@ sub _RenderArticle {
         my $GID = $Kernel::OM->Get('Kernel::System::Queue')->GetQueueGroupID( QueueID => $Param{Ticket}->{QueueID} );
         my %MemberList = $Kernel::OM->Get('Kernel::System::Group')->PermissionGroupGet(
             GroupID => $GID,
-            Type    => 'note',
+            Type    => 'ro',
         );
         for my $UserID ( sort keys %MemberList ) {
             $ShownUsers{$UserID} = $AllGroupsMembers{$UserID};
@@ -2786,34 +2833,10 @@ sub _RenderArticle {
         );
     }
 
-    # get all attachments meta data
-    my @Attachments = $Kernel::OM->Get('Kernel::System::Web::UploadCache')->FormIDGetAllFilesMeta(
-        FormID => $Self->{FormID},
-    );
-
-    # show attachments
-    ATTACHMENT:
-    for my $Attachment (@Attachments) {
-        if (
-            $Attachment->{ContentID}
-            && $LayoutObject->{BrowserRichText}
-            && ( $Attachment->{ContentType} =~ /image/i )
-            && ( $Attachment->{Disposition} eq 'inline' )
-            )
-        {
-            next ATTACHMENT;
-        }
-
-        push @{ $Param{AttachmentList} }, $Attachment;
-    }
-
     # output server errors
     if ( IsHashRefWithData( $Param{Error} ) && $Param{Error}->{'TimeUnits'} ) {
         $Param{TimeUnitsInvalid} = 'ServerError';
     }
-
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # show time units
     if (
@@ -2847,6 +2870,15 @@ sub _RenderArticle {
             $Param{TimeUnitsRequired} = 'Validate_Required';
         }
 
+        # Get TimeUnits value.
+        $Param{TimeUnits} = $Param{GetParam}{TimeUnits};
+
+        if ( !defined $Param{TimeUnits} && $Self->{ArticleID} ) {
+            $Param{TimeUnits} = $Self->_GetTimeUnits(
+                ArticleID => $Self->{ArticleID},
+            );
+        }
+
         $LayoutObject->Block(
             Name => 'TimeUnits',
             Data => \%Param,
@@ -2857,6 +2889,21 @@ sub _RenderArticle {
         Success => 1,
         HTML    => $LayoutObject->Output( TemplateFile => 'ProcessManagement/Article' ),
     };
+}
+
+sub _GetTimeUnits {
+    my ( $Self, %Param ) = @_;
+
+    my $AccountedTime = '';
+
+    # Get accounted time if AccountTime config item is enabled.
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::AccountTime') && defined $Param{ArticleID} ) {
+        $AccountedTime = $Kernel::OM->Get('Kernel::System::Ticket::Article')->ArticleAccountedTimeGet(
+            ArticleID => $Param{ArticleID},
+        );
+    }
+
+    return $AccountedTime ? $AccountedTime : '';
 }
 
 sub _RenderCustomer {
@@ -2926,6 +2973,28 @@ sub _RenderCustomer {
         );
     }
 
+    # Customer user from article is preselected for new split ticket. See bug#12956.
+    if (
+        IsHashRefWithData( $Self->{LinkArticleData} )
+        && $Self->{LinkArticleData}->{From}
+        && $Self->{LinkArticleData}->{SenderType} eq 'customer'
+        )
+    {
+
+        my @ArticleFromAddress = Mail::Address->parse( $Self->{LinkArticleData}->{From} );
+
+        my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
+        my %List               = $CustomerUserObject->CustomerSearch(
+            PostMasterSearch => $ArticleFromAddress[0]->address(),
+            Valid            => 1,
+        );
+
+        my @CustomerUser = sort keys %List;
+        %CustomerUserData = $CustomerUserObject->CustomerUserDataGet(
+            User => $CustomerUser[0],
+        );
+    }
+
     # show customer field as "FirstName Lastname" <MailAddress>
     if ( IsHashRefWithData( \%CustomerUserData ) ) {
         $Data{CustomerUserID}       = "\"$CustomerUserData{UserFullname}" . "\" <$CustomerUserData{UserEmail}>";
@@ -2946,6 +3015,10 @@ sub _RenderCustomer {
         Value => $Param{AJAXUpdatableFields},
     );
 
+    if ( $Param{DescriptionShort} ) {
+        $Data{DescriptionShort} = $Param{DescriptionShort};
+    }
+
     $LayoutObject->Block(
         Name => $Param{ActivityDialogField}->{LayoutBlock} || 'rw:Customer',
         Data => \%Data,
@@ -2956,15 +3029,6 @@ sub _RenderCustomer {
         $LayoutObject->Block(
             Name => 'LabelSpanCustomerUser',
             Data => {},
-        );
-    }
-
-    if ( $Param{DescriptionShort} ) {
-        $LayoutObject->Block(
-            Name => $Param{ActivityDialogField}->{LayoutBlock} || 'rw:Customer:DescriptionShort',
-            Data => {
-                DescriptionShort => $Param{DescriptionShort},
-            },
         );
     }
 
@@ -4075,7 +4139,7 @@ sub _RenderQueue {
     $Data{Content} = $LayoutObject->BuildSelection(
         Data          => $Queues,
         Name          => 'QueueID',
-        Translation   => 1,
+        Translation   => 0,
         SelectedValue => $SelectedValue,
         Class         => "Modernize $ServerError",
         TreeView      => $TreeView,
@@ -4630,7 +4694,7 @@ sub _StoreActivityDialog {
                 %{ $ActivityDialog->{Fields}{$CurrentField} },
             );
 
-            if ( !$Result && $ActivityDialog->{Fields}->{$CurrentField}->{Display} == 2 ) {
+            if ( !$Result ) {
 
                 # special case for Article (Subject & Body)
                 if ( $CurrentField eq 'Article' ) {
@@ -4644,7 +4708,7 @@ sub _StoreActivityDialog {
                 }
 
                 # all other fields
-                else {
+                elsif ( $ActivityDialog->{Fields}->{$CurrentField}->{Display} == 2 ) {
                     $Error{ $Self->{NameToID}->{$CurrentField} } = 1;
                 }
             }
@@ -4676,7 +4740,7 @@ sub _StoreActivityDialog {
             ActivityDialogObject   => $ActivityDialogObject,
             TransitionObject       => $Kernel::OM->Get('Kernel::System::ProcessManagement::Transition'),
             TransitionActionObject => $Kernel::OM->Get('Kernel::System::ProcessManagement::TransitionAction'),
-            }
+        }
     );
     my $ProcessObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::Process');
 
@@ -4685,6 +4749,7 @@ sub _StoreActivityDialog {
     my @Notify;
 
     my $NewTicketID;
+    my $NewOwnerID;
     if ( !$TicketID ) {
 
         $ProcessEntityID = $Param{GetParam}->{ProcessEntityID};
@@ -4743,17 +4808,21 @@ sub _StoreActivityDialog {
 
             $TicketParam{UserID} = $Self->{UserID};
 
-            if ( !$TicketParam{OwnerID} ) {
-
-                $TicketParam{OwnerID} = $Param{GetParam}->{OwnerID} || 1;
+            if ( $TicketParam{OwnerID} ) {
+                $NewOwnerID = $TicketParam{OwnerID};
             }
+
+            # Set OwnerID to 1 on TicketCreate. This will be updated later on, so events can be triggered.
+            $TicketParam{OwnerID} = 1;
 
             # if StartActivityDialog does not provide a ticket title set a default value
             if ( !$TicketParam{Title} ) {
 
                 # get the current server Time-stamp
-                my $CurrentTimeStamp = $Kernel::OM->Create('Kernel::System::DateTime')->ToString();
-                $TicketParam{Title} = "$Param{ProcessName} - $CurrentTimeStamp";
+                my $DateTimeObject   = $Kernel::OM->Create('Kernel::System::DateTime');
+                my $CurrentTimeStamp = $DateTimeObject->ToString();
+                my $OTRSTimeZone     = $DateTimeObject->OTRSTimeZoneGet();
+                $TicketParam{Title} = "$Param{ProcessName} - $CurrentTimeStamp ($OTRSTimeZone)";
 
                 # use article subject from the web request if any
                 if ( IsStringWithData( $Param{GetParam}->{Subject} ) ) {
@@ -5042,7 +5111,7 @@ sub _StoreActivityDialog {
         }
 
         if ( $CurrentField =~ m{^DynamicField_(.*)}xms ) {
-            my $DynamicFieldName = $1;
+            my $DynamicFieldName   = $1;
             my $DynamicFieldConfig = ( grep { $_->{Name} eq $DynamicFieldName } @{$DynamicField} )[0];
 
             if ( !IsHashRefWithData($DynamicFieldConfig) ) {
@@ -5108,8 +5177,56 @@ sub _StoreActivityDialog {
                 # add note
                 my $ArticleID = '';
                 my $MimeType  = 'text/plain';
+
+                # get pre loaded attachment
+                my @Attachments = $UploadCacheObject->FormIDGetAllFilesData(
+                    FormID => $Self->{FormID},
+                );
+
+                # get submit attachment
+                my %UploadStuff = $ParamObject->GetUploadAll(
+                    Param => 'FileUpload',
+                );
+                if (%UploadStuff) {
+                    push @Attachments, \%UploadStuff;
+                }
+
                 if ( $LayoutObject->{BrowserRichText} ) {
                     $MimeType = 'text/html';
+
+                    # write attachments
+                    my @NewAttachmentData;
+                    ATTACHMENT:
+                    for my $Attachment (@Attachments) {
+
+                        # skip, deleted not used inline images
+                        my $ContentID = $Attachment->{ContentID};
+                        if (
+                            $ContentID
+                            && ( $Attachment->{ContentType} =~ /image/i )
+                            && ( $Attachment->{Disposition} eq 'inline' )
+                            )
+                        {
+                            my $ContentIDHTMLQuote = $LayoutObject->Ascii2Html(
+                                Text => $ContentID,
+                            );
+
+                            # workaround for link encode of rich text editor, see bug#5053
+                            my $ContentIDLinkEncode = $LayoutObject->LinkEncode($ContentID);
+                            $Param{GetParam}->{Body} =~ s/(ContentID=)$ContentIDLinkEncode/$1$ContentID/g;
+
+                            # ignore attachment if not linked in body
+                            if ( $Param{GetParam}->{Body} !~ /(\Q$ContentIDHTMLQuote\E|\Q$ContentID\E)/i )
+                            {
+                                next ATTACHMENT;
+                            }
+                        }
+
+                        # Remember inline images and normal attachments.
+                        push @NewAttachmentData, \%{$Attachment};
+                    }
+
+                    @Attachments = @NewAttachmentData;
 
                     # verify html document
                     $Param{GetParam}->{Body} = $LayoutObject->RichTextDocumentComplete(
@@ -5129,7 +5246,7 @@ sub _StoreActivityDialog {
                 my $HistoryComment = '%%Note';
                 if ( $CommunicationChannel eq 'Phone' ) {
                     $HistoryType    = 'PhoneCallAgent';
-                    $HistoryComment = '%%'
+                    $HistoryComment = '%%';
                 }
 
                 my $From = "\"$Self->{UserFullname}\" <$Self->{UserEmail}>";
@@ -5153,47 +5270,8 @@ sub _StoreActivityDialog {
                     return $LayoutObject->ErrorScreen();
                 }
 
-                # get pre loaded attachment
-                my @Attachments = $UploadCacheObject->FormIDGetAllFilesData(
-                    FormID => $Self->{FormID},
-                );
-
-                # get submit attachment
-                my %UploadStuff = $ParamObject->GetUploadAll(
-                    Param => 'FileUpload',
-                );
-                if (%UploadStuff) {
-                    push @Attachments, \%UploadStuff;
-                }
-
                 # write attachments
-                ATTACHMENT:
                 for my $Attachment (@Attachments) {
-
-                    # skip, deleted not used inline images
-                    my $ContentID = $Attachment->{ContentID};
-                    if (
-                        $ContentID
-                        && ( $Attachment->{ContentType} =~ /image/i )
-                        && ( $Attachment->{Disposition} eq 'inline' )
-                        )
-                    {
-                        my $ContentIDHTMLQuote = $LayoutObject->Ascii2Html(
-                            Text => $ContentID,
-                        );
-
-                        # workaround for link encode of rich text editor, see bug#5053
-                        my $ContentIDLinkEncode = $LayoutObject->LinkEncode($ContentID);
-                        $Param{GetParam}->{Body} =~ s/(ContentID=)$ContentIDLinkEncode/$1$ContentID/g;
-
-                        # ignore attachment if not linked in body
-                        if ( $Param{GetParam}->{Body} !~ /(\Q$ContentIDHTMLQuote\E|\Q$ContentID\E)/i )
-                        {
-                            next ATTACHMENT;
-                        }
-                    }
-
-                    # write existing file to backend
                     $ArticleBackendObject->ArticleWriteAttachment(
                         %{$Attachment},
                         ArticleID => $ArticleID,
@@ -5201,56 +5279,8 @@ sub _StoreActivityDialog {
                     );
                 }
 
-                # remove pre submitted attachments
+                # Remove pre submitted attachments.
                 $UploadCacheObject->FormIDRemove( FormID => $Self->{FormID} );
-
-                # get the link ticket id if given
-                my $LinkTicketID = $ParamObject->GetParam( Param => 'LinkTicketID' ) || '';
-
-                # get screen config
-                my $Config = $Kernel::OM->Get('Kernel::Config')->Get("Ticket::Frontend::$Self->{Action}");
-
-                # link tickets
-                if (
-                    $LinkTicketID
-                    && $Config->{SplitLinkType}
-                    && $Config->{SplitLinkType}->{LinkType}
-                    && $Config->{SplitLinkType}->{Direction}
-                    )
-                {
-
-                    my $Access = $TicketObject->TicketPermission(
-                        Type     => 'ro',
-                        TicketID => $LinkTicketID,
-                        UserID   => $Self->{UserID}
-                    );
-
-                    if ( !$Access ) {
-                        return $LayoutObject->NoPermission(
-                            Message    => "You need ro permission!",
-                            WithHeader => 'yes',
-                        );
-                    }
-
-                    my $SourceKey = $LinkTicketID;
-                    my $TargetKey = $TicketID;
-
-                    if ( $Config->{SplitLinkType}->{Direction} eq 'Source' ) {
-                        $SourceKey = $TicketID;
-                        $TargetKey = $LinkTicketID;
-                    }
-
-                    # link the tickets
-                    $Kernel::OM->Get('Kernel::System::LinkObject')->LinkAdd(
-                        SourceObject => 'Ticket',
-                        SourceKey    => $SourceKey,
-                        TargetObject => 'Ticket',
-                        TargetKey    => $TargetKey,
-                        Type         => $Config->{SplitLinkType}->{LinkType} || 'Normal',
-                        State        => 'Valid',
-                        UserID       => $Self->{UserID},
-                    );
-                }
 
                 # time accounting
                 if ( $Param{GetParam}->{TimeUnits} ) {
@@ -5454,6 +5484,62 @@ sub _StoreActivityDialog {
         }
     }
 
+    # get the link ticket id if given
+    my $LinkTicketID = $ParamObject->GetParam( Param => 'LinkTicketID' ) || '';
+
+    # get screen config
+    my $Config = $Kernel::OM->Get('Kernel::Config')->Get("Ticket::Frontend::$Self->{Action}");
+
+    # link tickets
+    if (
+        $LinkTicketID
+        && $Config->{SplitLinkType}
+        && $Config->{SplitLinkType}->{LinkType}
+        && $Config->{SplitLinkType}->{Direction}
+        )
+    {
+
+        my $Access = $TicketObject->TicketPermission(
+            Type     => 'ro',
+            TicketID => $LinkTicketID,
+            UserID   => $Self->{UserID}
+        );
+
+        if ( !$Access ) {
+            return $LayoutObject->NoPermission(
+                Message    => "You need ro permission!",
+                WithHeader => 'yes',
+            );
+        }
+
+        my $SourceKey = $LinkTicketID;
+        my $TargetKey = $TicketID;
+
+        if ( $Config->{SplitLinkType}->{Direction} eq 'Source' ) {
+            $SourceKey = $TicketID;
+            $TargetKey = $LinkTicketID;
+        }
+
+        # link the tickets
+        $Kernel::OM->Get('Kernel::System::LinkObject')->LinkAdd(
+            SourceObject => 'Ticket',
+            SourceKey    => $SourceKey,
+            TargetObject => 'Ticket',
+            TargetKey    => $TargetKey,
+            Type         => $Config->{SplitLinkType}->{LinkType} || 'Normal',
+            State        => 'Valid',
+            UserID       => $Self->{UserID},
+        );
+    }
+
+    if ($NewOwnerID) {
+        $TicketObject->TicketOwnerSet(
+            TicketID  => $TicketID,
+            NewUserID => $NewOwnerID,
+            UserID    => $Self->{UserID},
+        );
+    }
+
     # Transitions will be handled by ticket event module (TicketProcessTransitions.pm).
 
     # if we were updating a ticket, close the pop-up and return to zoom
@@ -5482,9 +5568,9 @@ sub _DisplayProcessList {
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     $Param{ProcessList} = $LayoutObject->BuildSelection(
-        Class => 'Modernize Validate_Required' . ( $Param{Errors}->{ProcessEntityIDInvalid} || ' ' ),
-        Data  => $Param{ProcessList},
-        Name  => 'ProcessEntityID',
+        Class        => 'Modernize Validate_Required' . ( $Param{Errors}->{ProcessEntityIDInvalid} || ' ' ),
+        Data         => $Param{ProcessList},
+        Name         => 'ProcessEntityID',
         SelectedID   => $Param{ProcessEntityID},
         PossibleNone => 1,
         Sort         => 'AlphanumericValue',
@@ -5674,8 +5760,24 @@ sub _CheckField {
         # check if the given field param is valid
         if ( $Param{Field} eq 'Article' ) {
 
-            # in case of article fields we need to fake a value
             $Value = 1;
+
+            my ( $Body, $Subject, $AttachmentExists, $TimeUnits ) = (
+                $ParamObject->GetParam( Param => 'Body' ),
+                $ParamObject->GetParam( Param => 'Subject' ),
+                $ParamObject->GetParam( Param => 'AttachmentExists' ),
+                $ParamObject->GetParam( Param => 'TimeUnits' )
+            );
+
+            # If attachment exists and body and subject not, it is error (see bug#13081).
+            if ( $AttachmentExists && ( !$Body && !$Subject ) ) {
+                $Value = 0;
+            }
+
+            # If time units exists and body and subject not, it is error (see bug#13266).
+            if ( $TimeUnits && ( !$Body && !$Subject ) ) {
+                $Value = 0;
+            }
         }
         else {
 
@@ -5858,13 +5960,13 @@ sub _GetResponsibles {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # Get available permissions and set permission group type accordingly.
-    my $ConfigPermissions = $ConfigObject->Get('System::Permission');
+    my $ConfigPermissions   = $ConfigObject->Get('System::Permission');
     my $PermissionGroupType = ( grep { $_ eq 'responsible' } @{$ConfigPermissions} ) ? 'responsible' : 'rw';
 
     # if we are updating a ticket show the full list of possible responsibles
     if ( $Param{TicketID} ) {
         if ( $Param{QueueID} && !$Param{AllUsers} ) {
-            my $GID = $QueueObject->GetQueueGroupID( QueueID => $Param{QueueID} );
+            my $GID        = $QueueObject->GetQueueGroupID( QueueID => $Param{QueueID} );
             my %MemberList = $GroupObject->PermissionGroupGet(
                 GroupID => $GID,
                 Type    => $PermissionGroupType,
@@ -5879,7 +5981,7 @@ sub _GetResponsibles {
         # the StartActivityDialog does not provide a TicketID and it could be that also there
         # is no QueueID information. Get the default QueueID for this matters.
         if ( !$Param{QueueID} ) {
-            my $Queue = $ConfigObject->Get("Process::DefaultQueue");
+            my $Queue   = $ConfigObject->Get("Process::DefaultQueue");
             my $QueueID = $QueueObject->QueueLookup( Queue => $Queue );
             if ($QueueID) {
                 $Param{QueueID} = $QueueID;
@@ -5909,7 +6011,7 @@ sub _GetResponsibles {
 
         # show all subscribed users who have the appropriate permission in the queue group
         elsif ( $Param{QueueID} ) {
-            my $GID = $QueueObject->GetQueueGroupID( QueueID => $Param{QueueID} );
+            my $GID        = $QueueObject->GetQueueGroupID( QueueID => $Param{QueueID} );
             my %MemberList = $GroupObject->PermissionGroupGet(
                 GroupID => $GID,
                 Type    => $PermissionGroupType,
@@ -5954,13 +6056,13 @@ sub _GetOwners {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # Get available permissions and set permission group type accordingly.
-    my $ConfigPermissions = $ConfigObject->Get('System::Permission');
+    my $ConfigPermissions   = $ConfigObject->Get('System::Permission');
     my $PermissionGroupType = ( grep { $_ eq 'owner' } @{$ConfigPermissions} ) ? 'owner' : 'rw';
 
     # if we are updating a ticket show the full list of possible owners
     if ( $Param{TicketID} ) {
         if ( $Param{QueueID} && !$Param{AllUsers} ) {
-            my $GID = $QueueObject->GetQueueGroupID( QueueID => $Param{QueueID} );
+            my $GID        = $QueueObject->GetQueueGroupID( QueueID => $Param{QueueID} );
             my %MemberList = $GroupObject->PermissionGroupGet(
                 GroupID => $GID,
                 Type    => $PermissionGroupType,
@@ -5975,7 +6077,7 @@ sub _GetOwners {
         # the StartActivityDialog does not provide a TicketID and it could be that also there
         # is no QueueID information. Get the default QueueID for this matters.
         if ( !$Param{QueueID} ) {
-            my $Queue = $ConfigObject->Get("Process::DefaultQueue");
+            my $Queue   = $ConfigObject->Get("Process::DefaultQueue");
             my $QueueID = $QueueObject->QueueLookup( Queue => $Queue );
             if ($QueueID) {
                 $Param{QueueID} = $QueueID;
@@ -6005,7 +6107,7 @@ sub _GetOwners {
 
         # show all subscribed users who have the appropriate permission in the queue group
         elsif ( $Param{QueueID} ) {
-            my $GID = $QueueObject->GetQueueGroupID( QueueID => $Param{QueueID} );
+            my $GID        = $QueueObject->GetQueueGroupID( QueueID => $Param{QueueID} );
             my %MemberList = $GroupObject->PermissionGroupGet(
                 GroupID => $GID,
                 Type    => $PermissionGroupType,

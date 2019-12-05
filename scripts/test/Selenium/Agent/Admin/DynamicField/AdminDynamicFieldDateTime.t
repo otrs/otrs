@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -12,20 +12,18 @@ use utf8;
 
 use vars (qw($Self));
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get helper object
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         my %DynamicFieldsOverviewPageShownSysConfig = $Kernel::OM->Get('Kernel::System::SysConfig')->SettingGet(
             Name => 'PreferencesGroups###DynamicFieldsOverviewPageShown',
         );
 
-        # show more dynamic fields per page as the default value
+        # Show more dynamic fields per page as the default value.
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'PreferencesGroups###DynamicFieldsOverviewPageShown',
@@ -35,7 +33,7 @@ $Selenium->RunTest(
             },
         );
 
-        # create test user and login
+        # Create test user and login.
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => ['admin'],
         ) || die "Did not get test user";
@@ -46,34 +44,35 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # navigate to AdminDynamicField
+        # Navigate to AdminDynamicField.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminDynamicField");
 
-        # create and edit Ticket and Article DynamicFieldCheckbox
+        # Create and edit Ticket and Article DynamicFieldCheckbox.
         for my $Type (qw(Ticket Article)) {
 
             my $ObjectType = $Type . "DynamicField";
-            $Selenium->execute_script("\$('#$ObjectType').val('Date').trigger('redraw.InputField').trigger('change');");
-
-            # wait until page has finished loading
-            $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#Name").length' );
+            $Selenium->InputFieldValueSet(
+                Element => "#$ObjectType",
+                Value   => 'Date',
+            );
 
             for my $ID (
                 qw(Name Label FieldOrder ValidID DefaultValue YearsPeriod Link DateRestriction)
                 )
             {
+                $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#$ID').length" );
                 my $Element = $Selenium->find_element( "#$ID", 'css' );
                 $Element->is_enabled();
                 $Element->is_displayed();
             }
 
-            # check client side validation
+            # Check client side validation.
             my $Element = $Selenium->find_element( "#Name", 'css' );
             $Element->send_keys("");
-            $Element->VerifiedSubmit();
+            $Selenium->find_element( "#Submit", 'css' )->click();
+            $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#Name.Error").length' );
 
             $Self->Is(
                 $Selenium->execute_script(
@@ -83,8 +82,11 @@ $Selenium->RunTest(
                 'Client side validation correctly detected missing input value',
             );
 
-            # check default values
-            $Selenium->execute_script("\$('#YearsPeriod').val('1').trigger('redraw.InputField').trigger('change');");
+            # Check default values.
+            $Selenium->InputFieldValueSet(
+                Element => '#YearsPeriod',
+                Value   => 1,
+            );
 
             $Self->Is(
                 $Selenium->find_element( '#DefaultValue', 'css' )->get_value(),
@@ -102,20 +104,20 @@ $Selenium->RunTest(
                 "#YearsInFuture updated value",
             );
 
-            # create real text DynamicFieldDate
+            # Create real text DynamicFieldDate.
             my $RandomID = $Helper->GetRandomID();
 
-            $Selenium->find_element( "#Name",  'css' )->send_keys($RandomID);
-            $Selenium->find_element( "#Label", 'css' )->send_keys($RandomID);
-            $Selenium->find_element( "#Name",  'css' )->VerifiedSubmit();
+            $Selenium->find_element( "#Name",   'css' )->send_keys($RandomID);
+            $Selenium->find_element( "#Label",  'css' )->send_keys($RandomID);
+            $Selenium->find_element( "#Submit", 'css' )->VerifiedClick();
 
-            # check for test DynamicFieldCheckbox on AdminDynamicField screen
+            # Check for test DynamicFieldCheckbox on AdminDynamicField screen.
             $Self->True(
                 index( $Selenium->get_page_source(), $RandomID ) > -1,
                 "DynamicFieldDate $RandomID found on table"
             ) || die;
 
-            # edit test DynamicFieldDate years period, default value and set it to invalid
+            # Edit test DynamicFieldDate years period, default value and set it to invalid.
             $Selenium->find_element( $RandomID, 'link_text' )->VerifiedClick();
 
             $Selenium->find_element( "#DefaultValue",  'css' )->clear();
@@ -124,10 +126,13 @@ $Selenium->RunTest(
             $Selenium->find_element( "#YearsInPast",   'css' )->send_keys("10");
             $Selenium->find_element( "#YearsInFuture", 'css' )->clear();
             $Selenium->find_element( "#YearsInFuture", 'css' )->send_keys("8");
-            $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
-            $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
+            $Selenium->InputFieldValueSet(
+                Element => '#ValidID',
+                Value   => 2,
+            );
+            $Selenium->find_element( "#Submit", 'css' )->VerifiedClick();
 
-            # check new and edited DynamicFieldDateTime values
+            # Check new and edited DynamicFieldDateTime values.
             $Selenium->find_element( $RandomID, 'link_text' )->VerifiedClick();
 
             $Self->Is(
@@ -166,7 +171,7 @@ $Selenium->RunTest(
                 "#ValidID updated value",
             );
 
-            # delete DynamicFields
+            # Delete DynamicFields.
             my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
             my $DynamicField       = $DynamicFieldObject->DynamicFieldGet(
                 Name => $RandomID,
@@ -175,8 +180,6 @@ $Selenium->RunTest(
                 ID     => $DynamicField->{ID},
                 UserID => 1,
             );
-
-            # sanity check
             $Self->True(
                 $Success,
                 "DynamicFieldDelete() - $RandomID"
@@ -184,14 +187,11 @@ $Selenium->RunTest(
 
             # Go back to AdminDynamicField screen.
             $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminDynamicField");
-
         }
 
-        # make sure cache is correct
+        # Make sure cache is correct.
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => "DynamicField" );
-
     }
-
 );
 
 1;

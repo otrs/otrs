@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminRegistration;
@@ -48,7 +48,7 @@ sub Run {
             Data         => \%Param
         );
         $Output .= $LayoutObject->Footer();
-        return $Output
+        return $Output;
     }
 
     my $RegistrationState = $Kernel::OM->Get('Kernel::System::SystemData')->SystemDataGet(
@@ -133,7 +133,7 @@ sub Run {
         my %Result = (
             Success => $Response{Success} ? 'OK' : 'False',
             Message => $Response{Reason} || '',
-            Token   => $Response{Token}  || '',
+            Token   => $Response{Token} || '',
         );
 
         my $Output = $LayoutObject->Header();
@@ -247,7 +247,11 @@ sub Run {
 
         $Output .= $LayoutObject->Output(
             TemplateFile => 'AdminRegistration',
-            Data         => \%Param,
+            Data         => {
+                %Param,
+                OTRSSTORMIsInstalled   => $OTRSBusinessObject->OTRSSTORMIsInstalled(),
+                OTRSCONTROLIsInstalled => $OTRSBusinessObject->OTRSCONTROLIsInstalled(),
+            },
         );
         $Output .= $LayoutObject->Footer();
 
@@ -328,7 +332,7 @@ sub Run {
             Data => {
                 %Param,
                 Subaction => $Self->{Subaction},
-                }
+            }
         );
 
         $LayoutObject->Block(
@@ -412,7 +416,7 @@ sub Run {
             Data => {
                 %Param,
                 Subaction => $Self->{Subaction},
-                }
+            }
         );
 
         my %RegistrationData = $RegistrationObject->RegistrationDataGet();
@@ -602,7 +606,7 @@ sub _SentDataOverview {
         Data => {
             %Param,
             Subaction => 'SentDataOverview',
-            }
+        }
     );
 
     $LayoutObject->Block( Name => 'ActionList' );
@@ -625,12 +629,12 @@ sub _SentDataOverview {
         my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
         my %OSInfo       = $Kernel::OM->Get('Kernel::System::Environment')->OSInfoGet();
         my %System       = (
-            PerlVersion     => sprintf( "%vd", $^V ),
-            OSType          => $OSInfo{OS},
-            OSVersion       => $OSInfo{OSName},
-            OTRSVersion     => $ConfigObject->Get('Version'),
-            FQDN            => $ConfigObject->Get('FQDN'),
-            DatabaseVersion => $Kernel::OM->Get('Kernel::System::DB')->Version(),
+            PerlVersion        => sprintf( "%vd", $^V ),
+            OSType             => $OSInfo{OS},
+            OSVersion          => $OSInfo{OSName},
+            OTRSVersion        => $ConfigObject->Get('Version'),
+            FQDN               => $ConfigObject->Get('FQDN'),
+            DatabaseVersion    => $Kernel::OM->Get('Kernel::System::DB')->Version(),
             SupportDataSending => $Param{SupportDataSending} || $RegistrationData{SupportDataSending} || 'No',
         );
         my $RegistrationUpdateDataDump = $Kernel::OM->Get('Kernel::System::Main')->Dump( \%System );

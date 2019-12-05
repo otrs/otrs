@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 "use strict";
@@ -121,59 +121,43 @@ Core.UI.Table = (function (TargetNS) {
                     }
                 }
 
-                // handle multiple containers correctly
-                if ($Container.length > 1) {
-                    $Container.each(function() {
-                        var $Widget = $(this).closest('.WidgetSimple'),
-                            IsCollapsed = $Widget.hasClass('Collapsed');
+                // Handle containers correctly.
+                $Container.each(function() {
+                    var $Widget = $(this).closest('.WidgetSimple'),
+                        IsCollapsed = $Widget.hasClass('Collapsed');
 
-                        $Widget.show();
-                        if (IsCollapsed) {
-                            // Expand widget for a moment.
-                            $Widget.addClass("Expanded").removeClass("Collapsed");
+                    $Widget.show();
+                    if (IsCollapsed) {
+                        // Expand widget for a moment.
+                        $Widget.addClass("Expanded").removeClass("Collapsed");
+                    }
+
+                    if ($(this).find('tbody tr:visible:not(.FilterMessage), li:visible:not(.Header):not(.FilterMessage)').length) {
+                        $(this).find('.FilterMessage').hide();
+
+                        if (HideEmptyContainers) {
+                            $(this).closest('.WidgetSimple').show();
                         }
-
-                        if ($(this).find('tbody tr:visible:not(.FilterMessage), li:visible:not(.Header):not(.FilterMessage)').length) {
-                            $(this).find('.FilterMessage').hide();
-
-                            if (HideEmptyContainers) {
-                                $(this).closest('.WidgetSimple').show();
-                            }
-                        }
-                        else {
-                            $(this).find('.FilterMessage').show();
-                            if (HideEmptyContainers) {
-                                $(this).closest('.WidgetSimple').hide();
-                            }
-                        }
-
-                        if (IsCollapsed) {
-                            // Collapse widget, just like it was before.
-                            $Widget.addClass("Collapsed").removeClass("Expanded");
-                        }
-                    });
-
-                    if (!$Container.filter(':visible').length
-                        && !$Container.closest(".WidgetSimple:visible").length) {
-                        $('.FilterMessageWidget').show();
                     }
                     else {
-                        $('.FilterMessageWidget').hide();
+                        $(this).find('.FilterMessage').show();
+                        if (HideEmptyContainers) {
+                            $(this).closest('.WidgetSimple').hide();
+                        }
                     }
+
+                    if (IsCollapsed) {
+                        // Collapse widget, just like it was before.
+                        $Widget.addClass("Collapsed").removeClass("Expanded");
+                    }
+                });
+
+                if (!$Container.filter(':visible').length
+                    && !$Container.closest(".WidgetSimple:visible").length) {
+                    $('.FilterMessageWidget').show();
                 }
                 else {
-                    if ($Rows.filter(':visible').length) {
-                        $Container.find('.FilterMessage').hide();
-                        if (HideEmptyContainers) {
-                            $Container.closest('.WidgetSimple').show();
-                        }
-                    }
-                    else {
-                        $Container.find('.FilterMessage').show();
-                        if (HideEmptyContainers) {
-                            $Container.closest('.WidgetSimple').hide();
-                        }
-                    }
+                    $('.FilterMessageWidget').hide();
                 }
 
                 Core.App.Publish('Event.UI.Table.InitTableFilter.Change', [$FilterInput, $Container, ColumnNumber]);

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 <!-- TODO move before the merge the JS in the JS file -->
 ## nofilter(TidyAll::Plugin::OTRS::TT::ScriptUsage)
@@ -172,7 +172,7 @@
         <ul class="Tabs Filter">
 [% RenderBlockStart("FilterFooterItem") %]
             <li class="[% Data.ClassLI | html %]">
-                <a class="[% Data.ClassA | html %]" href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=[% Env("Subaction") %];Filter=[% Data.Filter | uri %];SortBy=[% Data.SortBy | uri %];OrderBy=[% Data.OrderBy | uri %];">
+                <a class="[% Data.ClassA | html %]" href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=[% Env("Subaction") %];Filter=[% Data.Filter | uri %];SortBy=[% Data.SortBy | uri %];OrderBy=[% Data.OrderBy | uri %][% Data.CustomerIDs %];">
                     [% Translate(Data.Name) | html %] ([% Data.Count | html %])
                 </a>
             </li>
@@ -189,6 +189,8 @@
 <script type="text/javascript">
     $('#CustomerIDs').on('change.CustomerIDs', function (Event) {
         var QueryString = '[% Env("Baselink") %]Action=[% Env("Action") %];[% Data.Link %]';
+
+        QueryString = QueryString.split('CustomerIDs=')[0];
 
         // Include customer selection
         if ($(this).val()) {

@@ -1,15 +1,16 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Package;
 
 use strict;
 use warnings;
+use utf8;
 
 use MIME::Base64;
 use File::Copy;
@@ -35,8 +36,11 @@ our @ObjectDependencies = (
     'Kernel::System::Loader',
     'Kernel::System::Log',
     'Kernel::System::Main',
+    'Kernel::System::OTRSBusiness',
+    'Kernel::System::Scheduler',
     'Kernel::System::SysConfig::Migration',
     'Kernel::System::SysConfig::XML',
+    'Kernel::System::SystemData',
     'Kernel::System::XML',
 );
 
@@ -47,6 +51,8 @@ Kernel::System::Package - to manage application packages/modules
 =head1 DESCRIPTION
 
 All functions to manage application packages/modules.
+
+=encoding utf-8
 
 =head1 PUBLIC INTERFACE
 
@@ -89,9 +95,10 @@ sub new {
         PackageMerge    => 'ARRAY',
 
         # package flags
-        PackageIsVisible      => 'SCALAR',
-        PackageIsDownloadable => 'SCALAR',
-        PackageIsRemovable    => 'SCALAR',
+        PackageIsVisible         => 'SCALAR',
+        PackageIsDownloadable    => 'SCALAR',
+        PackageIsRemovable       => 'SCALAR',
+        PackageAllowDirectUpdate => 'SCALAR',
 
         # *(Pre|Post) - just for compat. to 2.2
         IntroInstallPre    => 'ARRAY',
@@ -135,7 +142,7 @@ returns a list of repository packages
     my @List = $PackageObject->RepositoryList();
 
     my @List = $PackageObject->RepositoryList(
-        Result => 'short',  # will only return name, version, install_status md5sum and vendor
+        Result => 'short',  # will only return name, version, install_status md5sum, vendor and build commit ID
         instead of the structure
     );
 
@@ -198,6 +205,12 @@ sub RepositoryList {
         #   opm file from a mail client on Windows (see http://bugs.otrs.org/show_bug.cgi?id=9838).
         $Content =~ s{\r\n}{\n}xmsg;
         $Package{MD5sum} = $MainObject->MD5sum( String => \$Content );
+
+        # Extract and include build commit ID.
+        if ( $Content =~ m{ <BuildCommitID> (.*) </BuildCommitID> }smx ) {
+            $Package{BuildCommitID} = $1;
+            $Package{BuildCommitID} =~ s{ ^\s+|\s+$ }{}gsmx;
+        }
 
         # get package attributes
         if ( $Content && $Result eq 'Short' ) {
@@ -453,12 +466,7 @@ sub RepositoryRemove {
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
     # cleanup cache
-    $CacheObject->CleanUp(
-        Type => 'RepositoryList',
-    );
-    $CacheObject->CleanUp(
-        Type => 'RepositoryGet',
-    );
+    $Self->_RepositoryCacheClear();
 
     return 1;
 }
@@ -469,6 +477,7 @@ install a package
 
     $PackageObject->PackageInstall(
         String    => $FileString,
+        Force     => 1,             # optional 1 or 0, for to install package even if validation fails
         FromCloud => 1,             # optional 1 or 0, it indicates if package's origin is Cloud or not
     );
 
@@ -485,6 +494,10 @@ sub PackageInstall {
         );
         return;
     }
+
+    # Cleanup the repository cache before the package installation to have the current state
+    #   during the installation.
+    $Self->_RepositoryCacheClear();
 
     # get from cloud flag
     my $FromCloud = $Param{FromCloud} || 0;
@@ -574,7 +587,7 @@ sub PackageInstall {
     # install database (pre)
     if ( $Structure{DatabaseInstall} && $Structure{DatabaseInstall}->{pre} ) {
 
-        my $DatabaseInstall = $Self->_CheckDBMerged( Database => $Structure{DatabaseInstall}->{pre} );
+        my $DatabaseInstall = $Self->_CheckDBInstalledOrMerged( Database => $Structure{DatabaseInstall}->{pre} );
 
         if ( IsArrayRefWithData($DatabaseInstall) ) {
             $Self->_Database( Database => $DatabaseInstall );
@@ -615,7 +628,7 @@ sub PackageInstall {
     # install database (post)
     if ( $Structure{DatabaseInstall} && $Structure{DatabaseInstall}->{post} ) {
 
-        my $DatabaseInstall = $Self->_CheckDBMerged( Database => $Structure{DatabaseInstall}->{post} );
+        my $DatabaseInstall = $Self->_CheckDBInstalledOrMerged( Database => $Structure{DatabaseInstall}->{post} );
 
         if ( IsArrayRefWithData($DatabaseInstall) ) {
             $Self->_Database( Database => $DatabaseInstall );
@@ -638,6 +651,7 @@ sub PackageInstall {
             'SysConfigDefaultList',
             'SysConfigDefault',
             'SysConfigPersistent',
+            'SysConfigModifiedList',
         ],
     );
     $Kernel::OM->Get('Kernel::System::Loader')->CacheDelete();
@@ -675,6 +689,10 @@ sub PackageReinstall {
         );
         return;
     }
+
+    # Cleanup the repository cache before the package reinstallation to have the current state
+    #   during the reinstallation.
+    $Self->_RepositoryCacheClear();
 
     # parse source file
     my %Structure = $Self->PackageParse(%Param);
@@ -739,6 +757,7 @@ sub PackageReinstall {
             'SysConfigDefaultList',
             'SysConfigDefault',
             'SysConfigPersistent',
+            'SysConfigModifiedList',
         ],
     );
     $Kernel::OM->Get('Kernel::System::Loader')->CacheDelete();
@@ -761,7 +780,10 @@ sub PackageReinstall {
 
 upgrade a package
 
-    $PackageObject->PackageUpgrade( String => $FileString );
+    $PackageObject->PackageUpgrade(
+        String => $FileString,
+        Force  => 1,             # optional 1 or 0, for to install package even if validation fails
+    );
 
 =cut
 
@@ -776,6 +798,10 @@ sub PackageUpgrade {
         );
         return;
     }
+
+    # Cleanup the repository cache before the package upgrade to have the current state
+    #   during the upgrade.
+    $Self->_RepositoryCacheClear();
 
     # conflict check
     my %Structure = $Self->PackageParse(%Param);
@@ -798,10 +824,10 @@ sub PackageUpgrade {
 
     if ( !$Installed ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => 'Package is not installed, can\'t upgrade!',
+            Priority => 'notice',
+            Message  => 'Package is not installed, try a installation!',
         );
-        return;
+        return $Self->PackageInstall(%Param);
     }
 
     # write permission check
@@ -1161,6 +1187,7 @@ sub PackageUpgrade {
             'SysConfigDefaultList',
             'SysConfigDefault',
             'SysConfigPersistent',
+            'SysConfigModifiedList',
         ],
     );
     $Kernel::OM->Get('Kernel::System::Loader')->CacheDelete();
@@ -1198,6 +1225,10 @@ sub PackageUninstall {
         );
         return;
     }
+
+    # Cleanup the repository cache before the package uninstallation to have the current state
+    #   during the uninstallation.
+    $Self->_RepositoryCacheClear();
 
     # parse source file
     my %Structure = $Self->PackageParse(%Param);
@@ -1268,6 +1299,7 @@ sub PackageUninstall {
             'SysConfigDefaultList',
             'SysConfigDefault',
             'SysConfigPersistent',
+            'SysConfigModifiedList',
         ],
     );
     $Kernel::OM->Get('Kernel::System::Loader')->CacheDelete();
@@ -1345,11 +1377,12 @@ sub PackageOnlineRepositories {
 returns a list of available on-line packages
 
     my @List = $PackageObject->PackageOnlineList(
-        URL  => '',
-        Lang => 'en',
-        Cache => 0,   # (optional) do not use cached data
-        FromCloud => 1, # optional 1 or 0, it indicates if a Cloud Service
-                        # should be used for getting the packages list
+        URL                => '',
+        Lang               => 'en',
+        Cache              => 0,    # (optional) do not use cached data
+        FromCloud          => 1,    # optional 1 or 0, it indicates if a Cloud Service
+                                    #  should be used for getting the packages list
+        IncludeSameVersion => 1,    # (optional) to also get packages already installed and with the same version
     );
 
 =cut
@@ -1377,11 +1410,13 @@ sub PackageOnlineList {
         }
     }
 
+    $Param{IncludeSameVersion} //= 0;
+
     # get cache object
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
     # check cache
-    my $CacheKey = $Param{URL} . '-' . $Param{Lang};
+    my $CacheKey = $Param{URL} . '-' . $Param{Lang} . '-' . $Param{IncludeSameVersion};
     if ( $Param{Cache} ) {
         my $Cache = $CacheObject->Get(
             Type => 'PackageOnlineList',
@@ -1444,6 +1479,9 @@ sub PackageOnlineList {
                     $Package{Description} = $Tag->{Content};
                 }
             }
+            elsif ( $Tag->{Tag} eq 'PackageRequired' ) {
+                push @{ $Package{PackageRequired} }, $Tag;
+            }
             else {
                 $Package{ $Tag->{Tag} } = $Tag->{Content};
             }
@@ -1460,6 +1498,10 @@ sub PackageOnlineList {
         # get list from cloud
         my $ListResult = $Self->CloudFileGet(
             Operation => $Operation,
+            Data      => {
+                Language        => $Param{Lang},
+                PackageRequired => 1,
+            },
         );
 
         # check result structure
@@ -1584,7 +1626,7 @@ sub PackageOnlineList {
         }
 
         # add package if not already installed
-        if ( !$InstalledSameVersion ) {
+        if ( !$InstalledSameVersion || $Param{IncludeSameVersion} ) {
             push @NewPackages, $Newest{$Data};
         }
     }
@@ -1698,7 +1740,7 @@ sub DeployCheck {
         $Param{Log} = 1;
     }
 
-    my $Package = $Self->RepositoryGet( %Param, Result => 'SCALAR' );
+    my $Package   = $Self->RepositoryGet( %Param, Result => 'SCALAR' );
     my %Structure = $Self->PackageParse( String => $Package );
 
     $Self->{DeployCheckInfo} = undef;
@@ -1822,20 +1864,50 @@ sub PackageVerify {
         return;
     }
 
-    # return package as verified if cloud services are disabled
-    if ( $Self->{CloudServicesDisabled} ) {
-        return 'verified';
-    }
+    # Check if installation of packages, which are not verified by us, is possible.
+    my $PackageAllowNotVerifiedPackages = $Kernel::OM->Get('Kernel::Config')->Get('Package::AllowNotVerifiedPackages');
 
     # define package verification info
-    my $PackageVerifyInfo = {
-        Description =>
-            Translatable(
-            "<br>If you continue to install this package, the following issues may occur!<br><br>&nbsp;-Security problems<br>&nbsp;-Stability problems<br>&nbsp;-Performance problems<br><br>Please note that issues that are caused by working with this package are not covered by OTRS service contracts!<br><br>"
-            ),
-        Title =>
-            Translatable('Package not verified by the OTRS Group! It is recommended not to use this package.'),
-    };
+    my $PackageVerifyInfo;
+
+    if ($PackageAllowNotVerifiedPackages) {
+
+        $PackageVerifyInfo = {
+            Description =>
+                Translatable(
+                "<p>If you continue to install this package, the following issues may occur:</p><ul><li>Security problems</li><li>Stability problems</li><li>Performance problems</li></ul><p>Please note that issues that are caused by working with this package are not covered by OTRS service contracts.</p>"
+                ),
+            Title =>
+                Translatable('Package not verified by the OTRS Group! It is recommended not to use this package.'),
+            PackageInstallPossible => 1,
+        };
+    }
+    else {
+
+        $PackageVerifyInfo = {
+            Description =>
+                Translatable(
+                '<p>The installation of packages which are not verified by the OTRS Group is not possible by default. You can activate the installation of not verified packages via the "AllowNotVerifiedPackages" system configuration setting.</p>'
+                ),
+            Title =>
+                Translatable('Package not verified by the OTRS Group! It is recommended not to use this package.'),
+            PackageInstallPossible => 0,
+        };
+    }
+
+    # return package as verified if cloud services are disabled
+    if ( $Self->{CloudServicesDisabled} ) {
+
+        my $Verify = $PackageAllowNotVerifiedPackages ? 'verified' : 'not_verified';
+
+        if ( $Verify eq 'not_verified' ) {
+            $PackageVerifyInfo->{VerifyCSSClass} = 'NotVerifiedPackage';
+        }
+
+        $Self->{PackageVerifyInfo} = $PackageVerifyInfo;
+
+        return $Verify;
+    }
 
     # investigate name
     my $Name = $Param{Structure}->{Name}->{Content} || $Param{Name};
@@ -1855,6 +1927,12 @@ sub PackageVerify {
         Key  => $Sum,
     );
     if ($CachedValue) {
+
+        if ( $CachedValue eq 'not_verified' ) {
+
+            $PackageVerifyInfo->{VerifyCSSClass} = 'NotVerifiedPackage';
+        }
+
         $Self->{PackageVerifyInfo} = $PackageVerifyInfo;
 
         return $CachedValue;
@@ -1913,6 +1991,9 @@ sub PackageVerify {
 
     # set package verification info
     if ( $PackageVerify eq 'not_verified' ) {
+
+        $PackageVerifyInfo->{VerifyCSSClass} = 'NotVerifiedPackage';
+
         $Self->{PackageVerifyInfo} = $PackageVerifyInfo;
     }
 
@@ -2090,7 +2171,7 @@ build an opm package
             Content => 'L<http://otrs.org/>',
         },
         License => {
-            Content => 'GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007',
+            Content => 'GNU GENERAL PUBLIC LICENSE Version 3, November 2007',
         }
         Description => [
             {
@@ -2121,7 +2202,7 @@ build an opm package
 sub PackageBuild {
     my ( $Self, %Param ) = @_;
 
-    my $XML = '';
+    my $XML  = '';
     my $Home = $Param{Home} || $Self->{ConfigObject}->Get('Home');
 
     # check needed stuff
@@ -2162,7 +2243,7 @@ sub PackageBuild {
     for my $Tag (
         qw(Name Version Vendor URL License ChangeLog Description Framework OS
         IntroInstall IntroUninstall IntroReinstall IntroUpgrade
-        PackageIsVisible PackageIsDownloadable PackageIsRemovable PackageMerge
+        PackageIsVisible PackageIsDownloadable PackageIsRemovable PackageAllowDirectUpdate PackageMerge
         PackageRequired ModuleRequired CodeInstall CodeUpgrade CodeUninstall CodeReinstall)
         )
     {
@@ -3007,6 +3088,462 @@ sub AnalyzePackageFrameworkRequirements {
     return %Response;
 }
 
+=head2 PackageUpgradeAll()
+
+Updates installed packages to their latest version. Also updates OTRS Business Solution™ if system
+    is entitled and there is an update.
+
+    my %Result = $PackageObject->PackageUpgradeAll(
+        Force           => 1,     # optional 1 or 0, Upgrades packages even if validation fails.
+        SkipDeployCheck => 1,     # optional 1 or 0, If active it does not check file deployment status
+                                  #     for already updated packages.
+    );
+
+    %Result = (
+        Updated => {                # updated packages to the latest on-line repository version
+            PackageA => 1,
+            PackageB => 1,
+            PackageC => 1,
+            # ...
+        },
+        Installed => {              # packages installed as a result of missing dependencies
+            PackageD => 1,
+            # ...
+        },
+        AlreadyInstalled {          # packages that are already installed with the latest version
+            PackageE => 1,
+            # ...
+        }
+        Undeployed {                # packages not correctly deployed
+            PackageK => 1,
+            # ...
+        }
+        Failed => {                 # or {} if no failures
+            Cyclic => {             # packages with cyclic dependencies
+                PackageF => 1,
+                # ...
+            },
+            NotFound => {           # packages not listed in the on-line repositories
+                PackageG => 1,
+                # ...
+            },
+            WrongVersion => {       # packages that requires a mayor version that the available in the on-line repositories
+                PackageH => 1,
+                # ...
+            },
+            DependencyFail => {     # packages with dependencies that fail on any of the above reasons
+                PackageI => 1,
+                # ...
+            },
+        },
+    );
+
+=cut
+
+sub PackageUpgradeAll {
+    my ( $Self, %Param ) = @_;
+
+    # Set system data as communication channel with the GUI
+    my $SystemDataObject = $Kernel::OM->Get('Kernel::System::SystemData');
+    my $DataGroup        = 'Package_UpgradeAll';
+    my %SystemData       = $SystemDataObject->SystemDataGroupGet(
+        Group => $DataGroup,
+    );
+    if (%SystemData) {
+        KEY:
+        for my $Key (qw(StartTime UpdateTime InstalledPackages UpgradeResult Status Success))
+        {    # remove any existing information
+            next KEY if !defined $SystemData{$Key};
+
+            my $Success = $SystemDataObject->SystemDataDelete(
+                Key    => "${DataGroup}::${Key}",
+                UserID => 1,
+            );
+            if ( !$Success ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Could not delete key ${DataGroup}::${Key} from SystemData!",
+                );
+            }
+        }
+    }
+    my $CurrentDateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
+    $SystemDataObject->SystemDataAdd(
+        Key    => "${DataGroup}::StartTime",
+        Value  => $CurrentDateTimeObject->ToString(),
+        UserID => 1,
+    );
+    $SystemDataObject->SystemDataAdd(
+        Key    => "${DataGroup}::UpdateTime",
+        Value  => $CurrentDateTimeObject->ToString(),
+        UserID => 1,
+    );
+    $SystemDataObject->SystemDataAdd(
+        Key    => "${DataGroup}::Status",
+        Value  => "Running",
+        UserID => 1,
+    );
+
+    my %OnlinePackages = $Self->_PackageOnlineListGet();
+
+    my @PackageOnlineList   = @{ $OnlinePackages{PackageList} };
+    my %PackageSoruceLookup = %{ $OnlinePackages{PackageLookup} };
+
+    my @PackageInstalledList = $Self->RepositoryList(
+        Result => 'short',
+    );
+
+    # Modify @PackageInstalledList if ITSM packages are installed from Bundle (see bug#13778).
+    if ( grep { $_->{Name} eq 'ITSM' } @PackageInstalledList && grep { $_->{Name} eq 'ITSM' } @PackageOnlineList ) {
+        my @TmpPackages = (
+            'GeneralCatalog',
+            'ITSMCore',
+            'ITSMChangeManagement',
+            'ITSMConfigurationManagement',
+            'ITSMIncidentProblemManagement',
+            'ITSMServiceLevelManagement',
+            'ImportExport'
+        );
+        my %Values = map { $_ => 1 } @TmpPackages;
+        @PackageInstalledList = grep { !$Values{ $_->{Name} } } @PackageInstalledList;
+    }
+
+    my $JSONObject = $Kernel::OM->Get('Kernel::System::JSON');
+    my $JSON       = $JSONObject->Encode(
+        Data => \@PackageInstalledList,
+    );
+    $SystemDataObject->SystemDataAdd(
+        Key    => "${DataGroup}::InstalledPackages",
+        Value  => $JSON,
+        UserID => 1,
+    );
+    $SystemDataObject->SystemDataAdd(
+        Key    => "${DataGroup}::UpgradeResult",
+        Value  => '{}',
+        UserID => 1,
+    );
+
+    my %Result = $Self->PackageInstallOrderListGet(
+        InstalledPackages => \@PackageInstalledList,
+        OnlinePackages    => \@PackageOnlineList,
+    );
+
+    my %InstallOrder = %{ $Result{InstallOrder} };
+    my $Success      = 1;
+    if ( IsHashRefWithData( $Result{Failed} ) ) {
+        $Success = 0;
+    }
+
+    my %Failed = %{ $Result{Failed} };
+    my %Installed;
+    my %Updated;
+    my %AlreadyUpdated;
+    my %Undeployed;
+
+    my %InstalledVersions = map { $_->{Name} => $_->{Version} } @PackageInstalledList;
+
+    PACKAGENAME:
+    for my $PackageName ( sort { $InstallOrder{$b} <=> $InstallOrder{$a} } keys %InstallOrder ) {
+
+        if ( $PackageName eq 'OTRSBusiness' ) {
+            my $UpdateSuccess = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessUpdate();
+
+            if ( !$UpdateSuccess ) {
+                $Success = 0;
+                $Failed{UpdateError}->{$PackageName} = 1;
+                next PACKAGENAME;
+            }
+
+            $Updated{'OTRS Business Solution™'} = 1;
+            next PACKAGENAME;
+        }
+
+        my $MetaPackage = $PackageSoruceLookup{$PackageName};
+        next PACKAGENAME if !$MetaPackage;
+
+        if ( $MetaPackage->{Version} eq ( $InstalledVersions{$PackageName} || '' ) ) {
+
+            if ( $Param{SkipDeployCheck} ) {
+                $AlreadyUpdated{$PackageName} = 1;
+                next PACKAGENAME;
+            }
+
+            my $CheckSuccess = $Self->DeployCheck(
+                Name    => $PackageName,
+                Version => $MetaPackage->{Version},
+                Log     => 0
+            );
+            if ( !$CheckSuccess ) {
+                $Undeployed{$PackageName} = 1;
+                next PACKAGENAME;
+            }
+            $AlreadyUpdated{$PackageName} = 1;
+            next PACKAGENAME;
+        }
+
+        my $Package = $Self->PackageOnlineGet(
+            Source => $MetaPackage->{URL},
+            File   => $MetaPackage->{File},
+        );
+
+        if ( !$InstalledVersions{$PackageName} ) {
+            my $InstallSuccess = $Self->PackageInstall(
+                String    => $Package,
+                FromCloud => $MetaPackage->{FromCloud},
+                Force     => $Param{Force} || 0,
+            );
+            if ( !$InstallSuccess ) {
+                $Success = 0;
+                $Failed{InstallError}->{$PackageName} = 1;
+                next PACKAGENAME;
+            }
+            $Installed{$PackageName} = 1;
+            next PACKAGENAME;
+        }
+
+        my $UpdateSuccess = $Self->PackageUpgrade(
+            String => $Package,
+            Force  => $Param{Force} || 0,
+        );
+        if ( !$UpdateSuccess ) {
+            $Success = 0;
+            $Failed{UpdateError}->{$PackageName} = 1;
+            next PACKAGENAME;
+        }
+        $Updated{$PackageName} = 1;
+        next PACKAGENAME;
+    }
+    continue {
+        my $JSON = $JSONObject->Encode(
+            Data => {
+                Updated        => \%Updated,
+                Installed      => \%Installed,
+                AlreadyUpdated => \%AlreadyUpdated,
+                Undeployed     => \%Undeployed,
+                Failed         => \%Failed,
+            },
+        );
+        $SystemDataObject->SystemDataUpdate(
+            Key    => "${DataGroup}::UpdateTime",
+            Value  => $Kernel::OM->Create('Kernel::System::DateTime')->ToString(),
+            UserID => 1,
+        );
+        $SystemDataObject->SystemDataUpdate(
+            Key    => "${DataGroup}::UpgradeResult",
+            Value  => $JSON,
+            UserID => 1,
+        );
+    }
+
+    $SystemDataObject->SystemDataAdd(
+        Key    => "${DataGroup}::Success",
+        Value  => $Success,
+        UserID => 1,
+    );
+    $SystemDataObject->SystemDataUpdate(
+        Key    => "${DataGroup}::Status",
+        Value  => 'Finished',
+        UserID => 1,
+    );
+
+    return (
+        Success        => $Success,
+        Updated        => \%Updated,
+        Installed      => \%Installed,
+        AlreadyUpdated => \%AlreadyUpdated,
+        Undeployed     => \%Undeployed,
+        Failed         => \%Failed,
+    );
+}
+
+=head2 PackageInstallOrderListGet()
+
+Gets a list of packages and its corresponding install order including is package dependencies. Higher
+    install order means to install first.
+
+    my %Result = $PackageObject->PackageInstallOrderListGet(
+        InstalledPackages => \@PakageList,      # as returned from RepositoryList(Result => 'short')
+        OnlinePackages    => \@PakageList,      # as returned from PackageOnlineList()
+    );
+
+    %Result = (
+        InstallOrder => {
+            PackageA => 3,
+            PackageB => 2,
+            PackageC => 1,
+            PackageD => 1,
+            # ...
+        },
+        Failed => {                 # or {} if no failures
+            Cyclic => {             # packages with cyclic dependencies
+                PackageE => 1,
+                # ...
+            },
+            NotFound => {           # packages not listed in the on-line repositories
+                PackageF => 1,
+                # ...
+            },
+            WrongVersion => {        # packages that requires a mayor version that the available in the on-line repositories
+                PackageG => 1,
+                # ...
+            },
+            DependencyFail => {     # packages with dependencies that fail on any of the above reasons
+                PackageH => 1,
+                # ...
+            }
+        },
+    );
+
+=cut
+
+sub PackageInstallOrderListGet {
+    my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw(InstalledPackages OnlinePackages)) {
+        if ( !$Param{$Needed} || ref $Param{$Needed} ne 'ARRAY' ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "$Needed is missing or invalid!",
+            );
+            return;
+        }
+    }
+
+    my %InstalledVersions = map { $_->{Name} => $_->{Version} } @{ $Param{InstalledPackages} };
+
+    my %OnlinePackageLookup = map { $_->{Name} => $_ } @{ $Param{OnlinePackages} };
+
+    my %InstallOrder;
+    my %Failed;
+
+    my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+
+    if ( $OTRSBusinessObject->OTRSBusinessIsInstalled() && $OTRSBusinessObject->OTRSBusinessIsUpdateable() ) {
+        $InstallOrder{OTRSBusiness} = 9999;
+    }
+
+    my $DependenciesSuccess = $Self->_PackageInstallOrderListGet(
+        Callers             => {},
+        InstalledVersions   => \%InstalledVersions,
+        TargetPackages      => \%InstalledVersions,
+        InstallOrder        => \%InstallOrder,
+        OnlinePackageLookup => \%OnlinePackageLookup,
+        Failed              => \%Failed,
+        IsDependency        => 0,
+    );
+
+    return (
+        InstallOrder => \%InstallOrder,
+        Failed       => \%Failed,
+    );
+}
+
+=head2 PackageUpgradeAllDataDelete()
+
+Removes all Package Upgrade All data from the database.
+
+    my $Success = $PackageObject->PackageUpgradeAllDataDelete();
+
+=cut
+
+sub PackageUpgradeAllDataDelete {
+    my ( $Self, %Param ) = @_;
+
+    my $SystemDataObject = $Kernel::OM->Get('Kernel::System::SystemData');
+    my $DataGroup        = 'Package_UpgradeAll';
+    my %SystemData       = $SystemDataObject->SystemDataGroupGet(
+        Group => $DataGroup,
+    );
+
+    my $Success = 1;
+
+    KEY:
+    for my $Key (qw(StartTime UpdateTime InstalledPackages UpgradeResult Status Success)) {
+        next KEY if !$SystemData{$Key};
+
+        my $DeleteSuccess = $SystemDataObject->SystemDataDelete(
+            Key    => "${DataGroup}::${Key}",
+            UserID => 1,
+        );
+        if ( !$DeleteSuccess ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Could not delete key ${DataGroup}::${Key} from SystemData!",
+            );
+            $Success = 0;
+        }
+    }
+
+    return 1;
+}
+
+=head2 PackageUpgradeAllIsRunning()
+
+Check if there is a Package Upgrade All process running by checking the scheduler tasks and the
+system data.
+
+    my %Result = $PackageObject->PackageUpgradeAllIsRunning();
+
+Returns:
+    %Result = (
+        IsRunning      => 1,             # or 0 if it is not running
+        UpgradeStatus  => 'Running'      # (optional) 'Running' or 'Finished' or 'TimedOut',
+        UpgradeSuccess => 1,             # (optional) 1 or 0,
+    );
+
+=cut
+
+sub PackageUpgradeAllIsRunning {
+    my ( $Self, %Param ) = @_;
+
+    my $IsRunning;
+
+    # Check if there is a task for the scheduler daemon (process started from GUI).
+    my @List = $Kernel::OM->Get('Kernel::System::Scheduler')->TaskList(
+        Type => 'AsynchronousExecutor',
+    );
+    if ( grep { $_->{Name} eq 'Kernel::System::Package-PackageUpgradeAll()' } @List ) {
+        $IsRunning = 1;
+    }
+
+    my $SystemDataObject = $Kernel::OM->Get('Kernel::System::SystemData');
+    my %SystemData       = $SystemDataObject->SystemDataGroupGet(
+        Group => 'Package_UpgradeAll',
+    );
+
+    # If there is no task running but there is system data it might be that the is a running
+    #   process from the CLI.
+    if (
+        !$IsRunning
+        && %SystemData
+        && $SystemData{Status}
+        && $SystemData{Status} eq 'Running'
+        )
+    {
+        $IsRunning = 1;
+
+        # Check if the last update was more than 5 minutes ago (timed out).
+        my $CurrentDateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
+        my $TargetDateTimeObject  = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $SystemData{UpdateTime},
+            }
+        );
+        $TargetDateTimeObject->Add( Minutes => 5 );
+        if ( $CurrentDateTimeObject > $TargetDateTimeObject ) {
+            $IsRunning = 0;
+            $SystemData{Status} = 'TimedOut';
+        }
+    }
+
+    return (
+        IsRunning      => $IsRunning // 0,
+        UpgradeStatus  => $SystemData{Status} || '',
+        UpgradeSuccess => $SystemData{Success} || '',
+    );
+}
+
 =begin Internal:
 
 =cut
@@ -3658,7 +4195,7 @@ sub _FileRemove {
     # check if file exists
     if ( !-e $RealFile ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
+            Priority => 'debug',
             Message  => "No such file: $RealFile!",
         );
         return;
@@ -3957,6 +4494,7 @@ sub _PackageUninstallMerged {
             'SysConfigDefaultList',
             'SysConfigDefault',
             'SysConfigPersistent',
+            'SysConfigModifiedList',
         ],
     );
     $Kernel::OM->Get('Kernel::System::Loader')->CacheDelete();
@@ -3981,7 +4519,7 @@ sub _MergedPackages {
     return 1 if ref $Param{Structure}->{PackageMerge} ne 'ARRAY';
 
     # get repository list
-    my @RepositoryList = $Self->RepositoryList();
+    my @RepositoryList    = $Self->RepositoryList();
     my %PackageListLookup = map { $_->{Name}->{Content} => $_ } @RepositoryList;
 
     # check required packages
@@ -4131,7 +4669,7 @@ sub _MergedPackages {
     return 1;
 }
 
-sub _CheckDBMerged {
+sub _CheckDBInstalledOrMerged {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
@@ -4181,7 +4719,11 @@ sub _CheckDBMerged {
             )
             || (
                 defined $Part->{IfNotPackage}
-                && defined $Self->{MergedPackages}->{ $Part->{IfNotPackage} }
+                &&
+                (
+                    defined $Self->{MergedPackages}->{ $Part->{IfNotPackage} }
+                    || $Self->PackageIsInstalled( Name => $Part->{IfNotPackage} )
+                )
             )
             )
         {
@@ -4354,13 +4896,41 @@ sub _ConfigurationDeploy {
         }
     }
 
+    #
+    # Normally, on package modifications, a configuration settings cleanup needs to happen,
+    #   to prevent old configuration settings from breaking the system.
+    #
+    # This does not work in the case of updates: there we can have situations where the packages
+    #   only exist in the DB, but not yet on the file system, and need to be reinstalled. We have
+    #   to prevent the cleanup until all packages are properly installed again.
+    #
+    # Please see bug#13754 for more information.
+    #
+
+    my $CleanUp = 1;
+
+    PACKAGE:
+    for my $Package ( $Self->RepositoryList() ) {
+
+        # Only check the deployment state of the XML configuration files for performance reasons.
+        #   Otherwise, this would be too slow on systems with many packages.
+        $CleanUp = $Self->_ConfigurationFilesDeployCheck(
+            Name    => $Package->{Name}->{Content},
+            Version => $Package->{Version}->{Content},
+        );
+
+        # Stop if any package has its configuration wrong deployed, configuration cleanup should not
+        #   take place in the lines below. Otherwise modified setting values can be lost.
+        last PACKAGE if !$CleanUp;
+    }
+
     my $SysConfigObject = Kernel::System::SysConfig->new();
 
     if (
         !$SysConfigObject->ConfigurationXML2DB(
             UserID  => 1,
             Force   => 1,
-            CleanUp => 1,
+            CleanUp => $CleanUp,
         )
         )
     {
@@ -4379,7 +4949,8 @@ sub _ConfigurationDeploy {
 
     # if this is a Packageupgrade and if there is a ZZZAutoOTRS5.pm file in the backup location
     # (this file has been copied there during the migration from OTRS 5 to OTRS 6)
-    if ( $Param{Action} eq 'PackageUpgrade' && -e $OTRS5ConfigFile ) {
+    if ( ( IsHashRefWithData( $Self->{MergedPackages} ) || $Param{Action} eq 'PackageUpgrade' ) && -e $OTRS5ConfigFile )
+    {
 
         # delete categories cache
         $Kernel::OM->Get('Kernel::System::Cache')->Delete(
@@ -4478,6 +5049,399 @@ sub _ConfigurationDeploy {
     return 1;
 }
 
+=head2 _PackageInstallOrderListGet()
+
+Helper function for PackageInstallOrderListGet() to process the packages and its dependencies recursively.
+
+    my $Success = $PackageObject->_PackageInstallOrderListGet(
+        Callers           => {      # packages in the recursive chain
+            PackageA => 1,
+            # ...
+        },
+        InstalledVersions => {      # list of installed packages and their versions
+            PackageA => '1.0.1',
+            # ...
+        },
+        TargetPackages => {
+            PackageA => '1.0.1',    # list of packages to process
+            # ...
+        }
+        InstallOrder => {           # current install order
+            PackageA => 2,
+            PacakgeB => 1,
+            # ...
+        },
+        Failed => {                 # current failed packages or dependencies
+            Cyclic => {},
+            NotFound => {},
+            WrongVersion => {},
+            DependencyFail => {},
+        },
+        OnlinePackageLookup => {
+            PackageA => {
+                Name    => 'PackageA',
+                Version => '1.0.1',
+                PackageRequired => [
+                    {
+                        Content => 'PackageB',
+                        Version => '1.0.2',
+                    },
+                    # ...
+                ],
+            },
+        },
+        IsDependency => 1,      # 1 or 0
+    );
+
+=cut
+
+sub _PackageInstallOrderListGet {
+    my ( $Self, %Param ) = @_;
+
+    my $Success = 1;
+    PACKAGENAME:
+    for my $PackageName ( sort keys %{ $Param{TargetPackages} } ) {
+
+        next PACKAGENAME if $PackageName eq 'OTRSBusiness';
+
+        # Prevent cyclic dependencies.
+        if ( $Param{Callers}->{$PackageName} ) {
+            $Param{Failed}->{Cyclic}->{$PackageName} = 1;
+            $Success = 0;
+            next PACKAGENAME;
+        }
+
+        my $OnlinePackage = $Param{OnlinePackageLookup}->{$PackageName};
+
+        # Check if the package can be obtained on-line.
+        if ( !$OnlinePackage || !IsHashRefWithData($OnlinePackage) ) {
+            $Param{Failed}->{NotFound}->{$PackageName} = 1;
+            $Success = 0;
+            next PACKAGENAME;
+        }
+
+        # Check if the version of the on-line package is grater (or equal) to the required version,
+        #   in case of equal, reference still counts, but at update or install package must be
+        #   skipped.
+        if ( $OnlinePackage->{Version} ne $Param{TargetPackages}->{$PackageName} ) {
+            my $CheckOk = $Self->_CheckVersion(
+                VersionNew       => $OnlinePackage->{Version},
+                VersionInstalled => $Param{TargetPackages}->{$PackageName},
+                Type             => 'Max',
+            );
+            if ( !$CheckOk ) {
+                $Param{Failed}->{WrongVersion}->{$PackageName} = 1;
+                $Success = 0;
+                next PACKAGENAME;
+            }
+        }
+
+        my %PackageDependencies = map { $_->{Content} => $_->{Version} } @{ $OnlinePackage->{PackageRequired} };
+
+        # Update callers list locally to start recursion
+        my %Callers = (
+            %{ $Param{Callers} },
+            $PackageName => 1,
+        );
+
+        # Start recursion with package dependencies.
+        my $DependenciesSuccess = $Self->_PackageInstallOrderListGet(
+            Callers             => \%Callers,
+            InstalledVersions   => $Param{InstalledVersions},
+            TargetPackages      => \%PackageDependencies,
+            InstallOrder        => $Param{InstallOrder},
+            OnlinePackageLookup => $Param{OnlinePackageLookup},
+            Failed              => $Param{Failed},
+            IsDependency        => 1,
+        );
+
+        if ( !$DependenciesSuccess ) {
+            $Param{Failed}->{DependencyFail}->{$PackageName} = 1;
+            $Success = 0;
+
+            # Do not process more dependencies.
+            last PACKAGENAME if $Param{IsDependency};
+
+            # Keep processing other initial packages.
+            next PACKAGENAME;
+        }
+
+        if ( $Param{InstallOrder}->{$PackageName} ) {
+
+            # Only increase the counter if is a dependency, if its a first level package then skip,
+            #   as it was already set from the dependencies of another package.
+            if ( $Param{IsDependency} ) {
+                $Param{InstallOrder}->{$PackageName}++;
+            }
+
+            next PACKAGENAME;
+        }
+
+        # If package wasn't set before it initial value must be 1, but in case the package is added
+        #   because its a dependency then it must be sum of all packages that requires it at the
+        #   moment + 1 e.g.
+        #   ITSMCore -> GeneralCatalog, Then GeneralCatalog needs to be 2
+        #   ITSMIncidenProblemManagement -> ITSMCore -> GeneralCatalog, Then GeneralCatalog needs to be 3
+        my $InitialValue = $Param{IsDependency} ? scalar keys %Callers : 1;
+        $Param{InstallOrder}->{$PackageName} = $InitialValue;
+    }
+
+    return $Success;
+}
+
+=head2 _PackageOnlineListGet()
+
+Helper function that gets the full list of available on-line packages.
+
+    my %OnlinePackages = $PackageObject->_PackageOnlineListGet();
+
+Returns:
+
+    %OnlinePackages = (
+        PackageList => [
+            {
+                Name => 'Test',
+                Version => '6.0.20',
+                File => 'Test-6.0.20.opm',
+                ChangeLog => 'InitialRelease',
+                Description => 'Test package.',
+                Framework => [
+                    {
+                        Content => '6.0.x',
+                        Minimum => '6.0.2',
+                        # ... ,
+                    }
+                ],
+                License => 'GNU GENERAL PUBLIC LICENSE Version 3, November 2007',
+                PackageRequired => [
+                    {
+                        Content => 'TestRequitement',
+                        Version => '6.0.20',
+                        # ... ,
+                    },
+                ],
+                URL => 'http://otrs.org/',
+                Vendor => 'OTRS AG',
+            },
+            # ...
+        ];
+        PackageLookup  => {
+            Test => {
+                   URL        => 'http://otrs.org/',
+                    FromCloud => 1,                     # 1 or 0,
+                    Version   => '6.0.20',
+                    File      => 'Test-6.0.20.opm',
+            },
+            # ...
+        },
+    );
+
+=cut
+
+sub _PackageOnlineListGet {
+
+    my ( $Self, %Param ) = @_;
+
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my %RepositoryList = $Self->_ConfiguredRepositoryDefinitionGet();
+
+    # Show cloud repositories if system is registered.
+    my $RepositoryCloudList;
+    my $RegistrationState = $Kernel::OM->Get('Kernel::System::SystemData')->SystemDataGet(
+        Key => 'Registration::State',
+    ) || '';
+
+    if ( $RegistrationState eq 'registered' && !$Self->{CloudServicesDisabled} ) {
+        $RepositoryCloudList = $Self->RepositoryCloudList( NoCache => 1 );
+    }
+
+    my %RepositoryListAll = ( %RepositoryList, %{ $RepositoryCloudList || {} } );
+
+    my @PackageOnlineList;
+    my %PackageSoruceLookup;
+
+    for my $URL ( sort keys %RepositoryListAll ) {
+
+        my $FromCloud = 0;
+        if ( $RepositoryCloudList->{$URL} ) {
+            $FromCloud = 1;
+
+        }
+
+        my @OnlineList = $Self->PackageOnlineList(
+            URL                => $URL,
+            Lang               => 'en',
+            Cache              => 1,
+            FromCloud          => $FromCloud,
+            IncludeSameVersion => 1,
+        );
+
+        @PackageOnlineList = ( @PackageOnlineList, @OnlineList );
+
+        for my $Package (@OnlineList) {
+            $PackageSoruceLookup{ $Package->{Name} } = {
+                URL       => $URL,
+                FromCloud => $FromCloud,
+                Version   => $Package->{Version},
+                File      => $Package->{File},
+            };
+        }
+    }
+
+    return (
+        PackageList   => \@PackageOnlineList,
+        PackageLookup => \%PackageSoruceLookup,
+    );
+}
+
+=head2 _ConfiguredRepositoryDefinitionGet()
+
+Helper function that gets the full list of configured package repositories updated for the current
+framework version.
+
+    my %RepositoryList = $PackageObject->_ConfiguredRepositoryDefinitionGet();
+
+Returns:
+
+    %RepositoryList = (
+        'http://ftp.otrs.org/pub/otrs/packages' => 'OTRS Freebie Features',
+        # ...,
+    );
+
+=cut
+
+sub _ConfiguredRepositoryDefinitionGet {
+    my ( $Self, %Param ) = @_;
+
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my %RepositoryList;
+    if ( $ConfigObject->Get('Package::RepositoryList') ) {
+        %RepositoryList = %{ $ConfigObject->Get('Package::RepositoryList') };
+    }
+    if ( $ConfigObject->Get('Package::RepositoryRoot') ) {
+        %RepositoryList = ( %RepositoryList, $Self->PackageOnlineRepositories() );
+    }
+
+    return () if !%RepositoryList;
+
+    # Make sure ITSM repository matches the current framework version.
+    my @Matches = grep { $_ =~ m{http://ftp\.otrs\.org/pub/otrs/itsm/packages\d+/}msxi } sort keys %RepositoryList;
+
+    return %RepositoryList if !@Matches;
+
+    my @FrameworkVersionParts = split /\./, $Self->{ConfigObject}->Get('Version');
+    my $FrameworkVersion      = $FrameworkVersionParts[0];
+
+    my $CurrentITSMRepository = "http://ftp.otrs.org/pub/otrs/itsm/packages$FrameworkVersion/";
+
+    # Delete all old ITSM repositories, but leave the current if exists
+    for my $Repository (@Matches) {
+        if ( $Repository ne $CurrentITSMRepository ) {
+            delete $RepositoryList{$Repository};
+        }
+    }
+
+    return %RepositoryList if exists $RepositoryList{$CurrentITSMRepository};
+
+    # Make sure that current ITSM repository is in the list.
+    $RepositoryList{$CurrentITSMRepository} = "OTRS::ITSM $FrameworkVersion Master";
+
+    return %RepositoryList;
+}
+
+=head2 _RepositoryCacheClear()
+
+Remove all caches related to the package repository.
+
+    my $Success = $PackageObject->_RepositoryCacheClear();
+
+=cut
+
+sub _RepositoryCacheClear {
+    my ( $Self, %Param ) = @_;
+
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
+    $CacheObject->CleanUp(
+        Type => 'RepositoryList',
+    );
+    $CacheObject->CleanUp(
+        Type => 'RepositoryGet',
+    );
+
+    return 1;
+}
+
+=head2 _ConfigurationFilesDeployCheck()
+
+check if package configuration files are deployed correctly.
+
+    my $Success = $PackageObject->_ConfigurationFilesDeployCheck(
+        Name    => 'Application A',
+        Version => '1.0',
+    );
+
+=cut
+
+sub _ConfigurationFilesDeployCheck {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(Name Version)) {
+        if ( !defined $Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "$Needed not defined!",
+            );
+            return;
+        }
+    }
+
+    my $Package   = $Self->RepositoryGet( %Param, Result => 'SCALAR' );
+    my %Structure = $Self->PackageParse( String => $Package );
+
+    return 1 if !$Structure{Filelist};
+    return 1 if ref $Structure{Filelist} ne 'ARRAY';
+
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
+    my $Success = 1;
+
+    FILE:
+    for my $File ( @{ $Structure{Filelist} } ) {
+
+        my $Extension = substr $File->{Location}, -4, 4;
+
+        next FILE if lc $Extension ne '.xml';
+
+        my $LocalFile = $Self->{Home} . '/' . $File->{Location};
+
+        if ( !-e $LocalFile ) {
+            $Success = 0;
+            last FILE;
+        }
+
+        my $Content = $MainObject->FileRead(
+            Location => $Self->{Home} . '/' . $File->{Location},
+            Mode     => 'binmode',
+        );
+
+        if ( !$Content ) {
+            $Success = 0;
+            last FILE;
+        }
+
+        if ( ${$Content} ne $File->{Content} ) {
+            $Success = 0;
+            last FILE;
+        }
+    }
+
+    return $Success;
+}
+
 sub DESTROY {
     my $Self = shift;
 
@@ -4493,10 +5457,10 @@ sub DESTROY {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

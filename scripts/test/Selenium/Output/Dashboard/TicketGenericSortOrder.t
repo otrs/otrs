@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -72,12 +72,8 @@ $Selenium->RunTest(
         );
 
         # Create test user.
-        my $TestUserLogin = $Helper->TestUserCreate(
+        my ( $TestUserLogin, $TestUserID ) = $Helper->TestUserCreate(
             Groups => [ 'admin', 'users' ],
-        ) || die "Did not get test user";
-
-        my $TestUserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-            UserLogin => $TestUserLogin,
         );
 
         # Create test queue.
@@ -151,7 +147,10 @@ $Selenium->RunTest(
         );
 
         # Set MyQueue preferences.
-        $Selenium->execute_script("\$('#QueueID').val('$QueueID').trigger('redraw.InputField').trigger('change');");
+        $Selenium->InputFieldValueSet(
+            Element => '#QueueID',
+            Value   => $QueueID,
+        );
 
         # Save the setting, wait for the ajax call to finish and check if success sign is shown.
         $Selenium->execute_script(
@@ -206,7 +205,7 @@ $Selenium->RunTest(
         $Selenium->find_element("//a[contains(\@title, \'Queue, filter not active' )]")->click();
         $Selenium->WaitFor(
             JavaScript =>
-                "return typeof(\$) === 'function' && \$(\"#ColumnFilterQueue0120-TicketNew option[value='$QueueID']:visible\").length"
+                "return typeof(\$) === 'function' && \$(\"#ColumnFilterQueue0120-TicketNew option[value='$QueueID']\").length"
         );
 
         $Selenium->find_element( "#ColumnFilterQueue0120-TicketNew option[value='$QueueID']", 'css' )->click();
@@ -288,6 +287,15 @@ $Selenium->RunTest(
                 TicketID => $Ticket,
                 UserID   => 1,
             );
+
+            # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+            if ( !$Success ) {
+                sleep 3;
+                $Success = $TicketObject->TicketDelete(
+                    TicketID => $Ticket,
+                    UserID   => 1,
+                );
+            }
             $Self->True(
                 $Success,
                 "Ticket ID $Ticket is deleted"

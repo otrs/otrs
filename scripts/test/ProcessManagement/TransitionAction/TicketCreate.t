@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -29,15 +29,14 @@ $Kernel::OM->ObjectParamAdd(
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # define variables
-my $UserID     = 1;
 my $ModuleName = 'TicketCreate';
 my $RandomID   = $Helper->GetRandomID();
 
 # set user details
-my $TestUserLogin = $Helper->TestUserCreate();
-my $TestUserID    = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-    UserLogin => $TestUserLogin,
-);
+my ( $TestUserLogin, $UserID ) = $Helper->TestUserCreate();
+
+# Create another test user.
+my ( $TestUserLogin2, $TestUserID2 ) = $Helper->TestUserCreate();
 
 # use Test email backend
 my $Success = $Kernel::OM->Get('Kernel::Config')->Set(
@@ -217,7 +216,7 @@ my $DFSetSuccess = $DynamicFieldBackendObject->ValueSet(
                 2 => 'B',
                 3 => 'C',
             },
-            }
+        }
     },
     ObjectID => $TicketID,
     Value    => [ 1, 2 ],
@@ -281,8 +280,8 @@ my @Tests = (
                 InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
-                NoAgentNotify             => 0,
-                ForceNotificationToUserID => [ 1, 43, 56, ],
+                NoAgentNotify                   => 0,
+                ForceNotificationToUserID       => [ 1, 43, 56, ],
                 ExcludeNotificationToUserID     => [ 43, 56, ],
                 ExcludeMuteNotificationToUserID => [ 43, 56, ],
 
@@ -327,8 +326,8 @@ my @Tests = (
                 InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
-                NoAgentNotify             => 0,
-                ForceNotificationToUserID => [ 1, 43, 56, ],
+                NoAgentNotify                   => 0,
+                ForceNotificationToUserID       => [ 1, 43, 56, ],
                 ExcludeNotificationToUserID     => [ 43, 56, ],
                 ExcludeMuteNotificationToUserID => [ 43, 56, ],
 
@@ -413,8 +412,8 @@ my @Tests = (
                 InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
-                NoAgentNotify             => 0,
-                ForceNotificationToUserID => [ 1, 43, 56, ],
+                NoAgentNotify                   => 0,
+                ForceNotificationToUserID       => [ 1, 43, 56, ],
                 ExcludeNotificationToUserID     => [ 43, 56, ],
                 ExcludeMuteNotificationToUserID => [ 43, 56, ],
 
@@ -460,8 +459,8 @@ my @Tests = (
                 InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
-                NoAgentNotify             => 0,
-                ForceNotificationToUserID => [ 1, 43, 56, ],
+                NoAgentNotify                   => 0,
+                ForceNotificationToUserID       => [ 1, 43, 56, ],
                 ExcludeNotificationToUserID     => [ 43, 56, ],
                 ExcludeMuteNotificationToUserID => [ 43, 56, ],
 
@@ -507,8 +506,8 @@ my @Tests = (
                 InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
-                NoAgentNotify             => 0,
-                ForceNotificationToUserID => [ 1, 43, 56, ],
+                NoAgentNotify                   => 0,
+                ForceNotificationToUserID       => [ 1, 43, 56, ],
                 ExcludeNotificationToUserID     => [ 43, 56, ],
                 ExcludeMuteNotificationToUserID => [ 43, 56, ],
 
@@ -555,8 +554,8 @@ my @Tests = (
                 InReplyTo      => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
-                NoAgentNotify             => 0,
-                ForceNotificationToUserID => [ 1, 43, 56, ],
+                NoAgentNotify                   => 0,
+                ForceNotificationToUserID       => [ 1, 43, 56, ],
                 ExcludeNotificationToUserID     => [ 43, 56, ],
                 ExcludeMuteNotificationToUserID => [ 43, 56, ],
 
@@ -597,8 +596,8 @@ my @Tests = (
                 InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
-                NoAgentNotify             => 0,
-                ForceNotificationToUserID => [ 1, 43, 56, ],
+                NoAgentNotify                   => 0,
+                ForceNotificationToUserID       => [ 1, 43, 56, ],
                 ExcludeNotificationToUserID     => [ 43, 56, ],
                 ExcludeMuteNotificationToUserID => [ 43, 56, ],
 
@@ -640,8 +639,8 @@ my @Tests = (
                 InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
-                NoAgentNotify             => 0,
-                ForceNotificationToUserID => [ 1, 43, 56, ],
+                NoAgentNotify                   => 0,
+                ForceNotificationToUserID       => [ 1, 43, 56, ],
                 ExcludeNotificationToUserID     => [ 43, 56, ],
                 ExcludeMuteNotificationToUserID => [ 43, 56, ],
 
@@ -682,8 +681,8 @@ my @Tests = (
                 InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
-                NoAgentNotify             => 0,
-                ForceNotificationToUserID => [ 1, 43, 56, ],
+                NoAgentNotify                   => 0,
+                ForceNotificationToUserID       => [ 1, 43, 56, ],
                 ExcludeNotificationToUserID     => [ 43, 56, ],
                 ExcludeMuteNotificationToUserID => [ 43, 56, ],
 
@@ -812,8 +811,8 @@ my @Tests = (
                 InReplyTo            => '<asdasdasd.12@example.com>',
                 References =>
                     '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
-                NoAgentNotify             => 0,
-                ForceNotificationToUserID => [ 1, 43, 56, ],
+                NoAgentNotify                   => 0,
+                ForceNotificationToUserID       => [ 1, 43, 56, ],
                 ExcludeNotificationToUserID     => [ 43, 56, ],
                 ExcludeMuteNotificationToUserID => [ 43, 56, ],
 
@@ -861,7 +860,7 @@ my @Tests = (
                 ForceNotificationToUserID       => '1, 43, 56',
                 ExcludeNotificationToUserID     => '43, 56',
                 ExcludeMuteNotificationToUserID => '43, 56',
-                UserID                          => $TestUserID,
+                UserID                          => $TestUserID2,
             },
         },
         Success => 1,
@@ -894,7 +893,8 @@ my @Tests = (
                 TimeUnit => 123,
             },
         },
-        Success => 1,
+        Success        => 1,
+        CheckFromValue => 1,
     },
 
     {
@@ -926,8 +926,9 @@ my @Tests = (
                 TimeUnit => 123,
             },
         },
-        Success => 1,
-        Article => 1,
+        Success        => 1,
+        Article        => 1,
+        CheckFromValue => 1,
     },
     {
         Name   => 'Correct Ticket Email Article',
@@ -958,8 +959,9 @@ my @Tests = (
                 TimeUnit => 123,
             },
         },
-        Success => 1,
-        Article => 1,
+        Success        => 1,
+        Article        => 1,
+        CheckFromValue => 1,
     },
     {
         Name   => 'Correct Ticket Internal Article',
@@ -990,8 +992,9 @@ my @Tests = (
                 TimeUnit => 123,
             },
         },
-        Success => 1,
-        Article => 1,
+        Success        => 1,
+        Article        => 1,
+        CheckFromValue => 1,
     },
 
 );
@@ -1080,6 +1083,14 @@ for my $Test (@Tests) {
                     ArticleID     => $Articles[0]->{ArticleID},
                     DynamicFields => 1,
                 );
+
+                # Check 'From' value of article (see bug#13867).
+                if ( $Test->{CheckFromValue} ) {
+                    $Self->True(
+                        $Article{From} =~ /$TestUserLogin/,
+                        "Article 'From' value is correct",
+                    );
+                }
             }
         }
 
@@ -1162,6 +1173,29 @@ for my $Test (@Tests) {
                         "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value:"
                     );
                 }
+                elsif ( $OrigTest->{Config}->{Config}->{$Attribute} =~ m{<OTRS_TICKET_DynamicField_(\S+)>} ) {
+                    $Self->IsNot(
+                        $Test->{Config}->{Config}->{$Attribute},
+                        $OrigTest->{Config}->{Config}->{$Attribute},
+                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value: $OrigTest->{Config}->{Config}->{$Attribute} should been replaced"
+                    );
+                    my $DynamicFieldName = $1;
+
+                    my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
+                        Name => $DynamicFieldName,
+                    );
+
+                    my $ValueStrg = $DynamicFieldBackendObject->ReadableValueRender(
+                        DynamicFieldConfig => $DynamicFieldConfig,
+                        Value              => $Ticket{"DynamicField_$DynamicFieldName"},
+                    );
+
+                    $Self->Is(
+                        $Test->{Config}->{Config}->{$Attribute},
+                        $ValueStrg->{Value},
+                        "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value:"
+                    );
+                }
                 else {
                     $Self->IsNotDeeply(
                         $Test->{Config}->{Config}->{$Attribute},
@@ -1183,7 +1217,7 @@ for my $Test (@Tests) {
                     'Kernel::System::DateTime',
                     ObjectParams => {
                         String => $ExpectedValue,
-                        }
+                    }
                 )->ToEpoch();
             }
 
@@ -1272,7 +1306,7 @@ for my $Test (@Tests) {
                                 || {}
                         };
                         for my $ObjectID ( sort keys %{ObjectsPerRelation} ) {
-                            $LinkLookup{$ObjectID} = $LinkType
+                            $LinkLookup{$ObjectID} = $LinkType;
                         }
                     }
                 }

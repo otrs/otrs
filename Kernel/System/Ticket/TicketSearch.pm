@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Ticket::TicketSearch;
@@ -11,7 +11,7 @@ package Kernel::System::Ticket::TicketSearch;
 use strict;
 use warnings;
 
-use Kernel::System::VariableCheck qw(IsArrayRefWithData);
+use Kernel::System::VariableCheck qw(IsArrayRefWithData IsStringWithData);
 
 our $ObjectManagerDisabled = 1;
 
@@ -158,11 +158,11 @@ To find tickets in your system.
         },
 
         # article stuff (optional)
-        From    => '%spam@example.com%',
-        To      => '%service@example.com%',
-        Cc      => '%client@example.com%',
-        Subject => '%VIRUS 32%',
-        Body    => '%VIRUS 32%',
+        MIMEBase_From    => '%spam@example.com%',
+        MIMEBase_To      => '%service@example.com%',
+        MIMEBase_Cc      => '%client@example.com%',
+        MIMEBase_Subject => '%VIRUS 32%',
+        MIMEBase_Body    => '%VIRUS 32%',
 
         # attachment stuff (optional, applies only for ArticleStorageDB)
         AttachmentName => '%anyfile.txt%',
@@ -446,9 +446,9 @@ sub TicketSearch {
     }
 
     # check sort/order by options
-    my @SortByArray = ( ref $SortBy eq 'ARRAY' ? @{$SortBy} : ($SortBy) );
+    my @SortByArray       = ( ref $SortBy eq 'ARRAY' ? @{$SortBy} : ($SortBy) );
     my %LookupSortByArray = map { $_ => 1 } @SortByArray;
-    my @OrderByArray = ( ref $OrderBy eq 'ARRAY' ? @{$OrderBy} : ($OrderBy) );
+    my @OrderByArray      = ( ref $OrderBy eq 'ARRAY' ? @{$OrderBy} : ($OrderBy) );
 
     for my $Count ( 0 .. $#SortByArray ) {
         if (
@@ -494,12 +494,23 @@ sub TicketSearch {
         $ArticleTableJoined = 1;
     }
 
-    # use also history table if required
+    # Use also history table if required
+    # Create a inner join for each param and register it.
+    my %TicketHistoryJoins = ();
     ARGUMENT:
     for my $Key ( sort keys %Param ) {
         if ( $Param{$Key} && $Key =~ /^(Ticket(Close|Change)Time(Newer|Older)(Date|Minutes)|Created.+?)/ ) {
-            $SQLFrom .= 'INNER JOIN ticket_history th ON st.id = th.ticket_id ';
-            last ARGUMENT;
+            my $THRef = $Self->_TicketHistoryReferenceForSearchArgument(
+                Argument => $Key,
+            );
+            return if !$THRef;
+
+            next ARGUMENT if $TicketHistoryJoins{$THRef};
+
+            $TicketHistoryJoins{$THRef} = 1;
+            $SQLFrom .= sprintf
+                'INNER JOIN ticket_history %s ON st.id = %s.ticket_id ',
+                $THRef, $THRef;
         }
     }
 
@@ -512,7 +523,7 @@ sub TicketSearch {
 
     # Limit the search to just one (or a list) TicketID (used by the GenericAgent
     #   to filter for events on single tickets with the job's ticket filter).
-    if ( $Param{TicketID} ) {
+    if ( IsStringWithData( $Param{TicketID} ) || IsArrayRefWithData( $Param{TicketID} ) ) {
 
         my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
             Key       => 'st.id',
@@ -614,16 +625,19 @@ sub TicketSearch {
         );
 
         if ($HistoryTypeID) {
+            my $THRef = $Self->_TicketHistoryReferenceForSearchArgument(
+                Argument => 'CreatedTypeIDs',
+            );
+            return if !$THRef;
 
             my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
-                Key       => 'th.type_id',
+                Key       => "${ THRef }.type_id",
                 Values    => $Param{CreatedTypeIDs},
                 QuoteType => 'Integer',
                 BindMode  => 0,
             );
             $SQLExt .= ' AND ( ' . $SQLQueryInCondition . ' ) ';
-
-            $SQLExt .= " AND th.history_type_id = $HistoryTypeID ";
+            $SQLExt .= " AND ${ THRef }.history_type_id = $HistoryTypeID ";
         }
     }
 
@@ -685,16 +699,20 @@ sub TicketSearch {
         );
 
         if ($HistoryTypeID) {
+            my $THRef = $Self->_TicketHistoryReferenceForSearchArgument(
+                Argument => 'CreatedStateIDs',
+            );
+            return if !$THRef;
 
             my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
-                Key       => 'th.state_id',
+                Key       => "${ THRef }.state_id",
                 Values    => $Param{CreatedStateIDs},
                 QuoteType => 'Integer',
                 BindMode  => 0,
             );
             $SQLExt .= ' AND ( ' . $SQLQueryInCondition . ' ) ';
 
-            $SQLExt .= " AND th.history_type_id = $HistoryTypeID ";
+            $SQLExt .= " AND ${ THRef }.history_type_id = $HistoryTypeID ";
         }
     }
 
@@ -736,7 +754,7 @@ sub TicketSearch {
             UserID => $Param{UserID} || 1,
         );
         my @StateTypes = map { $StateTypeList{$_} } @{ $Param{StateTypeIDs} };
-        my @StateIDs = $StateObject->StateGetStatesByType(
+        my @StateIDs   = $StateObject->StateGetStatesByType(
             StateType => \@StateTypes,
             Result    => 'ID',
         );
@@ -804,16 +822,20 @@ sub TicketSearch {
         );
 
         if ($HistoryTypeID) {
+            my $THRef = $Self->_TicketHistoryReferenceForSearchArgument(
+                Argument => 'CreatedUserIDs',
+            );
+            return if !$THRef;
 
             my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
-                Key       => 'th.create_by',
+                Key       => "${ THRef }.create_by",
                 Values    => $Param{CreatedUserIDs},
                 QuoteType => 'Integer',
                 BindMode  => 0,
             );
             $SQLExt .= ' AND ( ' . $SQLQueryInCondition . ' ) ';
 
-            $SQLExt .= " AND th.history_type_id = $HistoryTypeID ";
+            $SQLExt .= " AND ${ THRef }.history_type_id = $HistoryTypeID ";
         }
     }
 
@@ -899,16 +921,20 @@ sub TicketSearch {
         );
 
         if ($HistoryTypeID) {
+            my $THRef = $Self->_TicketHistoryReferenceForSearchArgument(
+                Argument => 'CreatedQueueIDs',
+            );
+            return if !$THRef;
 
             my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
-                Key       => 'th.queue_id',
+                Key       => "${ THRef }.queue_id",
                 Values    => $Param{CreatedQueueIDs},
                 QuoteType => 'Integer',
                 BindMode  => 0,
             );
             $SQLExt .= ' AND ( ' . $SQLQueryInCondition . ' ) ';
 
-            $SQLExt .= " AND th.history_type_id = $HistoryTypeID ";
+            $SQLExt .= " AND ${ THRef }.history_type_id = $HistoryTypeID ";
         }
     }
 
@@ -1135,16 +1161,20 @@ sub TicketSearch {
         );
 
         if ($HistoryTypeID) {
+            my $THRef = $Self->_TicketHistoryReferenceForSearchArgument(
+                Argument => 'CreatedPriorityIDs',
+            );
+            return if !$THRef;
 
             my $SQLQueryInCondition = $Kernel::OM->Get('Kernel::System::DB')->QueryInCondition(
-                Key       => 'th.priority_id',
+                Key       => "${ THRef }.priority_id",
                 Values    => $Param{CreatedPriorityIDs},
                 QuoteType => 'Integer',
                 BindMode  => 0,
             );
             $SQLExt .= ' AND ( ' . $SQLQueryInCondition . ' ) ';
 
-            $SQLExt .= " AND th.history_type_id = $HistoryTypeID ";
+            $SQLExt .= " AND ${ THRef }.history_type_id = $HistoryTypeID ";
         }
     }
 
@@ -1507,7 +1537,11 @@ sub TicketSearch {
     # catch searches for non-existing dynamic fields
     PARAMS:
     for my $Key ( sort keys %Param ) {
-        next PARAMS if !$Param{$Key};
+
+        # Only look at fields which start with DynamicField_ and contain a substructure that is meant for searching.
+        #   It could happen that similar scalar parameters are sent to this method, that should be ignored
+        #   (see bug#13412).
+        next PARAMS if !ref $Param{$Key};
         next PARAMS if $Key !~ /^DynamicField_(.*)$/;
 
         my $DynamicFieldName = $1;
@@ -1575,7 +1609,7 @@ sub TicketSearch {
                     Hour   => $4,
                     Minute => $5,
                     Second => $6,
-                    }
+                }
             );
 
             if ( !$SystemTime ) {
@@ -1618,7 +1652,7 @@ sub TicketSearch {
                     Hour   => $4,
                     Minute => $5,
                     Second => $6,
-                    }
+                }
             );
             if ( !$SystemTime ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -1715,7 +1749,7 @@ sub TicketSearch {
                 'Kernel::System::DateTime',
                 ObjectParams => {
                     String => $Param{ $Key . 'OlderDate' },
-                    }
+                }
             );
 
             if ( !$Time ) {
@@ -1756,7 +1790,7 @@ sub TicketSearch {
                 'Kernel::System::DateTime',
                 ObjectParams => {
                     String => $Param{ $Key . 'NewerDate' },
-                    }
+                }
             );
             if ( !$Time ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -1823,7 +1857,7 @@ sub TicketSearch {
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $Param{TicketChangeTimeOlderDate},
-                }
+            }
         );
 
         if ( !$Time ) {
@@ -1837,7 +1871,12 @@ sub TicketSearch {
         }
         $CompareChangeTimeOlderNewerDate = $Time;
 
-        $SQLExt .= " AND th.create_time <= '"
+        my $THRef = $Self->_TicketHistoryReferenceForSearchArgument(
+            Argument => 'TicketChangeTimeOlderDate',
+        );
+        return if !$THRef;
+
+        $SQLExt .= " AND ${ THRef }.create_time <= '"
             . $DBObject->Quote( $Param{TicketChangeTimeOlderDate} ) . "'";
     }
 
@@ -1859,7 +1898,7 @@ sub TicketSearch {
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $Param{TicketChangeTimeNewerDate},
-                }
+            }
         );
 
         if ( !$Time ) {
@@ -1878,7 +1917,12 @@ sub TicketSearch {
         # don't execute queries if older/newer date restriction show now valid timeframe
         return if $CompareChangeTimeOlderNewerDate && $Time > $CompareChangeTimeOlderNewerDate;
 
-        $SQLExt .= " AND th.create_time >= '"
+        my $THRef = $Self->_TicketHistoryReferenceForSearchArgument(
+            Argument => 'TicketChangeTimeNewerDate',
+        );
+        return if !$THRef;
+
+        $SQLExt .= " AND ${ THRef }.create_time >= '"
             . $DBObject->Quote( $Param{TicketChangeTimeNewerDate} ) . "'";
     }
 
@@ -1925,7 +1969,7 @@ sub TicketSearch {
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $Param{TicketLastChangeTimeOlderDate},
-                }
+            }
         );
 
         if ( !$Time ) {
@@ -1961,7 +2005,7 @@ sub TicketSearch {
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $Param{TicketLastChangeTimeNewerDate},
-                }
+            }
         );
 
         if ( !$Time ) {
@@ -2010,6 +2054,10 @@ sub TicketSearch {
     # get tickets closed older than xxxx-xx-xx xx:xx date
     my $CompareCloseTimeOlderNewerDate;
     if ( $Param{TicketCloseTimeOlderDate} ) {
+        my $THRef = $Self->_TicketHistoryReferenceForSearchArgument(
+            Argument => 'TicketCloseTimeOlderDate',
+        );
+        return if !$THRef;
 
         # check time format
         if (
@@ -2028,7 +2076,7 @@ sub TicketSearch {
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $Param{TicketCloseTimeOlderDate},
-                }
+            }
         );
 
         if ( !$Time ) {
@@ -2051,16 +2099,24 @@ sub TicketSearch {
         push( @StateID, $Self->HistoryTypeLookup( Type => 'StateUpdate' ) );
         if (@StateID) {
             $SQLExt .= sprintf(
-                " AND th.history_type_id IN (%s) AND th.state_id IN (%s) AND th.create_time <= '%s'",
+                " AND %s.history_type_id IN (%s) AND %s.state_id IN (%s) AND %s.create_time <= '%s'",
+                $THRef,
                 ( join ', ', sort @StateID ),
+                $THRef,
                 ( join ', ', sort @List ),
+                $THRef,
                 $DBObject->Quote( $Param{TicketCloseTimeOlderDate} )
-                )
+            );
         }
     }
 
     # get tickets closed newer than xxxx-xx-xx xx:xx date
     if ( $Param{TicketCloseTimeNewerDate} ) {
+        my $THRef = $Self->_TicketHistoryReferenceForSearchArgument(
+            Argument => 'TicketCloseTimeNewerDate',
+        );
+        return if !$THRef;
+
         if (
             $Param{TicketCloseTimeNewerDate}
             !~ /\d\d\d\d-(\d\d|\d)-(\d\d|\d) (\d\d|\d):(\d\d|\d):(\d\d|\d)/
@@ -2077,7 +2133,7 @@ sub TicketSearch {
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $Param{TicketCloseTimeNewerDate},
-                }
+            }
         );
 
         if ( !$Time ) {
@@ -2105,11 +2161,14 @@ sub TicketSearch {
         push( @StateID, $Self->HistoryTypeLookup( Type => 'StateUpdate' ) );
         if (@StateID) {
             $SQLExt .= sprintf(
-                " AND th.history_type_id IN (%s) AND th.state_id IN (%s) AND th.create_time >= '%s'",
+                " AND %s.history_type_id IN (%s) AND %s.state_id IN (%s) AND %s.create_time >= '%s'",
+                $THRef,
                 ( join ', ', sort @StateID ),
+                $THRef,
                 ( join ', ', sort @List ),
+                $THRef,
                 $DBObject->Quote( $Param{TicketCloseTimeNewerDate} )
-                )
+            );
         }
     }
 
@@ -2176,7 +2235,7 @@ sub TicketSearch {
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $Param{TicketPendingTimeOlderDate},
-                }
+            }
         );
 
         if ( !$TimeStamp ) {
@@ -2211,7 +2270,7 @@ sub TicketSearch {
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $Param{TicketPendingTimeNewerDate},
-                }
+            }
         );
 
         if ( !$TimeStamp ) {
@@ -2336,7 +2395,7 @@ sub TicketSearch {
                     . ' ON ' . $SortOptions{ $SortByArray[$Count] } . ' = u.id ';
 
                 my $FirstnameLastNameOrder = $Kernel::OM->Get('Kernel::Config')->Get('FirstnameLastnameOrder') || 0;
-                my $OrderBySuffix = $OrderByArray[$Count] eq 'Up' ? 'ASC' : 'DESC';
+                my $OrderBySuffix          = $OrderByArray[$Count] eq 'Up' ? 'ASC' : 'DESC';
 
                 # Sort by configured first and last name order.
                 if ( $FirstnameLastNameOrder eq '1' || $FirstnameLastNameOrder eq '6' ) {
@@ -2358,9 +2417,35 @@ sub TicketSearch {
                     $SQLExt .= " u.first_name $OrderBySuffix, u.last_name ";
                 }
             }
+            elsif (
+                $SortByArray[$Count] eq 'EscalationUpdateTime'
+                || $SortByArray[$Count] eq 'EscalationResponseTime'
+                || $SortByArray[$Count] eq 'EscalationSolutionTime'
+                || $SortByArray[$Count] eq 'EscalationTime'
+                || $SortByArray[$Count] eq 'PendingTime'
+                )
+            {
+
+                # Tickets with no Escalation or Pending time have '0' as value in the according ticket columns.
+                # When sorting by these columns always place ticket's with '0' value on the end, no matter order by.
+                if ( $Kernel::OM->Get('Kernel::System::DB')->{'DB::Type'} eq 'mysql' ) {
+
+                    # For MySQL create SQL order by query 'ORDER BY column_value = 0, column_value ASC/DESC'.
+                    $SQLSelect .= ', ' . $SortOptions{ $SortByArray[$Count] };
+                    $SQLExt
+                        .= ' ' . $SortOptions{ $SortByArray[$Count] };
+                }
+                else {
+
+                    # For PostgreSQL and Oracle transform selected 0 values to NULL and use 'NULLS LAST'
+                    #   in the end of SQL query.
+                    $SQLSelect .= ', ' . $SortOptions{ $SortByArray[$Count] } . ' AS order_value ';
+                    $SQLExt    .= ' order_value ';
+                }
+            }
             else {
 
-                # regular sort
+                # Regular sort.
                 $SQLSelect .= ', ' . $SortOptions{ $SortByArray[$Count] };
                 $SQLExt    .= ' ' . $SortOptions{ $SortByArray[$Count] };
             }
@@ -2410,11 +2495,11 @@ sub TicketSearch {
     my %Tickets;
     my @TicketIDs;
     my $Count;
-    return
-        if !$DBObject->Prepare(
+
+    return if !$DBObject->Prepare(
         SQL   => $SQLSelect . $SQLFrom . $SQLExt,
         Limit => $Limit
-        );
+    );
     while ( my @Row = $DBObject->FetchrowArray() ) {
         $Count = $Row[0];
         $Tickets{ $Row[0] } = $Row[1];
@@ -2461,14 +2546,217 @@ sub TicketSearch {
     }
 }
 
+=head2 TicketCountByAttribute()
+
+Returns count of tickets per value for a specific attribute.
+
+    my $TicketCount = $TicketObject->TicketCountByAttribute(
+        Attribute => 'ServiceID',
+        TicketIDs => [ 1, 2, 3 ],
+    );
+
+Returns:
+
+    $TicketCount = {
+        Attribute_Value_1 => 1,
+        Attribute_Value_2 => 3,
+        ...
+    };
+
+=cut
+
+sub TicketCountByAttribute {
+    my ( $Self, %Param ) = @_;
+
+    if ( !$Param{Attribute} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need Attribute!',
+        );
+        return;
+    }
+
+    # Check supported attributes.
+    my $Attribute           = $Param{Attribute};
+    my %AttributeToDatabase = (
+        Lock       => 'ticket_lock_id',
+        LockID     => 'ticket_lock_id',
+        Queue      => 'queue_id',
+        QueueID    => 'queue_id',
+        Priority   => 'ticket_priority_id',
+        PriorityID => 'ticket_priority_id',
+        Service    => 'service_id',
+        ServiceID  => 'service_id',
+        SLA        => 'sla_id',
+        SLAID      => 'sla_id',
+        State      => 'ticket_state_id',
+        StateID    => 'ticket_state_id',
+        Type       => 'type_id',
+        TypeID     => 'type_id',
+    );
+    if ( !$AttributeToDatabase{$Attribute} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "No matching database colum found for Attribute '$Attribute'!",
+        );
+        return;
+    }
+    my $DatabaseColumn = $AttributeToDatabase{$Attribute};
+
+    # Nothing to do.
+    return {} if !IsArrayRefWithData( $Param{TicketIDs} );
+    my @BindTicketIDs = map { \$_ } @{ $Param{TicketIDs} };
+
+    # Prepare value-type attributes.
+    my %AttributeValueLookup;
+    if ( $Attribute eq 'Lock' ) {
+        %AttributeValueLookup = $Kernel::OM->Get('Kernel::System::Lock')->LockList( UserID => 1 );
+    }
+    elsif ( $Attribute eq 'Queue' ) {
+        %AttributeValueLookup = $Kernel::OM->Get('Kernel::System::Queue')->QueueList( Valid => 0 );
+    }
+    elsif ( $Attribute eq 'Priority' ) {
+        %AttributeValueLookup = $Kernel::OM->Get('Kernel::System::Priority')->PriorityList( Valid => 0 );
+    }
+    elsif ( $Attribute eq 'Service' ) {
+        %AttributeValueLookup = $Kernel::OM->Get('Kernel::System::Service')->ServiceList(
+            Valid  => 0,
+            UserID => 1,
+        );
+    }
+    elsif ( $Attribute eq 'SLA' ) {
+        %AttributeValueLookup = $Kernel::OM->Get('Kernel::System::SLA')->SLAList(
+            Valid  => 0,
+            UserID => 1,
+        );
+    }
+    elsif ( $Attribute eq 'State' ) {
+        %AttributeValueLookup = $Kernel::OM->Get('Kernel::System::State')->StateList(
+            Valid  => 0,
+            UserID => 1,
+        );
+    }
+    elsif ( $Attribute eq 'Type' ) {
+        %AttributeValueLookup = $Kernel::OM->Get('Kernel::System::Type')->TypeList( Valid => 0 );
+    }
+    my $AttributeType = %AttributeValueLookup ? 'Value' : 'ID';
+
+    # Split IN statement with more than 900 elements in more statements combined with OR
+    # because Oracle doesn't support more than 1000 elements in one IN statement.
+    my @TicketIDs = @BindTicketIDs;
+    my @SQLStrings;
+    while ( scalar @TicketIDs ) {
+
+        # Remove section in the array.
+        my @TicketIDsPart = splice @TicketIDs, 0, 900;
+
+        my $TicketIDString = join ',', ('?') x scalar @TicketIDsPart;
+
+        # Add new statement.
+        push @SQLStrings, "id IN ($TicketIDString)";
+    }
+
+    my $SQLString = join ' OR ', @SQLStrings;
+
+    # Get count from database.
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+    return if !$DBObject->Prepare(
+        SQL =>
+            'SELECT COUNT(*), ' . $DatabaseColumn
+            . ' FROM ticket'
+            . ' WHERE ' . $SQLString
+            . ' AND ' . $DatabaseColumn . ' IS NOT NULL'
+            . ' GROUP BY ' . $DatabaseColumn,
+        Bind  => \@BindTicketIDs,
+        Limit => 10_000,
+    );
+    my %AttributeCount;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $AttributeCount{ $Row[1] } = $Row[0];
+    }
+
+    # No conversion necessary.
+    return \%AttributeCount if $AttributeType eq 'ID';
+
+    # Convert database IDs to values, skip entries with unknown value lookup.
+    my %AttributeCountConverted = map { $AttributeValueLookup{$_} => $AttributeCount{$_} }
+        grep { $AttributeValueLookup{$_} } sort keys %AttributeCount;
+    return \%AttributeCountConverted;
+}
+
+=head1 PRIVATE INTERFACE
+
+=head2 _TicketHistoryReferenceForSearchArgument
+
+Returns the ticket history reference to the given search argument.
+
+    my $Self->_TicketHistoryReferenceForSearchArgument(
+        Argument => '...' # argument name
+    );
+
+Result
+    C<undef> - in case the argument is not mapped
+    string   - the ticket history reference name
+
+=cut
+
+sub _TicketHistoryReferenceForSearchArgument {
+    my ( $Self, %Param ) = @_;
+
+    # Column to TicketHistory table reference map
+    my %ArgumentTableMap = (
+
+        # Ticket create columns reference.
+        CreatedStates      => 'th0',
+        CreatedStateIDs    => 'th0',
+        CreatedQueues      => 'th0',
+        CreatedQueueIDs    => 'th0',
+        CreatedPriorities  => 'th0',
+        CreatedPriorityIDs => 'th0',
+        CreatedTypes       => 'th0',
+        CreatedTypeIDs     => 'th0',
+        CreatedUserIDs     => 'th0',
+
+        # Ticket change columns reference.
+        TicketChangeTimeNewerDate        => 'th1',
+        TicketChangeTimeNewerMinutes     => 'th1',
+        TicketChangeTimeOlderDate        => 'th1',
+        TicketChangeTimeOlderMinutes     => 'th1',
+        TicketLastChangeTimeNewerDate    => 'th1',
+        TicketLastChangeTimeNewerMinutes => 'th1',
+        TicketLastChangeTimeOlderDate    => 'th1',
+        TicketLastChangeTimeOlderMinutes => 'th1',
+
+        # Ticket close columns reference.
+        TicketCloseTimeNewerDate    => 'th2',
+        TicketCloseTimeNewerMinutes => 'th2',
+        TicketCloseTimeOlderDate    => 'th2',
+        TicketCloseTimeOlderMinutes => 'th2',
+    );
+
+    my $Argument = $Param{Argument};
+
+    # Check if the column is mapped
+    my $Table = $ArgumentTableMap{$Argument};
+    if ( !$Table ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Message  => "TicketSearch :: no table_history map for argument '${ Argument }'",
+            Priority => 'error',
+        );
+        return;
+    }
+
+    return $Table;
+}
+
 1;
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

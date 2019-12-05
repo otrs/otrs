@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -105,7 +105,7 @@ $Self->IsNot(
 );
 
 my @AddedActivityDialogs = ( $AcitivityDialogID1, $AcitivityDialogID2, $AcitivityDialogID3 );
-my $ActivityDialogList = $ActivityDialogObject->ActivityDialogList(
+my $ActivityDialogList   = $ActivityDialogObject->ActivityDialogList(
     UseEntities => 1,
     UserID      => $UserID,
 );
@@ -749,7 +749,7 @@ for my $Test (@Tests) {
 
     # get the old activity (if any)
     my $OldActivity = $ActivityObject->ActivityGet(
-        ID => $Test->{Config}->{ID} || 0,
+        ID     => $Test->{Config}->{ID} || 0,
         UserID => $Test->{Config}->{UserID},
     );
 
@@ -998,7 +998,7 @@ my $List = $ActivityObject->ActivityList(
 
 # create the list of activities with details manually
 my $ExpectedActivityList;
-for my $ActivityID ( sort { $a <=> $b } keys %{$List} ) {
+for my $ActivityID ( sort { int $a <=> int $b } keys %{$List} ) {
 
     my $ActivityData = $ActivityObject->ActivityGet(
         ID     => $ActivityID,

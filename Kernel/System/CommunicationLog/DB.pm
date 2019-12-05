@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::CommunicationLog::DB;
@@ -303,7 +303,7 @@ sub CommunicationList {
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $Param{OlderThan}
-                }
+            }
         );
 
         if ($DateTimeObject) {
@@ -328,7 +328,7 @@ sub CommunicationList {
         Duration        => $DurationSQL,
     );
 
-    my $SortBy = $OrderByMap{ $Param{SortBy} } || 'c.status';
+    my $SortBy  = $OrderByMap{ $Param{SortBy} } || 'c.status';
     my $OrderBy = lc $Param{OrderBy} eq 'up' ? 'ASC' : 'DESC';
 
     $SQL .= "ORDER BY $SortBy $OrderBy";
@@ -378,15 +378,17 @@ sub CommunicationList {
 Deletes a Communication entry if specified. Otherwise deletes all communications.
 
     my $Result = $CommunicationDBObject->CommunicationDelete(
-        CommunicationID => 123, # (required)
+        CommunicationID => 1,            # (optional) Communication ID
+        Status          => 'Processing', # (optional) 'Successful', 'Processing' or 'Failed'
+                                         # for example, using '!Processing', means different from
+        Date            => '2017-07-03', # (optional) Delete communications just from the given date.
+        OlderThan       => '2017-07-03', # (optional) Delete communications older than the given date.
     );
 
 Returns:
 
-    $Result = {
-        Status => '...',  # Failed | Success
-        Message => '...', # (Failed status only) Descriptive error message
-    }
+    C<undef> - in case of error
+    1        - in case of success
 
 =cut
 
@@ -404,34 +406,71 @@ sub CommunicationDelete {
         push @Bind,         \$Param{CommunicationID};
     }
 
-    if (@FilterFields) {
-        $SQL .= ' WHERE ' . join ' AND ', @FilterFields;
+    if ( $Param{Status} ) {
+        my $Operator = '=';
+        my $Status   = $Param{Status};
+        if ( substr( $Status, 0, 1 ) eq '!' ) {
+            $Operator = '!=';
+            $Status   = substr( $Status, 1, );
+        }
 
-        my $List = $Self->CommunicationList( %Param, );
-        for my $Communication ( @{$List} ) {
-            if (
-                !$Self->ObjectLogDelete(
-                    CommunicationID => $Communication->{CommunicationID},
-                )
-                )
-            {
-                $Self->_LogError(
-                    sprintf(
-                        "Error deleting communication '%s' dependencies!",
-                        $Communication->{CommunicationID},
-                    ),
-                );
+        push @FilterFields, " (status ${ Operator } ?) ";
+        push @Bind,         \$Status;
+    }
 
-                return;
-            }
+    if ( $Param{Date} ) {
+
+        my $DateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $Param{Date}
+            },
+        );
+
+        if ($DateTimeObject) {
+            my $NextDayObj = $DateTimeObject->Clone();
+            $NextDayObj->Add( Days => 1 );
+
+            push @FilterFields, ' (start_time BETWEEN ? and ?) ';
+            push @Bind, \$DateTimeObject->Format( Format => '%Y-%m-%d' ), \$NextDayObj->Format( Format => '%Y-%m-%d' );
         }
     }
-    else {
-        # Delete communication dependencies.
-        if ( !$Self->ObjectLogDelete() ) {
-            $Self->_LogError( "Error deleting communications dependencies!", );
-            return;
+
+    if ( $Param{OlderThan} ) {
+
+        my $DateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $Param{OlderThan}
+            },
+        );
+
+        if ($DateTimeObject) {
+            push @FilterFields, ' (start_time < ?) ';
+            push @Bind,         \$Param{OlderThan};
         }
+    }
+
+    # Delete communication dependencies.
+    my $DependenciesDeleteResult = 1;
+    if (@FilterFields) {
+        my $Where = 'WHERE ' . join ' AND ', @FilterFields;
+        $SQL .= " ${ Where }";
+
+        $DependenciesDeleteResult = $Self->ObjectLogDelete(
+            CommunicationFilters => {
+                Where => $Where,
+                Binds => \@Bind,
+            },
+        );
+    }
+    else {
+        $DependenciesDeleteResult = $Self->ObjectLogDelete();
+    }
+
+    if ( !$DependenciesDeleteResult ) {
+        $Self->_LogError( "Error deleting communication(s) dependencies!", );
+        return;
     }
 
     # Delete the communication records.
@@ -584,7 +623,7 @@ sub ObjectLogCreate {
                 q{Error while starting object log type '%s' for CommunicationID '%s'},
                 $Param{ObjectLogType},
                 $Param{CommunicationID},
-                )
+            )
         );
     }
 
@@ -661,7 +700,7 @@ sub ObjectLogUpdate {
                 $Param{ObjectLogID},
                 $Param{ObjectLogType},
                 $Param{CommunicationID},
-                )
+            )
         );
     }
 
@@ -672,7 +711,7 @@ sub ObjectLogUpdate {
 
 Get the object list for a specific communication.
 
-    my $Result = $LogModuleObject->ObjectLogList(
+    my $Result = $CommunicationDBObject->ObjectLogList(
         CommunicationID    => '123',         # (optional)
         ObjectLogID        => '123',         # (optional)
         ObjectLogType      => 'Connection',  # (optional)
@@ -787,7 +826,7 @@ sub ObjectLogList {
         push @SQL, join( ' AND ', @FilterFields );
     }
 
-    my $SortBy = $OrderByMap{ $Param{SortBy} || 'ObjectLogID' };
+    my $SortBy  = $OrderByMap{ $Param{SortBy} || 'ObjectLogID' };
     my $OrderBy = $Param{OrderBy} && lc $Param{OrderBy} eq 'up' ? 'ASC' : 'DESC';
 
     push @SQL, "ORDER BY $SortBy $OrderBy";
@@ -842,6 +881,7 @@ sub ObjectLogDelete {
 
         if ( !$Result ) {
             $Self->_LogError( $LocalParam{ErrorMessage} );
+            return;
         }
 
         return 1;
@@ -871,7 +911,7 @@ sub ObjectLogDelete {
         },
     );
 
-    my @PossibleFilters = qw( CommunicationID ObjectLogStatus ObjectLogID );
+    my @PossibleFilters = qw( CommunicationFilters CommunicationID ObjectLogStatus ObjectLogID );
     POSSIBLE_FILTER:
     for my $PossibleFilter (@PossibleFilters) {
         my $Value = $Param{$PossibleFilter};
@@ -879,8 +919,25 @@ sub ObjectLogDelete {
 
         ITEM:
         for my $Item (@DeleteOrder) {
-            my $ItemSQL = $SQL{$Item}->{Stmt};
+            my $ItemSQL    = $SQL{$Item}->{Stmt};
             my $WhereORAnd = ( $ItemSQL =~ m/\s+where\s+/i ) ? 'AND' : 'WHERE';
+
+            if ( $PossibleFilter eq 'CommunicationFilters' ) {
+                my $CommunicationSELECT = 'SELECT id FROM communication_log ' . $Value->{Where};
+
+                if ( $Item eq 'Objects' ) {
+                    $ItemSQL .= " ${ WhereORAnd } communication_id IN (${ CommunicationSELECT })";
+                }
+                else {
+                    $ItemSQL
+                        .= " ${ WhereORAnd } communication_log_object_id IN (SELECT id FROM communication_log_object WHERE communication_id IN (${ CommunicationSELECT }))";
+                }
+
+                $SQL{$Item}->{Stmt} = $ItemSQL;
+                push @{ $SQL{$Item}->{Binds} }, @{ $Value->{Binds} };
+
+                next ITEM;
+            }
 
             my $ColumnDBName = $DBNames{$PossibleFilter};
             if ( ref $ColumnDBName ) {
@@ -1016,7 +1073,7 @@ sub ObjectLogEntryCreate {
                 $Param{Key},
                 $Param{Value},
                 $Param{Priority},
-                )
+            )
         );
     }
 
@@ -1122,7 +1179,7 @@ sub ObjectLogEntryList {
         push @SQL, join( ' AND ', @FilterFields );
     }
 
-    my $SortBy = $OrderByMap{ $Param{SortBy} || 'LogID' };
+    my $SortBy  = $OrderByMap{ $Param{SortBy} || 'LogID' };
     my $OrderBy = $Param{OrderBy} && lc $Param{OrderBy} eq 'up' ? 'ASC' : 'DESC';
 
     push @SQL, "ORDER BY $SortBy $OrderBy";
@@ -1182,25 +1239,29 @@ Returns Arrayref of Hashes.
 sub GetConnectionsObjectsAndCommunications {
     my ( $Self, %Param ) = @_;
 
-    if ( !$Param{ObjectLogStartDate} ) {
+    if ( !defined $Param{ObjectLogStartDate} ) {
         return $Self->_LogError("Need ObjectLogStartDate!");
     }
-
-    my $DateTimeObject = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            String => $Param{ObjectLogStartDate},
-        },
-    );
-
-    return if !$DateTimeObject;
 
     my $SQL = "SELECT c.id, clo.status, c.account_type, c.account_id, c.transport
     FROM communication_log_object clo
     JOIN communication_log c on c.id = clo.communication_id
-    WHERE clo.object_type = 'Connection' AND clo.start_time >= ?";
+    WHERE clo.object_type = 'Connection'";
 
-    my @Binds = ( \$Param{ObjectLogStartDate} );
+    my @Binds;
+    if ( $Param{ObjectLogStartDate} ) {
+        my $DateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => $Param{ObjectLogStartDate},
+            },
+        );
+
+        return if !$DateTimeObject;
+
+        $SQL .= "AND clo.start_time >= ?";
+        push @Binds, \$Param{ObjectLogStartDate};
+    }
 
     # Add Status where clause if there is a given valid status.
     if ( $Param{Status} ) {
@@ -1222,7 +1283,7 @@ sub GetConnectionsObjectsAndCommunications {
         push @List, {
             CommunicationID => $Row[0],
             ObjectLogStatus => $Row[1],
-            AccountType     => $Row[2],
+            AccountType     => $Row[2] || 'Unknown',
             AccountID       => $Row[3],
             Transport       => $Row[4],
         };
@@ -1665,10 +1726,10 @@ sub _DurationSQL {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

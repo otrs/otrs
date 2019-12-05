@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -33,7 +33,7 @@ my $HomeDir = $ConfigObject->Get('Home');
 
 my $CertPath    = $ConfigObject->Get('Home') . "/var/tmp/certs";
 my $PrivatePath = $ConfigObject->Get('Home') . "/var/tmp/private";
-$CertPath =~ s{/{2,}}{/}smxg;
+$CertPath    =~ s{/{2,}}{/}smxg;
 $PrivatePath =~ s{/{2,}}{/}smxg;
 File::Path::rmtree($CertPath);
 File::Path::rmtree($PrivatePath);
@@ -55,7 +55,7 @@ my $OpenSSLVersionString = qx{$OpenSSLBin version};
 my $OpenSSLMajorVersion;
 
 # get the openssl major version, e.g. 1 for version 1.0.0
-if ( $OpenSSLVersionString =~ m{ \A (?: OpenSSL )? \s* ( \d )  }xmsi ) {
+if ( $OpenSSLVersionString =~ m{ \A (?: (?: Open|Libre)SSL )? \s* ( \d )  }xmsi ) {
     $OpenSSLMajorVersion = $1;
 }
 
@@ -2530,7 +2530,7 @@ VvHrdzP1tlEqZhMhfEgiNYVhYaxg6SaKSVY9GlGmMVrL2rUNIJ5I+Ef0lZh842bF
                 $Self->True(
                     $Match,
                     "CertificateRead $Test->{Name}: Certificate contains word '$String'",
-                    )
+                );
             }
         }
         else {

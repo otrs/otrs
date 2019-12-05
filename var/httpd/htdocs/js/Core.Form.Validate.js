@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 "use strict";
@@ -127,10 +127,18 @@ Core.Form.Validate = (function (TargetNS) {
         InputErrorMessageText = $('#' + Core.App.EscapeSelector($Element.attr('id')) + ErrorType).text();
 
         if (InputErrorMessageHTML && InputErrorMessageHTML.length) {
-            // if error field is a RTE, it is a little bit more difficult
+            // If error field is a RTE, it is a little bit more difficult.
             if ($('#cke_' + Core.App.EscapeSelector(Element.id)).length) {
                 Core.Form.ErrorTooltips.InitRTETooltip($Element, InputErrorMessageHTML);
-            } else {
+            }
+            // If server error field is RTE, action must be subscribed and loaded when event is finished because RTE is not loaded yet.
+            else if ($Element.hasClass('RichText') && parseInt(Core.Config.Get('RichTextSet'), 10) === 1)
+            {
+                Core.App.Subscribe('Event.UI.RichTextEditor.InstanceReady', function () {
+                    Core.Form.ErrorTooltips.InitRTETooltip($Element, InputErrorMessageHTML);
+                });
+            }
+            else {
                 Core.Form.ErrorTooltips.InitTooltip($Element, InputErrorMessageHTML);
             }
         }
@@ -257,9 +265,10 @@ Core.Form.Validate = (function (TargetNS) {
 
         // for richtextareas, get editor code and remove all tags and whitespace
         // keep tags if images are embedded because of inline-images
+        // keep tags if codemirror plugin is used (for XSLT editor)
         if (Core.UI.RichTextEditor.IsEnabled($Element)) {
             Value = CKEDITOR.instances[Element.id].getData();
-            if (!Value.match(/<img/)) {
+            if (typeof CKEDITOR.instances[Element.id].config.codemirror === 'undefined' && !Value.match(/<img/)) {
                 Value = Value.replace(/\s+|&nbsp;|<\/?\w+[^>]*\/?>/g, '');
             }
         }
@@ -272,11 +281,32 @@ Core.Form.Validate = (function (TargetNS) {
         return $.trim(Value).length > 0;
     }
 
+    /**
+     * @private
+     * @name ValidatorMethodDnDUpload
+     * @memberof Core.Form.Validate
+     * @function
+     * @returns {Boolean} True if a DnDUpload field has at least one uploaded attachment, false otherwise
+     * @param {String} Value
+     * @param {DOMObject} Element
+     * @description
+     *      Validator method for checking if a value is present for
+     *      different types of elements.
+     */
+    function ValidatorMethodDnDUpload(Value, Element) {
+
+        var $AttachmentList = $(Element).prev('.AttachmentListContainer'),
+            AttachmentCount = $AttachmentList.find('table tbody tr').length;
+
+        return AttachmentCount;
+    }
+
     /*
      * Definitions of all OTRS specific rules and rule methods
      */
     $.validator.addMethod("Validate_Required", ValidatorMethodRequired, "");
     $.validator.addMethod("Validate_Number", $.validator.methods.digits, "");
+    $.validator.addMethod("Validate_DnDUpload", ValidatorMethodDnDUpload, "");
 
     // There is a configuration option in OTRS that controls if email addresses
     // should be validated or not.
@@ -590,6 +620,10 @@ Core.Form.Validate = (function (TargetNS) {
         Validate_Required: true
     });
 
+    $.validator.addClassRules("Validate_DnDUpload", {
+        Validate_DnDUpload: true
+    });
+
     $.validator.addClassRules("Validate_Number", {
         Validate_Number: true
     });
@@ -760,7 +794,10 @@ Core.Form.Validate = (function (TargetNS) {
     TargetNS.Init = function () {
         var FormSelector,
             $ServerErrors,
-            ServerErrorDialogCloseFunction;
+            ServerErrorDialogCloseFunction,
+            ChangedStateID = parseInt($('#ComposeStateID, #NewStateID, #NextStateID').val(), 10),
+            PendingStateIDs = Core.Config.Get('PendingStateIDs') || [],
+            Index;
 
         if (Options.FormClass) {
             FormSelector = 'form.' + Options.FormClass;
@@ -814,6 +851,27 @@ Core.Form.Validate = (function (TargetNS) {
 
             Core.UI.Dialog.ShowAlert(Core.Language.Translate('Error'), Core.Language.Translate('One or more errors occurred!'), ServerErrorDialogCloseFunction);
         }
+
+        // Convert PendingStateIDs array elements to integer.
+        for (Index = 0; Index < PendingStateIDs.length; Index++) {
+            PendingStateIDs[Index] = parseInt(PendingStateIDs[Index], 10);
+        }
+
+        // Remove validation on pending fields for non pending states on load.
+        if (PendingStateIDs.indexOf(ChangedStateID) === -1) {
+            $('#Day').removeClass('Validate_DateInFuture');
+        }
+
+        // Change event on next state selection.
+        $('#ComposeStateID, #NewStateID, #NextStateID').on('change', function() {
+            ChangedStateID = parseInt($(this).val(), 10);
+            if (PendingStateIDs.indexOf(ChangedStateID) > -1) {
+                $('#Day').addClass('Validate_DateInFuture');
+            }
+            else {
+                $('#Day').removeClass('Validate_DateInFuture');
+            }
+        })
     };
 
     /**

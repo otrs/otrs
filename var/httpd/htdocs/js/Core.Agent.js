@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 "use strict";
@@ -43,6 +43,40 @@ Core.Agent = (function (TargetNS) {
     }
     if (!Core.Debug.CheckDependency('Core.Agent', 'Core.AJAX', 'Core.AJAX')) {
         return false;
+    }
+
+    /**
+     * @private
+     * @name InitAvatarFlyout
+     * @memberof Core.Agent
+     * @function
+     * @description
+     *      This function initializes the flyout when the avatar on the top left is clicked.
+     */
+    function InitAvatarFlyout() {
+
+        var Timeout,
+            TimeoutDuration = 700;
+
+        // init the avatar toggle
+        $('#ToolBar .UserAvatar > a').off('click.UserAvatar').on('click.UserAvatar', function() {
+            $(this).next('div').fadeToggle('fast');
+            $(this).toggleClass('Active');
+            return false;
+        });
+
+        $('#ToolBar .UserAvatar > div').off('mouseenter.UserAvatar').on('mouseenter.UserAvatar', function() {
+            if (Timeout && $(this).css('opacity') == 1) {
+                clearTimeout(Timeout);
+            }
+        });
+
+        $('#ToolBar .UserAvatar > div').off('mouseleave.UserAvatar').on('mouseleave.UserAvatar', function() {
+            Timeout = setTimeout(function() {
+                $('#ToolBar .UserAvatar > div').fadeOut('fast');
+                $('#ToolBar .UserAvatar > div').prev('a').removeClass('Active');
+            }, TimeoutDuration);
+        });
     }
 
     /**
@@ -662,7 +696,7 @@ Core.Agent = (function (TargetNS) {
         Core.App.Responsive.CheckIfTouchDevice();
 
         InitNavigation();
-
+        InitAvatarFlyout();
         InitSubmitAndContinue();
 
         // Initialize pagination
@@ -677,18 +711,6 @@ Core.Agent = (function (TargetNS) {
         if (parseInt(Core.Config.Get('NewTicketInNewWindow'), 10)) {
             InitTicketInNewWindow();
         }
-
-        // init the avatar toggle
-        $('#ToolBar .UserAvatar > a').off('click.UserAvatar').on('click.UserAvatar', function() {
-            $(this).next('div').fadeToggle('fast');
-            $(this).toggleClass('Active');
-            return false;
-        });
-
-        $('#ToolBar .UserAvatar > div').off('mouseleave.UserAvatar').on('mouseleave.UserAvatar', function() {
-            $(this).fadeToggle('fast');
-            $(this).prev('a').toggleClass('Active');
-        });
     };
 
     /**
@@ -812,24 +834,18 @@ Core.Agent = (function (TargetNS) {
         var OTRSBusinessLabel = '<strong>OTRS Business Solution</strong>™';
 
         Core.UI.Dialog.ShowContentDialog(
-            '<div class="OTRSBusinessRequiredDialog">' + Core.Language.Translate('This feature is part of the %s.  Please contact us at %s for an upgrade.', OTRSBusinessLabel, 'sales@otrs.com') + '<a class="Hidden" href="http://www.otrs.com/solutions/" target="_blank"><span></span></a></div>',
+            '<div class="OTRSBusinessRequiredDialog">' + Core.Language.Translate('This feature is part of the %s. Please contact us at %s for an upgrade.', OTRSBusinessLabel, 'sales@otrs.com') + '<a class="Hidden" href="http://www.otrs.com/solutions/" target="_blank"><span></span></a></div>',
             '',
             '240px',
             'Center',
             true,
             [
                 {
-                    Label: Core.Language.Translate('Find out more about the %s', 'OTRS Business Solution™'),
+                    Label: Core.Language.Translate('Find out more'),
                     Class: 'Primary',
                     Function: function () {
                         $('.OTRSBusinessRequiredDialog').find('a span').trigger('click');
                     }
-                },
-                {
-                   Label: Core.Language.Translate('Close dialog'),
-                   Function: function () {
-                       Core.UI.Dialog.CloseDialog($('.OTRSBusinessRequiredDialog'));
-                   }
                 }
             ]
         );

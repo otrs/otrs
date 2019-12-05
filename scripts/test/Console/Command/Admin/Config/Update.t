@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -25,27 +25,30 @@ my %DefaultSettingAddTemplate = (
     Navigation     => "Core::Test",
     IsInvisible    => 0,
     IsReadonly     => 0,
-    IsRequired     => 1,
+    IsRequired     => 0,
     IsValid        => 1,
     HasConfigLevel => 0,
     XMLFilename    => 'UnitTest.xml',
 );
 
 my $SettingsXML = << 'EOF',
-<Setting Name="Test0" Required="1" Valid="1">
-    <Description Translatable="1">Test.</Description>
-    <Navigation>Core::Test</Navigation>
-    <Value>
-        <Item ValueType="String" ValueRegex=".*">Test</Item>
-    </Value>
-</Setting>
-<Setting Name="Test1" Required="1" Valid="1">
-    <Description Translatable="1">Test.</Description>
-    <Navigation>Core::Test</Navigation>
-    <Value>
-        <Item ValueType="String" ValueRegex=".*">Test</Item>
-    </Value>
-</Setting>
+<?xml version="1.0" encoding="utf-8" ?>
+<otrs_config version="2.0" init="Framework">
+    <Setting Name="Test0" Required="1" Valid="1">
+        <Description Translatable="1">Test.</Description>
+        <Navigation>Core::Test</Navigation>
+        <Value>
+            <Item ValueType="String" ValueRegex=".*">Test</Item>
+        </Value>
+    </Setting>
+    <Setting Name="Test1" Required="1" Valid="1">
+        <Description Translatable="1">Test.</Description>
+        <Navigation>Core::Test</Navigation>
+        <Value>
+            <Item ValueType="String" ValueRegex=".*">Test</Item>
+        </Value>
+    </Setting>
+</otrs_config>
 EOF
 
     # Get SysConfig XML object.
@@ -192,6 +195,30 @@ my @Tests = (
         ExpectedResuts => '',
         ExitCode       => 0,
     },
+    {
+        Name     => 'Missing valid value',
+        Options  => [ '--setting-name', "Test0$RandomID", '--valid', '--no-deploy' ],
+        ExitCode => 1,
+    },
+    {
+        Name     => 'Correct valid value - invalid',
+        Options  => [ '--setting-name', "Test0$RandomID", '--valid', '0', '--no-deploy' ],
+        ExitCode => 0,
+        IsValid  => 0,
+    },
+    {
+        Name     => 'Correct valid value - valid',
+        Options  => [ '--setting-name', "Test0$RandomID", '--valid', '1', '--no-deploy' ],
+        ExitCode => 0,
+        IsValid  => 1,
+    },
+    {
+        Name           => 'Reset config to default value',
+        Options        => [ '--setting-name', "Test0$RandomID", '--reset', '--no-deploy' ],
+        ExitCode       => 0,
+        ExpectedResuts => 'Test',
+        Test           => 1,
+    },
 );
 
 # get needed objects
@@ -229,6 +256,16 @@ for my $Test (@Tests) {
     my %Setting = $SysConfigObject->SettingGet(
         Name => $Test->{Options}->[1],
     );
+
+    if ( defined $Test->{IsValid} ) {
+        $Self->IsDeeply(
+            $Setting{IsValid},
+            $Test->{IsValid},
+            "$Test->{Name} - IsValid check"
+        );
+
+        next TEST;
+    }
 
     $Self->IsDeeply(
         $Setting{EffectiveValue},

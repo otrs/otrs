@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 "use strict";
@@ -342,14 +342,16 @@ Core.UI.InputFields = (function (TargetNS) {
      * @private
      * @name CloseOpenSelections
      * @memberof Core.UI.InputFields
+     * @param {jQueryObject} [$Context] - jQuery object for context (optional)
      * @description
      *      Triggers blur on all modern input fields in order to close them.
      */
-    function CloseOpenSelections() {
-        // step through all select fields on the page.
+    function CloseOpenSelections($Context) {
+
+        // Step through all select fields on the page or only those in supplied context.
         // If the dropdown of the field is opened, close it (by calling blur event)
         // TODO: nicer way to find opened select elements
-        $('select.Modernize').each(function () {
+        $('select.Modernize', $Context).each(function () {
             var Selector = Core.App.EscapeSelector($(this).data('modernized'));
             if (!Selector) {
                 return;
@@ -1353,6 +1355,13 @@ Core.UI.InputFields = (function (TargetNS) {
                     CloseOpenSelections();
                 });
 
+                // Handle hiding of inline actions in ticket overviews.
+                Core.App.Subscribe('Event.Agent.TicketOverview.InlineActions.Hidden', function ($InlineActionsContainer) {
+                    setTimeout(function () {
+                        CloseOpenSelections($InlineActionsContainer);
+                    }, 0);
+                });
+
                 // Register handler for on focus event
                 $SearchObj.off('focus.InputField')
                     .on('focus.InputField', function () {
@@ -1614,7 +1623,16 @@ Core.UI.InputFields = (function (TargetNS) {
                     .on('focus.jstree', '.jstree-anchor', function () {
                         if (!SkipFocus) {
                             Focused = this;
+
+                            // In modernize field selection disable 'backspace' key functionality.
+                            // See bug#14011 (https://bugs.otrs.org/show_bug.cgi?id=14011).
+                            $('.jstree .jstree-anchor').on('keydown', function (e) {
+                                if (e.which === 8 && !$(e.target).is('input')) {
+                                    return false;
+                                }
+                            });
                         } else {
+
                             SkipFocus = false;
                         }
                     })

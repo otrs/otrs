@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -362,11 +362,29 @@ console.log(22);
         Result => '',
     },
     {
+        Name      => 'JSData 3 with AddJSData()',
+        Template  => '',
+        AddJSData => {
+            Key   => 'JS.String',
+            Value => { String => '</script></script>' }
+        },
+        Result => '',
+    },
+    {
+        Name      => 'JSData 4 with AddJSData()',
+        Template  => '',
+        AddJSData => {
+            Key   => 'JS.String.CaseInsensitive',
+            Value => { String => '</ScRiPt></ScRiPt>' },
+        },
+        Result => '',
+    },
+    {
         Name     => 'JSDataInsert',
         Template => '
 [% PROCESS "JSDataInsert" -%]',
         Result => '
-Core.Config.AddConfig({"Config.Test":123,"Config.Test2":[1,2,{"test":"test"}],"Perl.Code":{"Perl":"Data"}});
+Core.Config.AddConfig({"Config.Test":123,"Config.Test2":[1,2,{"test":"test"}],"JS.String":{"String":"<\/script><\/script>"},"JS.String.CaseInsensitive":{"String":"<\/ScRiPt><\/ScRiPt>"},"Perl.Code":{"Perl":"Data"}});
 ',
     },
     {
@@ -461,21 +479,28 @@ EOF
     {
         Name     => 'HumanReadableDataSize',
         Template => <<'EOF',
-[% 123 | Localize( 'Filesize' ) %] [% Localize( 456 * 1024, 'Filesize' ) %]
+[% 123 | Localize( 'Filesize' ) %] [% Localize( 456 * 1024, 'Filesize' ) %] [% Localize( 789.5 * 1024 * 1024, 'Filesize' ) %]
 EOF
-        Result => '123 B 456 KB
+        Result => '123 B 456 KB 789,5 MB
 ',
         Data => {},
     },
     {
-        Name     => 'RelativeTime',
+        Name     => 'Replace',
         Template => <<'EOF',
-[% '2017-01-09 00:00:00' | Localize( 'RelativeTime' ) %] [% Localize( '2017-01-11 00:00:00', 'RelativeTime' ) %]
+[% "This is %s" | ReplacePlaceholders("<strong>bold text</strong>") %]
+[% ReplacePlaceholders("This is %s", "<em>italic text</em>") %]
+[% "This string has %s and %s placeholder" | ReplacePlaceholders("<strong>first</strong>", "<em>second</em>") %]
+[% ReplacePlaceholders("This string has neither %s or %s text", "bold", "italic") %]
+[% "This is an <unsafe> string with %s placeholder" | html | ReplacePlaceholders("<strong>safe</strong>") %]
 EOF
-        Result => 'a day ago in a day
+        Result => 'This is <strong>bold text</strong>
+This is <em>italic text</em>
+This string has <strong>first</strong> and <em>second</em> placeholder
+This string has neither bold or italic text
+This is an &lt;unsafe&gt; string with <strong>safe</strong> placeholder
 ',
-        Data         => {},
-        FixedTimeSet => '2017-01-10 00:00:00',
+        Data => {},
     },
 );
 

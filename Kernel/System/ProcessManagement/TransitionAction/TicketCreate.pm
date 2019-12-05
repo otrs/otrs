@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::ProcessManagement::TransitionAction::TicketCreate;
@@ -35,7 +35,7 @@ Kernel::System::ProcessManagement::TransitionAction::TicketCreate - A module to 
 
 =head1 DESCRIPTION
 
-All TicketArticleCreate functions.
+All TicketCreate functions.
 
 =head1 PUBLIC INTERFACE
 
@@ -61,7 +61,7 @@ sub new {
 
     Run Data
 
-    my $TicketArticleCreateResult = $TicketArticleCreateActionObject->Run(
+    my $TicketCreateResult = $TicketCreateActionObject->Run(
         UserID                   => 123,
         Ticket                   => \%Ticket,   # required
         ProcessEntityID          => 'P123',
@@ -161,7 +161,7 @@ sub Run {
         )
     {
         if ( defined $Param{Config}->{$Attribute} ) {
-            $TicketParam{$Attribute} = $Param{Config}->{$Attribute}
+            $TicketParam{$Attribute} = $Param{Config}->{$Attribute};
         }
     }
 
@@ -232,7 +232,7 @@ sub Run {
                 'Kernel::System::DateTime',
                 ObjectParams => {
                     String => $Param{Config}->{PendingTime}
-                    }
+                }
             );
             my $TimeStamp = $DateTimeObject->ToString();
 
@@ -267,6 +267,22 @@ sub Run {
     my $ArticleID;
 
     if ($ArticleCreate) {
+
+        # If "From" is not set and MIME based article is to be created.
+        if (
+            !$Param{Config}->{From}
+            && $Param{Config}->{CommunicationChannel} =~ m{\AEmail|Internal|Phone\z}msxi
+            )
+        {
+
+            # Get current user data.
+            my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
+                UserID => $Param{UserID},
+            );
+
+            # Set "From" field according to user - UserFullname <UserEmail>.
+            $Param{Config}->{From} = $User{UserFullname} . ' <' . $User{UserEmail} . '>';
+        }
 
         my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
             ChannelName => $Param{Config}->{CommunicationChannel},
@@ -430,10 +446,10 @@ sub Run {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

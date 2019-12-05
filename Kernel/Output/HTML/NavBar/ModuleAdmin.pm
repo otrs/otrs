@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::NavBar::ModuleAdmin;
@@ -12,6 +12,7 @@ use parent 'Kernel::Output::HTML::Base';
 
 use strict;
 use warnings;
+use Unicode::Collate::Locale;
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -41,6 +42,7 @@ sub Run {
     # get all Frontend::Module
     my %NavBarModule;
 
+    my $Config           = $ConfigObject->Get('Frontend::Module')           || {};
     my $NavigationModule = $ConfigObject->Get('Frontend::NavigationModule') || {};
 
     MODULE:
@@ -48,6 +50,7 @@ sub Run {
         my %Hash = %{ $NavigationModule->{$Module} };
 
         next MODULE if !$Hash{Name};
+        next MODULE if !$Config->{$Module};    # If module is not registered, skip it.
 
         if ( $Hash{Module} eq 'Kernel::Output::HTML::NavBar::ModuleAdmin' ) {
 
@@ -131,8 +134,7 @@ sub Run {
         next ITEMS if ( $NavBarModule{$Module}->{'Link'} && $NavBarModule{$Module}->{'Link'} eq 'Action=Admin' );
 
         if ( grep { $_ eq $Module } @{$PrefFavourites} ) {
-            push @Favourites,       $NavBarModule{$Module};
-            push @FavouriteModules, $Module;
+            push @Favourites, $NavBarModule{$Module};
             $NavBarModule{$Module}->{IsFavourite} = 1;
         }
 
@@ -144,12 +146,29 @@ sub Run {
         push @{ $Modules{$Block} }, $NavBarModule{$Module};
     }
 
+    # Create collator according to the user chosen language.
+    my $Collator = Unicode::Collate::Locale->new(
+        locale => $LayoutObject->{LanguageObject}->{UserLanguage},
+    );
+
+    @Favourites = sort {
+        $Collator->cmp(
+            $LayoutObject->{LanguageObject}->Translate( $a->{Name} ),
+            $LayoutObject->{LanguageObject}->Translate( $b->{Name} )
+        )
+    } @Favourites;
+
+    for my $Favourite (@Favourites) {
+        push @FavouriteModules, $Favourite->{'Frontend::Module'};
+    }
+
     # Sort the items within the groups.
     for my $Block ( sort keys %Modules ) {
         for my $Entry ( @{ $Modules{$Block} } ) {
             $Entry->{NameTranslated} = $LayoutObject->{LanguageObject}->Translate( $Entry->{Name} );
         }
-        @{ $Modules{$Block} } = sort { $a->{NameTranslated} cmp $b->{NameTranslated} } @{ $Modules{$Block} };
+        @{ $Modules{$Block} }
+            = sort { $Collator->cmp( $a->{NameTranslated}, $b->{NameTranslated} ) } @{ $Modules{$Block} };
     }
 
     $LayoutObject->Block(

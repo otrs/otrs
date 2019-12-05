@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -37,10 +37,18 @@ $Selenium->RunTest(
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentPreferences;Subaction=Group;Group=UserProfile");
 
         # change test user password preference, input incorrect current password
-        my $NewPw = "new" . $TestUserLogin;
+        my $NewPw = "newáél" . $TestUserLogin;
         $Selenium->find_element( "#CurPw",  'css' )->send_keys("incorrect");
         $Selenium->find_element( "#NewPw",  'css' )->send_keys($NewPw);
         $Selenium->find_element( "#NewPw1", 'css' )->send_keys($NewPw);
+
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#NewPw1').val()"
+            ),
+            $NewPw,
+            'NewPw field has accepted accentuated letters',
+        );
 
         $Selenium->execute_script(
             "\$('#NewPw1').closest('.WidgetSimple').find('.SettingUpdateBox').find('button').trigger('click');"

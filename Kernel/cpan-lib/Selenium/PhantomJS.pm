@@ -1,5 +1,8 @@
 package Selenium::PhantomJS;
-$Selenium::PhantomJS::VERSION = '1.11';
+$Selenium::PhantomJS::VERSION = '1.36';
+use strict;
+use warnings;
+
 # ABSTRACT: Use GhostDriver without a Selenium server
 use Moo;
 use Selenium::CanStartBinary::FindBinary qw/coerce_simple_binary/;
@@ -7,26 +10,26 @@ extends 'Selenium::Remote::Driver';
 
 
 has '+browser_name' => (
-    is => 'ro',
+    is      => 'ro',
     default => sub { 'phantomjs' }
 );
 
 
 has 'binary' => (
-    is => 'lazy',
-    coerce => \&coerce_simple_binary,
-    default => sub { 'phantomjs' },
+    is        => 'lazy',
+    coerce    => \&coerce_simple_binary,
+    default   => sub { 'phantomjs' },
     predicate => 1
 );
 
 
 has 'binary_port' => (
-    is => 'lazy',
+    is      => 'lazy',
     default => sub { 8910 }
 );
 
 has '_binary_args' => (
-    is => 'lazy',
+    is      => 'lazy',
     builder => sub {
         my ($self) = @_;
 
@@ -51,7 +54,7 @@ Selenium::PhantomJS - Use GhostDriver without a Selenium server
 
 =head1 VERSION
 
-version 1.11
+version 1.36
 
 =head1 SYNOPSIS
 
@@ -146,6 +149,8 @@ We do our best to call this when the C<$driver> option goes out of
 scope, but if that happens during global destruction, there's nothing
 we can do.
 
+=for Pod::Coverage has_binary
+
 =head1 SEE ALSO
 
 Please see those modules/websites for more information related to this module.
@@ -161,7 +166,7 @@ L<Selenium::Remote::Driver|Selenium::Remote::Driver>
 =head1 BUGS
 
 Please report any bugs or feature requests on the bugtracker website
-https://github.com/gempesaw/Selenium-Remote-Driver/issues
+L<https://github.com/teodesian/Selenium-Remote-Driver/issues>
 
 When submitting a bug or request, please include a test-file or a
 patch to an existing test-file that illustrates the bug or desired
@@ -211,7 +216,7 @@ Aditya Ivaturi <ivaturi@gmail.com>
 
 Copyright (c) 2010-2011 Aditya Ivaturi, Gordon Child
 
-Copyright (c) 2014-2016 Daniel Gempesaw
+Copyright (c) 2014-2017 Daniel Gempesaw
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

@@ -1,21 +1,19 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU AFFERO General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# any later version.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-# or see http://www.gnu.org/licenses/agpl.txt.
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -42,10 +40,20 @@ my %Compare;
 my %Opts;
 getopt( 'abd', \%Opts );
 if ( exists $Opts{h} || !keys %Opts ) {
-    print "otrs.CheckSum.pl - OTRS check sum\n";
-    print "Copyright (C) 2001-2017 OTRS AG, http://otrs.com/\n";
-    print
-        "usage: otrs.CheckSum.pl -a create|compare [-b /path/to/ARCHIVE] [-d /path/to/framework]\n";
+    print <<EOF;
+
+Create or compare OTRS file checksum information.
+
+Usage:
+ otrs.CheckSum.pl -a create|compare [-b /path/to/ARCHIVE] [-d /path/to/framework]
+
+Options:
+ -a                     - Specify the action (create|compare).
+ [-b]                   - Specify the path to archive.
+ [-d]                   - Specify the path to OTRS framework.
+ [-h]                   - Display help for this command.
+
+EOF
     exit 1;
 }
 
@@ -149,7 +157,7 @@ sub ProcessDirectory {
             }
             elsif ( -e "$File.save" )
             {    ## report .save files as modified by the OTRS Package Manager
-                print "Notice: OPM Changed $File\n"
+                print "Notice: OPM Changed $File\n";
             }
             if ( defined $Compare{$File} ) {
                 delete $Compare{$File};

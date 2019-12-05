@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::DynamicField::Driver::Date;
@@ -342,10 +342,10 @@ sub EditFieldRender {
 
     my $HTMLString = $Param{LayoutObject}->BuildDateSelection(
         %Param,
-        Prefix               => $FieldName,
-        Format               => 'DateInputFormat',
-        $FieldName . 'Class' => $FieldClass,
-        DiffTime             => $DiffTime,
+        Prefix                => $FieldName,
+        Format                => 'DateInputFormat',
+        $FieldName . 'Class'  => $FieldClass,
+        DiffTime              => $DiffTime,
         $FieldName . Required => $Param{Mandatory} || 0,
         $FieldName . Optional => 1,
         Validate              => 1,
@@ -592,12 +592,14 @@ sub DisplayValueRender {
     my $Title = $Value;
 
     # set field link form config
-    my $Link = $Param{DynamicFieldConfig}->{Config}->{Link} || '';
+    my $Link        = $Param{DynamicFieldConfig}->{Config}->{Link}        || '';
+    my $LinkPreview = $Param{DynamicFieldConfig}->{Config}->{LinkPreview} || '';
 
     my $Data = {
-        Value => $Value,
-        Title => $Title,
-        Link  => $Link,
+        Value       => $Value,
+        Title       => $Title,
+        Link        => $Link,
+        LinkPreview => $LinkPreview,
     };
 
     return $Data;
@@ -746,7 +748,7 @@ EOF
             Sort           => 'IndividualKey',
             SortIndividual => [ 'Before', 'Last', 'Next', 'After' ],
             Name           => $FieldName . 'Start',
-            SelectedID => $Value->{Start}->{ $FieldName . 'Start' } || 'Last',
+            SelectedID     => $Value->{Start}->{ $FieldName . 'Start' } || 'Last',
         );
         $HTMLString .= ' ' . $Param{LayoutObject}->BuildSelection(
             Data       => [ 1 .. 59 ],
@@ -1085,7 +1087,7 @@ sub SearchFieldParameterBuild {
                     'Kernel::System::DateTime',
                     ObjectParams => {
                         Epoch => $Now - $DiffTimeSeconds,
-                        }
+                    }
                 );
 
                 # only search dates in the past (before the time stamp)
@@ -1103,7 +1105,7 @@ sub SearchFieldParameterBuild {
                     'Kernel::System::DateTime',
                     ObjectParams => {
                         Epoch => $Now - $DiffTimeSeconds,
-                        }
+                    }
                 );
 
                 my $YearMonthDay = $DateTimeObjectLast->Format( Format => '%Y-%m-%d' );
@@ -1135,7 +1137,7 @@ sub SearchFieldParameterBuild {
                     'Kernel::System::DateTime',
                     ObjectParams => {
                         Epoch => $Now + $DiffTimeSeconds,
-                        }
+                    }
                 );
 
                 $YearMonthDay = $DateTimeObjectNext->Format( Format => '%Y-%m-%d' );
@@ -1151,7 +1153,7 @@ sub SearchFieldParameterBuild {
                     'Kernel::System::DateTime',
                     ObjectParams => {
                         Epoch => $Now + $DiffTimeSeconds,
-                        }
+                    }
                 );
 
                 my $YearMonthDay = $DateTimeObjectAfter->Format( Format => '%Y-%m-%d' );
@@ -1230,7 +1232,7 @@ sub StatsSearchFieldParameterBuild {
         'Kernel::System::DateTime',
         ObjectParams => {
             String => $Value
-            }
+        }
     );
 
     my $ToReturn = $DateTimeObject->Format( Format => '%Y-%m-%d' );
@@ -1245,7 +1247,7 @@ sub StatsSearchFieldParameterBuild {
 
     # set start of day
     elsif ( $Operator eq 'GreaterThanEquals' ) {
-        $ToReturn .= ' 00:00:00'
+        $ToReturn .= ' 00:00:00';
     }
 
     # same values for unknown operators
@@ -1335,10 +1337,10 @@ sub _ConvertDate2DateTime {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -14,20 +14,23 @@ use vars (qw($Self));
 
 use Kernel::GenericInterface::Operation::Session::Common;
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
+
+# Cleanup existing settings to make sure session limit calculations are correct.
+my $AuthSessionObject = $Kernel::OM->Get('Kernel::System::AuthSession');
+for my $SessionID ( $AuthSessionObject->GetAllSessionIDs() ) {
+    $AuthSessionObject->RemoveSessionID( SessionID => $SessionID );
+}
 
 $Selenium->RunTest(
     sub {
 
-        # get helper object
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         my @TestUserLogins;
 
+        # Create test users.
         for ( 0 .. 2 ) {
-
-            # create test user and login
             my $TestUserLogin = $Helper->TestUserCreate(
                 Groups => [ 'admin', 'users' ],
             ) || die "Did not get test user";
@@ -35,16 +38,18 @@ $Selenium->RunTest(
             push @TestUserLogins, $TestUserLogin;
         }
 
-        # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # First load the page so we can delete any pre-existing cookies
+        # First load the page so we can delete any pre-existing cookies.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl");
         $Selenium->delete_all_cookies();
 
         # Check Secure::DisableBanner functionality.
-        my $Product = $Kernel::OM->Get('Kernel::Config')->Get('Product');
-        my $Version = $Kernel::OM->Get('Kernel::Config')->Get('Version');
+        my $Product          = $Kernel::OM->Get('Kernel::Config')->Get('Product');
+        my $Version          = $Kernel::OM->Get('Kernel::Config')->Get('Version');
+        my $STORMInstalled   = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSSTORMIsInstalled();
+        my $CONTROLInstalled = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSCONTROLIsInstalled();
+
         for my $Disabled ( reverse 0 .. 1 ) {
             $Helper->ConfigSettingChange(
                 Key   => 'Secure::DisableBanner',
@@ -53,22 +58,80 @@ $Selenium->RunTest(
             $Selenium->VerifiedRefresh();
 
             if ($Disabled) {
-                $Self->False(
-                    index( $Selenium->get_page_source(), 'Powered' ) > -1,
-                    'Footer banner hidden',
-                );
+
+                if ($STORMInstalled) {
+
+                    my $STORMFooter = 0;
+
+                    if ( $Selenium->get_page_source() =~ m{ ^ [ ]+ STORM \s powered }xms ) {
+                        $STORMFooter = 1;
+                    }
+
+                    $Self->False(
+                        $STORMFooter,
+                        'Footer banner hidden',
+                    );
+                }
+                elsif ($CONTROLInstalled) {
+
+                    my $CONTROLFooter = 0;
+
+                    if ( $Selenium->get_page_source() =~ m{ ^ [ ]+ CONTROL \s powered }xms ) {
+                        $CONTROLFooter = 1;
+                    }
+
+                    $Self->False(
+                        $CONTROLFooter,
+                        'Footer banner hidden',
+                    );
+                }
+                else {
+                    $Self->False(
+                        index( $Selenium->get_page_source(), 'Powered' ) > -1,
+                        'Footer banner hidden',
+                    );
+                }
             }
             else {
-                $Self->True(
-                    index( $Selenium->get_page_source(), 'Powered' ) > -1,
-                    'Footer banner shown',
-                );
 
-                # Prevent version information disclosure on login page.
-                $Self->False(
-                    index( $Selenium->get_page_source(), "$Product $Version" ) > -1,
-                    "No version information disclosure ($Product $Version)",
-                );
+                if ($STORMInstalled) {
+
+                    my $STORMFooter = 0;
+
+                    if ( $Selenium->get_page_source() =~ m{ ^ [ ]+ STORM \s powered }xms ) {
+                        $STORMFooter = 1;
+                    }
+
+                    $Self->True(
+                        $STORMFooter,
+                        'Footer banner hidden',
+                    );
+                }
+                elsif ($CONTROLInstalled) {
+
+                    my $CONTROLFooter = 0;
+
+                    if ( $Selenium->get_page_source() =~ m{ ^ [ ]+ CONTROL \s powered }xms ) {
+                        $CONTROLFooter = 1;
+                    }
+
+                    $Self->True(
+                        $CONTROLFooter,
+                        'Footer banner hidden',
+                    );
+                }
+                else {
+                    $Self->True(
+                        index( $Selenium->get_page_source(), 'Powered' ) > -1,
+                        'Footer banner shown',
+                    );
+
+                    # Prevent version information disclosure on login page.
+                    $Self->False(
+                        index( $Selenium->get_page_source(), "$Product $Version" ) > -1,
+                        "No version information disclosure ($Product $Version)",
+                    );
+                }
             }
         }
 
@@ -82,13 +145,16 @@ $Selenium->RunTest(
         $Element->is_enabled();
         $Element->send_keys( $TestUserLogins[0] );
 
-        # login
-        $Element->VerifiedSubmit();
+        # Login.
+        $Selenium->find_element( '#LoginButton', 'css' )->VerifiedClick();
 
-        # try to expand the user profile sub menu by clicking the avatar
-        $Selenium->find_element( '.UserAvatar > a', 'css' )->VerifiedClick();
+        # Try to expand the user profile sub menu by clicking the avatar.
+        $Selenium->find_element( '.UserAvatar > a', 'css' )->click();
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $("li.UserAvatar > div:visible").length'
+        );
 
-        # check if we see the logout button
+        # Check if we see the logout button.
         $Element = $Selenium->find_element( 'a#LogoutButton', 'css' );
 
         # Check for version tag in the footer.
@@ -97,7 +163,7 @@ $Selenium->RunTest(
             "Version information present ($Product $Version)",
         );
 
-        # logout again
+        # Logout again.
         $Element->VerifiedClick();
 
         my @SessionIDs;
@@ -106,7 +172,7 @@ $Selenium->RunTest(
 
         for my $Counter ( 1 .. 2 ) {
 
-            # create new session id
+            # Create new session id.
             my $NewSessionID = $SessionObject->CreateSessionID(
                 UserLogin       => $TestUserLogins[$Counter],
                 UserLastRequest => $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch(),
@@ -152,15 +218,18 @@ $Selenium->RunTest(
         $Element->is_enabled();
         $Element->send_keys( $TestUserLogins[0] );
 
-        $Element->VerifiedSubmit();
+        $Selenium->find_element( '#LoginButton', 'css' )->VerifiedClick();
 
         $Self->True(
             index( $Selenium->get_page_source(), 'Please note that the session limit is almost reached.' ) > -1,
             "AgentSessionLimitPriorWarning is reached.",
         );
 
-        # try to expand the user profile sub menu by clicking the avatar
-        $Selenium->find_element( '.UserAvatar > a', 'css' )->VerifiedClick();
+        # Try to expand the user profile sub menu by clicking the avatar.
+        $Selenium->find_element( '.UserAvatar > a', 'css' )->click();
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $("li.UserAvatar > div:visible").length'
+        );
 
         $Element = $Selenium->find_element( 'a#LogoutButton', 'css' );
         $Element->VerifiedClick();
@@ -180,7 +249,7 @@ $Selenium->RunTest(
         $Element->is_enabled();
         $Element->send_keys( $TestUserLogins[2] );
 
-        $Element->VerifiedSubmit();
+        $Selenium->find_element( '#LoginButton', 'css' )->VerifiedClick();
 
         $Self->True(
             index( $Selenium->get_page_source(), 'Session per user limit reached!' ) > -1,
@@ -202,7 +271,7 @@ $Selenium->RunTest(
         $Element->is_enabled();
         $Element->send_keys( $TestUserLogins[0] );
 
-        $Element->VerifiedSubmit();
+        $Selenium->find_element( '#LoginButton', 'css' )->VerifiedClick();
 
         $Self->True(
             index( $Selenium->get_page_source(), 'Session limit reached! Please try again later.' ) > -1,
@@ -225,12 +294,15 @@ $Selenium->RunTest(
         $Element->is_enabled();
         $Element->send_keys( $TestUserLogins[0] );
 
-        $Element->VerifiedSubmit();
+        $Selenium->find_element( '#LoginButton', 'css' )->VerifiedClick();
 
-        # try to expand the user profile sub menu by clicking the avatar
-        $Selenium->find_element( '.UserAvatar > a', 'css' )->VerifiedClick();
+        # Try to expand the user profile sub menu by clicking the avatar.
+        $Selenium->find_element( '.UserAvatar > a', 'css' )->click();
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $("li.UserAvatar > div:visible").length'
+        );
 
-        # login successful?
+        # Login successful?
         $Element = $Selenium->find_element( 'a#LogoutButton', 'css' );
 
         $SessionObject->CleanUp();

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -14,21 +14,18 @@ use vars (qw($Self));
 
 use Kernel::GenericInterface::Debugger;
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get needed objects
         my $Helper           = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
         my $WebserviceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice');
 
-        # define needed variables
         my $RandomID       = $Helper->GetRandomID();
-        my $WebserviceName = "Selenium $RandomID webservice";
+        my $WebserviceName = "Selenium $RandomID web service";
 
-        # create test webservice
+        # Create test web service.
         my $WebserviceID = $WebserviceObject->WebserviceAdd(
             Config => {
                 Debugger => {
@@ -48,10 +45,10 @@ $Selenium->RunTest(
 
         $Self->True(
             $WebserviceID,
-            "Webservice ID $WebserviceID is created"
+            "Web service ID $WebserviceID is created"
         );
 
-        # create debugger object
+        # Create debugger object.
         my $DebuggerObject = Kernel::GenericInterface::Debugger->new(
             DebuggerConfig => {
                 DebugThreshold => 'debug',
@@ -67,15 +64,23 @@ $Selenium->RunTest(
             'DebuggerObject instantiate correctly',
         );
 
-        # create different debug log types
+        # Create different debug log types.
         my $Count = 1;
         my @Summaries;
         for my $LogType (qw( Debug Info Notice Error )) {
 
+            my $Data = "Selenium test log data type $LogType";
+            if ( $LogType eq 'Error' ) {
+                $Data = <<"EOS";
+<?xml version="1.0" encoding="utf-8" ?>
+<test_config></test_config>
+EOS
+            }
+
             my $Summary = "Debug log nr. $Count - type $LogType";
             my $Result  = $DebuggerObject->$LogType(
                 Summary => $Summary,
-                Data    => "Selenium test log data type $LogType",
+                Data    => $Data,
             ) || 0;
             $Self->True(
                 $Result,
@@ -87,10 +92,18 @@ $Selenium->RunTest(
             push @Summaries, $Summary;
         }
 
-        # create test user and login
-        my $TestUserLogin = $Helper->TestUserCreate(
+        # Create test user and login.
+        my ( $TestUserLogin, $TestUserID ) = $Helper->TestUserCreate(
             Groups => ['admin'],
-        ) || die "Did not get test user";
+        );
+
+        # Set user's time zone.
+        my $UserTimeZone = 'Europe/Berlin';
+        $Kernel::OM->Get('Kernel::System::User')->SetPreferences(
+            Key    => 'UserTimeZone',
+            Value  => $UserTimeZone,
+            UserID => $TestUserID,
+        );
 
         $Selenium->Login(
             Type     => 'Agent',
@@ -98,32 +111,31 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # navigate to AdminGenericInterfaceWebservice screen
+        # Navigate to AdminGenericInterfaceWebservice screen.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminGenericInterfaceWebservice");
 
-        # check breadcrumb on Overview screen
+        # Check breadcrumb on Overview screen.
         $Self->True(
             $Selenium->find_element( '.BreadCrumb', 'css' ),
             "Breadcrumb is found on Overview screen.",
         );
 
-        # click on created webservice
+        # Click on created web service.
         $Selenium->find_element("//a[contains(\@href, 'WebserviceID=$WebserviceID')]")->VerifiedClick();
 
-        # click on 'Debugger' button
+        # Click on 'Debugger' button.
         $Selenium->find_element( "span .fa.fa-bug", 'css' )->VerifiedClick();
 
-        # check screen
+        # Check screen.
         $Selenium->find_element( "table",             'css' );
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
 
         for my $ID (
             qw(DeleteButton FilterType_Search FilterFromMonth FilterFromDay FilterFromYear FilterFromDayDatepickerIcon
-            FilterToMonth FilterToDay FilterToYear FilterRemoteIP FilterLimit_Search FilterRefresh)
+            FilterToMonth FilterToDay FilterToYear FilterRemoteIP FilterLimit_Search FilterSort FilterRefresh)
             )
         {
             my $Element = $Selenium->find_element( "#$ID", 'css' );
@@ -131,7 +143,7 @@ $Selenium->RunTest(
             $Element->is_displayed();
         }
 
-        # check breadcrumb on Debugger screen
+        # Check breadcrumb on Debugger screen.
         my @Breadcrumbs = (
             {
                 Text => 'Web Service Management',
@@ -155,35 +167,38 @@ $Selenium->RunTest(
             $Count++;
         }
 
-        # verify CommunicationDetails are not visible
+        # Verify CommunicationDetails are not visible.
         $Self->Is(
             $Selenium->execute_script("return \$('#CommunicationDetails:visible').length;"),
             0,
             "Communication details are not visible"
         );
 
-        # verify Provider log is present in table
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && !$(".RequestListWidget.Loading").length'
+        );
+
+        # Verify Provider log is present in table.
         $Self->True(
             $Selenium->execute_script("return \$('#RequestList').find('tbody tr td a').text().trim();") =~ /^Provider/,
             "Debugger log type Provider is found in table"
         );
 
-        # click on it
-        $Selenium->find_element( "Provider", 'link_text' )->VerifiedClick();
-
-        # wait if necessary
+        # Click on it.
+        $Selenium->find_element( "Provider", 'link_text' )->click();
         $Selenium->WaitFor(
             JavaScript => 'return typeof($) === "function" && $("#CommunicationDetails:visible").length'
         );
 
-        # verify CommunicationDetails are visible
+        # Verify CommunicationDetails are visible.
         $Self->Is(
             $Selenium->execute_script("return \$('#CommunicationDetails:visible').length;"),
             1,
             "Communication details are visible"
         );
 
-        # verify request details are present
+        # Verify request details are present.
         for my $RequestSummary (@Summaries) {
             $Self->True(
                 index( $Selenium->get_page_source(), $RequestSummary ) > -1,
@@ -191,56 +206,77 @@ $Selenium->RunTest(
             );
         }
 
-        # change filter type to Requester
-        $Selenium->execute_script("\$('#FilterType').val('Requester').trigger('redraw.InputField').trigger('change');");
+        # Verify debug time log informations are in user preference time zone. See bug#14557.
+        $Self->True(
+            $Selenium->execute_script("return \$('#RequestList tbody tr:contains(\"Europe/Berlin\")').length;"),
+            "Request list debug log time stamp is in user preference time zone ($UserTimeZone) format."
+        );
 
-        # click on 'Refresh' button and test JS GetRequestList function, expecting no result to find
-        $Selenium->find_element( "#FilterRefresh", 'css' )->VerifiedClick();
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('#CommunicationDetails .WidgetSimple:eq(0) h3:contains(\"Europe/Berlin\")').length;"
+            ),
+            "Request details debug log time stamp is in user preference time zone ($UserTimeZone) format."
+        );
 
-        # wait if necessary
+        # Change filter type to Requester.
+        $Selenium->InputFieldValueSet(
+            Element => '#FilterType',
+            Value   => 'Requester',
+        );
+
+        # Click on 'Refresh' button and test JS GetRequestList function, expecting no result to find.
+        $Selenium->find_element( "#FilterRefresh", 'css' )->click();
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && !$(".RequestListWidget.Loading").length'
         );
 
-        # verify log table is empty
+        # Verify log table is empty.
         $Self->Is(
             $Selenium->execute_script("return \$('#RequestList').find('tbody tr td a').text().trim();"),
             "",
             "Debugger log type Requester is not found in table- JS success"
         );
 
-        # click to clear debugger log
-        $Selenium->find_element( "#DeleteButton", 'css' )->VerifiedClick();
+        # Click to clear debugger log.
+        $Selenium->find_element( "#DeleteButton", 'css' )->click();
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#DeleteDialog").length'
+        );
 
-        # verify delete dialog text
+        # Verify delete dialog text.
         $Self->Is(
-            $Selenium->execute_script("return \$('p#DeleteDialog').text().trim();"),
+            $Selenium->execute_script("return \$('#DeleteDialog').text().trim();"),
             "Do you really want to clear the debug log of this web service?",
             'Delete dialog text is found'
         );
 
-        # click to clear debug log
-        $Selenium->find_element( "#DialogButton2", 'css' )->VerifiedClick();
+        $Selenium->find_element( "#DialogButton2", 'css' )->click();
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && !$(".Dialog.Modal").length'
+        );
 
-        # verify log table is empty
+        # Verify log table is empty.
         $Self->Is(
             $Selenium->execute_script("return \$('#RequestList').find('tbody tr td a').text().trim();"),
             "",
             "Debugger log table is empty after clear"
         );
 
-        # delete test created webservice
+        # Delete test created web service.
         my $Success = $WebserviceObject->WebserviceDelete(
             ID     => $WebserviceID,
             UserID => 1,
         );
         $Self->True(
             $Success,
-            "Webservice ID $WebserviceID is deleted"
+            "Web service ID $WebserviceID is deleted"
         );
 
-        # make sure cache is correct
+        # Make sure cache is correct.
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'Webservice' );
     }
 );

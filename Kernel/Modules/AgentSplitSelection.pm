@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentSplitSelection;
@@ -65,28 +65,7 @@ sub Run {
         if ( $Param{SplitSelection} eq 'EmailTicket' ) {
 
             $RedirectAction = 'AgentTicketEmail';
-
-            my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForArticle(
-                TicketID  => $Param{TicketID},
-                ArticleID => $Param{ArticleID},
-            );
-
-            my %Article = $ArticleBackendObject->ArticleGet(
-                TicketID  => $Param{TicketID},
-                ArticleID => $Param{ArticleID},
-            );
-
-            # detect the from address from given article
-            my @Email = Mail::Address->parse( $Article{From} );
-
-            my $FromAddress = '';
-            if (@Email) {
-                $Email[0]->address();
-            }
-
-            # append the from address as current customer for the email ticket
-            $URLExtension =
-                ";TicketID=$Param{TicketID};CustomerTicketCounterToCustomer=1;CustomerTicketText_1=$FromAddress;CustomerSelected=1";
+            $URLExtension   = ";TicketID=$Param{TicketID}";
         }
 
         #
@@ -137,11 +116,47 @@ sub Run {
     # Split Selection Dialog
     # ---------------------------------------------------------- #
 
-    # build split selection the modal dialog
-    my %SplitSelectionContent = (
-        PhoneTicket => Translatable('Phone ticket'),
-        EmailTicket => Translatable('Email ticket'),
+    # Get ACL restrictions.
+    my %PossibleActions;
+    my $Counter = 0;
+
+    # Get all registered actions.
+    if ( ref $ConfigObject->Get('Frontend::Module') eq 'HASH' ) {
+
+        my %Actions = %{ $ConfigObject->Get('Frontend::Module') };
+
+        # Only use those actions that start with 'Agent'.
+        %PossibleActions = map { ++$Counter => $_ }
+            grep { substr( $_, 0, length 'Agent' ) eq 'Agent' }
+            sort keys %Actions;
+    }
+
+    my $ACL = $TicketObject->TicketAcl(
+        Data          => \%PossibleActions,
+        Action        => 'AgentTicketZoom',
+        TicketID      => $Param{TicketID},
+        ReturnType    => 'Action',
+        ReturnSubType => '-',
+        UserID        => $Self->{UserID},
     );
+
+    my %AclAction = %PossibleActions;
+    if ($ACL) {
+        %AclAction = $TicketObject->TicketAclActionData();
+    }
+
+    my %AclActionLookup = reverse %AclAction;
+
+    # Build split selection based on availability of corresponding registered modules and ACL restrictions.
+    # See bug#13690 (https://bugs.otrs.org/show_bug.cgi?id=13690) and
+    #   bug#13947 (https://bugs.otrs.org/show_bug.cgi?id=13947) respectively.
+    my %SplitSelectionContent;
+    if ( $ConfigObject->Get('Frontend::Module')->{AgentTicketPhone} && $AclActionLookup{AgentTicketPhone} ) {
+        $SplitSelectionContent{PhoneTicket} = Translatable('Phone ticket');
+    }
+    if ( $ConfigObject->Get('Frontend::Module')->{AgentTicketEmail} && $AclActionLookup{AgentTicketEmail} ) {
+        $SplitSelectionContent{EmailTicket} = Translatable('Email ticket');
+    }
 
     # only display process tickets if active processes are available
     my $Processes = $ConfigObject->Get('Process');

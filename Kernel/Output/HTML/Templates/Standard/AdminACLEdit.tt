@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
@@ -53,7 +53,7 @@
                     <strong>[% Translate("Change settings") | html %]</strong>: [% Translate("Set up what you want to change if the criteria match. Keep in mind that 'Possible' is a white list, 'PossibleNot' a black list.") | html %]
                 </p>
                 <p class="FieldExplanation">
-                    [% Translate("Check the official") | html %] <a href="https://otrs.github.io/doc/manual/admin/stable/en/html/customization.html#acl" target="_blank">[% Translate("documentation") | html %]</a>.
+                    [% Translate("Check the official %sdocumentation%s.") | html | ReplacePlaceholders('<a href="https://doc.otrs.com/doc/manual/admin/6.0/en/html/customization.html#acl" target="_blank">', '</a>')  %]
                 </p>
             </div>
         </div>
@@ -96,7 +96,7 @@
 
                         <label for="Description">[% Translate("Description") | html %]:</label>
                         <div class="Field">
-                            <textarea name="Description" id="Description" class="W50pc [% Data.DescriptionServerError | html %]" rows="5">[% Data.Description | html %]</textarea>
+                            <textarea name="Description" id="Description" class="W50pc [% Data.DescriptionServerError | html %]" rows="5" maxlength="200">[% Data.Description | html %]</textarea>
                         </div>
                         <div class="Clear"></div>
 
@@ -235,10 +235,7 @@
             </div>
 
             <div class="WidgetSimple ScreenXL">
-                <div class="Header Expanded">
-                    <div class="WidgetAction Toggle">
-                        <a href="#" title="[% Translate("Save settings") | html %]"></a>
-                    </div>
+                <div class="Header">
                     <h2>[% Translate("Save ACL") | html %]</h2>
                 </div>
                 <div class="Content">

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::MailAccount::POP3TLS;
@@ -19,7 +19,7 @@ our @ObjectDependencies = (
     'Kernel::System::Log',
 );
 
-# Use Net::SSLGlue::POP3 on systems with older Net::POP3 modules that cannot handle POP3S.
+# Use Net::SSLGlue::POP3 on systems with older Net::POP3 modules that cannot handle POP3TLS.
 BEGIN {
     if ( !defined &Net::POP3::starttls ) {
         ## nofilter(TidyAll::Plugin::OTRS::Perl::Require)

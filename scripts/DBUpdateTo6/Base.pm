@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package scripts::DBUpdateTo6::Base;    ## no critic
@@ -38,7 +38,9 @@ sub new {
 Refreshes the configuration to make sure that a ZZZAAuto.pm is present after the upgrade.
 
     $DBUpdateTo6Object->RebuildConfig(
-        UnitTestMode => 1,      # (optional) Prevent discarding all objects at the end
+        UnitTestMode      => 1,         # (optional) Prevent discarding all objects at the end.
+        CleanUpIfPossible => 1,         # (optional) Removes leftover settings that are not contained in XML files,
+                                        #   but only if all XML files for installed packages are present.
     );
 
 =cut
@@ -47,14 +49,40 @@ sub RebuildConfig {
     my ( $Self, %Param ) = @_;
 
     my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-    my $Verbose = $Param{CommandlineOptions}->{Verbose} || 0;
+    my $Verbose         = $Param{CommandlineOptions}->{Verbose} || 0;
+
+    my $CleanUp = $Param{CleanUpIfPossible} ? 1 : 0;
+
+    if ($CleanUp) {
+        my $PackageObject = $Kernel::OM->Get('Kernel::System::Package');
+
+        PACKAGE:
+        for my $Package ( $PackageObject->RepositoryList() ) {
+
+            # Only check the deployment state of the XML configuration files for performance reasons.
+            #   Otherwise, this would be too slow on systems with many packages.
+            $CleanUp = $PackageObject->_ConfigurationFilesDeployCheck(
+                Name    => $Package->{Name}->{Content},
+                Version => $Package->{Version}->{Content},
+            );
+
+            # Stop if any package has its configuration wrong deployed, configuration cleanup should not
+            #   take place in the lines below. Otherwise modified setting values can be lost.
+            if ( !$CleanUp ) {
+                if ($Verbose) {
+                    print "\n    Configuration cleanup was not possible as packages are not correctly deployed!\n";
+                }
+                last PACKAGE;
+            }
+        }
+    }
 
     # Convert XML files to entries in the database
     if (
         !$SysConfigObject->ConfigurationXML2DB(
-            CleanUp => 1,
             Force   => 1,
             UserID  => 1,
+            CleanUp => $CleanUp,
         )
         )
     {
@@ -65,7 +93,7 @@ sub RebuildConfig {
     # Rebuild ZZZAAuto.pm with current values
     if (
         !$SysConfigObject->ConfigurationDeploy(
-            Comments => $Param{Comments} || "Configuration Rebuild",
+            Comments     => $Param{Comments} || "Configuration Rebuild",
             AllSettings  => 1,
             Force        => 1,
             NoValidation => 1,
@@ -87,6 +115,8 @@ sub RebuildConfig {
     if ($Verbose) {
         print "\n    If you see warnings about 'Subroutine Load redefined', that's fine, no need to worry!\n";
     }
+
+    return 1 if $Param{UnitTestMode};
 
     # create common objects with new default config
     $Kernel::OM->ObjectsDiscard();
@@ -215,6 +245,21 @@ sub ExecuteXMLDBArray {
 
                 # skip dropping the column if the column does not exist
                 next XMLSTRING if !$ColumnExists;
+            }
+
+            # extract indexes that should be added
+            if ( $XMLString =~ m{<IndexCreate \s+ Name="([^"]+)" }xms ) {
+
+                my $IndexName = $1;
+                return if !$IndexName;
+
+                my $IndexExists = $Self->IndexExists(
+                    Table => $TableName,
+                    Index => $IndexName,
+                );
+
+                # skip the index creation if it already exits
+                next XMLSTRING if $IndexExists;
             }
         }
 
@@ -434,6 +479,79 @@ sub ColumnExists {
     return 1;
 }
 
+=head2 IndexExists()
+
+Checks if the given index exists in the given table.
+
+    my $Result = $DBUpdateTo6Object->IndexExists(
+        Table => 'ticket',
+        Index =>  'id',
+    );
+
+Returns true if the index exists, otherwise false.
+
+=cut
+
+sub IndexExists {
+    my ( $Self, %Param ) = @_;
+
+    for my $Argument (qw(Table Index)) {
+        if ( !$Param{$Argument} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Argument!",
+            );
+            return;
+        }
+    }
+
+    my $DBType = $Kernel::OM->Get('Kernel::System::DB')->GetDatabaseFunction('Type');
+
+    my ( $SQL, @Bind );
+
+    if ( $DBType eq 'mysql' ) {
+        $SQL = '
+            SELECT COUNT(*)
+            FROM information_schema.statistics
+            WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ?
+        ';
+        push @Bind, \$Param{Table}, \$Param{Index};
+    }
+    elsif ( $DBType eq 'postgresql' ) {
+        $SQL = '
+            SELECT COUNT(*)
+            FROM pg_indexes
+            WHERE indexname = ?
+        ';
+        push @Bind, \$Param{Index};
+    }
+    elsif ( $DBType eq 'oracle' ) {
+        $SQL = '
+            SELECT COUNT(*)
+            FROM user_indexes
+            WHERE index_name = ?
+        ';
+        push @Bind, \$Param{Index};
+    }
+    else {
+        return;
+    }
+
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    return if !$DBObject->Prepare(
+        SQL   => $SQL,
+        Bind  => \@Bind,
+        Limit => 1,
+    );
+
+    my @Result = $DBObject->FetchrowArray();
+
+    return if !$Result[0];
+
+    return 1;
+}
+
 =head2 GetTaskConfig()
 
 Clean up the cache.
@@ -479,14 +597,89 @@ sub GetTaskConfig {
     return $ConfigData;
 }
 
+=head2 SettingUpdate()
+
+Update an existing SysConfig Setting in a migration context. It will skip updating both read-only and already modified
+settings by default.
+
+    $DBUpdateTo6Object->SettingUpdate(
+        Name                   => 'Setting::Name',           # (required) setting name
+        IsValid                => 1,                         # (optional) 1 or 0, modified 0
+        EffectiveValue         => $SettingEffectiveValue,    # (optional)
+        UserModificationActive => 0,                         # (optional) 1 or 0, modified 0
+        TargetUserID           => 2,                         # (optional) ID of the user for which the modified setting is meant,
+                                                             #   leave it undef for global changes.
+        NoValidation           => 1,                         # (optional) no value type validation.
+        ContinueOnModified     => 0,                         # (optional) Do not skip already modified settings.
+                                                             #   1 or 0, default 0
+        Verbose                => 0,                         # (optional) 1 or 0, default 0
+    );
+
+=cut
+
+sub SettingUpdate {
+    my ( $Self, %Param ) = @_;
+
+    if ( !$Param{Name} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need Name!',
+        );
+
+        return;
+    }
+
+    my $SettingName = $Param{Name};
+
+    my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
+
+    # Try to get the default setting from OTRS 6 for the new setting name.
+    my %CurrentSetting = $SysConfigObject->SettingGet(
+        Name  => $SettingName,
+        NoLog => 1,
+    );
+
+    # Skip settings which already have been modified in the meantime.
+    if ( $CurrentSetting{ModifiedID} && !$Param{ContinueOnModified} ) {
+        if ( $Param{Verbose} ) {
+            print "\n        - Setting '$Param{Name}' is already modified in the system skipping...\n\n";
+        }
+        return 1;
+    }
+
+    # Skip this setting if it is a read-only setting.
+    if ( $CurrentSetting{IsReadonly} ) {
+        if ( $Param{Verbose} ) {
+            print "\n        - Setting '$Param{Name}' is is set to read-only skipping...\n\n";
+        }
+        return 1;
+    }
+
+    my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
+        Name   => $SettingName,
+        Force  => 1,
+        UserID => 1,
+    );
+
+    my %Result = $SysConfigObject->SettingUpdate(
+        %Param,
+        Name              => $SettingName,
+        IsValid           => $Param{IsValid} || 1,
+        ExclusiveLockGUID => $ExclusiveLockGUID,
+        UserID            => 1,
+    );
+
+    return $Result{Success};
+}
+
 1;
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

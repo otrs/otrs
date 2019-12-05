@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -191,7 +191,7 @@ for my $Test (@Test) {
         ObjectParams => {
             Transport => $Test->{Create}->{Transport},
             Direction => $Test->{Create}->{Direction},
-            }
+        }
     );
 
     $Self->Is(
@@ -332,6 +332,21 @@ for my $Test (@Test) {
         "$Test->{Name} - Communication stop - Status.",
     );
 
+    #
+    # CommunicationLog recreate closed object
+    #
+    $CommunicationLogObject = undef;
+    $CommunicationLogObject = $Kernel::OM->Create(
+        'Kernel::System::CommunicationLog',
+        ObjectParams => {
+            CommunicationID => $GeneratedCommunicationID,
+        },
+    );
+
+    $Self->False(
+        $CommunicationLogObject,
+        "$Test->{Name} - Object already closed couldn't be recreated.",
+    );
 }
 
 1;

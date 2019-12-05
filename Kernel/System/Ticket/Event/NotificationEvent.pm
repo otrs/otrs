@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Ticket::Event::NotificationEvent;
@@ -73,6 +73,11 @@ sub Run {
 
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+    # Loop protection: prevent from running if ArticleSend has already triggered for certain ticket.
+    if ( $Param{Event} eq 'ArticleSend' ) {
+        return if $TicketObject->{'_NotificationEvent::ArticleSend'}->{ $Param{Data}->{TicketID} }++;
+    }
 
     # return if no notification is active
     return 1 if $TicketObject->{SendNoNotification};
@@ -350,26 +355,6 @@ sub Run {
                 );
             }
         }
-
-        if ( %AlreadySent && $Param{Data}->{ArticleID} && $Param{Data}->{ArticleType} ) {
-
-            # update to field
-            my $UpdateToSuccess = $Self->_ArticleToUpdate(
-                ArticleID   => $Param{Data}->{ArticleID},
-                ArticleType => $Param{Data}->{ArticleType},
-                UserIDs     => \%AlreadySent,
-                UserID      => $Param{UserID},
-            );
-
-            # check for errors
-            if ( !$UpdateToSuccess ) {
-
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'error',
-                    Message  => "Could not update To field for Article: $Param{Data}->{ArticleID}.",
-                );
-            }
-        }
     }
 
     return 1;
@@ -434,15 +419,15 @@ sub _NotificationFilter {
         }
 
         # check ticket attributes
-        next KEY if !$Notification{Data}->{$Key};
+        next KEY if !defined $Notification{Data}->{$Key};
+        next KEY if !defined $Notification{Data}->{$Key}->[0];
         next KEY if !@{ $Notification{Data}->{$Key} };
-        next KEY if !$Notification{Data}->{$Key}->[0];
         my $Match = 0;
 
         VALUE:
         for my $Value ( @{ $Notification{Data}->{$Key} } ) {
 
-            next VALUE if !$Value;
+            next VALUE if !defined $Value;
 
             # check if key is a search dynamic field
             if ( $Key =~ m{\A Search_DynamicField_}xms ) {
@@ -1107,7 +1092,7 @@ sub _RecipientsGet {
                 'Kernel::System::DateTime',
                 ObjectParams => {
                     String => $Start,
-                    }
+                }
             );
             my $End = sprintf(
                 "%04d-%02d-%02d 23:59:59",
@@ -1118,7 +1103,7 @@ sub _RecipientsGet {
                 'Kernel::System::DateTime',
                 ObjectParams => {
                     String => $End,
-                    }
+                }
             );
 
             next RECIPIENT if $TimeStart < $DateTimeObject && $TimeEnd > $DateTimeObject;
@@ -1196,14 +1181,14 @@ sub _SendRecipientNotification {
             my $LastNotificationDateTimeObject = $Kernel::OM->Create(
                 'Kernel::System::DateTime',
                 ObjectParams => {
-                    String => $LastNotificationHistory->{CreateTime}
-                    }
+                    String => $LastNotificationHistory->{CreateTime},
+                },
             );
 
             # do not send the notification if it has been sent already today
             if (
-                $DateTimeObject->Format( Format => "%Y-%M-%D" ) eq
-                $LastNotificationDateTimeObject->Format( Format => "%Y-%M-%D" )
+                $DateTimeObject->Format( Format => "%Y-%m-%d" ) eq
+                $LastNotificationDateTimeObject->Format( Format => "%Y-%m-%d" )
                 )
             {
                 return;
@@ -1258,47 +1243,6 @@ sub _SendRecipientNotification {
     # ticket event
     $TicketObject->EventHandler(
         %EventData,
-    );
-
-    return 1;
-}
-
-sub _ArticleToUpdate {
-    my ( $Self, %Param ) = @_;
-
-    # check needed params
-    for my $Needed (qw(ArticleID ArticleType UserIDs UserID)) {
-        return if !$Param{$Needed};
-    }
-
-    # not update for User 1
-    return 1 if $Param{UserID} eq 1;
-
-    # get needed objects
-    my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
-    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
-
-    # not update if its not a note article
-    return 1 if $Param{ArticleType} !~ /^note\-/;
-
-    my $NewTo = $Param{To} || '';
-    for my $UserID ( sort keys %{ $Param{UserIDs} } ) {
-        my %UserData = $UserObject->GetUserData(
-            UserID => $UserID,
-            Valid  => 1,
-        );
-        if ($NewTo) {
-            $NewTo .= ', ';
-        }
-        $NewTo .= "$UserData{UserFullname} <$UserData{UserEmail}>";
-    }
-
-    # not update if To is the same
-    return 1 if !$NewTo;
-
-    return if !$DBObject->Do(
-        SQL  => 'UPDATE article SET a_to = ? WHERE id = ?',
-        Bind => [ \$NewTo, \$Param{ArticleID} ],
     );
 
     return 1;

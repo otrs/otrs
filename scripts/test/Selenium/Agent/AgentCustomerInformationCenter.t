@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -19,33 +19,27 @@ $Selenium->RunTest(
 
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-        # disable check email addresses
+        # Disable check email addresses.
         $Helper->ConfigSettingChange(
             Key   => 'CheckEmailAddresses',
             Value => 0,
         );
 
-        # create test user and login
+        # Create test user.
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => [ 'admin', 'users' ],
         ) || die "Did not get test user";
 
-        $Selenium->Login(
-            Type     => 'Agent',
-            User     => $TestUserLogin,
-            Password => $TestUserLogin,
-        );
-
-        # get test user ID
+        # Get test user ID.
         my $TestUserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
             UserLogin => $TestUserLogin,
         );
 
-        # create test customer user
+        # Create test customer user.
         my $TestCustomerUserLogin = $Helper->TestCustomerUserCreate(
         ) || die "Did not get test customer user";
 
-        # get test customer user ID
+        # Get test customer user ID.
         my @CustomerIDs = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerIDs(
             User => $TestCustomerUserLogin,
         );
@@ -103,7 +97,7 @@ $Selenium->RunTest(
 
         my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-        # create test data parameters
+        # Create test data parameters.
         my %TicketData = (
             'Open' => {
                 TicketState   => 'open',
@@ -112,16 +106,16 @@ $Selenium->RunTest(
                 TicketIDs     => [],
                 TicketLink    => 'Open',
             },
-            'closed' => {
+            'Closed' => {
                 TicketState   => 'closed successful',
                 TicketCount   => '',
                 TicketNumbers => [],
                 TicketIDs     => [],
-                TicketLink    => 'closed',
+                TicketLink    => 'Closed',
             },
         );
 
-        # create open and closed tickets
+        # Create open and closed tickets.
         for my $TicketCreate ( sort keys %TicketData ) {
             for my $TestTickets ( 1 .. 5 ) {
                 my $TicketNumber = $TicketObject->TicketCreateNumber();
@@ -153,77 +147,91 @@ $Selenium->RunTest(
             $TicketData{$TicketCreate}->{TicketCount} = $TicketCount;
         }
 
+        # Login as test user.
+        $Selenium->Login(
+            Type     => 'Agent',
+            User     => $TestUserLogin,
+            Password => $TestUserLogin,
+        );
+
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # navigate to AdminCustomerInformationCenter screen
+        # Navigate to AdminCustomerInformationCenter screen.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentCustomerInformationCenter");
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#AgentCustomerInformationCenterSearchCustomerID").length'
+                'return typeof($) === "function" && $("#AgentCustomerInformationCenterSearchCustomerID").length;'
         );
 
-        # input search parameters for CustomerUser
+        # Input search parameters for CustomerUser.
         $Selenium->find_element( "#AgentCustomerInformationCenterSearchCustomerUser", 'css' )
             ->send_keys( $RandomID . 'CustomerUser' . '*' );
+        sleep 1;
 
-        $Selenium->WaitFor( JavaScript => "return \$('.ui-menu:eq(1) li').length > 0;" );
+        # Check result of customer user search (there should be 5 matches).
+        $Selenium->WaitFor( JavaScript => "return \$('li a:contains(\"$RandomID\")').length == 5;" );
 
-        $Self->Is(
-            $Selenium->execute_script("return \$('.ui-menu:eq(1) li').length;"), 5,
-            'Check result of customer user search.',
-        );
         $Selenium->find_element( "#AgentCustomerInformationCenterSearchCustomerUser", 'css' )->clear();
 
-        # input search parameters CustomerID
+        # Input search parameters CustomerID.
         $Selenium->find_element( "#AgentCustomerInformationCenterSearchCustomerID", 'css' )
             ->send_keys($TestCustomerUserLogin);
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length' );
-        $Selenium->find_element("//*[text()='$TestCustomerUserLogin']")->VerifiedClick();
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length;' );
+        $Selenium->execute_script("\$('li.ui-menu-item:contains($TestCustomerUserLogin)').click();");
 
-        # check customer information center page
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $(".ContentColumn .WidgetSimple .Header h2").length;'
+        );
+
+        # Check customer information center page.
         $Self->True(
             index( $Selenium->get_page_source(), "Customer Information Center" ) > -1,
             "Found looked value on page",
         );
-        $Self->True(
-            index( $Selenium->get_page_source(), "Customer Users" ) > -1,
-            "Customer Users widget found on page",
+
+        my @Header = (
+            'Customer Users',
+            'Reminder Tickets',
+            'Escalated Tickets',
+            'New Tickets',
+            'Open Tickets',
         );
-        $Self->True(
-            index( $Selenium->get_page_source(), "Reminder Tickets" ) > -1,
-            "Reminder Tickets widget found on page",
-        );
-        $Self->True(
-            index( $Selenium->get_page_source(), "Escalated Tickets" ) > -1,
-            "Escalated Tickets widget found on page",
-        );
-        $Self->True(
-            index( $Selenium->get_page_source(), "Open Tickets / Need to be answered" ) > -1,
-            "Open Tickets / Need to be answered widget found on page",
-        );
-        $Self->True(
-            index( $Selenium->get_page_source(), "Settings" ) > -1,
+
+        my $Count = 0;
+        for my $Title (@Header) {
+
+            # Check widget title.
+            $Self->True(
+                index( $Selenium->get_page_source(), $Title ) > -1,
+                "$Title widget found on page",
+            );
+            $Count++;
+        }
+
+        $Self->Is(
+            $Selenium->execute_script("return \$('.SidebarColumn .WidgetSimple .Header h2:eq(0)').text();"),
+            'Settings',
             "Setting for toggle widgets found on page",
         );
 
-        # check if there is link to CIC search modal dialog from heading (name of the company)
+        # Check if there is link to CIC search modal dialog from heading (name of the company).
         $Self->True(
             $Selenium->find_element( "#CustomerInformationCenterHeading", 'css' ),
             'There is link to customer information center search modal dialog.',
         );
 
-        # test links in Company Status widget
+        # Test links in Company Status widget.
         for my $TestLinks ( sort keys %TicketData ) {
 
-            # click on link
+            # Click on link.
             $Selenium->find_element(
                 "//a[contains(\@href, \'Subaction=Search;StateType=$TicketData{$TestLinks}->{TicketLink};CustomerIDRaw=$TestCustomerUserLogin' )]"
             )->VerifiedClick();
 
-            # wait until page has loaded, if necessary
-            $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("body").length' );
+            # Wait until page has loaded, if necessary.
+            $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("body").length;' );
 
-            # check for test ticket numbers on search screen
+            # Check for test ticket numbers on search screen.
             for my $CheckTicketNumbers ( @{ $TicketData{$TestLinks}->{TicketNumbers} } ) {
                 $Self->True(
                     index( $Selenium->get_page_source(), $CheckTicketNumbers ) > -1,
@@ -231,18 +239,18 @@ $Selenium->RunTest(
                 );
             }
 
-            # click on 'Change search option'
+            # Click on 'Change search option'.
             $Selenium->find_element(
                 "//a[contains(\@href, \'AgentTicketSearch;Subaction=LoadProfile' )]"
-            )->VerifiedClick();
+            )->click();
 
-            # wait until search dialog has been loaded
-            $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#SearchFormSubmit").length' );
+            # Wait until search dialog has been loaded.
+            $Selenium->WaitFor( JavaScript => 'return $("#SearchFormSubmit").length;' );
 
-            # verify state search attributes are shown in search screen, see bug #10853
+            # Verify state search attributes are shown in search screen, see bug #10853.
             $Selenium->find_element( "#StateIDs", 'css' );
 
-            # open CIC again for the next test case
+            # Open CIC again for the next test case.
             $Selenium->VerifiedGet(
                 "${ScriptAlias}index.pl?Action=AgentCustomerInformationCenter;CustomerID=$TestCustomerUserLogin"
             );
@@ -264,11 +272,9 @@ $Selenium->RunTest(
         $Selenium->find_element( "#ToCustomer", 'css' )->send_keys( $CustomerUserIDs[0] );
 
         # Click on wanted element in dropdown menu.
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length' );
-        $Selenium->find_element("//*[text()='$CustomerUserIDs[0]']")->VerifiedClick();
-
-        # Error is expected.
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".Dialog.Modal").length' );
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length;' );
+        $Selenium->execute_script("\$('li.ui-menu-item:contains($CustomerUserIDs[0])').click();");
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".Dialog.Modal").length;' );
 
         $Self->Is(
             $Selenium->execute_script('return $(".Dialog.Modal .Header h1").text().trim();'),
@@ -277,7 +283,8 @@ $Selenium->RunTest(
         );
 
         # Close error message.
-        $Selenium->find_element( "#DialogButton1", 'css' )->VerifiedClick();
+        $Selenium->find_element( "#DialogButton1", 'css' )->click();
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".Dialog.Modal").length;' );
 
         # Go to previous.
         $Selenium->VerifiedGet(
@@ -298,11 +305,11 @@ $Selenium->RunTest(
         # Select input field and type inside.
         $Selenium->find_element( "#FromCustomer", 'css' )->send_keys( $CustomerUserIDs[0] );
 
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length' );
-        $Selenium->find_element("//*[text()='$CustomerUserIDs[0]']")->VerifiedClick();
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length;' );
+        $Selenium->execute_script("\$('li.ui-menu-item:contains($CustomerUserIDs[0])').click();");
 
         # Error is expected.
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".Dialog.Modal").length' );
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".Dialog.Modal").length;' );
 
         $Self->Is(
             $Selenium->execute_script('return $(".Dialog.Modal .Header h1").text().trim();'),
@@ -310,7 +317,7 @@ $Selenium->RunTest(
             "Warning dialog for entry duplication is found",
         );
 
-        # delete created test tickets
+        # Delete created test tickets.
         for my $TicketState ( sort keys %TicketData ) {
             for my $TicketID ( @{ $TicketData{$TicketState}->{TicketIDs} } ) {
 
@@ -319,6 +326,14 @@ $Selenium->RunTest(
                     UserID   => $TestUserID,
                 );
 
+                # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+                if ( !$Success ) {
+                    sleep 3;
+                    $Success = $TicketObject->TicketDelete(
+                        TicketID => $TicketID,
+                        UserID   => $TestUserID,
+                    );
+                }
                 $Self->True(
                     $Success,
                     "Delete ticket - $TicketID"
@@ -326,7 +341,7 @@ $Selenium->RunTest(
             }
         }
 
-        # delete created test customer user and customer company
+        # Delete created test customer user and customer company.
         my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
         for my $CustomerID (@CustomerUserIDs) {
             my $Success = $DBObject->Do(
@@ -348,7 +363,7 @@ $Selenium->RunTest(
             "Deleted CustomerUser - $CustomerID",
         );
 
-        # make sure cache is correct
+        # Make sure cache is correct.
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'Ticket' );
     }
 );

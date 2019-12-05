@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminSystemConfigurationGroup;
@@ -33,6 +33,7 @@ sub Run {
     my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
     my $ParamObject     = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
+    my $ConfigLevel     = $Kernel::OM->Get('Kernel::Config')->Get('ConfigLevel') || 0;
 
     if ( $Self->{Subaction} eq 'Lock' ) {
 
@@ -42,7 +43,9 @@ sub Run {
         my $SettingName = $ParamObject->GetParam( Param => 'SettingName' ) || '';
 
         my %Setting = $SysConfigObject->SettingGet(
-            Name => $SettingName,
+            Name            => $SettingName,
+            OverriddenInXML => 1,
+            UserID          => $Self->{UserID},
         );
 
         my %Result;
@@ -55,11 +58,19 @@ sub Run {
 
         my $Guid;
         if ( !$LockStatus{Locked} ) {
-            $Guid = $SysConfigObject->SettingLock(
-                UserID    => $Self->{UserID},
-                DefaultID => $Setting{DefaultID},
-            );
-
+            if ( $Setting{IsValid} ) {
+                $Guid = $SysConfigObject->SettingLock(
+                    UserID    => $Self->{UserID},
+                    DefaultID => $Setting{DefaultID},
+                );
+            }
+            else {
+                # Setting can't be locked if it's disabled.
+                $Result{Error} = $Kernel::OM->Get('Kernel::Language')->Translate(
+                    "You need to enable the setting before locking!"
+                );
+                return $Self->_ReturnJSON( Response => \%Result );
+            }
             $Setting{Locked} = $Guid ? 2 : 0;
         }
         elsif ( $LockStatus{Locked} == 1 ) {
@@ -109,7 +120,9 @@ sub Run {
         my %Result;
 
         my %Setting = $SysConfigObject->SettingGet(
-            Name => $SettingName,
+            Name            => $SettingName,
+            OverriddenInXML => 1,
+            UserID          => $Self->{UserID},
         );
 
         my %LockStatus = $SysConfigObject->SettingLockCheck(
@@ -238,7 +251,7 @@ sub Run {
         }
 
         if (
-            grep { $_ eq 'reset-locally' } @Options
+            ( grep { $_ eq 'reset-locally' } @Options )
             && $SysConfigObject->can('UserSettingValueDelete')    # OTRS Business Solution™
             )
         {
@@ -260,7 +273,9 @@ sub Run {
         }
 
         %Setting = $SysConfigObject->SettingGet(
-            Name => $SettingName,
+            Name            => $SettingName,
+            OverriddenInXML => 1,
+            UserID          => $Self->{UserID},
         );
 
         # Send only useful setting attributes to reduce amount of data transfered in the AJAX call.
@@ -324,28 +339,27 @@ sub Run {
         my %Result;
 
         # Get setting
-        my %DefaultSetting = $SysConfigObject->SettingGet(
-            Name    => $SettingName,
-            Default => 1,
+        my %Setting = $SysConfigObject->SettingGet(
+            Name => $SettingName,
         );
 
         # try to lock to the current user
         if (
-            !$DefaultSetting{ExclusiveLockUserID}
+            !$Setting{ExclusiveLockUserID}
             ||
             (
-                $DefaultSetting{ExclusiveLockUserID} &&
-                $DefaultSetting{ExclusiveLockUserID} != $Self->{UserID}
+                $Setting{ExclusiveLockUserID} &&
+                $Setting{ExclusiveLockUserID} != $Self->{UserID}
             )
             )
         {
             my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
-                DefaultID => $DefaultSetting{DefaultID},
+                DefaultID => $Setting{DefaultID},
                 UserID    => $Self->{UserID},
             );
 
             if ($ExclusiveLockGUID) {
-                $DefaultSetting{ExclusiveLockGUID} = $ExclusiveLockGUID;
+                $Setting{ExclusiveLockGUID} = $ExclusiveLockGUID;
             }
             else {
                 $Result{Data}->{Error} = $Kernel::OM->Get('Kernel::Language')->Translate(
@@ -355,14 +369,19 @@ sub Run {
             }
         }
 
+        # Detect if IsValid state is different (user pressed enable or disable).
+        my $NoValidation = $IsValid // $Setting{IsValid};
+        $NoValidation = $NoValidation != $Setting{IsValid};
+
         # Try to Update.
         my %UpdateResult = $SysConfigObject->SettingUpdate(
             Name                   => $SettingName,
             EffectiveValue         => $EffectiveValue,
-            ExclusiveLockGUID      => $DefaultSetting{ExclusiveLockGUID},
+            ExclusiveLockGUID      => $Setting{ExclusiveLockGUID},
             UserID                 => $Self->{UserID},
-            IsValid                => $IsValid // undef,
-            UserModificationActive => $UserModificationActive // undef,
+            IsValid                => $IsValid // $Setting{IsValid},
+            UserModificationActive => $UserModificationActive,
+            NoValidation           => $NoValidation,
         );
 
         if ( !$UpdateResult{Success} && !$UpdateResult{Error} ) {
@@ -374,8 +393,8 @@ sub Run {
             $Result{Data}->{Error} = $UpdateResult{Error};
 
             my %LockStatus = $SysConfigObject->SettingLockCheck(
-                DefaultID           => $DefaultSetting{DefaultID},
-                ExclusiveLockGUID   => $DefaultSetting{ExclusiveLockGUID},
+                DefaultID           => $Setting{DefaultID},
+                ExclusiveLockGUID   => $Setting{ExclusiveLockGUID},
                 ExclusiveLockUserID => $Self->{UserID},
             );
 
@@ -384,7 +403,9 @@ sub Run {
         }
 
         my %UpdatedSetting = $SysConfigObject->SettingGet(
-            Name => $SettingName,
+            Name            => $SettingName,
+            OverriddenInXML => 1,
+            UserID          => $Self->{UserID},
         );
 
         $Result{Data}->{HTMLStrg} = $SysConfigObject->SettingRender(
@@ -417,9 +438,11 @@ sub Run {
 
         # Get all settings by navigation group
         my @SettingList = $SysConfigObject->ConfigurationListGet(
-            Navigation => $RootNavigation,
-            Translate  => 0,
-            Category   => $Category,
+            Navigation      => $RootNavigation,
+            Translate       => 0,
+            Category        => $Category,
+            OverriddenInXML => 1,
+            UserID          => $Self->{UserID},
         );
 
         # get favorites from user preferences
@@ -469,6 +492,7 @@ sub Run {
             Data         => {
                 SettingList             => \@SettingList,
                 OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
+                ConfigLevel             => $ConfigLevel
             },
         );
 
@@ -610,7 +634,9 @@ sub Run {
         for my $Setting (@UpdatedSettingsList) {
 
             my %UpdatedSetting = $SysConfigObject->SettingGet(
-                Name => $Setting->{SettingName},
+                Name            => $Setting->{SettingName},
+                OverriddenInXML => 1,
+                UserID          => $Self->{UserID},
             );
 
             my %Item;
@@ -656,9 +682,11 @@ sub Run {
 
     # Get all settings by navigation group
     my @SettingList = $SysConfigObject->ConfigurationListGet(
-        Navigation => $RootNavigation,
-        Translate  => 0,
-        Category   => $Category,
+        Navigation      => $RootNavigation,
+        Translate       => 0,
+        Category        => $Category,
+        OverriddenInXML => 1,
+        UserID          => $Self->{UserID},
     );
 
     # get favorites from user preferences
@@ -711,6 +739,7 @@ sub Run {
             CategoriesStrg          => $Self->_GetCategoriesStrg(),
             InvalidSettings         => $Self->_CheckInvalidSettings(),
             OTRSBusinessIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled(),
+            ConfigLevel             => $ConfigLevel,
         },
     );
     $Output .= $LayoutObject->Footer();
@@ -738,7 +767,7 @@ sub _GetCategoriesStrg {
         SelectedID   => $Category || 'All',
         PossibleNone => 0,
         Translation  => 1,
-        Sort         => 'AlfaNumericKey',
+        Sort         => 'AlphaNumericKey',
         Class        => 'Modernize',
         Title        => $Kernel::OM->Get('Kernel::Language')->Translate('Category Search'),
     );

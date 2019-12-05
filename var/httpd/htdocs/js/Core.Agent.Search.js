@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 "use strict";
@@ -113,12 +113,13 @@ Core.Agent.Search = (function (TargetNS) {
      * @memberof Core.Agent.Search
      * @function
      * @param {String} Profile - The profile name that will be delete.
+     * @param {String} SearchProfileAction - The action of search profile delete module.
      * @description
      *      Delete a profile via an ajax requests.
      */
-    function SearchProfileDelete(Profile) {
+    function SearchProfileDelete(Profile, SearchProfileAction) {
         var Data = {
-            Action: 'AgentTicketSearch',
+            Action: SearchProfileAction,
             Subaction: 'AJAXProfileDelete',
             Profile: Profile
         };
@@ -210,10 +211,17 @@ Core.Agent.Search = (function (TargetNS) {
 
     function AJAXStopWordCheck(SearchStrings, CallbackStopWordsFound, CallbackNoStopWordsFound) {
         var StopWordCheckData = {
-            Action: 'AgentTicketSearch',
-            Subaction: 'AJAXStopWordCheck',
-            SearchStrings: SearchStrings
-        };
+                Action: 'AgentTicketSearch',
+                Subaction: 'AJAXStopWordCheck',
+                SearchStrings: SearchStrings
+            },
+            MIMEBaseElements = {
+                'MIMEBase_From': 1,
+                'MIMEBase_To': 1,
+                'MIMEBase_Cc': 1,
+                'MIMEBase_Subject': 1,
+                'MIMEBase_Body': 1
+            };
 
         // Prevent multiple stop word checks
         if (AJAXStopWordCheckRunning) {
@@ -237,6 +245,11 @@ Core.Agent.Search = (function (TargetNS) {
 
                     if (!TranslatedKey) {
                         TranslatedKey = Key;
+                    }
+
+                    // Substring 'MIMEBase_' for clearer alert description.
+                    if (MIMEBaseElements[TranslatedKey]) {
+                        TranslatedKey = TranslatedKey.replace('MIMEBase_', '');
                     }
 
                     FoundStopWords += TranslatedKey + ': ' + StopWords.join(', ') + "\n";
@@ -269,11 +282,11 @@ Core.Agent.Search = (function (TargetNS) {
         var SearchStrings = {},
             SearchStringsFound = 0,
             RelevantElementNames = {
-                'From': 1,
-                'To': 1,
-                'Cc': 1,
-                'Subject': 1,
-                'Body': 1,
+                'MIMEBase_From': 1,
+                'MIMEBase_To': 1,
+                'MIMEBase_Cc': 1,
+                'MIMEBase_Subject': 1,
+                'MIMEBase_Body': 1,
                 'Fulltext': 1
             };
 
@@ -362,7 +375,16 @@ Core.Agent.Search = (function (TargetNS) {
                     return;
                 }
 
-                Core.UI.Dialog.ShowContentDialog(HTML, Core.Language.Translate('Search'), '10px', 'Center', true, undefined, true);
+                Core.UI.Dialog.ShowDialog({
+                    HTML: HTML,
+                    Title: Core.Language.Translate('Search'),
+                    Modal: true,
+                    CloseOnClickOutside: false,
+                    CloseOnEscape: true,
+                    PositionTop: '10px',
+                    PositionLeft: 'Center',
+                    AllowAutoGrow: true
+                });
 
                 // hide add template block
                 $('#SearchProfileAddBlock').hide();
@@ -464,7 +486,12 @@ Core.Agent.Search = (function (TargetNS) {
                 Core.Form.Validate.Init();
                 Core.Form.Validate.SetSubmitFunction($('#SearchForm'), function (Form) {
                     Form.submit();
-                    ShowWaitingDialog();
+
+                    // Show only a waiting dialog for Normal results mode, because this result
+                    //  will return the HTML in the same window.
+                    if ($('#SearchForm #ResultForm').val() === 'Normal') {
+                        ShowWaitingDialog();
+                    }
                 });
 
                 // load profile
@@ -535,6 +562,7 @@ Core.Agent.Search = (function (TargetNS) {
 
                 // delete profile
                 $('#SearchProfileDelete').on('click', function (Event) {
+                    var SearchProfileAction = $('#SearchAction').val();
 
                     // strip all already used attributes
                     $('#SearchProfile').find('option:selected').each(function () {
@@ -544,7 +572,7 @@ Core.Agent.Search = (function (TargetNS) {
                             $('#SearchInsert').text('');
 
                             // remove remote
-                            SearchProfileDelete($(this).val());
+                            SearchProfileDelete($(this).val(), SearchProfileAction);
 
                             // remove local
                             $(this).remove();

@@ -1,12 +1,18 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
-[% SET OTRSBusinessLabel = '<strong>OTRS Business Solution</strong>™' %]
+[% IF Data.OTRSSTORMIsInstalled %]
+    [% SET OTRSBusinessLabel = '<strong>STORM powered by OTRS</strong>™' %]
+[% ELSIF Data.OTRSCONTROLIsInstalled %]
+    [% SET OTRSBusinessLabel = '<strong>CONTROL powered by OTRS</strong>™' %]
+[% ELSE %]
+    [% SET OTRSBusinessLabel = '<strong>OTRS Business Solution</strong>™' %]
+[% END %]
 
 [% RenderBlockStart("Overview") %]
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
@@ -74,7 +80,7 @@
                     </li>
 [% RenderBlockEnd("ActionDeregister") %]
                     <li>
-                        <a href="https://portal.otrs.com/otrs/customer.pl?Action=CustomerOTRSSystems" target="_blank" class="CallForAction Fullsize Center">
+                        <a href="https://portal.otrs.com/external/otrssystems/overview" target="_blank" class="CallForAction Fullsize Center">
                             <span><i class="fa fa-external-link"></i> [% Translate("Overview of registered systems") | html %]</span>
                         </a>
                     </li>
@@ -141,7 +147,7 @@
             </div>
             <div class="Content">
                 <p>
-                    [% Translate("Please note that you can't deregister your system if you're using the %s or having a valid service contract.", OTRSBusinessLabel) %]
+                    [% Translate("Please note that you can't deregister your system if you're using the %s or having a valid service contract.") | html | ReplacePlaceholders(OTRSBusinessLabel) %]
                 </p>
             </div>
             <div class="Clear"></div>
@@ -354,13 +360,13 @@
                             </div>
                             <p class="FieldExplanation">
                                         [% Translate("You don't have an OTRS-ID yet?") | html %]
-                                <a href="https://portal.otrs.com/otrs/customer.pl#Signup" target="_blank">
+                                <a href="https://portal.otrs.com/" target="_blank">
                                             [% Translate("Sign up now") | html %]
                                 </a>
                             </p>
                             <p class="FieldExplanation">
                                         [% Translate("Forgot your password?") | html %]
-                                <a href="https://portal.otrs.com/otrs/customer.pl#Reset" target="_blank">
+                                <a href="https://portal.otrs.com/" target="_blank">
                                             [% Translate("Retrieve a new one") | html %]
                                 </a>
                             </p>

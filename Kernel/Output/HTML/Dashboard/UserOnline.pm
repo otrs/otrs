@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::Dashboard::UserOnline;
@@ -31,7 +31,7 @@ sub new {
     my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     # get current filter
-    my $Name = $ParamObject->GetParam( Param => 'Name' ) || '';
+    my $Name           = $ParamObject->GetParam( Param => 'Name' ) || '';
     my $PreferencesKey = 'UserDashboardUserOnlineFilter' . $Self->{Name};
     if ( $Self->{Name} eq $Name ) {
         $Self->{Filter} = $ParamObject->GetParam( Param => 'Filter' ) || '';
@@ -187,6 +187,9 @@ sub Run {
         # Check the last request / idle time, only if the user is not already shown.
         if ( !$Online->{User}->{ $Data{UserType} }->{ $Data{UserID} } ) {
             next SESSIONID if $Data{UserLastRequest} + $SessionMaxIdleTime < $SystemTime;
+
+            # Count only unique agents and customers, please see bug#13429 for more information.
+            $Online->{UserCount}->{ $Data{UserType} }++;
         }
 
         # Remember the user data, if the user not already exists in the online list or the last request time is newer.
@@ -195,9 +198,7 @@ sub Run {
             || $Online->{UserData}->{ $Data{UserType} }->{ $Data{UserID} }->{UserLastRequest} < $Data{UserLastRequest}
             )
         {
-
-            $Online->{User}->{ $Data{UserType} }->{ $Data{UserID} } = $Data{$SortBy};
-            $Online->{UserCount}->{ $Data{UserType} }++;
+            $Online->{User}->{ $Data{UserType} }->{ $Data{UserID} }     = $Data{$SortBy};
             $Online->{UserData}->{ $Data{UserType} }->{ $Data{UserID} } = { %Data, %AgentData };
         }
     }

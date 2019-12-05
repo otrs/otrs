@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -14,16 +14,14 @@ use vars (qw($Self));
 
 use Kernel::Language;
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get helper object
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-        # create test user and login
+        # Create test user and login.
         my $Language      = 'de';
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups   => ['admin'],
@@ -36,26 +34,24 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        # get language object
         my $LanguageObject = Kernel::Language->new(
             UserLanguage => $Language,
         );
 
-        # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # navigate to AdminRole screen
+        # Navigate to AdminRole screen.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminRole");
 
-        # check breadcrumb on Overview screen
+        # Check breadcrumb on Overview screen.
         $Self->True(
             $Selenium->find_element( '.BreadCrumb', 'css' ),
             "Breadcrumb is found on Overview screen.",
         );
 
-        # check roles overview screen,
+        # Check roles overview screen,
         # if there are roles, check is there table on screen
-        # otherwise check is there a message that no roles are defined
+        # otherwise check is there a message that no roles are defined.
         my %RoleList = $Kernel::OM->Get('Kernel::System::Group')->RoleList();
         if (%RoleList) {
             $Selenium->find_element( "table",             'css' );
@@ -68,26 +64,26 @@ $Selenium->RunTest(
                     $Selenium->get_page_source(),
                     $LanguageObject->Translate(
                         "There are no roles defined. Please use the 'Add' button to create a new role."
-                        )
-                    ) > -1,
+                    )
+                ) > -1,
                 "There are no roles defined.",
             );
         }
 
-        # click 'add new role' linK
+        # Click 'add new role' link.
         $Selenium->find_element("//a[contains(\@href, \'Action=AdminRole;Subaction=Add' )]")->VerifiedClick();
 
-        # check add page
+        # Check add page.
         my $Element = $Selenium->find_element( "#Name", 'css' );
         $Element->is_displayed();
         $Element->is_enabled();
         $Selenium->find_element( "#Comment", 'css' );
         $Selenium->find_element( "#ValidID", 'css' );
 
-        # define translated strings
+        # Define translated strings.
         my $RoleManagement = $LanguageObject->Translate('Role Management');
 
-        # check breadcrumb on Add screen
+        # Check breadcrumb on Add screen.
         my $Count = 1;
         for my $BreadcrumbText (
             $RoleManagement,
@@ -103,9 +99,13 @@ $Selenium->RunTest(
             $Count++;
         }
 
-        # check client side validation
+        # Check client side validation.
         $Selenium->find_element( "#Name", 'css' )->clear();
-        $Selenium->find_element( "#Name", 'css' )->VerifiedSubmit();
+        $Selenium->find_element("//button[\@type='submit']")->click();
+        $Selenium->WaitFor(
+            JavaScript => "return \$('#Name.Error').length"
+        );
+
         $Self->Is(
             $Selenium->execute_script(
                 "return \$('#Name').hasClass('Error')"
@@ -114,12 +114,15 @@ $Selenium->RunTest(
             'Client side validation correctly detected missing input value',
         );
 
-        # create a real test role
+        # Create a real test role.
         my $RandomID = 'TestRole' . $Helper->GetRandomID();
         $Selenium->find_element( "#Name", 'css' )->send_keys($RandomID);
-        $Selenium->execute_script("\$('#ValidID').val('1').trigger('redraw.InputField').trigger('change');");
+        $Selenium->InputFieldValueSet(
+            Element => '#ValidID',
+            Value   => 1,
+        );
         $Selenium->find_element( "#Comment", 'css' )->send_keys('Selenium test role');
-        $Selenium->find_element( "#Name",    'css' )->VerifiedSubmit();
+        $Selenium->find_element("//button[\@type='submit']")->VerifiedClick();
 
         $Self->True(
             index( $Selenium->get_page_source(), $RandomID ) > -1,
@@ -129,17 +132,17 @@ $Selenium->RunTest(
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
 
-        #check is there notification 'Role added!' after role is added
+        # Check is there notification 'Role added!' after role is added.
         my $Notification = $LanguageObject->Translate('Role added!');
         $Self->True(
             $Selenium->execute_script("return \$('.MessageBox.Notice p:contains($Notification)').length"),
             "$Notification - notification is found."
         );
 
-        # go to new role again
+        # Go to new role again.
         $Selenium->find_element( $RandomID, 'link_text' )->VerifiedClick();
 
-        # check new role values
+        # Check new role values.
         $Self->Is(
             $Selenium->find_element( '#Name', 'css' )->get_value(),
             $RandomID,
@@ -156,7 +159,7 @@ $Selenium->RunTest(
             "#Comment stored value",
         );
 
-        # check breadcrumb on Edit screen
+        # Check breadcrumb on Edit screen.
         $Count = 1;
         for my $BreadcrumbText (
             $RoleManagement,
@@ -172,25 +175,28 @@ $Selenium->RunTest(
             $Count++;
         }
 
-        # set test role to invalid
-        $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
+        # Set test role to invalid.
+        $Selenium->InputFieldValueSet(
+            Element => '#ValidID',
+            Value   => 2,
+        );
         $Selenium->find_element( "#Comment", 'css' )->clear();
-        $Selenium->find_element( "#Name",    'css' )->VerifiedSubmit();
+        $Selenium->find_element("//button[\@type='submit']")->VerifiedClick();
 
-        # check overview page
+        # Check overview page.
         $Self->True(
             index( $Selenium->get_page_source(), $RandomID ) > -1,
             "$RandomID found on page",
         );
 
-        #check is there notification 'Role updated!' after role is updated
+        # Check is there notification 'Role updated!' after role is updated.
         $Notification = $LanguageObject->Translate('Role updated!');
         $Self->True(
             $Selenium->execute_script("return \$('.MessageBox.Notice p:contains($Notification)').length"),
             "$Notification - notification is found."
         );
 
-        # chack class of invalid Role in the overview table
+        # Check class of invalid Role in the overview table.
         $Self->True(
             $Selenium->execute_script(
                 "return \$('tr.Invalid td a:contains($RandomID)').length"
@@ -202,10 +208,10 @@ $Selenium->RunTest(
         $Selenium->find_element( "table thead tr th", 'css' );
         $Selenium->find_element( "table tbody tr td", 'css' );
 
-        # go to new role again
+        # Go to new role again.
         $Selenium->find_element( $RandomID, 'link_text' )->VerifiedClick();
 
-        # check new role values
+        # Check new role values.
         $Self->Is(
             $Selenium->find_element( '#Name', 'css' )->get_value(),
             $RandomID,
@@ -222,8 +228,8 @@ $Selenium->RunTest(
             "#Comment updated value",
         );
 
-        # since there are no tickets that rely on our test roles, we can remove them again
-        # from the DB
+        # Since there are no tickets that rely on our test roles, we can remove them again
+        # from the DB.
         if ($RandomID) {
             my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
             $RandomID = $DBObject->Quote($RandomID);
@@ -237,7 +243,7 @@ $Selenium->RunTest(
             );
         }
 
-        # make sure the cache is correct
+        # Make sure the cache is correct.
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
             Type => 'Group',
         );

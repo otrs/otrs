@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::CustomerTicketProcess;
@@ -175,7 +175,7 @@ sub Run {
     # fetch also FadeAway processes to continue working with existing tickets, but not to start new
     #    ones
     if ( !$Self->{IsMainWindow} && $Self->{Subaction} ) {
-        push @ProcessStates, 'FadeAway'
+        push @ProcessStates, 'FadeAway';
     }
 
     # get process object
@@ -2064,6 +2064,27 @@ sub _RenderArticle {
         };
     }
 
+    # get all attachments meta data
+    my @Attachments = $Kernel::OM->Get('Kernel::System::Web::UploadCache')->FormIDGetAllFilesMeta(
+        FormID => $Self->{FormID},
+    );
+
+    # show attachments
+    ATTACHMENT:
+    for my $Attachment (@Attachments) {
+        if (
+            $Attachment->{ContentID}
+            && $LayoutObject->{BrowserRichText}
+            && ( $Attachment->{ContentType} =~ /image/i )
+            && ( $Attachment->{Disposition} eq 'inline' )
+            )
+        {
+            next ATTACHMENT;
+        }
+
+        push @{ $Param{AttachmentList} }, $Attachment;
+    }
+
     my %Data = (
         Name             => 'Article',
         MandatoryClass   => '',
@@ -2074,6 +2095,7 @@ sub _RenderArticle {
             || $LayoutObject->{LanguageObject}->Translate("Subject"),
         LabelBody => $Param{ActivityDialogField}->{Config}->{LabelBody}
             || $LayoutObject->{LanguageObject}->Translate("Text"),
+        AttachmentList => $Param{AttachmentList},
     );
 
     # If field is required put in the necessary variables for
@@ -2167,29 +2189,6 @@ sub _RenderArticle {
         $LayoutObject->Block(
             Name => 'rw:Article:InformAgent',
             Data => \%Param,
-        );
-    }
-
-    # get all attachments meta data
-    my @Attachments = $Kernel::OM->Get('Kernel::System::Web::UploadCache')->FormIDGetAllFilesMeta(
-        FormID => $Self->{FormID},
-    );
-
-    # show attachments
-    ATTACHMENT:
-    for my $Attachment (@Attachments) {
-        if (
-            $Attachment->{ContentID}
-            && $LayoutObject->{BrowserRichText}
-            && ( $Attachment->{ContentType} =~ /image/i )
-            && ( $Attachment->{Disposition} eq 'inline' )
-            )
-        {
-            next ATTACHMENT;
-        }
-        $LayoutObject->Block(
-            Name => 'Attachment',
-            Data => $Attachment,
         );
     }
 
@@ -3329,7 +3328,7 @@ sub _StoreActivityDialog {
                 }
 
                 if ( $ValidationResult->{ServerError} ) {
-                    $Error{ $DynamicFieldConfig->{Name} } = 1;
+                    $Error{ $DynamicFieldConfig->{Name} }        = 1;
                     $ErrorMessage{ $DynamicFieldConfig->{Name} } = $ValidationResult->{ErrorMessage} || '';
                 }
 
@@ -3385,7 +3384,7 @@ sub _StoreActivityDialog {
                 %{ $ActivityDialog->{Fields}->{$CurrentField} },
             );
 
-            if ( !$Result && $ActivityDialog->{Fields}->{$CurrentField}->{Display} == 2 ) {
+            if ( !$Result ) {
 
                 # special case for Article (Subject & Body)
                 if ( $CurrentField eq 'Article' ) {
@@ -3399,11 +3398,11 @@ sub _StoreActivityDialog {
                 }
 
                 # all other fields
-                else {
+                elsif ( $ActivityDialog->{Fields}->{$CurrentField}->{Display} == 2 ) {
                     $Error{ $Self->{NameToID}->{$CurrentField} } = 1;
                 }
             }
-            elsif ($Result) {
+            else {
                 $TicketParam{ $Self->{NameToID}->{$CurrentField} } = $Result;
             }
             $CheckedFields{ $Self->{NameToID}->{$CurrentField} } = 1;
@@ -3696,7 +3695,7 @@ sub _StoreActivityDialog {
         }
 
         if ( $CurrentField =~ m{^DynamicField_(.*)}xms ) {
-            my $DynamicFieldName = $1;
+            my $DynamicFieldName   = $1;
             my $DynamicFieldConfig = ( grep { $_->{Name} eq $DynamicFieldName } @{$DynamicField} )[0];
 
             if ( !IsHashRefWithData($DynamicFieldConfig) ) {
@@ -4009,9 +4008,9 @@ sub _DisplayProcessList {
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     $Param{ProcessList} = $LayoutObject->BuildSelection(
-        Class => 'Modernize Validate_Required' . ( $Param{Errors}->{ProcessEntityIDInvalid} || ' ' ),
-        Data  => $Param{ProcessList},
-        Name  => 'ProcessEntityID',
+        Class        => 'Modernize Validate_Required' . ( $Param{Errors}->{ProcessEntityIDInvalid} || ' ' ),
+        Data         => $Param{ProcessList},
+        Name         => 'ProcessEntityID',
         SelectedID   => $Param{ProcessEntityID},
         PossibleNone => 1,
         Sort         => 'AlphanumericValue',
@@ -4183,6 +4182,17 @@ sub _CheckField {
 
             # in case of article fields we need to fake a value
             $Value = 1;
+
+            my ( $Body, $Subject, $AttachmentExists ) = (
+                $ParamObject->GetParam( Param => 'Body' ),
+                $ParamObject->GetParam( Param => 'Subject' ),
+                $ParamObject->GetParam( Param => 'AttachmentExists' )
+            );
+
+            # If attachment exists and body and subject not, it is error (see bug#13081).
+            if ( $AttachmentExists && ( !$Body && !$Subject ) ) {
+                $Value = 0;
+            }
         }
         else {
 

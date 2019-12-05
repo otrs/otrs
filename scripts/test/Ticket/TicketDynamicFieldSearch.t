@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -138,7 +138,7 @@ for ( 1 .. 2 ) {
     push @TicketData, {
         TicketID     => $TicketID,
         TicketNumber => $Ticket{TicketNumber},
-        }
+    };
 }
 
 # Run initial tests for Empty before assigning values
@@ -836,7 +836,7 @@ $Self->IsDeeply(
 $Self->IsDeeply(
     \@TicketResultSearch,
     [ $TicketData[1]{TicketID}, $TicketData[0]{TicketID}, ],
-    'Search for one value, match two ticket',
+    'Search for one value, match two tickets',
 );
 
 @TicketResultSearch = $TicketObject->TicketSearch(
@@ -892,6 +892,27 @@ $Self->IsDeeply(
     $Result,
     undef,
     'Searching for a non-existing dynamic field is an error',
+);
+
+# Check that values that only look like a DF search query but are none, are accepted
+@TicketResultSearch = $TicketObject->TicketSearch(
+    Result                       => 'ARRAY',
+    Limit                        => 100,
+    Title                        => "Ticket$RandomID",
+    "DynamicField_DFT5$RandomID" => {
+        Like => 'ticket1_field5',
+    },
+    "DynamicField_DFT5_NOSUCHTHING_$RandomID" => 'some_statistic_param',
+    UserID                                    => 1,
+    Permission                                => 'rw',
+    SortBy                                    => "DynamicField_DFT1$RandomID",
+    OrderBy                                   => 'Down',
+);
+
+$Self->IsDeeply(
+    \@TicketResultSearch,
+    [ $TicketData[1]{TicketID}, $TicketData[0]{TicketID}, ],
+    'Searching allows custom unknown fields to be present',
 );
 
 # cleanup is done by RestoreDatabase.

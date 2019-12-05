@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Console::Command::Dev::Tools::CacheBenchmark;
@@ -24,7 +24,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Runs a benchmark over the available cache backends.');
+    $Self->Description('Run a benchmark over the available cache backends.');
 
     return;
 }
@@ -90,8 +90,8 @@ sub Run {
         my $Content1kB = '.' x 1024;
         for ( my $i = 0; $i < 100000; $i++ ) {
             $Result = $CacheObject->Set(
-                Type => 'CacheTestInitContent' . $SID . ( $i % 10 ),
-                Key => 'Test' . $i,
+                Type  => 'CacheTestInitContent' . $SID . ( $i % 10 ),
+                Key   => 'Test' . $i,
                 Value => $Content1kB,
                 TTL   => 60 * 24 * 60 * 60,
             );
@@ -114,8 +114,8 @@ sub Run {
             $SetOK = 0;
             for ( my $i = 0; $i < $OpCount; $i++ ) {
                 $Result = $CacheObject->Set(
-                    Type => 'CacheTest' . $SID . ( $i % 10 ),
-                    Key => 'Test' . $i,
+                    Type  => 'CacheTest' . $SID . ( $i % 10 ),
+                    Key   => 'Test' . $i,
                     Value => $Content,
                     TTL   => 60 * 24,
                 );
@@ -127,7 +127,7 @@ sub Run {
                 for ( my $i = 0; $i < $OpCount; $i++ ) {
                     $Result = $CacheObject->Get(
                         Type => 'CacheTest' . $SID . ( $i % 10 ),
-                        Key => 'Test' . $i,
+                        Key  => 'Test' . $i,
                     );
 
                     $GetOK++ if ( $Result && ( $Result eq $Content ) );
@@ -138,7 +138,7 @@ sub Run {
             for ( my $i = 0; $i < $OpCount; $i++ ) {
                 $Result = $CacheObject->Delete(
                     Type => 'CacheTest' . $SID . ( $i % 10 ),
-                    Key => 'Test' . $i,
+                    Key  => 'Test' . $i,
                 );
                 $DelOK++ if $Result;
             }

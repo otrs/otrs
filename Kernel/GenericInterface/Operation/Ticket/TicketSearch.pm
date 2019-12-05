@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::GenericInterface::Operation::Ticket::TicketSearch;
@@ -133,36 +133,23 @@ perform TicketSearch Operation. This will return a Ticket ID list.
         #   At least one operator must be specified. Operators will be connected with AND,
         #       values in an operator with OR.
         #   You can also pass more than one argument to an operator: ['value1', 'value2']
-        DynamicField => [                                                  # optional
-            {
-                Name   => 'some name',
-                Empty             => 1,                       # will return dynamic fields without a value
-                                                                  # set to 0 to search fields with a value present
-                Equals            => 123,
-                Like              => 'value*',                # "equals" operator with wildcard support
-                GreaterThan       => '2001-01-01 01:01:01',
-                GreaterThanEquals => '2001-01-01 01:01:01',
-                SmallerThan       => '2002-02-02 02:02:02',
-                SmallerThanEquals => '2002-02-02 02:02:02',
-            },
-            # ...
-        ],
-        # or
-        # DynamicField => {
-        #    Name   => 'some name',
-        #    # ...
-        #    Equals => 123,
-        #    # ...
-        #},
-
-
+        DynamicField_FieldNameX => {
+            Empty             => 1,                       # will return dynamic fields without a value
+                                                          #     set to 0 to search fields with a value present.
+            Equals            => 123,
+            Like              => 'value*',                # "equals" operator with wildcard support
+            GreaterThan       => '2001-01-01 01:01:01',
+            GreaterThanEquals => '2001-01-01 01:01:01',
+            SmallerThan       => '2002-02-02 02:02:02',
+            SmallerThanEquals => '2002-02-02 02:02:02',
+        },
 
         # article stuff (optional)
-        From    => '%spam@example.com%',
-        To      => '%service@example.com%',
-        Cc      => '%client@example.com%',
-        Subject => '%VIRUS 32%',
-        Body    => '%VIRUS 32%',
+        MIMEBase_From    => '%spam@example.com%',
+        MIMEBase_To      => '%service@example.com%',
+        MIMEBase_Cc      => '%client@example.com%',
+        MIMEBase_Subject => '%VIRUS 32%',
+        MIMEBase_Body    => '%VIRUS 32%',
 
         # attachment stuff (optional, applies only for ArticleStorageDB)
         AttachmentName => '%anyfile.txt%',
@@ -253,8 +240,8 @@ perform TicketSearch Operation. This will return a Ticket ID list.
         # tickets with escalation time before ... (optional)
         TicketEscalationTimeOlderDate => '2006-01-09 23:59:59',
 
-        # search in archive (optional)
-        ArchiveFlags => ['y', 'n'],
+        # search in archive (optional, default is not to search in archived tickets)
+        SearchInArchive => 'AllTickets',    # 'AllTickets' (normal and archived) or 'ArchivedTickets' (only archived)
 
         # OrderBy and SortBy (optional)
         OrderBy => 'Down',  # Down|Up
@@ -850,11 +837,11 @@ sub _CreateTimeSettings {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut
 

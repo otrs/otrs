@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminProcessManagement;
@@ -137,7 +137,7 @@ sub Run {
             $Content = ${ $Content || \'' };
         }
         else {
-            my $FormID = $ParamObject->GetParam( Param => 'FormID' ) || '';
+            my $FormID      = $ParamObject->GetParam( Param => 'FormID' ) || '';
             my %UploadStuff = $ParamObject->GetUploadAll(
                 Param => 'FileUpload',
             );
@@ -328,7 +328,7 @@ sub Run {
                             @{
                                 $ProcessData->{ActivityDialogs}->{$ActivityDialogEntityID}
                                     ->{Config}->{Interface}
-                                }
+                            }
                         ),
                         %{ $ProcessData->{ActivityDialogs}->{$ActivityDialogEntityID} },
                     },
@@ -663,7 +663,7 @@ sub Run {
                         @{
                             $ProcessData->{Process}->{Config}->{Path}->{$Activity}->{$Transition}
                                 ->{TransitionAction}
-                            }
+                        }
                     );
                     if ($TransitionActionString) {
                         $TransitionActionString = '(' . $TransitionActionString . ')';
@@ -726,11 +726,7 @@ sub Run {
         }
 
         # create new process name
-        my $ProcessName =
-            $ProcessData->{Name}
-            . ' ('
-            . $LayoutObject->{LanguageObject}->Translate('Copy')
-            . ')';
+        my $ProcessName = $LayoutObject->{LanguageObject}->Translate( '%s (copy)', $ProcessData->{Name} );
 
         # generate entity ID
         my $EntityID = $EntityObject->EntityIDGenerate(
@@ -746,7 +742,7 @@ sub Run {
         }
 
         # check if Inactive state estity exists
-        my $StateList = $StateObject->StateList( UserID => $Self->{UserID} );
+        my $StateList   = $StateObject->StateList( UserID => $Self->{UserID} );
         my %StateLookup = reverse %{$StateList};
 
         my $StateEntityID = $StateLookup{'Inactive'};
@@ -1623,6 +1619,7 @@ sub _ShowOverview {
         $Key =~ s{^.*/([^/]+)$}{$1}smx;
         my $Value = $Key;
         $Value =~ s{^(.+).yml}{$1}smx;
+        $Value =~ s{_}{ }smxg;
         $ExampleProcessData{$Key} = $Value;
     }
 
@@ -1660,7 +1657,7 @@ sub _ShowOverview {
                 Data => {
                     %{$ProcessData},
                     Description => $ProcessData->{Config}->{Description},
-                    }
+                }
             );
         }
     }
@@ -1786,9 +1783,9 @@ sub _ShowEdit {
     }
 
     $Param{StateSelection} = $LayoutObject->BuildSelection(
-        Data => $StateList || {},
-        Name => 'StateEntityID',
-        ID   => 'StateEntityID',
+        Data       => $StateList || {},
+        Name       => 'StateEntityID',
+        ID         => 'StateEntityID',
         SelectedID => $ProcessData->{StateEntityID}
             || $InactiveStateID,    # select inactive by default
         Sort        => 'AlphanumericKey',
@@ -1827,7 +1824,7 @@ sub _ShowEdit {
             PopupPathActivity => $LayoutObject->{Baselink}
                 . 'Action=AdminProcessManagementActivity;Subaction=ActivityEdit;',
             PopupPathPath => $LayoutObject->{Baselink} . 'Action=AdminProcessManagementPath;Subaction=PathEdit;',
-            }
+        }
     );
 
     $Output .= $LayoutObject->Output(
@@ -2035,7 +2032,7 @@ sub _PushSessionScreen {
 
     # add screen to the screen path
     push @{ $Self->{ScreensPath} }, {
-        Action => $Self->{Action} || '',
+        Action    => $Self->{Action} || '',
         Subaction => $Param{Subaction},
         ID        => $Param{ID},
         EntityID  => $Param{EntityID},

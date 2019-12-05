@@ -1,8 +1,10 @@
-/**
- * @project     OTRS (http: //www.otrs.org) - Agent Frontend
- * @copyright   OTRS AG
- * @license     AGPL (http: //www.gnu.org/licenses/agpl.txt)
- */
+/*
+Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+
+This software comes with ABSOLUTELY NO WARRANTY. For details, see
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
+*/
 
 /**
  * @package     Skin "Default"
@@ -93,6 +95,10 @@ div.InputField_InputContainer .InputField_Search {
     margin: 0;
 }
 
+#ContextSettingsDialog div.InputField_InputContainer .InputField_Search {
+    min-width: 0px;
+}
+
 a.InputField_Action {
     position: absolute;
     display: block;
@@ -154,7 +160,7 @@ div.InputField_More {
 
 div.InputField_ListContainer {
     position: absolute;
-    z-index: 5000;
+    z-index: 6100;
     display: none;
     text-shadow: none;
 }
@@ -227,13 +233,6 @@ div.InputField_ToolbarContainer i {
 div.InputField_ToolbarContainer ul li a:hover {
     border-bottom: 2px solid #f92;
     margin-bottom: 0;
-}
-
-.InputField_Loading {
-    background-image: url('../img/loader.gif');
-    background-position: 99.5% center;
-    background-position: right 3px center;
-    background-repeat: no-repeat;
 }
 
 .InputField_Confirm,
@@ -494,10 +493,6 @@ div.InputField_ToolbarContainer ul li a:hover {
     background-color: transparent;
     background-image: none;
     background-position: 0 0;
-}
-
-.jstree-InputField > .jstree-container-ul .jstree-loading > .jstree-ocl {
-    background: url('../img/loader.gif') center center no-repeat;
 }
 
 .jstree-InputField.jstree-rtl .jstree-node {

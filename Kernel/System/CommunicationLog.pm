@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::CommunicationLog;
@@ -64,7 +64,7 @@ sub new {
     bless( $Self, $Type );
 
     if ( IsStringWithData( $Param{CommunicationID} ) || IsStringWithData( $Param{ObjectLogID} ) ) {
-        $Self->_RecoverCommunicationObject(%Param);
+        return $Self->_RecoverCommunicationObject(%Param);
     }
 
     return $Self->_CommunicationStart(%Param);
@@ -478,7 +478,7 @@ sub _RecoverCommunicationObject {
     my $ErrorMessage          = "Could not restore the communication with %s '%s'!";
 
     if ( $Param{CommunicationID} ) {
-        $ErrorMessage = sprintf $ErrorMessage, 'CommunicationID', $Param{CommunicationID};
+        $ErrorMessage      = sprintf $ErrorMessage, 'CommunicationID', $Param{CommunicationID};
         $CommunicationData = $CommunicationDBObject->CommunicationGet(
             CommunicationID => $Param{CommunicationID},
         );
@@ -495,7 +495,7 @@ sub _RecoverCommunicationObject {
         return $Self->_LogError($ErrorMessage);
     }
 
-    if ( $CommunicationData->{Status} eq 'Closed' ) {
+    if ( $CommunicationData->{Status} ne 'Processing' ) {
         return $Self->_LogError(
             sprintf(
                 "The communication '%s' is already closed, can't be used.",
@@ -544,11 +544,11 @@ sub _LogError {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut
 

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminAppointmentNotificationEvent;
@@ -152,6 +152,13 @@ sub Run {
         # update
         my $Ok;
         my $DuplicatedEntry = 0;
+        my $Error           = 0;
+
+        # Check for 'Additional recipient' field value length.
+        if ( $GetParam{Data}->{RecipientEmail} && length $GetParam{Data}->{RecipientEmail} > 200 ) {
+            $GetParam{RecipientEmailServerError} = "ServerError";
+            $Error = 1;
+        }
 
         $GetParam{Data}->{NotificationType} = ['Appointment'];
 
@@ -178,7 +185,7 @@ sub Run {
             }
         }
 
-        if ( !$DuplicatedEntry ) {
+        if ( !$DuplicatedEntry && !$Error ) {
             $Ok = $NotificationEventObject->NotificationUpdate(
                 %GetParam,
                 UserID => $Self->{UserID},
@@ -329,6 +336,13 @@ sub Run {
         # add
         my $ID;
         my $DuplicatedEntry = 0;
+        my $Error           = 0;
+
+        # Check for 'Additional recipient' field value length.
+        if ( $GetParam{Data}->{RecipientEmail} && length $GetParam{Data}->{RecipientEmail} > 200 ) {
+            $GetParam{RecipientEmailServerError} = "ServerError";
+            $Error = 1;
+        }
 
         $GetParam{Data}->{NotificationType} = ['Appointment'];
 
@@ -349,7 +363,7 @@ sub Run {
             $DuplicatedEntry = 1;
         }
 
-        if ( !$DuplicatedEntry ) {
+        if ( !$DuplicatedEntry && !$Error ) {
             $ID = $NotificationEventObject->NotificationAdd(
                 %GetParam,
                 UserID => $Self->{UserID},
@@ -511,11 +525,7 @@ sub Run {
         }
 
         # create new Notification name
-        my $NotificationName =
-            $NotificationData{Name}
-            . ' ('
-            . $LayoutObject->{LanguageObject}->Translate('Copy')
-            . ')';
+        my $NotificationName = $LayoutObject->{LanguageObject}->Translate( '%s (copy)', $NotificationData{Name} );
 
         # otherwise save configuration and return to overview screen
         my $NewNotificationID = $NotificationEventObject->NotificationAdd(
@@ -543,7 +553,7 @@ sub Run {
         # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
 
-        my $FormID = $ParamObject->GetParam( Param => 'FormID' ) || '';
+        my $FormID      = $ParamObject->GetParam( Param => 'FormID' ) || '';
         my %UploadStuff = $ParamObject->GetUploadAll(
             Param  => 'FileUpload',
             Source => 'string',
@@ -744,7 +754,7 @@ sub _Edit {
     my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
 
     my @CalendarList = $CalendarObject->CalendarList(
-        UserID     => 4,
+        UserID     => $Self->{UserID},
         Permission => 'ro',
         ValidID    => 0,
     );
@@ -992,12 +1002,26 @@ sub _Edit {
     # set once per day checked value
     $Param{OncePerDayChecked} = ( $Param{Data}->{OncePerDay} ? 'checked="checked"' : '' );
 
+    my $OTRSBusinessObject      = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+    my $OTRSBusinessIsInstalled = $OTRSBusinessObject->OTRSBusinessIsInstalled();
+
+    # Third option is enabled only when OTRSBusiness is installed in the system.
     $Param{VisibleForAgentStrg} = $LayoutObject->BuildSelection(
-        Data => {
-            0 => Translatable('No'),
-            1 => Translatable('Yes'),
-            2 => Translatable('Yes, but require at least one active notification method'),
-        },
+        Data => [
+            {
+                Key   => '0',
+                Value => Translatable('No'),
+            },
+            {
+                Key   => '1',
+                Value => Translatable('Yes'),
+            },
+            {
+                Key      => '2',
+                Value    => Translatable('Yes, but require at least one active notification method.'),
+                Disabled => $OTRSBusinessIsInstalled ? 0 : 1,
+            }
+        ],
         Name       => 'VisibleForAgent',
         Sort       => 'NumericKey',
         Size       => 1,
@@ -1015,8 +1039,7 @@ sub _Edit {
 
     if ( IsHashRefWithData( \%RegisteredTransports ) ) {
 
-        my $MainObject         = $Kernel::OM->Get('Kernel::System::Main');
-        my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
+        my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
         TRANSPORT:
         for my $Transport (
@@ -1052,7 +1075,7 @@ sub _Edit {
                 if (
                     defined $RegisteredTransports{$Transport}->{IsOTRSBusinessTransport}
                     && $RegisteredTransports{$Transport}->{IsOTRSBusinessTransport} eq '1'
-                    && !$OTRSBusinessObject->OTRSBusinessIsInstalled()
+                    && !$OTRSBusinessIsInstalled
                     )
                 {
 
@@ -1088,7 +1111,7 @@ sub _Edit {
 
                     # set Email transport selected on add screen
                     if ( $Transport eq 'Email' && !$Param{ID} ) {
-                        $TransportChecked = 'checked="checked"'
+                        $TransportChecked = 'checked="checked"';
                     }
 
                     # get transport settings string from transport object

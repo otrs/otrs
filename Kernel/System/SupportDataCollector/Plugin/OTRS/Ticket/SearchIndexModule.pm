@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::SupportDataCollector::Plugin::OTRS::Ticket::SearchIndexModule;
@@ -27,32 +27,22 @@ sub GetDisplayPath {
 sub Run {
     my $Self = shift;
 
-    my $Module = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::SearchIndexModule');
+    my $ForceUnfilteredStorage = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::SearchIndex::ForceUnfilteredStorage');
 
-    # get database object
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my $ArticleCount;
-    $DBObject->Prepare( SQL => 'SELECT count(*) FROM article' );
-
-    while ( my @Row = $DBObject->FetchrowArray() ) {
-        $ArticleCount = $Row[0];
-    }
-
-    if ( $ArticleCount > 50_000 && $Module =~ /RuntimeDB/ ) {
+    if ($ForceUnfilteredStorage) {
         $Self->AddResultWarning(
             Label => Translatable('Ticket Search Index Module'),
-            Value => $Module,
+            Value => 'Ticket::SearchIndex::ForceUnfilteredStorage',
             Message =>
                 Translatable(
-                'You have more than 50,000 articles and should use the StaticDB backend. See admin manual (Performance Tuning) for more information.'
+                'The indexing process forces the storage of the original article text in the article search index, without executing filters or applying stop word lists. This will increase the size of the search index and thus may slow down fulltext searches.'
                 ),
         );
     }
     else {
         $Self->AddResultOk(
             Label => Translatable('Ticket Search Index Module'),
-            Value => $Module,
+            Value => 'Ticket::SearchIndex::ForceUnfilteredStorage',
         );
     }
 

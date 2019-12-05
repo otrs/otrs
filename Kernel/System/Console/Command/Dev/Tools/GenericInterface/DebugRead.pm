@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Console::Command::Dev::Tools::GenericInterface::DebugRead;
@@ -59,14 +59,14 @@ sub Configure {
     );
     $Self->AddOption(
         Name        => 'webservice-id',
-        Description => "Restriction on entries of a given webservice id.",
+        Description => "Restriction on entries of a given web service id.",
         Required    => 0,
         HasValue    => 1,
         ValueRegex  => qr/^\d+$/smx,
     );
     $Self->AddOption(
         Name        => 'with-data',
-        Description => "Restriction on entries of a given webservice id.",
+        Description => "Restriction on entries of a given web service id.",
         Required    => 0,
         HasValue    => 0,
     );

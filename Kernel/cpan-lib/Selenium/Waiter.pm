@@ -1,29 +1,32 @@
 package Selenium::Waiter;
-$Selenium::Waiter::VERSION = '1.11';
+$Selenium::Waiter::VERSION = '1.36';
+use strict;
+use warnings;
+
 # ABSTRACT: Provides a utility wait_until function
 use Try::Tiny;
 require Exporter;
-our @ISA = qw/Exporter/;
+our @ISA    = qw/Exporter/;
 our @EXPORT = qw/wait_until/;
 
 
 sub wait_until (&%) {
     my $assert = shift;
-    my $args = {
-        timeout => 30,
+    my $args   = {
+        timeout  => 30,
         interval => 1,
-        debug => 0,
+        debug    => 0,
         @_
     };
 
-    my $start = time;
+    my $start               = time;
     my $timeout_not_elapsed = sub {
         my $elapsed = time - $start;
         return $elapsed < $args->{timeout};
     };
 
     my $exception = '';
-    while ($timeout_not_elapsed->()) {
+    while ( $timeout_not_elapsed->() ) {
         my $assert_ret;
         my $try_ret = try {
             $assert_ret = $assert->();
@@ -35,8 +38,8 @@ sub wait_until (&%) {
             return '';
         }
         finally {
-            if (! $assert_ret) {
-                sleep($args->{interval});
+            if ( !$assert_ret ) {
+                sleep( $args->{interval} );
             }
         };
 
@@ -44,7 +47,7 @@ sub wait_until (&%) {
     }
 
     # No need to repeat ourselves if we're already debugging.
-    warn $exception if $exception && ! $args->{debug};
+    warn $exception if $exception && !$args->{debug};
     return '';
 }
 
@@ -62,14 +65,14 @@ Selenium::Waiter - Provides a utility wait_until function
 
 =head1 VERSION
 
-version 1.11
+version 1.36
 
 =head1 SYNOPSIS
 
     use Selenium::Waiter qw/wait_until/;
     my $d = Selenium::Remote::Driver->new;
 
-    my $div = wait_until { $d->find_element('div', css') };
+    my $div = wait_until { $d->find_element('div', 'css') };
 
 =head1 FUNCTIONS
 
@@ -80,7 +83,7 @@ hash of configuration params. It uses a prototype to take its
 arguments, so usage looks look like:
 
     use Selenium::Waiter;
-    my $div = wait_until { $driver->find_element('div', css') };
+    my $div = wait_until { $driver->find_element('div', 'css') };
 
 The above snippet will search for C<css=div> for thirty seconds; if it
 ever finds the element, it will immediately return. More generally,
@@ -143,7 +146,7 @@ L<Selenium::Remote::Driver|Selenium::Remote::Driver>
 =head1 BUGS
 
 Please report any bugs or feature requests on the bugtracker website
-https://github.com/gempesaw/Selenium-Remote-Driver/issues
+L<https://github.com/teodesian/Selenium-Remote-Driver/issues>
 
 When submitting a bug or request, please include a test-file or a
 patch to an existing test-file that illustrates the bug or desired
@@ -193,7 +196,7 @@ Aditya Ivaturi <ivaturi@gmail.com>
 
 Copyright (c) 2010-2011 Aditya Ivaturi, Gordon Child
 
-Copyright (c) 2014-2016 Daniel Gempesaw
+Copyright (c) 2014-2017 Daniel Gempesaw
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

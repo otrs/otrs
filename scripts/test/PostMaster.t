@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -26,6 +26,8 @@ my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 # get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
+
+my $Home = $ConfigObject->Get('Home');
 
 my @DynamicfieldIDs;
 my @DynamicFieldUpdate;
@@ -356,8 +358,7 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                 my $NamePrefix = "#$NumberModule $StorageModule $TicketSubjectConfig $File ";
 
                 # new ticket check
-                my $Location = $ConfigObject->Get('Home')
-                    . "/scripts/test/sample/PostMaster/PostMaster-Test$File.box";
+                my $Location   = "$Home/scripts/test/sample/PostMaster/PostMaster-Test$File.box";
                 my $ContentRef = $MainObject->FileRead(
                     Location => $Location,
                     Mode     => 'binmode',
@@ -1303,13 +1304,131 @@ Some Content in Body
             DynamicField_TicketFreeText6 => 'Text6#1',
         },
     },
+    {
+        Name  => '#3 - X-Envelope-To Test with old post master format',
+        Email => 'From: Sender <sender@example.com>
+To: Some Name <recipient@example.com>
+X-Envelope-To: Some XEnvelopeTo Name <xenvelopeto@example.com>
+Subject: some subject
+
+Some Content in Body
+',
+        Match => {
+            'X-Envelope-To' => 'xenvelopeto@example.com'
+        },
+        Set => {
+            'X-OTRS-Queue'        => 'Misc',
+            'X-OTRS-TicketKey6'   => 'Key6#1',
+            'X-OTRS-TicketValue6' => 'Text6#1',
+        },
+        Check => {
+            Queue                        => 'Misc',
+            DynamicField_TicketFreeKey6  => 'Key6#1',
+            DynamicField_TicketFreeText6 => 'Text6#1',
+        },
+        Type => 'Config',
+    },
+    {
+        Name  => '#4 - X-Envelope-To Test with Kernel::System::PostMaster::Filter::NewTicketReject',
+        Email => 'From: Sender <sender@example.com>
+To: Some Name <recipient@example.com>
+X-Envelope-To: Some XEnvelopeTo Name <xenvelopeto@example.com>
+Subject: some subject
+
+Some Content in Body
+',
+        Module => 'Kernel::System::PostMaster::Filter::NewTicketReject',
+        Match  => [
+            {
+                Key   => 'X-Envelope-To',
+                Value => 'xenvelopeto@example.com',
+            }
+        ],
+        Set => [
+            {
+                Key   => 'X-OTRS-Ignore',
+                Value => 'yes',
+            }
+        ],
+        Check => {
+            ReturnCode => 5,
+        },
+        Type => 'Config',
+    },
+    {
+        Name  => '#4 - X-Envelope-To Test with old post format Kernel::System::PostMaster::Filter::NewTicketReject',
+        Email => 'From: Sender <sender@example.com>
+To: Some Name <recipient@example.com>
+X-Envelope-To: Some XEnvelopeTo Name <xenvelopeto@example.com>
+Subject: some subject
+
+Some Content in Body
+',
+        Module => 'Kernel::System::PostMaster::Filter::NewTicketReject',
+        Match  => {
+            'X-Envelope-To' => 'xenvelopeto@example.com'
+        },
+        Set => {
+            'X-OTRS-Ignore' => 'yes',
+        },
+        Check => {
+            ReturnCode => 5,
+        },
+        Type => 'Config',
+    },
+
+    # Test cases are deactivated, because of problems with RHEL/CentOS7 with PostgreSQL
+    #     {
+    #         Name  => '#5 - X-Envelope-To Test with Kernel::System::PostMaster::Filter::CMD',
+    #         Email => 'From: Sender <sender@example.com>
+    # To: Some Name <recipient@example.com>
+    # X-Envelope-To: Some XEnvelopeTo Name <xenvelopeto@example.com>
+    # Subject: some subject
+
+    # Some Content in Body
+    # ',
+    #         Module => 'Kernel::System::PostMaster::Filter::CMD',
+    #         CMD => 'echo "SPAM"',
+    #         Set => [
+    #             {
+    #                 Key   => 'X-OTRS-Ignore',
+    #                 Value => 'yes',
+    #             }
+    #         ],
+    #         Check => {
+    #             ReturnCode => 5,
+    #         },
+    #         Type => 'Config',
+    #     },
+    #     {
+    #         Name  => '#5 - X-Envelope-To Test with old post format Kernel::System::PostMaster::Filter::CMD',
+    #         Email => 'From: Sender <sender@example.com>
+    # To: Some Name <recipient@example.com>
+    # X-Envelope-To: Some XEnvelopeTo Name <xenvelopeto@example.com>
+    # Subject: some subject
+
+    # Some Content in Body
+    # ',
+    #         Module => 'Kernel::System::PostMaster::Filter::CMD',
+    #         CMD => 'echo "SPAM"',
+    #         Set => {
+    #             'X-OTRS-Ignore' => 'yes',
+    #         },
+    #         Check => {
+    #             ReturnCode => 5,
+    #         },
+    #         Type => 'Config',
+    #     },
 );
 
 $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::PostMaster::Filter'] );
 $PostMasterFilter = $Kernel::OM->Get('Kernel::System::PostMaster::Filter');
 
 for my $Test (@Tests) {
+
+    TYPE:
     for my $Type (qw(Config DB)) {
+        next TYPE if $Test->{Type} && $Test->{Type} ne $Type;
 
         if ( $Type eq 'DB' ) {
             $PostMasterFilter->FilterAdd(
@@ -1322,8 +1441,8 @@ for my $Test (@Tests) {
             $ConfigObject->Set(
                 Key   => 'PostMaster::PreFilterModule###' . $Test->{Name},
                 Value => {
-                    %{$Test},
                     Module => 'Kernel::System::PostMaster::Filter::Match',
+                    %{$Test},
                 },
             );
         }
@@ -1339,44 +1458,53 @@ for my $Test (@Tests) {
         }
         $Self->Is(
             $Return[0] || 0,
-            1,
-            "#Filter $Type Run() - NewTicket",
-        );
-        $Self->True(
-            $Return[1] || 0,
-            "#Filter $Type Run() - NewTicket/TicketID",
+            $Test->{Check}->{ReturnCode} || 1,
+            "#Filter $Type Run('$Test->{Name}') - NewTicket",
         );
 
-        # new/clear ticket object
-        $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
-        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
-        my %Ticket = $TicketObject->TicketGet(
-            TicketID      => $Return[1],
-            DynamicFields => 1,
+        my %LookupRejectReturnCode = (
+            4 => 1,    # follow up / close -> reject
+            5 => 1,    # ignored (because of X-OTRS-Ignore header)
         );
 
-        TEST:
-        for my $TestCheck ($Test) {
-            next TEST if !$TestCheck->{Check};
-            for my $Key ( sort keys %{ $TestCheck->{Check} } ) {
-                $Self->Is(
-                    $Ticket{$Key},
-                    $TestCheck->{Check}->{$Key},
-                    "#Filter $Type Run('$TestCheck->{Name}') - $Key",
-                );
+        if ( !$Test->{Check}->{ReturnCode} || !$LookupRejectReturnCode{ $Test->{Check}->{ReturnCode} } ) {
+
+            $Self->True(
+                $Return[1] || 0,
+                "#Filter $Type Run('$Test->{Name}') - NewTicket/TicketID",
+            );
+
+            # new/clear ticket object
+            $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
+            my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+            my %Ticket = $TicketObject->TicketGet(
+                TicketID      => $Return[1],
+                DynamicFields => 1,
+            );
+
+            TEST:
+            for my $TestCheck ($Test) {
+                next TEST if !$TestCheck->{Check};
+                for my $Key ( sort keys %{ $TestCheck->{Check} } ) {
+                    $Self->Is(
+                        $Ticket{$Key},
+                        $TestCheck->{Check}->{$Key},
+                        "#Filter $Type Run('$TestCheck->{Name}') - $Key",
+                    );
+                }
             }
-        }
 
-        # delete ticket
-        my $Delete = $TicketObject->TicketDelete(
-            TicketID => $Return[1],
-            UserID   => 1,
-        );
-        $Self->True(
-            $Delete || 0,
-            "#Filter $Type TicketDelete()",
-        );
+            # delete ticket
+            my $Delete = $TicketObject->TicketDelete(
+                TicketID => $Return[1],
+                UserID   => 1,
+            );
+            $Self->True(
+                $Delete || 0,
+                "#Filter $Type TicketDelete()",
+            );
+        }
 
         # remove filter
         for my $Test (@Tests) {
@@ -1420,8 +1548,7 @@ for my $DynamicFieldID (@DynamicfieldIDs) {
 }
 
 # test X-OTRS-(Owner|Responsible)
-my $Login = $Helper->TestUserCreate();
-my $UserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup( UserLogin => $Login );
+my ( $Login, $UserID ) = $Helper->TestUserCreate();
 
 my %OwnerResponsibleTests = (
     Owner => {
@@ -1453,8 +1580,7 @@ my %OwnerResponsibleTests = (
 for my $Test ( sort keys %OwnerResponsibleTests ) {
 
     my $FileSuffix = $OwnerResponsibleTests{$Test}->{File};
-    my $Location   = $ConfigObject->Get('Home')
-        . "/scripts/test/sample/PostMaster/PostMaster-Test-$FileSuffix.box";
+    my $Location   = "$Home/scripts/test/sample/PostMaster/PostMaster-Test-$FileSuffix.box";
 
     my $ContentRef = $MainObject->FileRead(
         Location => $Location,
@@ -1508,6 +1634,46 @@ $CommunicationLogObject->ObjectLogStop(
 );
 $CommunicationLogObject->CommunicationStop(
     Status => 'Successful',
+);
+
+# Test ticket creation from application/xml content type email (bug#13644).
+my $Location   = "$Home/scripts/test/sample/PostMaster/PostMaster-Test27.box";
+my $ContentRef = $MainObject->FileRead(
+    Location => $Location,
+    Mode     => 'binmode',
+    Result   => 'ARRAY',
+);
+
+my $PostMasterObject = Kernel::System::PostMaster->new(
+    CommunicationLogObject => $CommunicationLogObject,
+    Email                  => $ContentRef,
+);
+my @PostMasterReturn = $PostMasterObject->Run();
+
+my $TicketID = $PostMasterReturn[1];
+
+my $ArticleObject        = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Email' );
+my @ArticleIDs           = map { $_->{ArticleID} } $ArticleObject->ArticleList(
+    TicketID => $TicketID,
+);
+
+my $ArticleID = $ArticleIDs[0];
+
+# Check attachment.
+my %Index = $ArticleBackendObject->ArticleAttachmentIndex(
+    ArticleID => $ArticleID,
+);
+
+$Self->Is(
+    $Index{1}->{Filename},
+    'Test-123-456-789',
+    "ArticleID $ArticleID has attachment with name '$Index{1}->{Filename}'",
+);
+$Self->Is(
+    $Index{1}->{ContentType},
+    'application/xml; charset=utf-8',
+    "ArticleID $ArticleID has attachment with content-type '$Index{1}->{ContentType}'",
 );
 
 # cleanup is done by RestoreDatabase

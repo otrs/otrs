@@ -1,14 +1,14 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 [%
     SET DocumentationLinkText  = Translate('online administrator documentation');
-    SET DocumentationLink      = "<a href='http://otrs.github.io/doc/manual/admin/" _ Data.ManualVersion _ ".0/en/html/configuration.html#sysconfig' target='_blank'>" _ DocumentationLinkText.html() _ "</a>";
+    SET DocumentationLink      = "<a href='https://doc.otrs.com/doc/manual/admin/" _ Data.ManualVersion _ ".0/en/html/configuration.html#sysconfig' target='_blank'>" _ DocumentationLinkText.html() _ "</a>";
 %]
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
@@ -38,8 +38,8 @@
         [% INCLUDE "SystemConfiguration/Sidebar/Navigation.tt" %]
         [% END %]
         [% INCLUDE "SystemConfiguration/Sidebar/Help.tt" %]
-        [% INCLUDE "SystemConfiguration/Sidebar/DynamicActions.tt" %]
         [% INCLUDE "SystemConfiguration/Sidebar/OTRSBusinessTeaser.tt" %]
+        [% INCLUDE "SystemConfiguration/Sidebar/DynamicActions.tt" %]
     </div>
 
     <div class="ContentColumn">
@@ -62,7 +62,7 @@
                     <li>
                         <i class="fa fa-lightbulb-o"></i>
                         <p>
-                            [% Translate("Find out how to use the system configuration by reading the %s.", DocumentationLink) %]
+                            [% Translate("Find out how to use the system configuration by reading the %s.") | html | ReplacePlaceholders(DocumentationLink) %]
                         </p>
                     </li>
                 </ul>

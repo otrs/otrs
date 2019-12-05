@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminSystemMaintenance;
@@ -130,6 +130,17 @@ sub Run {
 
         }
 
+        # Trigger server error if 'Login message' or 'Notify message' is longer then 250 characters.
+        #   See bug#13366 (https://bugs.otrs.org/show_bug.cgi?id=13366)
+        if ( $SystemMaintenanceData->{LoginMessage} && length $SystemMaintenanceData->{LoginMessage} > 250 ) {
+
+            $Error{LoginMessageServerError} = 'ServerError';
+        }
+        if ( $SystemMaintenanceData->{NotifyMessage} && length $SystemMaintenanceData->{NotifyMessage} > 250 ) {
+
+            $Error{NotifyMessageServerError} = 'ServerError';
+        }
+
         if ( !$SystemMaintenanceData->{ValidID} ) {
 
             # add server error class
@@ -211,7 +222,7 @@ sub Run {
                 'Kernel::System::DateTime',
                 ObjectParams => {
                     Epoch => $SystemMaintenanceData->{$Key},
-                    }
+                }
             );
             $SystemMaintenanceData->{ $Key . 'TimeStamp' } =
                 $DateTimeObject ? $DateTimeObject->ToString() : undef;
@@ -320,6 +331,17 @@ sub Run {
             # add server error class
             $Error{CommentServerError} = 'ServerError';
 
+        }
+
+        # Trigger server error if 'Login message' or 'Notify message' is longer then 250 characters.
+        #   See bug#13366 (https://bugs.otrs.org/show_bug.cgi?id=13366)
+        if ( $SystemMaintenanceData->{LoginMessage} && length $SystemMaintenanceData->{LoginMessage} > 250 ) {
+
+            $Error{LoginMessageServerError} = 'ServerError';
+        }
+        if ( $SystemMaintenanceData->{NotifyMessage} && length $SystemMaintenanceData->{NotifyMessage} > 250 ) {
+
+            $Error{NotifyMessageServerError} = 'ServerError';
         }
 
         if ( !$SystemMaintenanceData->{ValidID} ) {

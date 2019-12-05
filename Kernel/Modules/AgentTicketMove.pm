@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentTicketMove;
@@ -110,7 +110,7 @@ sub Run {
     {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('Loading draft failed!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -259,7 +259,7 @@ sub Run {
     if ( $FormDraftAction && !$Config->{FormDraft} ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('FormDraft functionality disabled!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -389,13 +389,13 @@ sub Run {
         $Error{DestQueue} = 1;
     }
 
-    # check if destination queue is restricted by ACL
-    my %QueueList = $TicketObject->TicketMoveList(
+    # Check if destination queue is restricted by ACL.
+    my $DestQueues = $Self->_GetQueues(
+        %GetParam,
+        %ACLCompatGetParam,
         TicketID => $Self->{TicketID},
-        UserID   => $Self->{UserID},
-        Type     => 'move_into',
     );
-    if ( $GetParam{DestQueueID} && !exists $QueueList{ $GetParam{DestQueueID} } ) {
+    if ( $GetParam{DestQueueID} && !exists $DestQueues->{ $GetParam{DestQueueID} } ) {
         return $LayoutObject->NoPermission( WithHeader => 'yes' );
     }
 
@@ -427,18 +427,13 @@ sub Run {
             %GetParam,
             %ACLCompatGetParam,
             TicketID => $Self->{TicketID},
-            QueueID  => $GetParam{DestQueueID} || 1,
+            QueueID  => $GetParam{DestQueueID} || $Ticket{QueueID},
         );
         my $NextPriorities = $Self->_GetPriorities(
             %GetParam,
             %ACLCompatGetParam,
             TicketID => $Self->{TicketID},
-            QueueID  => $GetParam{DestQueueID} || 1,
-        );
-        my $DestQueues = $Self->_GetQueues(
-            %GetParam,
-            %ACLCompatGetParam,
-            TicketID => $Self->{TicketID},
+            QueueID  => $GetParam{DestQueueID} || $Ticket{QueueID},
         );
 
         # update Dynamc Fields Possible Values via AJAX
@@ -503,7 +498,7 @@ sub Run {
 
         my $StandardTemplates = $Self->_GetStandardTemplates(
             %GetParam,
-            QueueID => $GetParam{DestQueueID} || '',
+            QueueID  => $GetParam{DestQueueID} || '',
             TicketID => $Self->{TicketID},
         );
 
@@ -901,25 +896,34 @@ sub Run {
             # get lock state && write (lock) permissions
             if ( !$TicketObject->TicketLockGet( TicketID => $Self->{TicketID} ) ) {
 
-                # set owner
-                $TicketObject->TicketOwnerSet(
-                    TicketID  => $Self->{TicketID},
-                    UserID    => $Self->{UserID},
-                    NewUserID => $Self->{UserID},
-                );
-
-                # set lock
-                my $Success = $TicketObject->TicketLockSet(
+                my $Lock = $TicketObject->TicketLockSet(
                     TicketID => $Self->{TicketID},
                     Lock     => 'lock',
                     UserID   => $Self->{UserID}
                 );
 
-                # show lock state
-                if ($Success) {
+                if ($Lock) {
+
+                    # Set new owner if ticket owner is different then logged user.
+                    if ( $Ticket{OwnerID} != $Self->{UserID} ) {
+
+                        # Remember previous owner, which will be used to restore ticket owner on undo action.
+                        $Param{PreviousOwner} = $Ticket{OwnerID};
+
+                        $TicketObject->TicketOwnerSet(
+                            TicketID  => $Self->{TicketID},
+                            UserID    => $Self->{UserID},
+                            NewUserID => $Self->{UserID},
+                        );
+                    }
+
+                    # Show lock state.
                     $LayoutObject->Block(
                         Name => 'PropertiesLock',
-                        Data => { %Param, TicketID => $Self->{TicketID} },
+                        Data => {
+                            %Param,
+                            TicketID => $Self->{TicketID}
+                        },
                     );
                     $TicketUnlock = 1;
                 }
@@ -983,7 +987,7 @@ sub Run {
             %GetParam,
             %ACLCompatGetParam,
             TicketID => $Self->{TicketID},
-            QueueID  => $GetParam{DestQueueID} || 1,
+            QueueID  => $GetParam{DestQueueID} || $Ticket{QueueID},
         );
 
         # get next priorities
@@ -991,7 +995,7 @@ sub Run {
             %GetParam,
             %ACLCompatGetParam,
             TicketID => $Self->{TicketID},
-            QueueID  => $GetParam{DestQueueID} || 1,
+            QueueID  => $GetParam{DestQueueID} || $Ticket{QueueID},
         );
 
         # get old owners
@@ -1185,11 +1189,12 @@ sub Run {
             );
         }
 
-        $ArticleID = $ArticleObject->ArticleCreate(
+        my $InternalArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Internal' );
+        $ArticleID = $InternalArticleBackendObject->ArticleCreate(
             TicketID             => $Self->{TicketID},
             IsVisibleForCustomer => 0,
             SenderType           => 'agent',
-            From                 => "$Self->{UserFullname} <$Self->{UserEmail}>",
+            From                 => "\"$Self->{UserFullname}\" <$Self->{UserEmail}>",
             Subject              => $GetParam{Subject},
             Body                 => $GetParam{Body},
             MimeType             => $MimeType,
@@ -1205,7 +1210,7 @@ sub Run {
 
         # write attachments
         for my $Attachment (@AttachmentData) {
-            $ArticleObject->ArticleWriteAttachment(
+            $InternalArticleBackendObject->ArticleWriteAttachment(
                 %{$Attachment},
                 ArticleID => $ArticleID,
                 UserID    => $Self->{UserID},
@@ -1229,13 +1234,18 @@ sub Run {
             # set the object ID (TicketID or ArticleID) depending on the field configration
             my $ObjectID = $DynamicFieldConfig->{ObjectType} eq 'Article' ? $ArticleID : $Self->{TicketID};
 
-            # set the value
-            my $Success = $DynamicFieldBackendObject->ValueSet(
-                DynamicFieldConfig => $DynamicFieldConfig,
-                ObjectID           => $ObjectID,
-                Value              => $DynamicFieldValues{ $DynamicFieldConfig->{Name} },
-                UserID             => $Self->{UserID},
-            );
+            # set dynamic field; when ObjectType=Article and no article will be created ignore
+            # this dynamic field
+            if ($ObjectID) {
+
+                # set the value
+                $DynamicFieldBackendObject->ValueSet(
+                    DynamicFieldConfig => $DynamicFieldConfig,
+                    ObjectID           => $ObjectID,
+                    Value              => $DynamicFieldValues{ $DynamicFieldConfig->{Name} },
+                    UserID             => $Self->{UserID},
+                );
+            }
         }
     }
 
@@ -1261,7 +1271,7 @@ sub Run {
     {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('Could not delete draft!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -1421,7 +1431,7 @@ sub AgentMove {
                 DiffTime         => $ConfigObject->Get('Ticket::Frontend::PendingDiffTime')
                     || 0,
                 %Param,
-                Class => $Param{DateInvalid} || ' ',
+                Class                => $Param{DateInvalid} || ' ',
                 Validate             => 1,
                 ValidateDateInFuture => 1,
                 Calendar             => $Calendar,
@@ -1579,9 +1589,9 @@ sub AgentMove {
 
         if ( IsHashRefWithData( \%StandardTemplates ) ) {
             $Param{StandardTemplateStrg} = $LayoutObject->BuildSelection(
-                Data       => $QueueStandardTemplates    || {},
-                Name       => 'StandardTemplateID',
-                SelectedID => $Param{StandardTemplateID} || '',
+                Data         => $QueueStandardTemplates || {},
+                Name         => 'StandardTemplateID',
+                SelectedID   => $Param{StandardTemplateID} || '',
                 PossibleNone => 1,
                 Sort         => 'AlphanumericValue',
                 Translation  => 1,
@@ -1617,7 +1627,7 @@ sub AgentMove {
                         ? 'Validate_Required'
                         : ''
                     ),
-                    }
+                }
             );
         }
 
@@ -1715,16 +1725,6 @@ sub AgentMove {
 
     if ( IsHashRefWithData($LoadedFormDraft) ) {
 
-        my $DateTimeObject = $Kernel::OM->Create(
-            'Kernel::System::DateTime',
-            ObjectParams => {
-                String => $LoadedFormDraft->{ChangeTime},
-            },
-        );
-        my %RelativeTime = $LayoutObject->FormatRelativeTime( DateTimeObject => $DateTimeObject );
-        $LoadedFormDraft->{ChangeTimeRelative}
-            = $LayoutObject->{LanguageObject}->Translate( $RelativeTime{Message}, $RelativeTime{Value} );
-
         $LoadedFormDraft->{ChangeByName} = $Kernel::OM->Get('Kernel::System::User')->UserName(
             UserID => $LoadedFormDraft->{ChangeBy},
         );
@@ -1778,7 +1778,7 @@ sub _GetUsers {
 
     # show all users who are rw in the queue group
     elsif ( $Param{QueueID} ) {
-        my $GID = $Kernel::OM->Get('Kernel::System::Queue')->GetQueueGroupID( QueueID => $Param{QueueID} );
+        my $GID        = $Kernel::OM->Get('Kernel::System::Queue')->GetQueueGroupID( QueueID => $Param{QueueID} );
         my %MemberList = $Kernel::OM->Get('Kernel::System::Group')->PermissionGroupGet(
             GroupID => $GID,
             Type    => 'owner',

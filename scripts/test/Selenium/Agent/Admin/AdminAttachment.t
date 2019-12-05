@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -12,18 +12,15 @@ use utf8;
 
 use vars (qw($Self));
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get needed objects
         my $ConfigObject     = $Kernel::OM->Get('Kernel::Config');
         my $Helper           = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
         my $AttachmentObject = $Kernel::OM->Get('Kernel::System::StdAttachment');
 
-        # get needed variables
         my $Home = $ConfigObject->Get('Home');
         my %Attachments;
         my $Count;
@@ -40,7 +37,6 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        # get script alias
         my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
 
         # navigate to AdminAttachment screen
@@ -88,9 +84,12 @@ $Selenium->RunTest(
             $Attachments{$File} = $AttachmentName;
 
             $Selenium->find_element( "#Name", 'css' )->send_keys($AttachmentName);
-            $Selenium->execute_script("\$('#ValidID').val('1').trigger('redraw.InputField').trigger('change')");
+            $Selenium->InputFieldValueSet(
+                Element => '#ValidID',
+                Value   => 1,
+            );
             $Selenium->find_element( "#FileUpload", 'css' )->send_keys($Location);
-            $Selenium->find_element( "#Name",       'css' )->VerifiedSubmit();
+            $Selenium->find_element( "#Submit",     'css' )->VerifiedClick();
 
             # check if standard attachment show on AdminAttachment screen
             $Self->True(
@@ -124,9 +123,12 @@ $Selenium->RunTest(
                 );
             }
 
-            $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
+            $Selenium->InputFieldValueSet(
+                Element => '#ValidID',
+                Value   => 2,
+            );
             $Selenium->find_element( "#Comment", 'css' )->send_keys('Selenium test attachment');
-            $Selenium->find_element( "#Name",    'css' )->VerifiedSubmit();
+            $Selenium->find_element( "#Submit",  'css' )->VerifiedClick();
 
             # check overview page
             $Self->Is(
@@ -219,7 +221,6 @@ $Selenium->RunTest(
             },
         );
 
-        # run test
         for my $Test (@Tests) {
             $Selenium->find_element( "#FilterAttachments", 'css' )->clear();
             $Selenium->find_element( "#FilterAttachments", 'css' )->send_keys( $Test->{Content}, "\N{U+E007}" );
@@ -258,25 +259,33 @@ $Selenium->RunTest(
             $Selenium->execute_script(
                 "\$('tbody tr:contains($Attachments{$File}) td .TrashCan').trigger('click')"
             );
+            $Selenium->WaitFor( JavaScript => 'return $(".Dialog:visible").length === 1;' );
 
-            $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".Dialog:visible").length === 1;' );
-
-            # verify delete dialog message
+            # Verify delete dialog message.
             my $DeleteMessage = "Do you really want to delete this attachment?";
             $Self->True(
-                index( $Selenium->get_page_source(), $DeleteMessage ) > -1,
-                "Delete message is found",
+                $Selenium->execute_script(
+                    "return \$('#DeleteAttachmentDialog:contains($DeleteMessage)').length"
+                ),
+                "Delete dialog message is found",
             );
 
-            # confirm delete action
-            $Selenium->find_element( "#DialogButton1", 'css' )->VerifiedClick();
+            # Confirm delete action.
+            $Selenium->find_element( "#DialogButton1", 'css' )->click();
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return !\$('.Dialog:visible').length && !\$('tbody tr:contains($Attachments{$File})').length"
+            );
 
-            # if deleting was successful, the entry should have disappeared
-            $Selenium->WaitFor( JavaScript => "return \$('tbody tr:contains($Attachments{$File})').length === 0;" );
-
-            # also, the dialog should be gone
-            $Selenium->WaitFor( JavaScript => 'return $(".Dialog:visible").length === 0;' );
+            $Self->True(
+                $Selenium->execute_script(
+                    "return \$('tbody tr:contains($Attachments{$File})').length === 0"
+                ),
+                "Attachment $Attachments{$File} is deleted",
+            );
         }
+
+        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp();
     }
 );
 

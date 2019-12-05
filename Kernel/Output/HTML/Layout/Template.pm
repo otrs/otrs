@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::Layout::Template;
@@ -23,7 +23,7 @@ our $ObjectManagerDisabled = 1;
 
 =head1 NAME
 
-Kernel::Output::HTML::LayoutTemplate - template rendering engine based on Template::Toolkit
+Kernel::Output::HTML::Layout::Template - template rendering engine based on Template::Toolkit
 
 =head1 PUBLIC INTERFACE
 
@@ -191,7 +191,7 @@ sub Output {
     my $Success = $Self->{TemplateObject}->process(
         $Param{TemplateFileTT} // \$TemplateString,
         {
-            Data => $Param{Data} // {},
+            Data   => $Param{Data} // {},
             global => {
                 BlockData      => $Self->{BlockData} // [],
                 KeepScriptTags => $Param{AJAX}       // 0,
@@ -220,7 +220,7 @@ sub Output {
             my $Target  = $2;
             my $End     = $3;
             my $RealEnd = $4;
-            if ( lc $Target =~ /^(http:|https:|#|ftp:)/ ||
+            if ( lc($Target) =~ /^(http:|https:|#|ftp:)/ ||
                 $Target !~ /\.(pl|php|cgi|fcg|fcgi|fpl)(\?|$)/ ||
                 $Target =~ /(\?|&|;)\Q$Self->{SessionName}\E=/) {
                 $AHref.$Target.$End.$RealEnd;
@@ -238,7 +238,7 @@ sub Output {
             my $AHref = $1;
             my $Target = $2;
             my $End = $3;
-            if (lc $Target =~ m{^http s? :}smx || !$Self->{SessionID} ||
+            if (lc($Target) =~ m{^http s? :}smx || !$Self->{SessionID} ||
                 $Target !~ /\.(pl|php|cgi|fcg|fcgi|fpl)(\?|$)/ ||
                 $Target =~ /\Q$Self->{SessionName}\E=/) {
                 $AHref.$Target.$End;
@@ -356,10 +356,10 @@ sub AddJSData {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

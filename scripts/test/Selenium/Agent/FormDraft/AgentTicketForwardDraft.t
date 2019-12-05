@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -12,7 +12,6 @@ use utf8;
 
 use vars (qw($Self));
 
-# Get selenium object.
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
@@ -80,8 +79,7 @@ $Selenium->RunTest(
             "Ticket ID $TicketID is created",
         );
 
-        # Get article object.
-        my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+        my $ArticleObject             = $Kernel::OM->Get('Kernel::System::Ticket::Article');
         my $ArticleEmailChannelObject = $ArticleObject->BackendForChannel( ChannelName => 'Email' );
 
         # Create test email Article.
@@ -113,14 +111,10 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        # Get script alias.
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # Navigate to zoom view of created test ticket.
-        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID");
-
-        # Expand article details.
-        $Selenium->find_element( '.WidgetAction.Expand', 'css' )->click();
+        # Navigate to forward view of created test ticket.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketForward;TicketID=$TicketID");
 
         # Create test fields for FormDraft.
         my $Title         = 'ForwardFormDraft' . $RandomID;
@@ -146,51 +140,52 @@ $Selenium->RunTest(
             },
         };
 
-        # Click on Forward and switch window.
-        $Selenium->find_element(
-            "//a[contains(\@href, \'Action=AgentTicket$FormDraftCase->{Module};TicketID=$TicketID' )]"
-        )->VerifiedClick();
-
-        $Selenium->WaitFor( WindowCount => 2 );
-        my $Handles = $Selenium->get_window_handles();
-        $Selenium->switch_to_window( $Handles->[1] );
-
-        # Wait until page has loaded, if necessary.
-        $Selenium->WaitFor(
-            JavaScript =>
-                'return typeof($) === "function" && $("#submitRichText").length;'
-        );
-
         # Select FormDraft values.
         for my $Field ( sort keys %{ $FormDraftCase->{Fields} } ) {
             if ( $FormDraftCase->{Fields}->{$Field}->{Type} eq 'AutoComplete' ) {
 
                 $Selenium->find_element( "#$FormDraftCase->{Fields}->{$Field}->{ID}", 'css' )->send_keys($TestCustomer);
                 $Selenium->WaitFor(
-                    JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length'
+                    JavaScript =>
+                        "return typeof(\$) === 'function' && \$('li.ui-menu-item:contains($TestCustomer):visible').length;"
                 );
-
-                $Selenium->find_element("//*[text()='$TestCustomer']")->VerifiedClick();
+                $Selenium->execute_script("\$('li.ui-menu-item:contains($TestCustomer)').click();");
 
             }
             elsif ( $FormDraftCase->{Fields}->{$Field}->{Type} eq 'Attachment' ) {
 
-                # make the file upload field visible
+                # Make the file upload field visible.
+                $Selenium->VerifiedRefresh();
                 $Selenium->execute_script(
-                    "\$('#FileUpload').css('display', 'block')"
+                    "\$('#FileUpload').css('display', 'block');"
                 );
+                $Selenium->WaitFor(
+                    JavaScript =>
+                        'return typeof($) === "function" && $("#FileUpload:visible").length;'
+                );
+                sleep 1;
 
-                # upload a file
+                # Upload a file.
                 $Selenium->find_element( "#FileUpload", 'css' )
                     ->send_keys( $ConfigObject->Get('Home') . "/scripts/test/sample/Main/Main-Test1.pdf" );
 
+                $Selenium->WaitFor(
+                    JavaScript =>
+                        "return typeof(\$) === 'function' && \$('.AttachmentList td.Filename:contains(\"Main-Test1.pdf\")').length === 1;"
+                );
+
+                # Wait until file is uploaded and 'Progress' class is removed.
+                $Selenium->WaitFor(
+                    JavaScript =>
+                        "return !\$('.AttachmentList td.Filename:contains(\"Main-Test1.pdf\")').siblings('.Filesize').find('.Progress').length;"
+                );
+
                 # Check if uploaded.
-                $Self->Is(
+                $Self->True(
                     $Selenium->execute_script(
-                        "return \$('#AttachmentList tbody tr td.Filename:contains(Main-Test1.pdf)').length"
+                        "return \$('.AttachmentList td.Filename:contains(\"Main-Test1.pdf\")').length === 1;"
                     ),
-                    1,
-                    "Uploaded file correctly"
+                    "Uploaded file 'Main-Test1.pdf' correctly"
                 );
 
             }
@@ -202,20 +197,22 @@ $Selenium->RunTest(
         }
 
         # Create FormDraft and submit.
-        $Selenium->find_element( "#FormDraftSave", 'css' )->VerifiedClick();
+        $Selenium->execute_script("\$('#FormDraftSave').click();");
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#FormDraftTitle").length;'
+                'return typeof($) === "function" && $("#FormDraftTitle").length && $("#SaveFormDraft").length;'
         );
         $Selenium->find_element( "#FormDraftTitle", 'css' )->send_keys($Title);
-        $Selenium->find_element( "#SaveFormDraft",  'css' )->click();
+        $Selenium->find_element( "#SaveFormDraft",  'css' )->VerifiedClick();
 
-        # Switch back window.
-        $Selenium->WaitFor( WindowCount => 1 );
-        $Selenium->switch_to_window( $Handles->[0] );
+        # Navigate to zoom view of created test ticket.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID");
 
-        # Refresh screen.
-        $Selenium->VerifiedRefresh();
+        # Wait until page has loaded, if necessary.
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("a.AsPopup:contains(Forward)").length;'
+        );
 
         # Verify FormDraft is created in zoom screen.
         $Self->True(
@@ -223,27 +220,17 @@ $Selenium->RunTest(
             "FormDraft for $FormDraftCase->{Module} $Title is found",
         );
 
-        # Expand article details.
-        $Selenium->find_element( '.WidgetAction.Expand', 'css' )->click();
+        # Navigate to forward view and try to create identical FormDraft to check for error.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketForward;TicketID=$TicketID");
 
-        # Try to create identical FormDraft to check for error.
-        $Selenium->find_element( "Forward", 'link_text' )->click();
-
-        $Selenium->WaitFor( WindowCount => 2 );
-        $Handles = $Selenium->get_window_handles();
-        $Selenium->switch_to_window( $Handles->[1] );
-
-        # Wait until page has loaded, if necessary.
-        $Selenium->WaitFor(
-            JavaScript =>
-                'return typeof($) === "function" && $("#submitRichText").length;'
+        $Selenium->WaitForjQueryEventBound(
+            CSSSelector => "#FormDraftSave",
         );
 
-        # Try to create FormDraft with same name, expecting error.
-        $Selenium->find_element( "#FormDraftSave", 'css' )->VerifiedClick();
+        $Selenium->execute_script("\$('#FormDraftSave').click();");
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#FormDraftTitle").length;'
+                'return typeof($) === "function" && $("#FormDraftTitle").length && $("#SaveFormDraft").length;'
         );
         $Selenium->find_element( "#FormDraftTitle", 'css' )->send_keys($Title);
         $Selenium->find_element( "#SaveFormDraft",  'css' )->click();
@@ -252,23 +239,15 @@ $Selenium->RunTest(
         $Selenium->WaitFor( AlertPresent => 1 ) || die 'Alert not found';
 
         # Check alert dialog message.
-        my $ExpectedAlertText = "FormDraft name $Title is already in use!";
         $Self->True(
-            ( $Selenium->get_alert_text() =~ /$ExpectedAlertText/ ),
+            index( $Selenium->get_alert_text(), "FormDraft name $Title is already in use!" ) > -1,
             "Check alert message text.",
         );
 
         # Accept alert.
         $Selenium->accept_alert();
 
-        # Close screen and switch back window.
-        $Selenium->close();
-
-        # Switch back window.
-        $Selenium->WaitFor( WindowCount => 1 );
-        $Selenium->switch_to_window( $Handles->[0] );
-
-        # Get backend object for channel.
+        # Close screen and switch back to the main window.
         my $ArticlePhoneChannelObject = $ArticleObject->BackendForChannel( ChannelName => 'Phone' );
 
         # Create test Article to trigger that draft is outdated.
@@ -289,27 +268,20 @@ $Selenium->RunTest(
             "Article ID $ArticleID is created",
         );
 
-        # Refresh screen.
-        $Selenium->VerifiedRefresh();
+        # Navigate to zoom view of created test ticket and get ID or form draft.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID");
+
+        my $FormDraftLink = $Selenium->execute_script("return \$('.DraftName .MasterActionLink').attr('href');");
+        my ($FormDraftID) = $FormDraftLink =~ m{FormDraftID=(\d*)};
 
         # Click on test created FormDraft and switch window.
-        $Selenium->find_element(
-            "//a[contains(\@href, \'Action=AgentTicket$FormDraftCase->{Module};TicketID=$TicketID;LoadFormDraft=1' )]"
-        )->VerifiedClick();
-
-        $Selenium->WaitFor( WindowCount => 2 );
-        $Handles = $Selenium->get_window_handles();
-        $Selenium->switch_to_window( $Handles->[1] );
-
-        # Wait until page has loaded, if necessary.
-        $Selenium->WaitFor(
-            JavaScript =>
-                'return typeof($) === "function" && $("#submitRichText").length;'
+        $Selenium->VerifiedGet(
+            "${ScriptAlias}index.pl?Action=AgentTicket$FormDraftCase->{Module};TicketID=$TicketID;LoadFormDraft=1;FormDraftID=$FormDraftID"
         );
 
-        # Make sure that outdated notification is present.
+        # Make sure that draft loaded notification is present.
         $Self->True(
-            index( $Selenium->get_page_source(), "You have loaded the draft \"$Title\"" ) > 0,
+            index( $Selenium->get_page_source(), "You have loaded the draft \"$Title\"" ) > -1,
             'Draft loaded notification is present',
         );
 
@@ -318,15 +290,17 @@ $Selenium->RunTest(
             index(
                 $Selenium->get_page_source(),
                 "Please note that this draft is outdated because the ticket was modified since this draft was created."
-                ) > 0,
+            ) > -1,
             'Outdated notification is present',
         );
 
         # Verify FormDraft values.
         for my $FieldValue ( sort keys %{ $FormDraftCase->{Fields} } ) {
+
             if ( $FormDraftCase->{Fields}->{$FieldValue}->{Type} eq 'Input' ) {
+
                 $Self->Is(
-                    $Selenium->find_element( "#$FormDraftCase->{Fields}->{$FieldValue}->{ID}", 'css' )->get_value(),
+                    $Selenium->execute_script("return \$('#$FormDraftCase->{Fields}->{$FieldValue}->{ID}').val();"),
                     $FormDraftCase->{Fields}->{$FieldValue}->{Value},
                     "Initial FormDraft value for $FormDraftCase->{Module} field $FieldValue is correct"
                 );
@@ -337,105 +311,81 @@ $Selenium->RunTest(
             }
             elsif ( $FormDraftCase->{Fields}->{$FieldValue}->{Type} eq 'Attachment' ) {
 
-                # there should be only one file with a certain name
-                $Self->Is(
-                    $Selenium->execute_script(
-                        "return \$('#AttachmentList tbody tr td.Filename:contains(Main-Test1.pdf)').length"
-                    ),
-                    1,
-                    "Uploaded file correctly"
+                # Wait until field has loaded, if necessary.
+                $Selenium->WaitFor(
+                    JavaScript =>
+                        "return typeof(\$) === 'function' && \$('.AttachmentList tbody tr td.Filename').length === 1;"
                 );
-                $Self->Is(
+
+                # There should be only one file with a certain name.
+                $Self->True(
                     $Selenium->execute_script(
-                        "return \$('#AttachmentList tbody tr td.Filename').length"
+                        "return \$('.AttachmentList td.Filename:contains(\"Main-Test1.pdf\")').length === 1;"
                     ),
-                    1,
+                    "Uploaded file 'Main-Test1.pdf' correctly"
+                );
+                $Self->True(
+                    $Selenium->execute_script(
+                        "return \$('.AttachmentList tbody tr td.Filename').length === 1;"
+                    ),
                     "Only one file present"
                 );
 
-                # add a second file
-                $Selenium->execute_script(
-                    "\$('#FileUpload').css('display', 'block')"
+                # Add a second file.
+                $Selenium->VerifiedRefresh();
+                $Selenium->WaitFor(
+                    JavaScript =>
+                        'return typeof($) === "function" && $("#FileUpload").length;'
                 );
+                $Selenium->execute_script(
+                    "\$('#FileUpload').css('display', 'block');"
+                );
+                $Selenium->WaitFor( JavaScript => 'return $("#FileUpload:visible").length;' );
+                sleep 1;
 
-                # upload a file
+                # Upload a file.
                 $Selenium->find_element( "#FileUpload", 'css' )
                     ->send_keys( $ConfigObject->Get('Home') . "/scripts/test/sample/Main/Main-Test1.doc" );
 
+                $Selenium->WaitFor(
+                    JavaScript =>
+                        "return typeof(\$) === 'function' && \$('.AttachmentList td.Filename:contains(\"Main-Test1.doc\")').length === 1;"
+                );
+
+                # Wait until file is uploaded and 'Progress' class is removed.
+                $Selenium->WaitFor(
+                    JavaScript =>
+                        "return !\$('.AttachmentList td.Filename:contains(\"Main-Test1.doc\")').siblings('.Filesize').find('.Progress').length;"
+                );
+
                 # Check if uploaded.
-                $Self->Is(
+                $Self->True(
                     $Selenium->execute_script(
-                        "return \$('#AttachmentList tbody tr td.Filename:contains(Main-Test1.doc)').length"
+                        "return \$('.AttachmentList td.Filename:contains(\"Main-Test1.doc\")').length === 1;"
                     ),
-                    1,
-                    "Uploaded file correctly"
+                    "Uploaded file 'Main-Test1.doc' correctly"
                 );
             }
         }
 
-        $Selenium->find_element( "#FormDraftUpdate", 'css' )->click();
+        # Navigate to zoom view of created test ticket.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID");
 
-        # Switch back window.
-        $Selenium->WaitFor( WindowCount => 1 );
-        $Selenium->switch_to_window( $Handles->[0] );
-
-        # Refresh screen.
-        $Selenium->VerifiedRefresh();
-
-        # Click on test created FormDraft and switch window.
-        $Selenium->find_element(
-            "//a[contains(\@href, \'Action=AgentTicket$FormDraftCase->{Module};TicketID=$TicketID;LoadFormDraft=1' )]"
-        )->VerifiedClick();
-
-        $Selenium->WaitFor( WindowCount => 2 );
-        $Handles = $Selenium->get_window_handles();
-        $Selenium->switch_to_window( $Handles->[1] );
-
-        # Wait until page has loaded, if necessary.
-        $Selenium->WaitFor(
-            JavaScript =>
-                'return typeof($) === "function" && $("#submitRichText").length;'
+        $Selenium->WaitForjQueryEventBound(
+            CSSSelector => ".FormDraftDelete",
         );
 
-        # Verify updated FormDraft values.
-        for my $FieldValue ( sort keys %{ $FormDraftCase->{Fields} } ) {
-            if ( $FormDraftCase->{Fields}->{$FieldValue}->{Type} eq 'Input' ) {
-                $Self->Is(
-                    $Selenium->find_element( "#$FormDraftCase->{Fields}->{$FieldValue}->{ID}", 'css' )->get_value(),
-                    $FormDraftCase->{Fields}->{$FieldValue}->{Update},
-                    "Updated FormDraft value for $FormDraftCase->{Module} field $FieldValue is correct"
-                );
-            }
-            elsif ( $FormDraftCase->{Fields}->{$FieldValue}->{Type} eq 'Attachment' ) {
-
-                # there should be two files now
-                $Self->Is(
-                    $Selenium->execute_script(
-                        "return \$('#AttachmentList tbody tr td.Filename').length"
-                    ),
-                    2,
-                    "Uploaded file correctly"
-                );
-            }
-        }
-
-        $Selenium->close();
-
-        # Switch back window.
-        $Selenium->WaitFor( WindowCount => 1 );
-        $Selenium->switch_to_window( $Handles->[0] );
-
-        # Delete draft
-        $Selenium->find_element( ".FormDraftDelete", 'css' )->VerifiedClick();
+        # Delete draft.
+        $Selenium->find_element( ".FormDraftDelete", 'css' )->click();
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#DeleteConfirm").length;'
         );
-        $Selenium->find_element( "#DeleteConfirm", 'css' )->VerifiedClick();
+        $Selenium->find_element( "#DeleteConfirm", 'css' )->click();
 
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $(".FormDraftDelete").length==0;'
+                'return typeof($) === "function" && $(".FormDraftDelete").length == 0;'
         ) || die 'FormDraft was not deleted!';
 
         # Delete created test ticket.
@@ -443,6 +393,15 @@ $Selenium->RunTest(
             TicketID => $TicketID,
             UserID   => 1,
         );
+
+        # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+        if ( !$Success ) {
+            sleep 3;
+            $Success = $TicketObject->TicketDelete(
+                TicketID => $TicketID,
+                UserID   => 1,
+            );
+        }
         $Self->True(
             $Success,
             "Ticket ID $TicketID is deleted"
@@ -459,6 +418,12 @@ $Selenium->RunTest(
             $Success,
             "Delete customer user - $TestCustomer",
         );
+
+        # Make sure the cache is correct.
+        my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+        for my $Cache (qw(Ticket Article CustomerUser)) {
+            $CacheObject->CleanUp( Type => $Cache );
+        }
     }
 );
 

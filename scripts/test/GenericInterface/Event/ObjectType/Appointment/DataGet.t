@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -22,12 +22,16 @@ my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 my $RandomID = $Helper->GetRandomID();
 
+my ( $TestUserLogin, $UserID ) = $Helper->TestUserCreate(
+    Groups => [ 'admin', 'users', ],
+);
+
 my %Calendar = $Kernel::OM->Get('Kernel::System::Calendar')->CalendarCreate(
     CalendarName => 'Meetings' . $RandomID,
     GroupID      => 1,
     Color        => '#FF7700',
-    UserID       => 1,
     ValidID      => 1,
+    UserID       => $UserID,
 );
 
 my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
@@ -44,7 +48,7 @@ my $AppointmentID = $AppointmentObject->AppointmentCreate(
     NotificationTime     => '2016-01-01 17:00:00',
     NotificationTemplate => 'Custom',
     NotificationCustom   => 'relative',
-    UserID               => 1,
+    UserID               => $UserID,
 );
 
 $Self->True(
@@ -55,7 +59,7 @@ $Self->True(
 my %ExpectedDataRaw = $AppointmentObject->AppointmentGet(
     CalendarID    => $Calendar{CalendarID},
     AppointmentID => $AppointmentID,
-    UserID        => 1,
+    UserID        => $UserID,
 );
 
 my @Tests = (

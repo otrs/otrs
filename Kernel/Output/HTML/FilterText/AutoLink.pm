@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::FilterText::AutoLink;
@@ -73,12 +73,14 @@ sub Post {
         for my $RegExp ( @{ $Link->{RegExp} } ) {
             my @Count    = $RegExp =~ m{\(}gx;
             my $Elements = scalar @Count;
-            if ( my @MatchData = ${ $Param{Data} } =~ m{([\s:]$RegExp)}gxi ) {
+
+            if ( my @MatchData = ${ $Param{Data} } =~ m{((?<!\w)$RegExp)}gxi ) {
                 my $Counter = 0;
                 KEYWORD:
                 while ( $MatchData[$Counter] ) {
 
                     my $HoleMatchString = $MatchData[$Counter];
+                    $HoleMatchString =~ s/^\s+|\s+$//g;
                     if ( $Keywords{$HoleMatchString} ) {
                         $Counter += $Elements + 1;
                         next KEYWORD;
@@ -105,7 +107,7 @@ sub Post {
                 next DATA if !$URLRef->{URL} || !$URLRef->{Image} || !$URLRef->{Target};
 
                 my $KeywordQuote = $LayoutObject->Ascii2Html( Text => $Keyword );
-                my $URL = $URLRef->{URL};
+                my $URL          = $URLRef->{URL};
 
                 # replace the whole keyword
                 my $KeywordLinkEncode = $LayoutObject->LinkEncode($Keyword);

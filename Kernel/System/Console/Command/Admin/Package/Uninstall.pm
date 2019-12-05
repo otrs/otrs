@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Console::Command::Admin::Package::Uninstall;
@@ -14,6 +14,7 @@ use warnings;
 use parent qw(Kernel::System::Console::BaseCommand Kernel::System::Console::Command::Admin::Package::List);
 
 our @ObjectDependencies = (
+    'Kernel::System::Cache',
     'Kernel::System::Package',
 );
 
@@ -23,7 +24,7 @@ sub Configure {
     $Self->Description('Uninstall an OTRS package.');
     $Self->AddOption(
         Name        => 'force',
-        Description => 'Force package Uninstallation even if validation fails.',
+        Description => 'Force package uninstallation even if validation fails.',
         Required    => 0,
         HasValue    => 0,
     );
@@ -42,6 +43,13 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     $Self->Print("<yellow>Uninstalling package...</yellow>\n");
+
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
+    # Enable in-memory cache to improve SysConfig performance, which is normally disabled for commands.
+    $CacheObject->Configure(
+        CacheInMemory => 1,
+    );
 
     my $FileString = $Self->_PackageContentGet( Location => $Self->GetArgument('location') );
     return $Self->ExitCodeError() if !$FileString;
@@ -114,6 +122,11 @@ sub Run {
             print "+----------------------------------------------------------------------------+\n";
         }
     }
+
+    # Disable in memory cache.
+    $CacheObject->Configure(
+        CacheInMemory => 0,
+    );
 
     $Self->Print("<green>Done.</green>\n");
     return $Self->ExitCodeOk();

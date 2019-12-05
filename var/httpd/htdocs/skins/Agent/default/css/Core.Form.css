@@ -1,8 +1,10 @@
-/**
- * @project     OTRS (http://www.otrs.org) - Agent Frontend
- * @copyright   OTRS AG
- * @license     AGPL (http://www.gnu.org/licenses/agpl.txt)
- */
+/*
+Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+
+This software comes with ABSOLUTELY NO WARRANTY. For details, see
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
+*/
 
 /**
  * @package     Skin "Default"
@@ -345,13 +347,21 @@ button.Reset:active {
     width: 16px;
 }
 
+.DialogTreeSearch span {
+    color: #AAAAAA;
+    cursor: pointer;
+    font-weight: bold;
+    position: relative;
+    right: 10px;
+}
+
 #TreeContainer #TreeSearch input {
     display: block;
     margin: 10px 12px 0px 12px;
     width: 92%;
 }
 
-#JSTree {
+.JSTreeField {
     background-color: #FFFFFF;
     border: 1px solid #ccc;
     height: 72%;
@@ -363,26 +373,26 @@ button.Reset:active {
     padding: 0px 10px 10px 10px;
 }
 
-#JSTree.InOverlay {
+.JSTreeField.InOverlay {
     margin: 5px 5px 5px 0px;
     width: 85%;
     float: left;
 }
 
-#JSTree .Disabled > a {
+.JSTreeField .Disabled > a {
     color: #aaa;
     font-style: italic;
 }
 
-#JSTree .jstree-search {
+.JSTreeField .jstree-search {
     color: #E07006;
 }
 
-#JSTree .jstree-search.jstree-clicked {
+.JSTreeField .jstree-search.jstree-clicked {
     color: #000;
 }
 
-#JSTree .jstree-clicked {
+.JSTreeField .jstree-clicked {
     background: #f3960d;
     background: -moz-linear-gradient(top,  #ffe7bd 0%, #fbba49 20%, #f6ad3e 51%, #f3960d 51%, #e98207 95%, #e07006 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffe7bd), color-stop(20%,#fbba49), color-stop(51%,#f6ad3e), color-stop(51%,#f3960d), color-stop(95%,#e98207), color-stop(100%,#e07006));
@@ -394,12 +404,12 @@ button.Reset:active {
     padding: 0px 3px;
 }
 
-#JSTree .jstree-hovered {
+.JSTreeField .jstree-hovered {
     background-color: #eee;
     border-color: #ddd;
 }
 
-#JSTree a:focus {
+.JSTreeField a:focus {
     background-color: #eee;
     border-color: #ddd;
 }
@@ -654,7 +664,6 @@ fieldset.TableLike > .Row > .Field > input {
  *          Additionally we have a generic FloatingField class,
  *          RichTextField is for backwards compatibility.
  */
-fieldset.TableLike > .RichTextField,
 fieldset.TableLike > .Row > .RichTextField,
 fieldset.TableLike > .FloatingField,
 fieldset.TableLike > .Row > .FloatingField {
@@ -664,14 +673,28 @@ fieldset.TableLike > .Row > .FloatingField {
     float: left;
 }
 
-body.Popup fieldset.TableLike > .RichTextField,
+fieldset.TableLike > .RichTextField {
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 30%;
+    margin-right: 0;
+}
+
 body.Popup fieldset.TableLike > .Row > .RichTextField,
 body.Popup fieldset.TableLike > .FloatingField,
 body.Popup fieldset.TableLike > .Row > .FloatingField {
     margin: 7px 7px 0px 7px;
 }
 
-.RTL fieldset.TableLike > .RichTextField,
+body.Popup fieldset.TableLike > .RichTextField {
+    padding-top: 7px;
+    padding-left: 17px;
+    padding-right: 0px;
+    margin-left: 170px;
+    margin-right: 0;
+}
+
 .RTL fieldset.TableLike > .Row > .RichTextField,
 .RTL fieldset.TableLike > .FloatingField,
 .RTL fieldset.TableLike > .Row > .FloatingField {
@@ -680,11 +703,26 @@ body.Popup fieldset.TableLike > .Row > .FloatingField {
     float: right;
 }
 
-body.Popup .RTL fieldset.TableLike > .RichTextField,
-body.Popup .RTL fieldset.TableLike > .Row > .RichTextField,
-body.Popup .RTL fieldset.TableLike > .FloatingField,
-body.Popup .RTL fieldset.TableLike > .Row > .FloatingField {
+.RTL fieldset.TableLike > .RichTextField {
+    padding-bottom: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+    margin-right: 30%;
+    margin-left: 0;
+}
+
+body.RealPopup.RTL fieldset.TableLike > .Row > .RichTextField,
+body.RealPopup.RTL fieldset.TableLike > .FloatingField,
+body.RealPopup.RTL fieldset.TableLike > .Row > .FloatingField {
     margin: 7px 7px 0px 7px;
+}
+
+body.RealPopup.RTL fieldset.TableLike > .RichTextField {
+    padding-top: 7px;
+    padding-right: 17px;
+    padding-left: 0px;
+    margin-right: 170px;
+    margin-left: 0;
 }
 
 fieldset.TableLike > .Value,
@@ -789,19 +827,6 @@ fieldset.TableLike > .Row > label {
 
 iframe.Signature {
     border: 1px solid #888;
-}
-
-/**
- * @subsection AJAX Loader
- */
-
-.AJAXLoader {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    margin: 2px;
-    background: url("../img/loader.gif") no-repeat right center;
-    vertical-align: bottom;
 }
 
 /**

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentTicketResponsibleView;
@@ -159,6 +159,9 @@ sub Run {
         $Output .= $LayoutObject->NavigationBar();
     }
 
+    # Notify if there are tickets which are not updated.
+    $Output .= $LayoutObject->NotifyNonUpdatedTickets() // '';
+
     # get locked  viewable tickets...
     my $SortByS = $SortBy;
     if ( $SortByS eq 'CreateTime' ) {
@@ -175,7 +178,7 @@ sub Run {
                 ResponsibleIDs => [ $Self->{UserID} ],
                 OrderBy        => $OrderBy,
                 SortBy         => $SortByS,
-                UserID         => 1,
+                UserID         => $Self->{UserID},
                 Permission     => 'ro',
             },
         },
@@ -191,7 +194,7 @@ sub Run {
                 TicketFlagUserID => $Self->{UserID},
                 OrderBy          => $OrderBy,
                 SortBy           => $SortByS,
-                UserID           => 1,
+                UserID           => $Self->{UserID},
                 Permission       => 'ro',
             },
         },
@@ -203,7 +206,7 @@ sub Run {
                 ResponsibleIDs => [ $Self->{UserID} ],
                 OrderBy        => $OrderBy,
                 SortBy         => $SortByS,
-                UserID         => 1,
+                UserID         => $Self->{UserID},
                 Permission     => 'ro',
             },
         },
@@ -216,7 +219,7 @@ sub Run {
                 ResponsibleIDs                => [ $Self->{UserID} ],
                 OrderBy                       => $OrderBy,
                 SortBy                        => $SortByS,
-                UserID                        => 1,
+                UserID                        => $Self->{UserID},
                 Permission                    => 'ro',
             },
         },
@@ -235,7 +238,7 @@ sub Run {
     my $Limit = 10_000;
 
     my $ElementChanged = $ParamObject->GetParam( Param => 'ElementChanged' ) || '';
-    my $HeaderColumn = $ElementChanged;
+    my $HeaderColumn   = $ElementChanged;
     $HeaderColumn =~ s{\A ColumnFilter }{}msxg;
     my @OriginalViewableTickets;
     my @ViewableTickets;
@@ -389,7 +392,7 @@ sub Run {
         next COLUMNNAME if !$GetColumnFilter{$ColumnName};
         $ColumnFilterLink
             .= ';' . $LayoutObject->Ascii2Html( Text => 'ColumnFilter' . $ColumnName )
-            . '=' . $LayoutObject->Ascii2Html( Text => $GetColumnFilter{$ColumnName} )
+            . '=' . $LayoutObject->Ascii2Html( Text => $GetColumnFilter{$ColumnName} );
     }
 
     # show tickets
@@ -431,7 +434,7 @@ sub Run {
 
         Filter     => $Filter,
         Filters    => \%NavBarFilter,
-        FilterLink => $LinkFilter,
+        LinkFilter => $LinkFilter,
 
         TitleName  => Translatable('My Responsible Tickets'),
         TitleValue => $Filters{$Filter}->{Name},

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
@@ -107,7 +107,7 @@
 [% RenderBlockStart("Result") %]
         <div class="WidgetSimple">
             <div class="Header">
-                <h2>[% Data.MatchesFound | html %] [% Translate("Results") | html %]</h2>
+                <h2>[% Translate("%s Results", Data.MatchesFound) | html %]</h2>
             </div>
             <div class="Content">
                 <table class="DataTable" id="Results">

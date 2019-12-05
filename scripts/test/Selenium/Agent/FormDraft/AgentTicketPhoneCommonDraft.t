@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -12,13 +12,11 @@ use utf8;
 
 use vars (qw($Self));
 
-# Get selenium object.
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # Get helper object.
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         # Do not check RichText and hide Fred.
@@ -39,7 +37,6 @@ $Selenium->RunTest(
             );
         }
 
-        # Get ticket object.
         my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
         my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
@@ -74,7 +71,6 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        # Get script alias.
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
         # Navigate to zoom view of created test ticket.
@@ -145,15 +141,15 @@ $Selenium->RunTest(
             my $Title = $Test->{Module} . 'FormDraft' . $RandomID;
 
             # Force sub menus to be visible in order to be able to click one of the links.
-            $Selenium->WaitFor(
-                JavaScript =>
-                    'return typeof($) === "function" && $("#nav-Communication ul").css({ "height": "auto", "opacity": "100" });'
+            $Selenium->execute_script(
+                '$("#nav-Communication ul").css({ "height": "auto", "opacity": "100" });'
             );
+            $Selenium->WaitFor( JavaScript => "return \$('#nav-Communication ul').css('opacity') == 1;" );
 
             # Click on module and switch window.
             $Selenium->find_element(
                 "//a[contains(\@href, \'Action=AgentTicketPhone$Test->{Module};TicketID=$TicketID' )]"
-            )->VerifiedClick();
+            )->click();
 
             $Selenium->WaitFor( WindowCount => 2 );
             my $Handles = $Selenium->get_window_handles();
@@ -169,25 +165,32 @@ $Selenium->RunTest(
             for my $Field ( sort keys %{ $Test->{Fields} } ) {
 
                 if ( $Test->{Fields}->{$Field}->{Type} eq 'DropDown' ) {
-                    $Selenium->execute_script(
-                        "\$('#$Test->{Fields}->{$Field}->{ID}').val('$Test->{Fields}->{$Field}->{Value}').trigger('redraw.InputField').trigger('change');"
+                    $Selenium->InputFieldValueSet(
+                        Element => "#$Test->{Fields}->{$Field}->{ID}",
+                        Value   => $Test->{Fields}->{$Field}->{Value},
                     );
                 }
                 elsif ( $Test->{Fields}->{$Field}->{Type} eq 'Attachment' ) {
 
-                    # make the file upload field visible
+                    # Make the file upload field visible.
+                    $Selenium->VerifiedRefresh();
                     $Selenium->execute_script(
                         "\$('#FileUpload').css('display', 'block')"
                     );
+                    $Selenium->WaitFor(
+                        JavaScript =>
+                            'return typeof($) === "function" && $("#FileUpload:visible").length;'
+                    );
+                    sleep 1;
 
-                    # upload a file
+                    # Upload a file.
                     $Selenium->find_element( "#FileUpload", 'css' )
                         ->send_keys( $ConfigObject->Get('Home') . "/scripts/test/sample/Main/Main-Test1.pdf" );
 
                     # Check if uploaded.
                     $Self->Is(
                         $Selenium->execute_script(
-                            "return \$('#AttachmentList tbody tr td.Filename:contains(Main-Test1.pdf)').length"
+                            "return \$('.AttachmentList tbody tr td.Filename:contains(Main-Test1.pdf)').length"
                         ),
                         1,
                         "Uploaded file correctly"
@@ -202,7 +205,7 @@ $Selenium->RunTest(
             }
 
             # Create FormDraft and submit.
-            $Selenium->find_element( "#FormDraftSave", 'css' )->VerifiedClick();
+            $Selenium->execute_script("\$('#FormDraftSave').click();");
             $Selenium->WaitFor(
                 JavaScript =>
                     'return typeof($) === "function" && $("#FormDraftTitle").length;'
@@ -223,8 +226,7 @@ $Selenium->RunTest(
                 "FormDraft for $Test->{Module} $Title is found",
             );
 
-            # Get article object.
-            my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+            my $ArticleObject        = $Kernel::OM->Get('Kernel::System::Ticket::Article');
             my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Phone' );
 
             # Create test Article to trigger that draft is outdated.
@@ -251,7 +253,7 @@ $Selenium->RunTest(
             # Click on test created FormDraft and switch window.
             $Selenium->find_element(
                 "//a[contains(\@href, \'Action=AgentTicketPhone$Test->{Module};TicketID=$TicketID;LoadFormDraft=1' )]"
-            )->VerifiedClick();
+            )->click();
 
             $Selenium->WaitFor( WindowCount => 2 );
             $Handles = $Selenium->get_window_handles();
@@ -289,8 +291,9 @@ $Selenium->RunTest(
                         "Initial FormDraft value for $Test->{Module} field $FieldValue is correct"
                     );
 
-                    $Selenium->execute_script(
-                        "\$('#$Test->{Fields}->{$FieldValue}->{ID}').val('$Test->{Fields}->{$FieldValue}->{Update}').trigger('redraw.InputField').trigger('change');"
+                    $Selenium->InputFieldValueSet(
+                        Element => "#$Test->{Fields}->{$FieldValue}->{ID}",
+                        Value   => $Test->{Fields}->{$FieldValue}->{Update},
                     );
                 }
                 elsif ( $Test->{Fields}->{$FieldValue}->{Type} eq 'Attachment' ) {
@@ -298,32 +301,38 @@ $Selenium->RunTest(
                     # there should be only one file with a certain name
                     $Self->Is(
                         $Selenium->execute_script(
-                            "return \$('#AttachmentList tbody tr td.Filename:contains(Main-Test1.pdf)').length"
+                            "return \$('.AttachmentList tbody tr td.Filename:contains(Main-Test1.pdf)').length"
                         ),
                         1,
                         "Uploaded file correctly"
                     );
                     $Self->Is(
                         $Selenium->execute_script(
-                            "return \$('#AttachmentList tbody tr td.Filename').length"
+                            "return \$('.AttachmentList tbody tr td.Filename').length"
                         ),
                         1,
                         "Only one file present"
                     );
 
-                    # add a second file
+                    # Add a second file.
+                    $Selenium->VerifiedRefresh();
                     $Selenium->execute_script(
                         "\$('#FileUpload').css('display', 'block')"
                     );
+                    $Selenium->WaitFor(
+                        JavaScript =>
+                            'return typeof($) === "function" && $("#FileUpload:visible").length;'
+                    );
+                    sleep 1;
 
-                    # upload a file
+                    # Upload a file.
                     $Selenium->find_element( "#FileUpload", 'css' )
                         ->send_keys( $ConfigObject->Get('Home') . "/scripts/test/sample/Main/Main-Test1.doc" );
 
                     # Check if uploaded.
                     $Self->Is(
                         $Selenium->execute_script(
-                            "return \$('#AttachmentList tbody tr td.Filename:contains(Main-Test1.doc)').length"
+                            "return \$('.AttachmentList tbody tr td.Filename:contains(Main-Test1.doc)').length"
                         ),
                         1,
                         "Uploaded file correctly"
@@ -354,7 +363,7 @@ $Selenium->RunTest(
             # Click on test created FormDraft and switch window.
             $Selenium->find_element(
                 "//a[contains(\@href, \'Action=AgentTicketPhone$Test->{Module};TicketID=$TicketID;LoadFormDraft=1' )]"
-            )->VerifiedClick();
+            )->click();
 
             $Selenium->WaitFor( WindowCount => 2 );
             $Handles = $Selenium->get_window_handles();
@@ -381,7 +390,7 @@ $Selenium->RunTest(
                     # there should be two files now
                     $Self->Is(
                         $Selenium->execute_script(
-                            "return \$('#AttachmentList tbody tr td.Filename').length"
+                            "return \$('.AttachmentList tbody tr td.Filename').length"
                         ),
                         2,
                         "Uploaded file correctly"
@@ -406,12 +415,12 @@ $Selenium->RunTest(
             $Selenium->VerifiedRefresh();
 
             # Delete draft
-            $Selenium->find_element( ".FormDraftDelete", 'css' )->VerifiedClick();
+            $Selenium->find_element( ".FormDraftDelete", 'css' )->click();
             $Selenium->WaitFor(
                 JavaScript =>
                     'return typeof($) === "function" && $("#DeleteConfirm").length;'
             );
-            $Selenium->find_element( "#DeleteConfirm", 'css' )->VerifiedClick();
+            $Selenium->find_element( "#DeleteConfirm", 'css' )->click();
 
             $Selenium->WaitFor(
                 JavaScript =>
@@ -424,6 +433,15 @@ $Selenium->RunTest(
             TicketID => $TicketID,
             UserID   => 1,
         );
+
+        # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+        if ( !$Success ) {
+            sleep 3;
+            $Success = $TicketObject->TicketDelete(
+                TicketID => $TicketID,
+                UserID   => 1,
+            );
+        }
         $Self->True(
             $Success,
             "Ticket ID $TicketID is deleted"

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::NavBar::AdminFavourites;
@@ -14,6 +14,7 @@ use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
+use Unicode::Collate::Locale;
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -35,9 +36,9 @@ sub Run {
     # check if the registration config is valid
     return if !IsHashRefWithData($FrontendModuleConfig);
     return if !IsHashRefWithData($FrontendNavigationConfig);
-    return if !IsHashRefWithData( $FrontendNavigationConfig->{1} );
+    return if !IsArrayRefWithData( $FrontendNavigationConfig->{'001-Framework'} );
 
-    my $NameForID = $FrontendNavigationConfig->{1}->{Name};
+    my $NameForID = $FrontendNavigationConfig->{'001-Framework'}->[0]->{Name};
     $NameForID =~ s/[ &;]//ig;
 
     # check if the module name is valid
@@ -63,9 +64,17 @@ sub Run {
     }
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    # Create collator according to the user chosen language.
+    my $Collator = Unicode::Collate::Locale->new(
+        locale => $LayoutObject->{LanguageObject}->{UserLanguage},
+    );
+
     @Favourites = sort {
-        $LayoutObject->{LanguageObject}->Translate( $a->{Name} )
-            cmp $LayoutObject->{LanguageObject}->Translate( $b->{Name} )
+        $Collator->cmp(
+            $LayoutObject->{LanguageObject}->Translate( $a->{Name} ),
+            $LayoutObject->{LanguageObject}->Translate( $b->{Name} )
+        )
     } @Favourites;
 
     if (@Favourites) {

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::LinkObject;
@@ -225,7 +225,7 @@ sub PossibleLinkList {
 
     # get possible link list
     my $PossibleLinkListRef = $ConfigObject->Get('LinkObject::PossibleLink') || {};
-    my %PossibleLinkList = %{$PossibleLinkListRef};
+    my %PossibleLinkList    = %{$PossibleLinkListRef};
 
     # prepare the possible link list
     POSSIBLELINK:
@@ -1046,7 +1046,8 @@ sub LinkList {
     # get complete list for both directions (or only one if restricted)
     my $SourceLinks = {};
     my $TargetLinks = {};
-    if ( !$Param{Direction} || $Param{Direction} eq 'Both' || $Param{Direction} eq 'Target' ) {
+    my $Direction   = $Param{Direction} || 'Both';
+    if ( $Direction ne 'Target' ) {
         $SourceLinks = $Self->_LinkListRaw(
             Direction => 'Target',
             ObjectID  => $ObjectID,
@@ -1055,15 +1056,13 @@ sub LinkList {
             TypeID    => $TypeID,
         );
     }
-    if ( !$Param{Direction} || $Param{Direction} eq 'Both' || $Param{Direction} eq 'Source' ) {
-        $TargetLinks = $Self->_LinkListRaw(
-            Direction => 'Source',
-            ObjectID  => $ObjectID,
-            Key       => $Param{Key},
-            StateID   => $StateID,
-            TypeID    => $TypeID,
-        );
-    }
+    $TargetLinks = $Self->_LinkListRaw(
+        Direction => 'Source',
+        ObjectID  => $ObjectID,
+        Key       => $Param{Key},
+        StateID   => $StateID,
+        TypeID    => $TypeID,
+    );
 
     # get names for used objects
     # consider restriction for Object2
@@ -1117,28 +1116,27 @@ sub LinkList {
             my $IsPointed       = $TypePointedLookup{$TypeID};
             my $TypeName        = $TypeNameLookup{$TypeID};
 
-            # add source links as source (no target links or type is pointed)
-            if ( $HaveSourceLinks && ( $IsPointed || !$HaveTargetLinks ) ) {
+            # add target links as target
+            if ( $Direction ne 'Source' && $HaveTargetLinks && $IsPointed ) {
+                $Links{$ObjectName}->{$TypeName}->{Target} = $TargetLinks->{$ObjectID}->{$TypeID};
+            }
+
+            next TYPEID if $Direction eq 'Target';
+
+            # add source links as source
+            if ($HaveSourceLinks) {
                 $Links{$ObjectName}->{$TypeName}->{Source} = $SourceLinks->{$ObjectID}->{$TypeID};
             }
 
-            # add source and target links as source (have source and target links and type is not pointed)
-            elsif ( $HaveSourceLinks && $HaveTargetLinks ) {
+            # add target links as source for non-pointed links
+            if ( !$IsPointed && $HaveTargetLinks ) {
+                $Links{$ObjectName}->{$TypeName}->{Source} //= {};
                 $Links{$ObjectName}->{$TypeName}->{Source} = {
-                    %{ $SourceLinks->{$ObjectID}->{$TypeID} },
+                    %{ $Links{$ObjectName}->{$TypeName}->{Source} },
                     %{ $TargetLinks->{$ObjectID}->{$TypeID} },
                 };
             }
 
-            # add target links as source (have only target links and type is not pointed)
-            elsif ( $HaveTargetLinks && !$IsPointed ) {
-                $Links{$ObjectName}->{$TypeName}->{Source} = $TargetLinks->{$ObjectID}->{$TypeID};
-            }
-
-            # add target links as target
-            if ( $HaveTargetLinks && $IsPointed ) {
-                $Links{$ObjectName}->{$TypeName}->{Target} = $TargetLinks->{$ObjectID}->{$TypeID};
-            }
         }
     }
 
@@ -1890,7 +1888,7 @@ sub TypeList {
 
     # get type list
     my $TypeListRef = $Kernel::OM->Get('Kernel::Config')->Get('LinkObject::Type') || {};
-    my %TypeList = %{$TypeListRef};
+    my %TypeList    = %{$TypeListRef};
 
     # get check item object
     my $CheckItemObject = $Kernel::OM->Get('Kernel::System::CheckItem');
@@ -1954,7 +1952,7 @@ sub TypeGroupList {
 
     # get possible type groups
     my $TypeGroupListRef = $Kernel::OM->Get('Kernel::Config')->Get('LinkObject::TypeGroup') || {};
-    my %TypeGroupList = %{$TypeGroupListRef};
+    my %TypeGroupList    = %{$TypeGroupListRef};
 
     # get check item object
     my $CheckItemObject = $Kernel::OM->Get('Kernel::System::CheckItem');
@@ -2414,7 +2412,7 @@ sub _LinkListRaw {
 
         # prepare SQL statement
         my $TypeSQL = '';
-        my @Bind = ( \$Param{ObjectID}, \$Param{StateID} );
+        my @Bind    = ( \$Param{ObjectID}, \$Param{StateID} );
 
         # get fields based on type
         my $SQL;
@@ -2476,10 +2474,10 @@ sub _LinkListRaw {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

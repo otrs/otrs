@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminQueue;
@@ -38,7 +38,7 @@ sub Run {
     );
 
     my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
-    my $QueueID = $ParamObject->GetParam( Param => 'QueueID' ) || '';
+    my $QueueID     = $ParamObject->GetParam( Param => 'QueueID' ) || '';
 
     my @Params = (
         qw(
@@ -68,8 +68,18 @@ sub Run {
             my @PrivateKeys = $CryptObjectPGP->PrivateKeySearch( Search => $QueueData{Email} );
 
             for my $DataRef (@PrivateKeys) {
-                $KeyList{"PGP::Inline::$DataRef->{Key}"}   = "PGP-Inline: $DataRef->{Key} $DataRef->{Identifier}";
-                $KeyList{"PGP::Detached::$DataRef->{Key}"} = "PGP-Detached: $DataRef->{Key} $DataRef->{Identifier}";
+
+                my $Status = '[' . $DataRef->{Status} . ']';
+                if ( $DataRef->{Status} eq 'expired' ) {
+                    $Status = '[WARNING: EXPIRED KEY]';
+                }
+                elsif ( $DataRef->{Status} eq 'revoked' ) {
+                    $Status = '[WARNING: REVOKED KEY]';
+                }
+
+                $KeyList{"PGP::Inline::$DataRef->{Key}"} = "PGP-Inline:$Status $DataRef->{Key} $DataRef->{Identifier}";
+                $KeyList{"PGP::Detached::$DataRef->{Key}"}
+                    = "PGP-Detached:$Status $DataRef->{Key} $DataRef->{Identifier}";
             }
         }
 
@@ -79,9 +89,18 @@ sub Run {
 
             my @PrivateKeys = $CryptObjectSMIME->PrivateSearch( Search => $QueueData{Email} );
 
+            my $Expired;
             for my $DataRef (@PrivateKeys) {
+                $Expired = '';
+                if (
+                    defined $DataRef->{EndDate}
+                    && $CryptObjectSMIME->KeyExpiredCheck( EndDate => $DataRef->{EndDate} )
+                    )
+                {
+                    $Expired = ' [WARNING: EXPIRED KEY]';
+                }
                 $KeyList{"SMIME::Detached::$DataRef->{Filename}"}
-                    = "SMIME-Detached: $DataRef->{Filename} [$DataRef->{EndDate}] $DataRef->{Email}";
+                    = "SMIME-Detached:$Expired $DataRef->{Filename} [$DataRef->{EndDate}] $DataRef->{Email}";
             }
         }
     }
@@ -168,7 +187,7 @@ sub Run {
             ID   => $GetParam{QueueID}
         );
         if ($NameExists) {
-            $Errors{NameExists} = 1;
+            $Errors{NameExists}    = 1;
             $Errors{'NameInvalid'} = 'ServerError';
         }
 
@@ -438,7 +457,7 @@ sub Run {
         # check if a queue exist with this name
         my $NameExists = $QueueObject->NameExistsCheck( Name => $GetParam{Name} );
         if ($NameExists) {
-            $Errors{NameExists} = 1;
+            $Errors{NameExists}    = 1;
             $Errors{'NameInvalid'} = 'ServerError';
         }
 
@@ -579,7 +598,7 @@ sub _Edit {
         Data => {
             $Kernel::OM->Get('Kernel::System::Group')->GroupList(
                 Valid => 1,
-                )
+            )
         },
         Translation => 0,
         Name        => 'GroupID',
@@ -600,7 +619,7 @@ sub _Edit {
     }
 
     my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
-    my %Data = $QueueObject->QueueList( Valid => 0 );
+    my %Data        = $QueueObject->QueueList( Valid => 0 );
 
     my $QueueName = '';
     if ( $Param{QueueID} ) {
@@ -707,7 +726,7 @@ sub _Edit {
         Translation => 0,
         Name        => 'SignatureID',
         SelectedID  => $Param{SignatureID},
-        Class => 'Modernize Validate_Required ' . ( $Param{Errors}->{'SignatureIDInvalid'} || '' ),
+        Class       => 'Modernize Validate_Required ' . ( $Param{Errors}->{'SignatureIDInvalid'} || '' ),
     );
     $Param{FollowUpLockYesNoOption} = $LayoutObject->BuildSelection(
         Data       => $ConfigObject->Get('YesNoOptions'),
@@ -738,7 +757,7 @@ sub _Edit {
             %DefaultSignKeyList
         },
         Name       => 'DefaultSignKey',
-        Max        => 50,
+        Max        => 150,
         SelectedID => $Param{DefaultSignKey},
         Class      => 'Modernize',
     );
@@ -747,7 +766,7 @@ sub _Edit {
         Translation => 0,
         Name        => 'SalutationID',
         SelectedID  => $Param{SalutationID},
-        Class => 'Modernize Validate_Required ' . ( $Param{Errors}->{'SalutationIDInvalid'} || '' ),
+        Class       => 'Modernize Validate_Required ' . ( $Param{Errors}->{'SalutationIDInvalid'} || '' ),
     );
 
     $Param{FollowUpOption} = $LayoutObject->BuildSelection(
@@ -789,6 +808,7 @@ sub _Edit {
     );
 
     if ( $Param{DefaultSignKeyOption} ) {
+        $Param{DefaultSignKeyListAvailable} = IsHashRefWithData( \%DefaultSignKeyList );
         $LayoutObject->Block(
             Name => 'OptionalField',
             Data => \%Param,
@@ -887,7 +907,7 @@ sub _Edit {
 
     my @IsQueueInSysConfig = $SysConfigObject->ConfigurationEntityCheck(
         EntityType => 'Queue',
-        EntityName => $QueueName,
+        EntityName => $QueueName // '',
     );
 
     if (@IsQueueInSysConfig) {

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::Dashboard::Stats;
@@ -240,10 +240,10 @@ sub Run {
     $LayoutObject->AddJSData(
         Key   => 'StatsData' . $StatID,
         Value => {
-            Name           => $Self->{Name},
-            Format         => $StatsFormatJSON,
-            StatResultData => $StatsResultDataJSON,
-            Preferences => $Preferences{ 'GraphWidget' . $Self->{Name} } || '{}',
+            Name               => $Self->{Name},
+            Format             => $StatsFormatJSON,
+            StatResultData     => $StatsResultDataJSON,
+            Preferences        => $Preferences{ 'GraphWidget' . $Self->{Name} } || '{}',
             MaxXaxisAttributes => $Kernel::OM->Get('Kernel::Config')->Get('Stats::MaxXaxisAttributes'),
         },
     );
@@ -271,7 +271,7 @@ sub Run {
             Stat                              => $Stat,
             Format                            => $Format,
             AgentStatisticsFrontendPermission => $AgentStatisticsFrontendPermission,
-            Preferences => $Preferences{ 'GraphWidget' . $Self->{Name} } || '{}',
+            Preferences                       => $Preferences{ 'GraphWidget' . $Self->{Name} } || '{}',
         },
         AJAX => $Param{AJAX},
     );

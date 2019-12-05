@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -28,7 +28,6 @@ $Kernel::OM->ObjectParamAdd(
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-# add three users
 $ConfigObject->Set(
     Key   => 'CheckEmailAddresses',
     Value => 0,
@@ -216,6 +215,7 @@ for my $Key ( 1 .. 3, 'ä', 'カス', '_', '&' ) {
     # search by CustomerID with asterisk
     %List = $CustomerUserObject->CustomerSearch(
         CustomerID => '*',
+        Limit      => 100000,
         ValidID    => 1,
     );
     $Self->True(
@@ -256,6 +256,7 @@ for my $Key ( 1 .. 3, 'ä', 'カス', '_', '&' ) {
     # search by CustomerID with %
     %List = $CustomerUserObject->CustomerSearch(
         CustomerID => '%',
+        Limit      => 100000,
         ValidID    => 1,
     );
     $Self->True(
@@ -857,6 +858,47 @@ $Self->Is(
     scalar( keys %List ),
     1,
     "CustomerSourceList - found 1 writable sources",
+);
+
+# Use default CustomerUserListFields config and search for customer.
+my $UserLogin     = "NewLogin$UserID";
+my $FirstName     = "Firstname Update$UserID";
+my $LastName      = "Lastname Update$UserID";
+my $CustomerID    = "${UserID}new\@example.com";
+my $CustomerEmail = "<${UserID}new\@example.com>";
+my %CustomerUser  = $CustomerUserObject->CustomerSearch(
+    UserLogin => $UserLogin,
+    Valid     => 1,
+);
+
+# Verified search result.
+$Self->Is(
+    $CustomerUser{$UserLogin},
+    "\"$FirstName $LastName\" $CustomerEmail",
+    "Default 'CustomerUserListFields' config is"
+);
+
+# Change CustomerUserListFields config and search for customer again.
+#   See bug#13394 (https://bugs.otrs.org/show_bug.cgi?id=13394).
+my $CustomerUser = $ConfigObject->Get('CustomerUser');
+$CustomerUser->{CustomerUserListFields} = [ 'login', 'first_name', 'last_name', 'customer_id', 'email' ];
+$ConfigObject->Set(
+    Key   => 'CustomerUser',
+    Value => $CustomerUser,
+);
+
+$CacheObject->CleanUp();
+
+%CustomerUser = $CustomerUserObject->CustomerSearch(
+    UserLogin => $UserLogin,
+    Valid     => 1,
+);
+
+# Verify search result.
+$Self->Is(
+    $CustomerUser{$UserLogin},
+    "\"$UserLogin $FirstName $LastName $CustomerID\" $CustomerEmail",
+    "Changed 'CustomerUserListFields' config is"
 );
 
 # cleanup is done by RestoreDatabase

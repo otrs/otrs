@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::CustomerTicketZoom;
@@ -60,7 +60,9 @@ sub Run {
 
     # check needed stuff
     if ( !$Self->{TicketID} ) {
-        my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
+        my $Output = $LayoutObject->CustomerHeader(
+            Title => Translatable('Error'),
+        );
         $Output .= $LayoutObject->CustomerError(
             Message => Translatable('Need TicketID!'),
         );
@@ -170,7 +172,7 @@ sub Run {
         );
 
         if ( IsHashRefWithData( \%AtmIndex ) ) {
-            $ArticleData{Attachment} = \%AtmIndex
+            $ArticleData{Attachment} = \%AtmIndex;
         }
 
         push @ArticleBox, \%ArticleData;
@@ -255,12 +257,12 @@ sub Run {
         my $Priorities = $Self->_GetPriorities(
             %GetParam,
             CustomerUserID => $CustomerUser || '',
-            TicketID => $Self->{TicketID},
+            TicketID       => $Self->{TicketID},
         );
         my $NextStates = $Self->_GetNextStates(
             %GetParam,
             CustomerUserID => $CustomerUser || '',
-            TicketID => $Self->{TicketID},
+            TicketID       => $Self->{TicketID},
         );
 
         # update Dynamic Fields Possible Values via AJAX
@@ -390,7 +392,9 @@ sub Run {
             ID => $Ticket{StateID},
         );
         if ( $FollowUpPossible =~ /(new ticket|reject)/i && $State{TypeName} =~ /^close/i ) {
-            my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
+            my $Output = $LayoutObject->CustomerHeader(
+                Title => Translatable('Error'),
+            );
             $Output .= $LayoutObject->CustomerWarning(
                 Message => Translatable('Can\'t reopen ticket, not possible in this queue!'),
                 Comment => Translatable('Create a new ticket!'),
@@ -494,7 +498,9 @@ sub Run {
             );
 
             if ( !IsHashRefWithData($ValidationResult) ) {
-                my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
+                my $Output = $LayoutObject->CustomerHeader(
+                    Title => Translatable('Error'),
+                );
                 $Output .= $LayoutObject->CustomerError(
                     Message => $LayoutObject->{LanguageObject}
                         ->Translate( 'Could not perform validation on field %s!', $DynamicFieldConfig->{Label} ),
@@ -577,8 +583,7 @@ sub Run {
             );
         }
 
-        my $From = "$Self->{UserFullname} <$Self->{UserEmail}>";
-
+        my $From     = "\"$Self->{UserFullname}\" <$Self->{UserEmail}>";
         my $MimeType = 'text/plain';
         if ( $LayoutObject->{BrowserRichText} ) {
             $MimeType = 'text/html';
@@ -643,10 +648,12 @@ sub Run {
             },
             HistoryType      => $Config->{HistoryType},
             HistoryComment   => $Config->{HistoryComment} || '%%',
-            AutoResponseType => 'auto follow up',
+            AutoResponseType => ( $ConfigObject->Get('AutoResponseForWebTickets') ) ? 'auto follow up' : '',
         );
         if ( !$ArticleID ) {
-            my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
+            my $Output = $LayoutObject->CustomerHeader(
+                Title => Translatable('Error'),
+            );
             $Output .= $LayoutObject->CustomerError();
             $Output .= $LayoutObject->CustomerFooter();
             return $Output;
@@ -1021,7 +1028,7 @@ sub _Mask {
             Data => {
                 Valid => $Type{ValidID},
                 %Param,
-                }
+            }
         );
     }
 
@@ -1223,7 +1230,7 @@ sub _Mask {
             );
 
             if ($ACL) {
-                %{$NextActivityDialogs} = $TicketObject->TicketAclData()
+                %{$NextActivityDialogs} = $TicketObject->TicketAclData();
             }
 
             $LayoutObject->Block(
@@ -1464,7 +1471,7 @@ sub _Mask {
     # get params
     my $ZoomExpand = $ParamObject->GetParam( Param => 'ZoomExpand' );
     if ( !defined $ZoomExpand ) {
-        $ZoomExpand = $ConfigObject->Get('Ticket::Frontend::ZoomExpand') || '';
+        $ZoomExpand = $ConfigObject->Get('Ticket::Frontend::CustomerTicketZoom')->{CustomerZoomExpand} || '';
     }
 
     # Expand option
@@ -1552,6 +1559,7 @@ sub _Mask {
             UserID                 => $Self->{UserID},
             ShowBrowserLinkMessage => $Self->{ShowBrowserLinkMessage},
             ArticleExpanded        => $SelectedArticleID eq $Article{ArticleID} || $ZoomExpand,
+            ArticleAge             => $Article{Age},
         );
     }
 
@@ -1575,7 +1583,7 @@ sub _Mask {
         if ( !IsHashRefWithData( \%Article ) ) {
             %Article = %Param;
             if ( !$Article{StateID} ) {
-                $Article{StateID} = $Param{TicketStateID}
+                $Article{StateID} = $Param{TicketStateID};
             }
         }
 
@@ -1605,7 +1613,7 @@ sub _Mask {
     if ( !IsHashRefWithData( \%Article ) ) {
         %Article = %Param;
         if ( !$Article{StateID} ) {
-            $Article{StateID} = $Param{TicketStateID}
+            $Article{StateID} = $Param{TicketStateID};
         }
     }
 

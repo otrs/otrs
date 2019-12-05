@@ -1,5 +1,8 @@
 package Selenium::Remote::Driver;
-$Selenium::Remote::Driver::VERSION = '1.11';
+$Selenium::Remote::Driver::VERSION = '1.36';
+use strict;
+use warnings;
+
 # ABSTRACT: Perl Client for Selenium Remote Driver
 
 use Moo;
@@ -20,11 +23,16 @@ use Archive::Zip qw( :ERROR_CODES );
 use Scalar::Util;
 use Selenium::Remote::RemoteConnection;
 use Selenium::Remote::Commands;
+use Selenium::Remote::Spec;
 use Selenium::Remote::WebElement;
+use Selenium::Remote::WDKeys;
 use File::Spec::Functions ();
 use File::Basename qw(basename);
 use Sub::Install ();
 use MIME::Base64 ();
+use Time::HiRes qw(usleep);
+use Clone qw{clone};
+use List::Util qw{any};
 
 use constant FINDERS => {
     class             => 'class name',
@@ -39,26 +47,29 @@ use constant FINDERS => {
     xpath             => 'xpath',
 };
 
+our $FORCE_WD2            = 0;
+our $FORCE_WD3            = 0;
+our %CURRENT_ACTION_CHAIN = ( actions => [] );
 
 
 
 
 has 'remote_server_addr' => (
-    is      => 'rw',
-    coerce  => sub { ( defined($_[0]) ? $_[0] : 'localhost' )},
-    default => sub {'localhost'},
+    is     => 'rw',
+    coerce => sub { ( defined( $_[0] ) ? $_[0] : 'localhost' ) },
+    default   => sub { 'localhost' },
     predicate => 1
 );
 
 has 'browser_name' => (
-    is      => 'rw',
-    coerce  => sub { ( defined($_[0]) ? $_[0] : 'firefox' )},
-    default => sub {'firefox'},
+    is     => 'rw',
+    coerce => sub { ( defined( $_[0] ) ? $_[0] : 'firefox' ) },
+    default => sub { 'firefox' },
 );
 
 has 'base_url' => (
-    is      => 'lazy',
-    coerce  => sub {
+    is     => 'lazy',
+    coerce => sub {
         my $base_url = shift;
         $base_url =~ s|/$||;
         return $base_url;
@@ -67,38 +78,37 @@ has 'base_url' => (
 );
 
 has 'platform' => (
-    is      => 'rw',
-    coerce  => sub { ( defined($_[0]) ? $_[0] : 'ANY' )},
-    default => sub {'ANY'},
+    is     => 'rw',
+    coerce => sub { ( defined( $_[0] ) ? $_[0] : 'ANY' ) },
+    default => sub { 'ANY' },
 );
 
 has 'port' => (
-    is      => 'rw',
-    coerce  => sub { ( defined($_[0]) ? $_[0] : '4444' )},
-    default => sub {'4444'},
+    is     => 'rw',
+    coerce => sub { ( defined( $_[0] ) ? $_[0] : '4444' ) },
+    default   => sub { '4444' },
     predicate => 1
 );
 
 has 'version' => (
     is      => 'rw',
-    default => sub {''},
+    default => sub { '' },
 );
 
 has 'webelement_class' => (
     is      => 'rw',
-    default => sub {'Selenium::Remote::WebElement'},
+    default => sub { 'Selenium::Remote::WebElement' },
 );
-
 
 has 'default_finder' => (
     is      => 'rw',
     coerce  => sub { __PACKAGE__->FINDERS->{ $_[0] } },
-    default => sub {'xpath'},
+    default => sub { 'xpath' },
 );
 
 has 'session_id' => (
     is      => 'rw',
-    default => sub {undef},
+    default => sub { undef },
 );
 
 has 'remote_conn' => (
@@ -115,7 +125,7 @@ has 'remote_conn' => (
 );
 
 has 'error_handler' => (
-    is => 'rw',
+    is     => 'rw',
     coerce => sub {
         my ($maybe_coderef) = @_;
 
@@ -126,7 +136,7 @@ has 'error_handler' => (
             croak 'The error handler must be a code ref.';
         }
     },
-    clearer => 1,
+    clearer   => 1,
     predicate => 1
 );
 
@@ -142,10 +152,17 @@ has 'commands' => (
     },
 );
 
+has 'commands_v3' => (
+    is      => 'lazy',
+    builder => sub {
+        return Selenium::Remote::Spec->new;
+    },
+);
+
 has 'auto_close' => (
-    is      => 'rw',
-    coerce  => sub { ( defined($_[0]) ? $_[0] : 1 )},
-    default => sub {1},
+    is     => 'rw',
+    coerce => sub { ( defined( $_[0] ) ? $_[0] : 1 ) },
+    default => sub { 1 },
 );
 
 has 'pid' => (
@@ -174,15 +191,16 @@ has 'proxy' => (
                 croak "proxyAutoconfigUrl not provided\n";
             }
             elsif ( not( $proxy->{proxyAutoconfigUrl} =~ /^(http|file)/g ) ) {
-                croak "proxyAutoconfigUrl should be of format http:// or file://";
+                croak
+                  "proxyAutoconfigUrl should be of format http:// or file://";
             }
 
             if ( $proxy->{proxyAutoconfigUrl} =~ /^file/ ) {
                 my $pac_url = $proxy->{proxyAutoconfigUrl};
-                my $file = $pac_url;
+                my $file    = $pac_url;
                 $file =~ s{^file://}{};
 
-                if (! -e $file) {
+                if ( !-e $file ) {
                     warn "proxyAutoConfigUrl file does not exist: '$pac_url'";
                 }
             }
@@ -197,18 +215,19 @@ has 'extra_capabilities' => (
 );
 
 has 'firefox_profile' => (
-    is        => 'rw',
-    coerce    => sub {
+    is     => 'rw',
+    coerce => sub {
         my $profile = shift;
-        unless (Scalar::Util::blessed($profile)
-          && $profile->isa('Selenium::Firefox::Profile')) {
+        unless ( Scalar::Util::blessed($profile)
+            && $profile->isa('Selenium::Firefox::Profile') )
+        {
             croak "firefox_profile should be a Selenium::Firefox::Profile\n";
         }
 
         return $profile;
     },
     predicate => 'has_firefox_profile',
-    clearer => 1
+    clearer   => 1
 );
 
 has 'desired_capabilities' => (
@@ -235,49 +254,66 @@ has 'inner_window_size' => (
 
 );
 
+# At the time of writing, Geckodriver uses a different endpoint than
+# the java bindings for executing synchronous and asynchronous
+# scripts. As a matter of fact, Geckodriver does conform to the W3C
+# spec, but as are bound to support both while the java bindings
+# transition to full spec support, we need some way to handle the
+# difference.
+
+has '_execute_script_suffix' => (
+    is      => 'lazy',
+    default => ''
+);
+
 with 'Selenium::Remote::Finders';
 with 'Selenium::Remote::Driver::CanSetWebdriverContext';
 
 sub BUILD {
     my $self = shift;
 
-    if ($self->has_desired_capabilities) {
-        $self->new_desired_session( $self->desired_capabilities );
-    }
-    else {
-        # Connect to remote server & establish a new session
-        $self->new_session( $self->extra_capabilities );
+    if ( !( defined $self->session_id ) ) {
+        if ( $self->has_desired_capabilities ) {
+            $self->new_desired_session( $self->desired_capabilities );
+        }
+        else {
+            # Connect to remote server & establish a new session
+            $self->new_session( $self->extra_capabilities );
+        }
     }
 
     if ( !( defined $self->session_id ) ) {
         croak "Could not establish a session with the remote server\n";
     }
-    elsif ($self->has_inner_window_size) {
+    elsif ( $self->has_inner_window_size ) {
         my $size = $self->inner_window_size;
         $self->set_inner_window_size(@$size);
     }
 
     # Setup non-croaking, parameter versions of finders
-    foreach my $by (keys %{ $self->FINDERS }) {
+    foreach my $by ( keys %{ $self->FINDERS } ) {
         my $finder_name = 'find_element_by_' . $by;
+
         # In case we get instantiated multiple times, we don't want to
         # install into the name space every time.
-        unless ($self->can($finder_name)) {
+        unless ( $self->can($finder_name) ) {
             my $find_sub = $self->_build_find_by($by);
 
-            Sub::Install::install_sub({
-                code => $find_sub,
-                into => __PACKAGE__,
-                as   => $finder_name,
-            });
+            Sub::Install::install_sub(
+                {
+                    code => $find_sub,
+                    into => __PACKAGE__,
+                    as   => $finder_name,
+                }
+            );
         }
     }
 }
 
 sub new_from_caps {
-    my ($self, %args) = @_;
+    my ( $self, %args ) = @_;
 
-    if (not exists $args{desired_capabilities}) {
+    if ( not exists $args{desired_capabilities} ) {
         $args{desired_capabilities} = {};
     }
 
@@ -285,7 +321,7 @@ sub new_from_caps {
 }
 
 sub DEMOLISH {
-    my ($self, $in_global_destruction) = @_;
+    my ( $self, $in_global_destruction ) = @_;
     return if $$ != $self->pid;
     return if $in_global_destruction;
     $self->quit() if ( $self->auto_close && defined $self->session_id );
@@ -293,19 +329,23 @@ sub DEMOLISH {
 
 # We install an 'around' because we can catch more exceptions this way
 # than simply wrapping the explicit croaks in _execute_command.
+# @args should be fed to the handler to provide context
+# return_value could be assigned from the handler if we want to allow the
+# error_handler to handle the errors
 
 around '_execute_command' => sub {
     my $orig = shift;
     my $self = shift;
+
     # copy @_ because it gets lost in the way
     my @args = @_;
     my $return_value;
     try {
-        $return_value = $orig->($self,@args);
+        $return_value = $orig->( $self, @args );
     }
     catch {
-        if ($self->has_error_handler) {
-            $self->error_handler->($self,$_);
+        if ( $self->has_error_handler ) {
+            $return_value = $self->error_handler->( $self, $_, @args );
         }
         else {
             croak $_;
@@ -320,48 +360,59 @@ around '_execute_command' => sub {
 sub _execute_command {
     my ( $self, $res, $params ) = @_;
     $res->{'session_id'} = $self->session_id;
-    my $resource = $self->commands->get_params($res);
+
+    print "Prepping $res->{command}\n" if $self->{debug};
+
+    #webdriver 3 shims
+    return $self->{capabilities}
+      if $res->{command} eq 'getCapabilities' && $self->{capabilities};
+    $res->{ms}    = $params->{ms}    if $params->{ms};
+    $res->{type}  = $params->{type}  if $params->{type};
+    $res->{text}  = $params->{text}  if $params->{text};
+    $res->{using} = $params->{using} if $params->{using};
+    $res->{value} = $params->{value} if $params->{value};
+
+    print "Executing $res->{command}\n" if $self->{debug};
+    my $resource =
+        $self->{is_wd3}
+      ? $self->commands_v3->get_params($res)
+      : $self->commands->get_params($res);
+
+    #Fall-back to legacy if wd3 command doesn't exist
+    if ( !$resource && $self->{is_wd3} ) {
+        print "Falling back to legacy selenium method for $res->{command}\n"
+          if $self->{debug};
+        $resource = $self->commands->get_params($res);
+    }
+
+    #XXX InternetExplorerDriver quirks
+    if ( $self->{is_wd3} && $self->browser_name eq 'internet explorer' ) {
+        delete $params->{ms};
+        delete $params->{type};
+        delete $resource->{payload}->{type};
+        my $oldvalue = delete $params->{'page load'};
+        $params->{pageLoad} = $oldvalue if $oldvalue;
+    }
 
     if ($resource) {
         $params = {} unless $params;
-        my $resp = $self->remote_conn->request( $resource, $params);
-        if ( ref($resp) eq 'HASH' ) {
-            if ( $resp->{cmd_status} && $resp->{cmd_status} eq 'OK' ) {
-                return $resp->{cmd_return};
-            }
-            else {
-                my $msg = "Error while executing command";
-                if ( $resp->{cmd_error} ) {
-                    $msg .= ": $resp->{cmd_error}" if $resp->{cmd_error};
-                }
-                elsif ( $resp->{cmd_return} ) {
-                    if ( ref( $resp->{cmd_return} ) eq 'HASH' ) {
-                        $msg .= ": $res->{command}"
-                          if $res->{command};
-                        $msg .= ": $resp->{cmd_return}->{error}->{msg}"
-                          if $resp->{cmd_return}->{error}->{msg};
-                        $msg .= ": $resp->{cmd_return}->{message}"
-                          if $resp->{cmd_return}->{message};
-                    }
-                    else {
-                        $msg .= ": $resp->{cmd_return}";
-                    }
-                }
-                croak $msg;
-            }
-        }
-        return $resp;
+        my $resp = $self->remote_conn->request( $resource, $params );
+
+#In general, the parse_response for v3 is better, which is why we use it *even if* we are falling back.
+        return $self->commands_v3->parse_response( $res, $resp )
+          if $self->{is_wd3};
+        return $self->commands->parse_response( $res, $resp );
     }
     else {
         croak "Couldn't retrieve command settings properly\n";
     }
 }
 
-# A method that is used by the Driver itself. It'll be called to set the
-# desired capabilities on the server.
+
 sub new_session {
     my ( $self, $extra_capabilities ) = @_;
     $extra_capabilities ||= {};
+
     my $args = {
         'desiredCapabilities' => {
             'browserName'       => $self->browser_name,
@@ -372,54 +423,147 @@ sub new_session {
             %$extra_capabilities,
         },
     };
+    $args->{'extra_capabilities'} = \%$extra_capabilities unless $FORCE_WD2;
 
     if ( defined $self->proxy ) {
         $args->{desiredCapabilities}->{proxy} = $self->proxy;
     }
 
-    if ($args->{desiredCapabilities}->{browserName} =~ /firefox/i
-        && $self->has_firefox_profile) {
-        $args->{desiredCapabilities}->{firefox_profile} = $self->firefox_profile->_encode;
+    if (   $args->{desiredCapabilities}->{browserName} =~ /firefox/i
+        && $self->has_firefox_profile )
+    {
+        $args->{desiredCapabilities}->{firefox_profile} =
+          $self->firefox_profile->_encode;
     }
 
     $self->_request_new_session($args);
 }
 
+
 sub new_desired_session {
     my ( $self, $caps ) = @_;
 
-    $self->_request_new_session({
-        desiredCapabilities => $caps
-    });
+    $self->_request_new_session(
+        {
+            desiredCapabilities => $caps
+        }
+    );
 }
 
 sub _request_new_session {
     my ( $self, $args ) = @_;
 
-    # geckodriver has not yet implemented the GET /status endpoint
-    # https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status
-    if (! $self->isa('Selenium::Firefox')) {
-        $self->remote_conn->check_status();
+    #XXX UGLY shim for webdriver3
+    $args->{capabilities}->{alwaysMatch} =
+      clone( $args->{desiredCapabilities} );
+    my $cmap = $self->commands_v3->get_caps_map();
+    my $caps = $self->commands_v3->get_caps();
+    foreach my $cap ( keys( %{ $args->{capabilities}->{alwaysMatch} } ) ) {
+
+        #Handle browser specific capabilities
+        if ( exists( $args->{desiredCapabilities}->{browserName} )
+            && $cap eq 'extra_capabilities' )
+        {
+
+            if (
+                exists $args->{capabilities}->{alwaysMatch}
+                ->{'moz:firefoxOptions'}->{args} )
+            {
+                $args->{capabilities}->{alwaysMatch}->{$cap}->{args} =
+                  $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}
+                  ->{args};
+            }
+            $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'} =
+              $args->{capabilities}->{alwaysMatch}->{$cap}
+              if $args->{desiredCapabilities}->{browserName} eq 'firefox';
+
+#XXX the chrome documentation is lies, you can't do this yet
+#$args->{capabilities}->{alwaysMatch}->{'goog:chromeOptions'}      = $args->{capabilities}->{alwaysMatch}->{$cap} if $args->{desiredCapabilities}->{browserName} eq 'chrome';
+#Does not appear there are any MSIE based options, so let's just let that be
+        }
+        if (   exists( $args->{desiredCapabilities}->{browserName} )
+            && $args->{desiredCapabilities}->{browserName} eq 'firefox'
+            && $cap eq 'firefox_profile' )
+        {
+            if (
+                ref $args->{capabilities}->{alwaysMatch}->{$cap} eq
+                'Selenium::Firefox::Profile' )
+            {
+#XXX not sure if I need to keep a ref to the File::Temp::Tempdir object to prevent reaping
+                $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}
+                  ->{args} = [
+                    '-profile',
+                    $args->{capabilities}->{alwaysMatch}->{$cap}->{profile_dir}
+                      ->dirname()
+                  ];
+            }
+            else {
+           #previously undocumented feature that we can pass the encoded profile
+                $args->{capabilities}->{alwaysMatch}->{'moz:firefoxOptions'}
+                  ->{profile} = $args->{capabilities}->{alwaysMatch}->{$cap};
+            }
+        }
+        foreach my $newkey ( keys(%$cmap) ) {
+            if ( $newkey eq $cap ) {
+                last if $cmap->{$newkey} eq $cap;
+                $args->{capabilities}->{alwaysMatch}->{ $cmap->{$newkey} } =
+                  $args->{capabilities}->{alwaysMatch}->{$cap};
+                delete $args->{capabilities}->{alwaysMatch}->{$cap};
+                last;
+            }
+        }
+        delete $args->{capabilities}->{alwaysMatch}->{$cap}
+          if !any { $_ eq $cap } @$caps;
     }
+    delete $args->{desiredCapabilities}
+      if $FORCE_WD3;    #XXX fork working-around busted fallback in firefox
+    delete $args->{capabilities}
+      if $FORCE_WD2; #XXX 'secret' feature to help the legacy unit tests to work
+
+    #Delete compatibility layer when using drivers directly
+    if ( $self->isa('Selenium::Firefox') || $self->isa('Selenium::Chrome') ) {
+        if (   exists $args->{capabilities}
+            && exists $args->{capabilities}->{alwaysMatch} )
+        {
+            delete $args->{capabilities}->{alwaysMatch}->{browserName};
+            delete $args->{capabilities}->{alwaysMatch}->{browserVersion};
+            delete $args->{capabilities}->{alwaysMatch}->{platformName};
+        }
+    }
+
+    #Fix broken out of the box chrome because they hate the maintainers of their interfaces
+    if ( $self->isa('Selenium::Chrome') ) {
+        if ( exists $args->{desiredCapabilities} ) {
+            $args->{desiredCapabilities}{'goog:chromeOptions'}{args} //= [];
+            push(@{$args->{desiredCapabilities}{'goog:chromeOptions'}{args}}, qw{no-sandbox disable-dev-shm-usage});
+        }
+    }
+
+    # Get actual status
+    $self->remote_conn->check_status();
+
     # command => 'newSession' to fool the tests of commands implemented
     # TODO: rewrite the testing better, this is so fragile.
     my $resource_new_session = {
         method => $self->commands->get_method('newSession'),
-        url => $self->commands->get_url('newSession'),
-        no_content_success => $self->commands->get_no_content_success('newSession'),
+        url    => $self->commands->get_url('newSession'),
+        no_content_success =>
+          $self->commands->get_no_content_success('newSession'),
     };
     my $rc = $self->remote_conn;
-    my $resp = $rc->request(
-        $resource_new_session,
-        $args,
-    );
+    my $resp = $rc->request( $resource_new_session, $args, );
+
+    if ( $resp->{cmd_status} && $resp->{cmd_status} eq 'NOT OK' ) {
+        croak "Could not obtain new session: ". $resp->{cmd_return}{message};
+    }
+
     if ( ( defined $resp->{'sessionId'} ) && $resp->{'sessionId'} ne '' ) {
         $self->session_id( $resp->{'sessionId'} );
     }
     else {
         my $error = 'Could not create new session';
 
-        if (ref $resp->{cmd_return} eq 'HASH') {
+        if ( ref $resp->{cmd_return} eq 'HASH' ) {
             $error .= ': ' . $resp->{cmd_return}->{message};
         }
         else {
@@ -427,17 +571,56 @@ sub _request_new_session {
         }
         croak $error;
     }
+
+    #Webdriver 3 - best guess that this is 'whats goin on'
+    if ( ref $resp->{cmd_return} eq 'HASH'
+        && $resp->{cmd_return}->{capabilities} )
+    {
+        $self->{is_wd3}           = 1;
+        $self->{emulate_jsonwire} = 1;
+        $self->{capabilities}     = $resp->{cmd_return}->{capabilities};
+    }
+
+    #XXX chromedriver DOES NOT FOLLOW SPEC!
+    if ( ref $resp->{cmd_return} eq 'HASH' && $resp->{cmd_return}->{chrome} ) {
+        if ( defined $resp->{cmd_return}->{setWindowRect} )
+        {    #XXX i'm inferring we are wd3 based on the presence of this
+            $self->{is_wd3}           = 1;
+            $self->{emulate_jsonwire} = 1;
+            $self->{capabilities}     = $resp->{cmd_return};
+        }
+    }
+
+    #XXX unsurprisingly, neither does microsoft
+    if (   ref $resp->{cmd_return} eq 'HASH'
+        && $resp->{cmd_return}->{pageLoadStrategy}
+        && $self->browser_name eq 'MicrosoftEdge' )
+    {
+        $self->{is_wd3}           = 1;
+        $self->{emulate_jsonwire} = 1;
+        $self->{capabilities}     = $resp->{cmd_return};
+    }
+
+    return ( $args, $resp );
+}
+
+
+sub is_webdriver_3 {
+    my $self = shift;
+    return $self->{is_wd3};
 }
 
 
 sub debug_on {
     my ($self) = @_;
+    $self->{debug} = 1;
     $self->remote_conn->debug(1);
 }
 
 
 sub debug_off {
     my ($self) = @_;
+    $self->{debug} = 0;
     $self->remote_conn->debug(0);
 }
 
@@ -465,10 +648,38 @@ sub get_alert_text {
 
 sub send_keys_to_active_element {
     my ( $self, @strings ) = @_;
-    my $res = { 'command' => 'sendKeysToActiveElement' };
-    my $params = {
-        'value' => \@strings,
-    };
+
+    if ( $self->{is_wd3}
+        && !( grep { $self->browser_name eq $_ } qw{MicrosoftEdge} ) )
+    {
+        @strings = map { split( '', $_ ) } @strings;
+        my @acts = map {
+            (
+                {
+                    type  => 'keyDown',
+                    value => $_,
+                },
+                {
+                    type  => 'keyUp',
+                    value => $_,
+                }
+              )
+        } @strings;
+
+        my $action = {
+            actions => [
+                {
+                    id      => 'key',
+                    type    => 'key',
+                    actions => \@acts,
+                }
+            ]
+        };
+        return $self->general_action(%$action);
+    }
+
+    my $res    = { 'command' => 'sendKeysToActiveElement' };
+    my $params = { 'value'   => \@strings, };
     return $self->_execute_command( $res, $params );
 }
 
@@ -500,9 +711,80 @@ sub dismiss_alert {
 }
 
 
+sub general_action {
+    my ( $self, %action ) = @_;
+
+    _queue_action(%action);
+    my $res = { 'command' => 'generalAction' };
+    my $out = $self->_execute_command( $res, \%CURRENT_ACTION_CHAIN );
+    %CURRENT_ACTION_CHAIN = ( actions => [] );
+    return $out;
+}
+
+sub _queue_action {
+    my (%action) = @_;
+    if ( ref $action{actions} eq 'ARRAY' ) {
+        foreach my $live_action ( @{ $action{actions} } ) {
+            my $existing_action;
+            foreach my $global_action ( @{ $CURRENT_ACTION_CHAIN{actions} } ) {
+                if ( $global_action->{id} eq $live_action->{id} ) {
+                    $existing_action = $global_action;
+                    last;
+                }
+            }
+            if ($existing_action) {
+                push(
+                    @{ $existing_action->{actions} },
+                    @{ $live_action->{actions} }
+                );
+            }
+            else {
+                push( @{ $CURRENT_ACTION_CHAIN{actions} }, $live_action );
+            }
+        }
+    }
+}
+
+
+sub release_general_action {
+    my ($self) = @_;
+    my $res = { 'command' => 'releaseGeneralAction' };
+    %CURRENT_ACTION_CHAIN = ( actions => [] );
+    return $self->_execute_command($res);
+}
+
+
 sub mouse_move_to_location {
     my ( $self, %params ) = @_;
     $params{element} = $params{element}{id} if exists $params{element};
+
+    if ( $self->{is_wd3}
+        && !( grep { $self->browser_name eq $_ } qw{MicrosoftEdge} ) )
+    {
+        my $origin      = $params{element};
+        my $move_action = {
+            type     => "pointerMove",
+            duration => 0,
+            x        => $params{xoffset} // 0,
+            y        => $params{yoffset} // 0,
+        };
+        $move_action->{origin} =
+          { 'element-6066-11e4-a52e-4f735466cecf' => $origin }
+          if $origin;
+
+        _queue_action(
+            actions => [
+                {
+                    type         => "pointer",
+                    id           => 'mouse',
+                    "parameters" => { "pointerType" => "mouse" },
+                    actions      => [$move_action],
+                }
+            ]
+        );
+        return 1;
+    }
+
     my $res = { 'command' => 'mouseMoveToLocation' };
     return $self->_execute_command( $res, \%params );
 }
@@ -520,23 +802,42 @@ sub get_capabilities {
 }
 
 
+sub get_timeouts {
+    my $self = shift;
+    my $res = { 'command' => 'getTimeouts' };
+    return $self->_execute_command( $res, {} );
+}
+
+
 sub set_timeout {
     my ( $self, $type, $ms ) = @_;
-    if ( not defined $type  ) {
+    if ( not defined $type ) {
         croak "Expecting type";
     }
-    $ms = _coerce_timeout_ms( $ms );
+    $ms   = _coerce_timeout_ms($ms);
+    $type = 'pageLoad'
+      if $type eq 'page load'
+      && $self->browser_name ne
+      'MicrosoftEdge';    #XXX SHIM they changed the WC3 standard mid stream
 
-    my $res = { 'command' => 'setTimeout' };
-    my $params = { 'type' => $type, 'ms' => $ms };
+    my $res    = { 'command' => 'setTimeout' };
+    my $params = { $type     => $ms };
+
+    #XXX edge still follows earlier versions of the WC3 standard
+    if ( $self->browser_name eq 'MicrosoftEdge' ) {
+        $params->{ms}   = $ms;
+        $params->{type} = $type;
+    }
     return $self->_execute_command( $res, $params );
 }
 
 
 sub set_async_script_timeout {
     my ( $self, $ms ) = @_;
-    $ms = _coerce_timeout_ms( $ms );
 
+    return $self->set_timeout( 'script', $ms ) if $self->{is_wd3};
+
+    $ms = _coerce_timeout_ms($ms);
     my $res    = { 'command' => 'setAsyncScriptTimeout' };
     my $params = { 'ms'      => $ms };
     return $self->_execute_command( $res, $params );
@@ -545,8 +846,9 @@ sub set_async_script_timeout {
 
 sub set_implicit_wait_timeout {
     my ( $self, $ms ) = @_;
-    $ms = _coerce_timeout_ms( $ms );
+    return $self->set_timeout( 'implicit', $ms ) if $self->{is_wd3};
 
+    $ms = _coerce_timeout_ms($ms);
     my $res    = { 'command' => 'setImplicitWaitTimeout' };
     my $params = { 'ms'      => $ms };
     return $self->_execute_command( $res, $params );
@@ -555,8 +857,8 @@ sub set_implicit_wait_timeout {
 
 sub pause {
     my $self = shift;
-    my $timeout = ( shift // 1000 ) / 1000;
-    select( undef, undef, undef, $timeout );    # Fractional-second sleep
+    my $timeout = ( shift // 1000 ) * 1000;
+    usleep($timeout);
 }
 
 
@@ -593,6 +895,8 @@ sub get_window_size {
     my ( $self, $window ) = @_;
     $window = ( defined $window ) ? $window : 'current';
     my $res = { 'command' => 'getWindowSize', 'window_handle' => $window };
+    $res = { 'command' => 'getWindowRect', handle => $window }
+      if $self->{is_wd3};
     return $self->_execute_command($res);
 }
 
@@ -601,6 +905,8 @@ sub get_window_position {
     my ( $self, $window ) = @_;
     $window = ( defined $window ) ? $window : 'current';
     my $res = { 'command' => 'getWindowPosition', 'window_handle' => $window };
+    $res = { 'command' => 'getWindowRect', handle => $window }
+      if $self->{is_wd3};
     return $self->_execute_command($res);
 }
 
@@ -621,13 +927,13 @@ sub navigate {
 sub get {
     my ( $self, $url ) = @_;
 
-    if ($self->has_base_url && $url !~ m|://|) {
+    if ( $self->has_base_url && $url !~ m|://| ) {
         $url =~ s|^/||;
         $url = $self->base_url . "/" . $url;
     }
 
     my $res    = { 'command' => 'get' };
-    my $params = { 'url'     => $url  };
+    my $params = { 'url'     => $url };
     return $self->_execute_command( $res, $params );
 }
 
@@ -662,7 +968,7 @@ sub refresh {
 
 sub has_javascript {
     my $self = shift;
-    return int($self->javascript);
+    return int( $self->javascript );
 }
 
 
@@ -672,15 +978,23 @@ sub execute_async_script {
         if ( not defined $script ) {
             croak 'No script provided';
         }
-        my $res = { 'command' => 'executeAsyncScript' };
+        my $res =
+          { 'command' => 'executeAsyncScript' . $self->_execute_script_suffix };
 
         # Check the args array if the elem obj is provided & replace it with
         # JSON representation
-        for ( my $i = 0; $i < @args; $i++ ) {
+        for ( my $i = 0 ; $i < @args ; $i++ ) {
             if ( Scalar::Util::blessed( $args[$i] )
-                 and $args[$i]->isa('Selenium::Remote::WebElement') )
+                and $args[$i]->isa('Selenium::Remote::WebElement') )
             {
-                $args[$i] = { 'ELEMENT' => ( $args[$i] )->{id} };
+                if ( $self->{is_wd3} ) {
+                    $args[$i] =
+                      { 'element-6066-11e4-a52e-4f735466cecf' =>
+                          ( $args[$i] )->{id} };
+                }
+                else {
+                    $args[$i] = { 'ELEMENT' => ( $args[$i] )->{id} };
+                }
             }
         }
 
@@ -688,12 +1002,12 @@ sub execute_async_script {
         my $ret = $self->_execute_command( $res, $params );
 
         # replace any ELEMENTS with WebElement
-        if ( ref($ret)
-             and ( ref($ret) eq 'HASH' )
-             and $self->_looks_like_element($ret) )
+        if (    ref($ret)
+            and ( ref($ret) eq 'HASH' )
+            and $self->_looks_like_element($ret) )
         {
             $ret = $self->webelement_class->new(
-                id => $ret,
+                id     => $ret,
                 driver => $self
             );
         }
@@ -711,15 +1025,23 @@ sub execute_script {
         if ( not defined $script ) {
             croak 'No script provided';
         }
-        my $res = { 'command' => 'executeScript' };
+        my $res =
+          { 'command' => 'executeScript' . $self->_execute_script_suffix };
 
         # Check the args array if the elem obj is provided & replace it with
         # JSON representation
-        for ( my $i = 0; $i < @args; $i++ ) {
+        for ( my $i = 0 ; $i < @args ; $i++ ) {
             if ( Scalar::Util::blessed( $args[$i] )
                 and $args[$i]->isa('Selenium::Remote::WebElement') )
             {
-                $args[$i] = { 'ELEMENT' => ( $args[$i] )->{id} };
+                if ( $self->{is_wd3} ) {
+                    $args[$i] =
+                      { 'element-6066-11e4-a52e-4f735466cecf' =>
+                          ( $args[$i] )->{id} };
+                }
+                else {
+                    $args[$i] = { 'ELEMENT' => ( $args[$i] )->{id} };
+                }
             }
         }
 
@@ -737,10 +1059,12 @@ sub execute_script {
 # An internal method to check if a return value might be an element
 
 sub _looks_like_element {
-    my ($self, $maybe_element) = @_;
+    my ( $self, $maybe_element ) = @_;
 
-    return (exists $maybe_element->{ELEMENT}
-      or exists $maybe_element->{'element-6066-11e4-a52e-4f735466cecf'});
+    return (
+             exists $maybe_element->{ELEMENT}
+          or exists $maybe_element->{'element-6066-11e4-a52e-4f735466cecf'}
+    );
 }
 
 # _convert_to_webelement
@@ -752,9 +1076,10 @@ sub _convert_to_webelement {
 
     if ( ref($ret) and ( ref($ret) eq 'HASH' ) ) {
         if ( $self->_looks_like_element($ret) ) {
+
             # replace an ELEMENT with WebElement
             return $self->webelement_class->new(
-                id => $ret,
+                id     => $ret,
                 driver => $self
             );
         }
@@ -776,25 +1101,31 @@ sub _convert_to_webelement {
 
 
 sub screenshot {
-    my ($self) = @_;
-    my $res = { 'command' => 'screenshot' };
+    my ($self, $params) = @_;
+    $params //= { full => 0 };
+
+    croak "Full page screenshot only supported on geckodriver" if $params->{full} && ( $self->{browser_name} ne 'firefox' );
+
+    my $res = { 'command' => $params->{'full'} == 1 ? 'mozScreenshotFull' : 'screenshot' };
     return $self->_execute_command($res);
 }
 
 
 sub capture_screenshot {
-    my ( $self, $filename ) = @_;
+    my ( $self, $filename, $params ) = @_;
     croak '$filename is required' unless $filename;
 
     open( my $fh, '>', $filename );
     binmode $fh;
-    print $fh MIME::Base64::decode_base64( $self->screenshot() );
+    print $fh MIME::Base64::decode_base64( $self->screenshot($params) );
     CORE::close $fh;
     return 1;
 }
 
 
-
+#TODO emulate behavior on wd3?
+#grep { eval { Selenium::Remote::Driver->new( browser => $_ ) } } (qw{firefox MicrosoftEdge chrome opera safari htmlunit iphone phantomjs},'internet_explorer');
+#might do the trick
 sub available_engines {
     my ($self) = @_;
     my $res = { 'command' => 'availableEngines' };
@@ -804,13 +1135,21 @@ sub available_engines {
 
 sub switch_to_frame {
     my ( $self, $id ) = @_;
+
     my $json_null = JSON::null;
     my $params;
     $id = ( defined $id ) ? $id : $json_null;
 
     my $res = { 'command' => 'switchToFrame' };
     if ( ref $id eq $self->webelement_class ) {
-        $params = { 'id' => { 'ELEMENT' => $id->{'id'} } };
+        if ( $self->{is_wd3} ) {
+            $params =
+              { 'id' =>
+                  { 'element-6066-11e4-a52e-4f735466cecf' => $id->{'id'} } };
+        }
+        else {
+            $params = { 'id' => { 'ELEMENT' => $id->{'id'} } };
+        }
     }
     else {
         $params = { 'id' => $id };
@@ -819,13 +1158,20 @@ sub switch_to_frame {
 }
 
 
+sub switch_to_parent_frame {
+    my ($self) = @_;
+    my $res = { 'command' => 'switchToParentFrame' };
+    return $self->_execute_command($res);
+}
+
+
 sub switch_to_window {
     my ( $self, $name ) = @_;
     if ( not defined $name ) {
         return 'Window name not provided';
     }
-    my $res    = { 'command' => 'switchToWindow' };
-    my $params = { 'handle'  => $name };
+    my $res = { 'command' => 'switchToWindow' };
+    my $params = { 'name' => $name, 'handle' => $name };
     return $self->_execute_command( $res, $params );
 }
 
@@ -836,8 +1182,18 @@ sub set_window_position {
     if ( not defined $x and not defined $y ) {
         croak "X & Y co-ordinates are required";
     }
+    croak qq{Error: In set_window_size, argument x "$x" isn't numeric}
+      unless Scalar::Util::looks_like_number($x);
+    croak qq{Error: In set_window_size, argument y "$y" isn't numeric}
+      unless Scalar::Util::looks_like_number($y);
+    $x +=
+      0;  # convert to numeric if a string, otherwise they'll be sent as strings
+    $y += 0;
     my $res = { 'command' => 'setWindowPosition', 'window_handle' => $window };
     my $params = { 'x' => $x, 'y' => $y };
+    if ( $self->{is_wd3} ) {
+        $res = { 'command' => 'setWindowRect', handle => $window };
+    }
     my $ret = $self->_execute_command( $res, $params );
     return $ret ? 1 : 0;
 }
@@ -849,10 +1205,18 @@ sub set_window_size {
     if ( not defined $height and not defined $width ) {
         croak "height & width of browser are required";
     }
-    $height += 0;
+    croak qq{Error: In set_window_size, argument height "$height" isn't numeric}
+      unless Scalar::Util::looks_like_number($height);
+    croak qq{Error: In set_window_size, argument width "$width" isn't numeric}
+      unless Scalar::Util::looks_like_number($width);
+    $height +=
+      0;  # convert to numeric if a string, otherwise they'll be sent as strings
     $width += 0;
     my $res = { 'command' => 'setWindowSize', 'window_handle' => $window };
     my $params = { 'height' => $height, 'width' => $width };
+    if ( $self->{is_wd3} ) {
+        $res = { 'command' => 'setWindowRect', handle => $window };
+    }
     my $ret = $self->_execute_command( $res, $params );
     return $ret ? 1 : 0;
 }
@@ -860,9 +1224,28 @@ sub set_window_size {
 
 sub maximize_window {
     my ( $self, $window ) = @_;
+
     $window = ( defined $window ) ? $window : 'current';
     my $res = { 'command' => 'maximizeWindow', 'window_handle' => $window };
-    my $ret = $self->_execute_command( $res );
+    my $ret = $self->_execute_command($res);
+    return $ret ? 1 : 0;
+}
+
+
+sub minimize_window {
+    my ( $self, $window ) = @_;
+    $window = ( defined $window ) ? $window : 'current';
+    my $res = { 'command' => 'minimizeWindow', 'window_handle' => $window };
+    my $ret = $self->_execute_command($res);
+    return $ret ? 1 : 0;
+}
+
+
+sub fullscreen_window {
+    my ( $self, $window ) = @_;
+    $window = ( defined $window ) ? $window : 'current';
+    my $res = { 'command' => 'fullscreenWindow', 'window_handle' => $window };
+    my $ret = $self->_execute_command($res);
     return $ret ? 1 : 0;
 }
 
@@ -875,12 +1258,11 @@ sub get_all_cookies {
 
 
 sub add_cookie {
-    my ( $self, $name, $value, $path, $domain, $secure ) = @_;
+    my ( $self, $name, $value, $path, $domain, $secure, $httponly, $expiry ) =
+      @_;
 
     if (   ( not defined $name )
-        || ( not defined $value )
-        || ( not defined $path )
-        || ( not defined $domain ) )
+        || ( not defined $value ) )
     {
         croak "Missing parameters";
     }
@@ -895,10 +1277,12 @@ sub add_cookie {
             'name'   => $name,
             'value'  => $value,
             'path'   => $path,
-            'domain' => $domain,
             'secure' => $secure,
         }
     };
+    $params->{cookie}->{domain}     = $domain   if $domain;
+    $params->{cookie}->{'httponly'} = $httponly if $httponly;
+    $params->{cookie}->{'expiry'}   = $expiry   if $expiry;
 
     return $self->_execute_command( $res, $params );
 }
@@ -907,6 +1291,13 @@ sub add_cookie {
 sub delete_all_cookies {
     my ($self) = @_;
     my $res = { 'command' => 'deleteAllCookies' };
+    return $self->_execute_command($res);
+}
+
+
+sub get_cookie_named {
+    my ( $self, $cookie_name ) = @_;
+    my $res = { 'command' => 'getCookieNamed', 'name' => $cookie_name };
     return $self->_execute_command($res);
 }
 
@@ -933,35 +1324,29 @@ sub find_element {
     if ( not defined $query ) {
         croak 'Search string to find element not provided.';
     }
-    my $using =
-      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
-    if ( defined $using ) {
-        my $res = { 'command' => 'findElement' };
-        my $params = { 'using' => $using, 'value' => $query };
-        my $ret_data = eval { $self->_execute_command( $res, $params ); };
-        if ($@) {
-            if ( $@
-                =~ /(An element could not be located on the page using the given search parameters)/
-              )
-            {
-                # give details on what element wasn't found
-                $@ = "$1: $query,$using";
-                local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
-                croak $@;
-            }
-            else {
-                # re throw if the exception wasn't what we expected
-                die $@;
-            }
+
+    my $res = { 'command' => 'findElement' };
+    my $params = $self->_build_find_params( $method, $query );
+    my $ret_data = eval { $self->_execute_command( $res, $params ); };
+    if ($@) {
+        if ( $@ =~
+/(An element could not be located on the page using the given search parameters)/
+          )
+        {
+            # give details on what element wasn't found
+            $@ = "$1: $query,$params->{using}";
+            local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
+            croak $@;
         }
-        return $self->webelement_class->new(
-            id => $ret_data,
-            driver => $self
-        );
+        else {
+            # re throw if the exception wasn't what we expected
+            die $@;
+        }
     }
-    else {
-        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
-    }
+    return $self->webelement_class->new(
+        id     => $ret_data,
+        driver => $self
+    );
 }
 
 
@@ -971,43 +1356,35 @@ sub find_elements {
         croak 'Search string to find element not provided.';
     }
 
-    my $using =
-      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
-
-    if ( defined $using ) {
-        my $res = { 'command' => 'findElements' };
-        my $params = { 'using' => $using, 'value' => $query };
-        my $ret_data = eval { $self->_execute_command( $res, $params ); };
-        if ($@) {
-            if ( $@
-                =~ /(An element could not be located on the page using the given search parameters)/
-              )
-            {
-                # give details on what element wasn't found
-                $@ = "$1: $query,$using";
-                local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
-                croak $@;
-            }
-            else {
-                # re throw if the exception wasn't what we expected
-                die $@;
-            }
+    my $res = { 'command' => 'findElements' };
+    my $params = $self->_build_find_params( $method, $query );
+    my $ret_data = eval { $self->_execute_command( $res, $params ); };
+    if ($@) {
+        if ( $@ =~
+/(An element could not be located on the page using the given search parameters)/
+          )
+        {
+            # give details on what element wasn't found
+            $@ = "$1: $query,$params->{using}";
+            local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
+            croak $@;
         }
-        my $elem_obj_arr = [];
-        foreach (@$ret_data) {
-            push(
-                @$elem_obj_arr,
-                $self->webelement_class->new(
-                    id => $_,
-                    driver => $self
-                )
-            );
+        else {
+            # re throw if the exception wasn't what we expected
+            die $@;
         }
-        return wantarray? @{$elem_obj_arr} : $elem_obj_arr ;
     }
-    else {
-        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
+    my $elem_obj_arr = [];
+    foreach (@$ret_data) {
+        push(
+            @$elem_obj_arr,
+            $self->webelement_class->new(
+                id     => $_,
+                driver => $self
+            )
+        );
     }
+    return wantarray ? @{$elem_obj_arr} : $elem_obj_arr;
 }
 
 
@@ -1016,33 +1393,28 @@ sub find_child_element {
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         croak "Missing parameters";
     }
-    my $using =
-      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
-    if ( defined $using ) {
-        my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
-        my $params = { 'using' => $using, 'value' => $query };
-        my $ret_data = eval { $self->_execute_command( $res, $params ); };
-        if ($@) {
-            if ( $@
-                =~ /(An element could not be located on the page using the given search parameters)/
-              )
-            {
-                # give details on what element wasn't found
-                $@ = "$1: $query,$using";
-                local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
-                croak $@;
-            }
-            else {
-                # re throw if the exception wasn't what we expected
-                die $@;
-            }
+    my $res = { 'command' => 'findChildElement', 'id' => $elem->{id} };
+    my $params = $self->_build_find_params( $method, $query );
+    my $ret_data = eval { $self->_execute_command( $res, $params ); };
+    if ($@) {
+        if ( $@ =~
+/(An element could not be located on the page using the given search parameters)/
+          )
+        {
+            # give details on what element wasn't found
+            $@ = "$1: $query,$params->{using}";
+            local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
+            croak $@;
         }
-        return $self->webelement_class->new( id => $ret_data,
-            driver => $self );
+        else {
+            # re throw if the exception wasn't what we expected
+            die $@;
+        }
     }
-    else {
-        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
-    }
+    return $self->webelement_class->new(
+        id     => $ret_data,
+        driver => $self
+    );
 }
 
 
@@ -1051,44 +1423,75 @@ sub find_child_elements {
     if ( ( not defined $elem ) || ( not defined $query ) ) {
         croak "Missing parameters";
     }
-    my $using =
-      ( defined $method ) ? $self->FINDERS->{$method} : $self->default_finder;
-    if ( defined $using ) {
-        my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
-        my $params = { 'using' => $using, 'value' => $query };
-        my $ret_data = eval { $self->_execute_command( $res, $params ); };
-        if ($@) {
-            if ( $@
-                =~ /(An element could not be located on the page using the given search parameters)/
-              )
-            {
-                # give details on what element wasn't found
-                $@ = "$1: $query,$using";
-                local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
-                croak $@;
-            }
-            else {
-                # re throw if the exception wasn't what we expected
-                die $@;
-            }
+
+    my $res = { 'command' => 'findChildElements', 'id' => $elem->{id} };
+    my $params = $self->_build_find_params( $method, $query );
+    my $ret_data = eval { $self->_execute_command( $res, $params ); };
+    if ($@) {
+        if ( $@ =~
+/(An element could not be located on the page using the given search parameters)/
+          )
+        {
+            # give details on what element wasn't found
+            $@ = "$1: $query,$params->{using}";
+            local @CARP_NOT = ( "Selenium::Remote::Driver", @CARP_NOT );
+            croak $@;
         }
-        my $elem_obj_arr = [];
-        my $i = 0;
-        foreach (@$ret_data) {
-            $elem_obj_arr->[$i] =
-              $self->webelement_class->new(
-                  id => $_,
-                  driver => $self
-              );
-            $i++;
+        else {
+            # re throw if the exception wasn't what we expected
+            die $@;
         }
-        return wantarray ? @{$elem_obj_arr} : $elem_obj_arr;
+    }
+    my $elem_obj_arr = [];
+    my $i            = 0;
+    foreach (@$ret_data) {
+        $elem_obj_arr->[$i] = $self->webelement_class->new(
+            id     => $_,
+            driver => $self
+        );
+        $i++;
+    }
+    return wantarray ? @{$elem_obj_arr} : $elem_obj_arr;
+}
+
+
+sub _build_find_params {
+    my ( $self, $method, $query ) = @_;
+
+    my $using = $self->_build_using($method);
+
+    # geckodriver doesn't accept name as a valid selector
+    if ( $self->isa('Selenium::Firefox') && $using eq 'name' ) {
+        return {
+            using => 'css selector',
+            value => qq{[name="$query"]}
+        };
     }
     else {
-        croak "Bad method, expected: " . join(', ', keys %{ $self->FINDERS });
+        return {
+            using => $using,
+            value => $query
+        };
     }
 }
 
+sub _build_using {
+    my ( $self, $method ) = @_;
+
+    if ($method) {
+        if ( $self->FINDERS->{$method} ) {
+            return $self->FINDERS->{$method};
+        }
+        else {
+            croak 'Bad method, expected: '
+              . join( ', ', keys %{ $self->FINDERS } )
+              . ", got $method";
+        }
+    }
+    else {
+        return $self->default_finder;
+    }
+}
 
 sub get_active_element {
     my ($self) = @_;
@@ -1099,7 +1502,7 @@ sub get_active_element {
     }
     else {
         return $self->webelement_class->new(
-            id => $ret_data,
+            id     => $ret_data,
             driver => $self
         );
     }
@@ -1130,7 +1533,7 @@ sub get_geolocation {
 sub get_log {
     my ( $self, $type ) = @_;
     my $res = { 'command' => 'getLog' };
-    return $self->_execute_command( $res, { type => $type });
+    return $self->_execute_command( $res, { type => $type } );
 }
 
 
@@ -1139,7 +1542,6 @@ sub get_log_types {
     my $res = { 'command' => 'getLogTypes' };
     return $self->_execute_command($res);
 }
-
 
 
 sub set_orientation {
@@ -1161,6 +1563,30 @@ sub send_modifier {
     if ( $isdown =~ /(down|up)/ ) {
         $isdown = $isdown =~ /down/ ? 1 : 0;
     }
+
+    if ( $self->{is_wd3}
+        && !( grep { $self->browser_name eq $_ } qw{MicrosoftEdge} ) )
+    {
+        my $acts = [
+            {
+                type => $isdown ? 'keyDown' : 'keyUp',
+                value => KEYS->{ lc($modifier) },
+            },
+        ];
+
+        my $action = {
+            actions => [
+                {
+                    id      => 'key',
+                    type    => 'key',
+                    actions => $acts,
+                }
+            ]
+        };
+        _queue_action(%$action);
+        return 1;
+    }
+
     my $res = { 'command' => 'sendModifier' };
     my $params = {
         value  => $modifier,
@@ -1182,25 +1608,72 @@ sub compare_elements {
 
 
 sub click {
-    my ( $self, $button ) = @_;
-    my $button_enum = { LEFT => 0, MIDDLE => 1, RIGHT => 2 };
-    if ( defined $button && $button =~ /(LEFT|MIDDLE|RIGHT)/i ) {
-        $button = $button_enum->{ uc $1 };
-    }
-    elsif ( defined $button && $button =~ /(0|1|2)/ ) {
-        $button = $1;
-    }
-    else {
-        $button = 0;
-    }
+    my ( $self, $button, $append ) = @_;
+    $button = _get_button($button);
+
     my $res    = { 'command' => 'click' };
     my $params = { 'button'  => $button };
+
+    if ( $self->{is_wd3}
+        && !( grep { $self->browser_name eq $_ } qw{MicrosoftEdge} ) )
+    {
+        $params = {
+            actions => [
+                {
+                    type       => "pointer",
+                    id         => 'mouse',
+                    parameters => { "pointerType" => "mouse" },
+                    actions    => [
+                        {
+                            type     => "pointerDown",
+                            duration => 0,
+                            button   => $button,
+                        },
+                        {
+                            type     => "pointerUp",
+                            duration => 0,
+                            button   => $button,
+                        },
+                    ],
+                }
+            ],
+        };
+        if ($append) {
+            _queue_action(%$params);
+            return 1;
+        }
+        return $self->general_action(%$params);
+    }
+
     return $self->_execute_command( $res, $params );
+}
+
+sub _get_button {
+    my $button = shift;
+    my $button_enum = { LEFT => 0, MIDDLE => 1, RIGHT => 2 };
+    if ( defined $button && $button =~ /(LEFT|MIDDLE|RIGHT)/i ) {
+        return $button_enum->{ uc $1 };
+    }
+    if ( defined $button && $button =~ /(0|1|2)/ ) {
+        return $1;
+    }
+    return 0;
 }
 
 
 sub double_click {
-    my ($self) = @_;
+    my ( $self, $button ) = @_;
+
+    $button = _get_button($button);
+
+    if ( $self->{is_wd3}
+        && !( grep { $self->browser_name eq $_ } qw{MicrosoftEdge} ) )
+    {
+        $self->click( $button, 1 );
+        $self->click( $button, 1 );
+        $self->general_action();
+    }
+
     my $res = { 'command' => 'doubleClick' };
     return $self->_execute_command($res);
 }
@@ -1208,6 +1681,30 @@ sub double_click {
 
 sub button_down {
     my ($self) = @_;
+
+    if ( $self->{is_wd3}
+        && !( grep { $self->browser_name eq $_ } qw{MicrosoftEdge} ) )
+    {
+        my $params = {
+            actions => [
+                {
+                    type       => "pointer",
+                    id         => 'mouse',
+                    parameters => { "pointerType" => "mouse" },
+                    actions    => [
+                        {
+                            type     => "pointerDown",
+                            duration => 0,
+                            button   => 0,
+                        },
+                    ],
+                }
+            ],
+        };
+        _queue_action(%$params);
+        return 1;
+    }
+
     my $res = { 'command' => 'buttonDown' };
     return $self->_execute_command($res);
 }
@@ -1215,6 +1712,30 @@ sub button_down {
 
 sub button_up {
     my ($self) = @_;
+
+    if ( $self->{is_wd3}
+        && !( grep { $self->browser_name eq $_ } qw{MicrosoftEdge} ) )
+    {
+        my $params = {
+            actions => [
+                {
+                    type       => "pointer",
+                    id         => 'mouse',
+                    parameters => { "pointerType" => "mouse" },
+                    actions    => [
+                        {
+                            type     => "pointerDown",
+                            duration => 0,
+                            button   => 0,
+                        },
+                    ],
+                }
+            ],
+        };
+        _queue_action(%$params);
+        return 1;
+    }
+
     my $res = { 'command' => 'buttonUp' };
     return $self->_execute_command($res);
 }
@@ -1227,11 +1748,10 @@ sub upload_file {
     my ( $self, $filename, $raw_content ) = @_;
 
     my $params;
-    if (defined $raw_content) {
+    if ( defined $raw_content ) {
+
         #If no processing is passed, send the argument raw
-        $params = {
-            file => $raw_content
-        };
+        $params = { file => $raw_content };
     }
     else {
         #Otherwise, zip/base64 it.
@@ -1245,19 +1765,17 @@ sub upload_file {
 }
 
 sub _prepare_file {
-    my ($self,$filename) = @_;
+    my ( $self, $filename ) = @_;
 
     if ( not -r $filename ) { croak "upload_file: no such file: $filename"; }
-    my $string = "";    # buffer
-    my $zip = Archive::Zip->new();
-    $zip->addFile($filename, basename($filename));
-    if ($zip->writeToFileHandle(IO::String->new($string)) != AZ_OK) {
+    my $string = "";                            # buffer
+    my $zip    = Archive::Zip->new();
+    $zip->addFile( $filename, basename($filename) );
+    if ( $zip->writeToFileHandle( IO::String->new($string) ) != AZ_OK ) {
         die 'zip failed';
     }
 
-    return {
-        file => MIME::Base64::encode_base64($string, '')
-    };
+    return { file => MIME::Base64::encode_base64( $string, '' ) };
 }
 
 
@@ -1269,7 +1787,7 @@ sub get_text {
 
 sub get_body {
     my $self = shift;
-    return $self->get_text('//body', 'xpath');
+    return $self->get_text( '//body', 'xpath' );
 }
 
 
@@ -1289,17 +1807,16 @@ sub get_user_agent {
 }
 
 
-
 sub set_inner_window_size {
-    my $self = shift;
-    my $height = shift;
-    my $width = shift;
+    my $self     = shift;
+    my $height   = shift;
+    my $width    = shift;
     my $location = $self->get_current_url;
 
-    $self->execute_script('window.open("' . $location . '", "_blank")');
+    $self->execute_script( 'window.open("' . $location . '", "_blank")' );
     $self->close;
     my @handles = @{ $self->get_window_handles };
-    $self->switch_to_window(pop @handles);
+    $self->switch_to_window( pop @handles );
 
     my @resize = (
         'window.innerHeight = ' . $height,
@@ -1307,30 +1824,30 @@ sub set_inner_window_size {
         'return 1'
     );
 
-    return $self->execute_script(join(';', @resize)) ? 1 : 0;
+    return $self->execute_script( join( ';', @resize ) ) ? 1 : 0;
 }
 
 
 sub get_local_storage_item {
-    my ($self, $key) = @_;
-    my $res = { 'command' => 'getLocalStorageItem' };
-    my $params = { 'key' => $key };
-    return $self->_execute_command($res, $params);
+    my ( $self, $key ) = @_;
+    my $res    = { 'command' => 'getLocalStorageItem' };
+    my $params = { 'key'     => $key };
+    return $self->_execute_command( $res, $params );
 }
 
 
 sub delete_local_storage_item {
-    my ($self, $key) = @_;
-    my $res = { 'command' => 'deleteLocalStorageItem' };
-    my $params = { 'key' => $key };
-    return $self->_execute_command($res, $params);
+    my ( $self, $key ) = @_;
+    my $res    = { 'command' => 'deleteLocalStorageItem' };
+    my $params = { 'key'     => $key };
+    return $self->_execute_command( $res, $params );
 }
 
 sub _coerce_timeout_ms {
     my ($ms) = @_;
 
     if ( defined $ms ) {
-        return _coerce_number( $ms );
+        return _coerce_number($ms);
     }
     else {
         croak 'Expecting a timeout in ms';
@@ -1340,14 +1857,13 @@ sub _coerce_timeout_ms {
 sub _coerce_number {
     my ($maybe_number) = @_;
 
-    if ( Scalar::Util::looks_like_number( $maybe_number )) {
+    if ( Scalar::Util::looks_like_number($maybe_number) ) {
         return $maybe_number + 0;
     }
     else {
         croak "Expecting a number, not: $maybe_number";
     }
 }
-
 
 1;
 
@@ -1363,7 +1879,7 @@ Selenium::Remote::Driver - Perl Client for Selenium Remote Driver
 
 =head1 VERSION
 
-version 1.11
+version 1.36
 
 =head1 SYNOPSIS
 
@@ -1382,12 +1898,16 @@ any HTTP website using any mainstream JavaScript-enabled browser. This module is
 an implementation of the client for the Remote driver that Selenium provides.
 You can find bindings for other languages at this location:
 
-L<http://code.google.com/p/selenium/>
+L<https://www.seleniumhq.org/download/>
 
 This module sends commands directly to the Server using HTTP. Using this module
 together with the Selenium Server, you can automatically control any supported
 browser. To use this module, you need to have already downloaded and started
 the Selenium Server (Selenium Server is a Java application).
+
+=for Pod::Coverage BUILD
+
+=for Pod::Coverage DEMOLISH
 
 =head1 USAGE
 
@@ -1395,21 +1915,23 @@ the Selenium Server (Selenium Server is a Java application).
 
 As of v0.25, it's possible to use this module without a standalone
 server - that is, you would not need the JRE or the JDK to run your
-Selenium tests. See L<Selenium::Chrome>, L<Selenium::PhantomJS>, and
-L<Selenium::Firefox> for details. If you'd like additional browsers
-besides these, give us a holler over in
-L<Github|https://github.com/gempesaw/Selenium-Remote-Driver/issues>.
+Selenium tests. See L<Selenium::Chrome>, L<Selenium::PhantomJS>,
+L<Selenium::Edge>, L<Selenium::InternetExplorer>,and L<Selenium::Firefox>
+for details. If you'd like additional browsers besides these,
+give us a holler over in
+L<Github|https://github.com/teodesian/Selenium-Remote-Driver/issues>.
 
 =head2 Remote Driver Response
 
 Selenium::Remote::Driver uses the
-L<JsonWireProtocol|http://code.google.com/p/selenium/wiki/JsonWireProtocol>
+L<JsonWireProtocol|https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol>
+And the
+L<WC3 WebDriver Protocol|https://www.w3.org/TR/webdriver/>
 to communicate with the Selenium Server. If an error occurs while
 executing the command then the server sends back an HTTP error code
-with a JSON encoded reponse that indicates the precise L<Response
-Error
-Code|http://code.google.com/p/selenium/wiki/JsonWireProtocol#Response_Status_Codes>. The
-module will then croak with the error message associated with this
+with a JSON encoded reponse that indicates the precise
+L<Response Error Code|https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol#response-status-codes>.
+The module will then croak with the error message associated with this
 code. If no error occurred, then the subroutine called will return the
 value sent back from the server (if a return value was sent).
 
@@ -1488,76 +2010,195 @@ Your other option is to use this module in conjunction with your
 choice of testing modules, like L<Test::Spec> or L<Test::More> as
 you please.
 
-=head1 FUNCTIONS
+=head1 WC3 WEBDRIVER COMPATIBILITY
+
+WC3 Webdriver is a constantly evolving standard, so some things may or may not work at any given time.
+
+Furthermore, out of date drivers probably identify as WD3, while only implementing a few methods and retaining JSONWire functionality.
+One way of dealing with this is setting:
+
+    $driver->{is_wd3} = 0
+
+Of course, this will prevent access of any new WC3 methods, but will probably make your tests pass until your browser's driver gets it's act together.
+
+There are also some JSONWire behaviors that we emulate in methods, such as Selenium::Remote::WebElement::get_attribute.
+You can get around that by passing an extra flag to the sub, or setting:
+
+    $driver->{emulate_jsonwire} = 0;
+
+When in WC3 Webdriver mode.
+
+=head2 WC3 WEBDRIVER CURRENT STATUS
+
+That said, the following 'sanity tests' in the at/ (acceptance test) directory of the module passed on the following versions:
+
+=over 4
+
+=item Selenium Server: 3.8.1 - all tests
+
+=item geckodriver: 0.19.1 - at/sanity.test, at/firefox.test (Selenium::Firefox)
+
+=item chromedriver: 2.35 - at/sanity-chrome.test, at/chrome.test (Selenium::Chrome)
+
+=item edgedriver: 5.16299 - at/sanity-edge.test
+
+=item InternetExplorerDriver : 3.8.1 - at/sanity-ie.test (be sure to enable 'allow local files to run active content in your 'advanced settings' pane)
+
+=item safaridriver : 11.0.2 - at/sanity-safari.test (be sure to enable 'allow automated testing' in the developer menu) -- it appears WC3 spec is *unimplemented*
+
+=back
+
+These tests are intended to be run directly against a working selenium server on the local host with said drivers configured.
+
+If you are curious as to what 'works and does not' on your driver versions (and a few other quirks),
+it is strongly encouraged you look at where the test calls the methods you are interested in.
+
+While other browsers/drivers (especially legacy ones) likely work fine as well,
+any new browser/driver will likely have problems if it's not listed above.
+
+There is also a 'legacy.test' file available to run against old browsers/selenium (2.x servers, pre geckodriver).
+This should only be used to verify backwards-compatibility has not been broken.
+
+=head2 Firefox Notes
+
+If you are intending to pass extra_capabilities to firefox on a WD3 enabled server with geckodriver, you MUST do the following:
+
+   $Selenium::Remote::Driver::FORCE_WD3=1;
+
+This is because the gecko driver prefers legacy capabilities, both of which are normally passed for compatibility reasons.
+
+=head2 Chrome Notes
+
+Use the option goog:chromeOptions instead of chromeOptions, if you are intending to pass extra_capabilities on a
+WD3 enabled server with chromedriver enabled.
+
+    https://sites.google.com/a/chromium.org/chromedriver/capabilities
+
+Also, if you instantiate the object in WC3 mode (which is the default), the remote driver will throw exceptions you have no choice but to catch,
+rather than falling back to JSONWire methods where applicable like geckodriver does.
+
+=head1 CONSTRUCTOR
 
 =head2 new
 
- Description:
-    Constructor for Driver. It'll instantiate the object if it can communicate
-    with the Selenium Webdriver server.
+Dies if communication with the selenium server cannot be established.
 
- Input: (all optional)
-    Desired capabilities - HASH - Following options are accepted:
-      Optional:
-        'remote_server_addr'   - <string>   - IP or FQDN of the Webdriver server machine
-        'port'                 - <string>   - Port on which the Webdriver server is listening
-        'browser_name'         - <string>   - desired browser string: {phantomjs|firefox|internet explorer|htmlunit|iphone|chrome}
-        'version'              - <string>   - desired browser version number
-        'platform'             - <string>   - desired platform: {WINDOWS|XP|VISTA|MAC|LINUX|UNIX|ANY}
-        'javascript'           - <boolean>  - whether javascript should be supported
-        'accept_ssl_certs'     - <boolean>  - whether SSL certs should be accepted, default is true.
-        'firefox_profile'      - Profile    - Use Selenium::Firefox::Profile to create a Firefox profile for the browser to use
-        'proxy'                - HASH       - Proxy configuration with the following keys:
-            'proxyType' - <string> - REQUIRED, Possible values are:
-                direct     - A direct connection - no proxy in use,
-                manual     - Manual proxy settings configured, e.g. setting a proxy for HTTP, a proxy for FTP, etc,
-                pac        - Proxy autoconfiguration from a URL,
-                autodetect - proxy autodetection, probably with WPAD,
-                system     - Use system settings
-            'proxyAutoconfigUrl' - <string> - REQUIRED if proxyType is 'pac', ignored otherwise. Expected format: http://hostname.com:1234/pacfile or file:///path/to/pacfile
-            'ftpProxy'           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
-            'httpProxy'          - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
-            'sslProxy'           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
-        'extra_capabilities'   - HASH       - Any other extra capabilities
+Input: (all optional)
 
-    You can also specify some options in the constructor hash that are
-    not part of the browser-related desired capabilities. These items
-    are also optional.
+Desired capabilities - HASH - Following options are accepted:
 
-        'auto_close'           - <boolean>   - whether driver should end session on remote server on close.
-        'base_url'             - <string>    - OPTIONAL, base url for the website Selenium acts on. This can save you from repeating the domain in every call to $driver->get()
-        'default_finder'       - <string>    - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
-        'inner_window_size'    - <aref[Int]> - An array ref [ height, width ] that the browser window should use as its initial size immediately after instantiation
-        'error_handler'        - CODEREF     - A CODEREF that we will call in event of any exceptions. See L</error_handler> for more details.
-        'webelement_class'     - <string>    - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
-        'ua'                   - LWP::UserAgent instance - if you wish to use a specific $ua, like from Test::LWP::UserAgent
+=over 4
 
-    If no values are provided, then these defaults will be assumed:
-        'remote_server_addr' => 'localhost'
-        'port'               => '4444'
-        'browser_name'       => 'firefox'
-        'version'            => ''
-        'platform'           => 'ANY'
-        'javascript'         => 1
-        'auto_close'         => 1
-        'default_finder'     => 'xpath'
+=item B<remote_server_addr> - <string>   - IP or FQDN of the Webdriver server machine. Default: 'localhost'
 
- Output:
-    Remote Driver object
+=item B<port>               - <string>   - Port on which the Webdriver server is listening. Default: 4444
 
- Usage:
+=item B<browser_name>       - <string>   - desired browser string: {phantomjs|firefox|internet explorer|MicrosoftEdge|safari|htmlunit|iphone|chrome}
+
+=item B<version>            - <string>   - desired browser version number
+
+=item B<platform>           - <string>   - desired platform: {WINDOWS|XP|VISTA|MAC|LINUX|UNIX|ANY}
+
+=item B<accept_ssl_certs>   - <boolean>  - whether SSL certs should be accepted, default is true.
+
+=item B<firefox_profile>    - Profile    - Use Selenium::Firefox::Profile to create a Firefox profile for the browser to use.
+
+=item B<javascript>         - <boolean> - Whether or not to use Javascript.  You probably won't disable this, as you would be using L<WWW::Mechanize> instead.  Default: True
+
+=item B<auto_close>         - <boolean> - Whether to automatically close the browser session on the server when the object goes out of scope. Default: False.
+
+=item B<default_finder>     - <string> - Default method by which to evaluate selectors.  Default: 'xpath'
+
+=item B<session_id>         - <string> - Provide a Session ID to highjack a browser session on the remote server.  Useful for micro-optimizers.  Default: undef
+
+=item B<pageLoadStrategy>   - STRING   - OPTIONAL, 'normal|eager|none'. default 'normal'. WebDriver3 only.
+
+=item B<extra_capabilities> - HASH     - Any other extra capabilities.  Accepted keys will vary by browser.  If firefox_profile is passed, the args (or profile) key will be overwritten, depending on how it was passed.
+
+=back
+
+On WebDriver3 the 'extra_capabilities' will be automatically converted into the parameter needed by your browser.
+For example, extra_capabilities is passed to the server as the moz:firefoxOptions parameter.
+
+You can also specify some options in the constructor hash that are
+not part of the browser-related desired capabilities.
+
+=over 4
+
+=item B<auto_close>        - <boolean>   - whether driver should end session on remote server on close.
+
+=item B<base_url>          - <string>    - OPTIONAL, base url for the website Selenium acts on. This can save you from repeating the domain in every call to $driver->get()
+
+=item B<default_finder>    - <string>    - choose default finder used for find_element* {class|class_name|css|id|link|link_text|name|partial_link_text|tag_name|xpath}
+
+=item B<inner_window_size> - <aref[Int]> - An array ref [ height, width ] that the browser window should use as its initial size immediately after instantiation
+
+=item B<error_handler>     - CODEREF     - A CODEREF that we will call in event of any exceptions. See L</error_handler> for more details.
+
+=item B<webelement_class>  - <string>    - sub-class of Selenium::Remote::WebElement if you wish to use an alternate WebElement class.
+
+=item B<ua>                - LWP::UserAgent instance - if you wish to use a specific $ua, like from Test::LWP::UserAgent
+
+=item B<proxy>              - HASH       - Proxy configuration with the following keys:
+
+=over 4
+
+=item B<proxyType> - <string> - REQUIRED, Possible values are:
+
+    direct     - A direct connection - no proxy in use,
+    manual     - Manual proxy settings configured, e.g. setting a proxy for HTTP, a proxy for FTP, etc,
+    pac        - Proxy autoconfiguration from a URL,
+    autodetect - proxy autodetection, probably with WPAD,
+    system     - Use system settings
+
+=item B<proxyAutoconfigUrl> - <string> - REQUIRED if proxyType is 'pac', ignored otherwise. Expected format: http://hostname.com:1234/pacfile or file:///path/to/pacfile
+
+=item B<ftpProxy>           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+
+=item B<httpProxy>          - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+
+=item B<sslProxy>           - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234
+
+=item B<socksProxy>         - <string> - OPTIONAL, ignored if proxyType is not 'manual'. Expected format: hostname.com:1234.  WebDriver 3 only.
+
+=item B<socksVersion>       - <int>    - OPTIONAL, ignored if proxyType is not 'manual'. WebDriver 3 only.
+
+=item B<noProxy>            - <ARRAY>  - OPTIONAL, list of URLs to bypass the proxy for. WebDriver3 only.
+
+=item B<firefox_profile>    - <string> - Base64 encoded ZIP file of a firefox profile directory, for use when you don't want/need Selenium::Firefox::Profile.
+
+=back
+
+=back
+
+Output:
+
+Selenium::Remote::Driver object
+
+Usage:
+
     my $driver = Selenium::Remote::Driver->new;
-    or
+
+    #or
     my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
                                                'platform'     => 'MAC');
-    or
+
+    #or (for Firefox 47 or lower on Selenium 3+)
+    my $driver = Selenium::Remote::Driver->new('browser_name' => 'firefox',
+                                               'platform'     => 'MAC',
+                                               'extra_capabilities' => {
+                                                    'marionette' => \0,
+                                              });
+
+    #or
     my $driver = Selenium::Remote::Driver->new('remote_server_addr' => '10.10.1.1',
                                                'port'               => '2222',
                                                'auto_close'         => 0);
-    or
+
+    #or
     my $driver = Selenium::Remote::Driver->new('browser_name' =>'chrome',
                                                'extra_capabilities' => {
-                                                   'chromeOptions' => {
+                                                   'goog:chromeOptions' => {
                                                        'args'  => [
                                                            'window-size=1260,960',
                                                            'incognito'
@@ -1576,9 +2217,11 @@ you please.
                                                        }
                                                    }
                                                });
-    or
+
+    #or
     my $driver = Selenium::Remote::Driver->new('proxy' => {'proxyType' => 'manual', 'httpProxy' => 'myproxy.com:1234'});
-    or
+
+    #or
     my $driver = Selenium::Remote::Driver->new('default_finder' => 'css');
 
 =head3 error_handler
@@ -1603,9 +2246,10 @@ already-instantiated driver:
     # (we will croak about the exception)
     $driver->clear_error_handler;
 
-Your error handler will receive two arguments: the first argument is
+Your error handler will receive three arguments: the first argument is
 the C<$driver> object itself, and the second argument is the exception
-message and stack trace in one multiline string.
+message and stack trace in one multiline string.  The final argument(s) are the
+argument array to the command just executed.
 
 B<N.B.>: If you set your own error handler, you are entirely
 responsible for handling webdriver exceptions, _including_ croaking
@@ -1682,6 +2326,50 @@ C<eval>, or use the parameterized versions find_element_*).
     localhost:4444 with the exact payload of '{"desiredCapabilities":
     {"browserName": "firefox" }}'.
 
+=for Pod::Coverage has_base_url
+
+=for Pod::Coverage has_desired_capabilities
+
+=for Pod::Coverage has_error_handler
+
+=for Pod::Coverage has_firefox_profile
+
+=for Pod::Coverage has_inner_window_size
+
+=for Pod::Coverage has_javascript
+
+=for Pod::Coverage has_port
+
+=for Pod::Coverage has_remote_server_addr
+
+=head1 METHODS
+
+=head2 new_session (extra_capabilities)
+
+Make a new session on the server.
+Called by new(), not intended for regular use.
+
+Occaisonally handy for recovering from brower crashes.
+
+DANGER DANGER DANGER
+
+This will throw away your old session if you have not closed it!
+
+DANGER DANGER DANGER
+
+=head2 new_desired_session(capabilities)
+
+Basically the same as new_session, but with caps.
+Sort of an analog to new_from_caps.
+
+=head2 is_webdriver_3
+
+Print whether the server (or browser) thinks it's implemented webdriver 3.
+If this returns true, webdriver 3 methods will be used in the case an action exists in L<Selenium::Remote::Spec> for the method you are trying to call.
+If a method you are calling has no webdriver 3 equivalent (or browser extension), the legacy commands implemented in L<Selenium::Remote::Commands> will be used.
+
+Note how I said *thinks* above.  In the case you want to force usage of legacy methods, set $driver->{is_wd3} to work around various browser issues.
+
 =head2 debug_on
 
   Description:
@@ -1746,6 +2434,9 @@ C<eval>, or use the parameterized versions find_element_*).
     Rather, the state of the modifier keys is kept between calls, so mouse
     interactions can be performed while modifier keys are depressed.
 
+ Compatibility:
+    On webdriver 3 servers, don't use this to send modifier keys; use send_modifier instead.
+
  Input: 1
     Required:
         {ARRAY | STRING} - Array of strings or a string.
@@ -1758,8 +2449,6 @@ C<eval>, or use the parameterized versions find_element_*).
 
     # include the WDKeys module
     use Selenium::Remote::WDKeys;
-    .
-    .
     $driver->send_keys_to_active_element(KEYS->{'space'}, KEYS->{'enter'});
 
 =head2 send_keys_to_alert
@@ -1801,6 +2490,55 @@ Synonymous with send_keys_to_prompt
  Example:
     $driver->dismiss_alert;
 
+=head2 general_action
+
+Provide an 'actions definition' hash to make webdriver use input devices.
+Given the spec for the structure of this data is 'non normative',
+it is left as an exercise to the reader what that means as to how to use this function.
+
+That said, it seems most of the data looks something like this:
+
+    $driver->general_action( actions => [{
+        type => 'pointer|key|none|somethingElseSuperSpecialDefinedByYourBrowserDriver',
+        id => MUST be mouse|key|none|other.  And by 'other' I mean anything else.  The first 3 are 'special' in that they are used in the global actions queue.
+              If you want say, another mouse action to execute in parallel to other mouse actions (to simulate multi-touch, for example), call your action 'otherMouseAction' or something.
+        parameters => {
+            someOption => "basically these are global parameters used by all steps in the forthcoming "action chain".
+        },
+        actions => [
+            {
+                type => "keyUp|KeyDown if key, pointerUp|pointerDown|pointerMove|pointerCancel if pointer, pause if any type",
+                key => A raw keycode or character from the keyboard if this is a key event,
+                duration => how many 'ticks' this action should take, you probably want this to be 0 all of the time unless you are evading Software debounce.
+                button => what number button if you are using a pointer (this sounds terribly like it might be re-purposed to be a joypad in the future sometime)
+                origin => Point of Origin if moving a pointer around
+                x => unit vector to travel along x-axis if pointerMove event
+                y => unit vector to travel along y-axis if pointerMove event
+            },
+            ...
+        ]
+        },
+        ...
+        ]
+    )
+
+Only available on WebDriver3 capable selenium servers.
+
+If you have called any legacy shim, such as mouse_move_to_location() previously, your actions passed will be appended to the existing actions queue.
+Called with no arguments, it simply executes the existing action queue.
+
+If you are looking for pre-baked action chains that aren't currently part of L<Selenium::Remote::Driver>,
+consider L<Selenium::ActionChains>, which is shipped with this distribution instead.
+
+=head2 release_general_action
+
+Nukes *all* input device state (modifier key up/down, pointer button up/down, pointer location, and other device state) from orbit.
+Call if you forget to do a *Up event in your provided action chains, or just to save time.
+
+Also clears the current actions queue.
+
+Only available on WebDriver3 capable selenium servers.
+
 =head2 mouse_move_to_location
 
  Description:
@@ -1809,6 +2547,12 @@ Synonymous with send_keys_to_prompt
     cursor. If an element is provided but no offset, the mouse will be
     moved to the center of the element. If the element is not visible,
     it will be scrolled into view.
+
+ Compatibility:
+    Due to limitations in the Webdriver 3 API, mouse movements have to be executed 'lazily' e.g. only right before a click() event occurs.
+    This is because there is no longer any persistent mouse location state; mouse movements are now totally atomic.
+    This has several problematic aspects; for one, I can't think of a way to both hover an element and then do another action relying on the element staying hover()ed,
+    Aside from using javascript workarounds.
 
  Output:
     STRING -
@@ -1835,6 +2579,17 @@ Synonymous with mouse_move_to_location
  Usage:
     my $capab = $driver->get_capabilities();
     print Dumper($capab);
+
+=head2 get_timeouts
+
+  Description:
+    Get the currently configured values (ms) for the page load, script and implicit timeouts.
+
+  Compatibility:
+    Only available on WebDriver3 enabled selenium servers.
+
+  Usage:
+    $driver->get_timeouts();
 
 =head2 set_timeout
 
@@ -1900,6 +2655,8 @@ Synonymous with mouse_move_to_location
     $driver->pause(10000);  # 10 second delay
     $driver->pause();       #  1 second delay default
 
+ DEPRECATED: consider using Time::HiRes instead.
+
 =head2 close
 
  Description:
@@ -1964,6 +2721,10 @@ Synonymous with mouse_move_to_location
  Description:
     Retrieve the window size
 
+ Compatibility:
+    The ability to get the size of arbitrary handles by passing input only exists in WebDriver2.
+    You will have to switch to the window first going forward.
+
  Input:
     STRING - <optional> - window handle (default is 'current' window)
 
@@ -1978,6 +2739,10 @@ Synonymous with mouse_move_to_location
 
  Description:
     Retrieve the window position
+
+ Compatibility:
+    The ability to get the size of arbitrary handles by passing input only exists in WebDriver2.
+    You will have to switch to the window first going forward.
 
  Input:
     STRING - <optional> - window handle (default is 'current' window)
@@ -2057,10 +2822,13 @@ Synonymous with mouse_move_to_location
  Usage:
     $driver->refresh();
 
-=head2 javascript
+=head2 has_javascript
 
  Description:
     returns true if javascript is enabled in the driver.
+
+ Compatibility:
+    Can't be false on WebDriver 3.
 
  Usage:
     if ($driver->has_javascript) { ...; }
@@ -2127,31 +2895,40 @@ Synonymous with mouse_move_to_location
 
  Description:
     Get a screenshot of the current page as a base64 encoded image.
+    Optionally pass {'full' => 1} as argument to take a full screenshot and not
+    only the viewport. (Works only with firefox and geckodriver >= 0.24.0)
 
  Output:
     STRING - base64 encoded image
 
  Usage:
     print $driver->screenshot();
+    print $driver->screenshot({'full' => 1});
 
-To conveniently write the screenshot to a file, see L<capture_screenshot()>.
+To conveniently write the screenshot to a file, see L</capture_screenshot>.
 
 =head2 capture_screenshot
 
  Description:
     Capture a screenshot and save as a PNG to provided file name.
     (The method is compatible with the WWW::Selenium method of the same name)
+    Optionally pass {'full' => 1} as second argument to take a full screenshot
+    and not only the viewport. (Works only with firefox and geckodriver >= 0.24.0)
 
  Output:
     TRUE - (Screenshot is written to file)
 
  Usage:
     $driver->capture_screenshot($filename);
+    $driver->capture_screenshot($filename, {'full' => 1});
 
 =head2 available_engines
 
  Description:
     List all available engines on the machine. To use an engine, it has to be present in this list.
+
+ Compatibility:
+    Does not appear to be available on Webdriver3 enabled selenium servers.
 
  Output:
     {Array.<string>} A list of available engines
@@ -2176,6 +2953,11 @@ To conveniently write the screenshot to a file, see L<capture_screenshot()>.
     $driver->switch_to_frame('frame_1');
     or
     $driver->switch_to_frame($driver->find_element('iframe', 'tag_name'));
+
+=head2 switch_to_parent_frame
+
+Webdriver 3 equivalent of calling switch_to_frame with no arguments (e.g. NULL frame).
+This is actually called in that case, supposing you are using WD3 capable servers now.
 
 =head2 switch_to_window
 
@@ -2212,6 +2994,10 @@ To conveniently write the screenshot to a file, see L<capture_screenshot()>.
  Description:
     Set the position (on screen) where you want your browser to be displayed.
 
+ Compatibility:
+    In webDriver 3 enabled selenium servers, you may only operate on the focused window.
+    As such, the window handle argument below will be ignored in this context.
+
  Input:
     INT - x co-ordinate
     INT - y co-ordinate
@@ -2227,6 +3013,10 @@ To conveniently write the screenshot to a file, see L<capture_screenshot()>.
 
  Description:
     Set the size of the browser window
+
+ Compatibility:
+    In webDriver 3 enabled selenium servers, you may only operate on the focused window.
+    As such, the window handle argument below will be ignored in this context.
 
  Input:
     INT - height of the window
@@ -2244,6 +3034,13 @@ To conveniently write the screenshot to a file, see L<capture_screenshot()>.
  Description:
     Maximizes the browser window
 
+ Compatibility:
+    In webDriver 3 enabled selenium servers, you may only operate on the focused window.
+    As such, the window handle argument below will be ignored in this context.
+
+    Also, on chromedriver maximize is actually just setting the window size to the screen's
+    available height and width.
+
  Input:
     STRING - <optional> - window handle (default is 'current' window)
 
@@ -2252,6 +3049,28 @@ To conveniently write the screenshot to a file, see L<capture_screenshot()>.
 
  Usage:
     $driver->maximize_window();
+
+=head2 minimize_window
+
+ Description:
+    Minimizes the currently focused browser window (webdriver3 only)
+
+ Output:
+    BOOLEAN - Success or failure
+
+ Usage:
+    $driver->minimize_window();
+
+=head2 fullscreen_window
+
+ Description:
+    Fullscreens the currently focused browser window (webdriver3 only)
+
+ Output:
+    BOOLEAN - Success or failure
+
+ Usage:
+    $driver->fullscreen_window();
 
 =head2 get_all_cookies
 
@@ -2276,17 +3095,20 @@ To conveniently write the screenshot to a file, see L<capture_screenshot()>.
  Description:
     Set a cookie on the domain.
 
- Input: 5 (1 optional)
+ Input: 2 (4 optional)
     Required:
-        'name' - STRING
-        'value' - STRING
-        'path' - STRING
-        'domain' - STRING
+        'name'   - STRING
+        'value'  - STRING
+
     Optional:
-        'secure' - BOOLEAN - default is false.
+        'path'   - STRING
+        'domain' - STRING
+        'secure'   - BOOLEAN - default false.
+        'httponly' - BOOLEAN - default false.
+        'expiry'   - TIME_T  - default 20 years in the future
 
  Usage:
-    $driver->add_cookie('foo', 'bar', '/', '.google.com', 0)
+    $driver->add_cookie('foo', 'bar', '/', '.google.com', 0, 1)
 
 =head2 delete_all_cookies
 
@@ -2295,6 +3117,19 @@ To conveniently write the screenshot to a file, see L<capture_screenshot()>.
 
  Usage:
     $driver->delete_all_cookies();
+
+=head2 get_cookie_named
+
+Basically get only the cookie with the provided name.
+Probably preferable to pick it out of the list unless you expect a *really* long list.
+
+ Input:
+    Cookie Name - STRING
+
+Returns cookie definition hash, much like the elements in get_all_cookies();
+
+  Compatibility:
+    Only available on webdriver3 enabled selenium servers.
 
 =head2 delete_cookie_named
 
@@ -2638,6 +3473,7 @@ See L</find_element>.
  Input:
     button - any one of 'LEFT'/0 'MIDDLE'/1 'RIGHT'/2
              defaults to 'LEFT'
+    queue - (optional) queue the click, rather than executing it.  WD3 only.
 
  Usage:
     $driver->click('LEFT');
@@ -2650,8 +3486,11 @@ See L</find_element>.
  Description:
     Double-clicks at the current mouse coordinates (set by moveto).
 
+ Compatibility:
+    On webdriver3 enabled servers, you can double click arbitrary mouse buttons.
+
  Usage:
-    $driver->double_click;
+    $driver->double_click(button);
 
 =head2 button_down
 
@@ -2660,6 +3499,10 @@ See L</find_element>.
     last moveto command). Note that the next mouse-related command that
     should follow is buttonup . Any other mouse command (such as click
     or another call to buttondown) will yield undefined behaviour.
+
+ Compatibility:
+    On WebDriver 3 enabled servers, all this does is queue a button down action.
+    You will either have to call general_action() to perform the queue, or an action like click() which also clears the queue.
 
  Usage:
     $self->button_down;
@@ -2671,6 +3514,10 @@ See L</find_element>.
     currently at). Must be called once for every buttondown command
     issued. See the note in click and buttondown about implications of
     out-of-order commands.
+
+ Compatibility:
+    On WebDriver 3 enabled servers, all this does is queue a button down action.
+    You will either have to call general_action() to perform the queue, or an action like click() which also clears the queue.
 
  Usage:
     $self->button_up;
@@ -2783,15 +3630,19 @@ Please see those modules/websites for more information related to this module.
 
 =item *
 
-L<http://code.google.com/p/selenium/|http://code.google.com/p/selenium/>
+L<L<https://github.com/SeleniumHQ/selenium> - the main selenium RC project|L<https://github.com/SeleniumHQ/selenium> - the main selenium RC project>
 
 =item *
 
-L<https://code.google.com/p/selenium/wiki/JsonWireProtocol#Capabilities_JSON_Object|https://code.google.com/p/selenium/wiki/JsonWireProtocol#Capabilities_JSON_Object>
+L<L<https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol> - the "legacy" webdriver specification|L<https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol> - the "legacy" webdriver specification>
 
 =item *
 
-L<https://github.com/gempesaw/Selenium-Remote-Driver/wiki|https://github.com/gempesaw/Selenium-Remote-Driver/wiki>
+L<L<https://www.w3.org/TR/webdriver/> - the WC3 WebDriver 3 specification|L<https://www.w3.org/TR/webdriver/> - the WC3 WebDriver 3 specification>
+
+=item *
+
+L<https://github.com/teodesian/Selenium-Remote-Driver/wiki>
 
 =item *
 
@@ -2806,7 +3657,7 @@ L<Wight|Wight>
 =head1 BUGS
 
 Please report any bugs or feature requests on the bugtracker website
-https://github.com/gempesaw/Selenium-Remote-Driver/issues
+L<https://github.com/teodesian/Selenium-Remote-Driver/issues>
 
 When submitting a bug or request, please include a test-file or a
 patch to an existing test-file that illustrates the bug or desired
@@ -2854,13 +3705,61 @@ Aditya Ivaturi <ivaturi@gmail.com>
 
 =head1 CONTRIBUTORS
 
-=for stopwords A.MacLeay Eric Johnson Gabor Szabo George S. Baugh Gordon Child GreatFlamingFoo Ivan Kurmanov Joe Higton Jon Hermansen Keita Sugama Ken Swanson Allen Lew Phil Kania Mitchell Richard Sailer Robert Utter Tetsuya Tatsumi Tom Hukins Vangelis Katsikaros Vishwanath Janmanchi amacleay Andy Jack jamadam lembark richi235 rouzier Bas Bloemsaat Brian Horakh Charles Howes Chris Davies Daniel Fackrell Dave Rolsky Dmitry Karasik
+=for stopwords Allen Lew A.MacLeay Andy Jack Bas Bloemsaat Blake GH Brian Horakh Charles Howes Chris Davies Daniel Fackrell Dave Rolsky Dmitry Karasik Doug Bell Eric Johnson Gabor Szabo George S. Baugh Gerhard Jungwirth Gordon Child GreatFlamingFoo Ivan Kurmanov Joe Higton Jon Hermansen Keita Sugama Ken Swanson lembark Luke Closs Martin Gruner Matthew Spahr Max O'Cull Michael Prokop Peter Mottram (SysPete) Phil Kania Mitchell Prateek Goyal Richard Sailer Robert Utter rouzier Tetsuya Tatsumi Tod Hagan Tom Hukins Vangelis Katsikaros Vishwanath Janmanchi Viťas Strádal Yves Lavoie
 
 =over 4
 
 =item *
 
+Allen Lew <allen@alew.org>
+
+=item *
+
 A.MacLeay <a.macleay@gmail.com>
+
+=item *
+
+Andy Jack <andyjack@users.noreply.github.com>
+
+=item *
+
+Andy Jack <github@veracity.ca>
+
+=item *
+
+Bas Bloemsaat <bas@bloemsaat.com>
+
+=item *
+
+Blake GH <blake@mobiusconsortium.org>
+
+=item *
+
+Brian Horakh <brianh@zoovy.com>
+
+=item *
+
+Charles Howes <charles.howes@globalrelay.net>
+
+=item *
+
+Chris Davies <FMQA@users.noreply.github.com>
+
+=item *
+
+Daniel Fackrell <dfackrell@bluehost.com>
+
+=item *
+
+Dave Rolsky <autarch@urth.org>
+
+=item *
+
+Dmitry Karasik <dmitry@karasik.eu.org>
+
+=item *
+
+Doug Bell <doug@preaction.me>
 
 =item *
 
@@ -2872,7 +3771,11 @@ Gabor Szabo <gabor@szabgab.com>
 
 =item *
 
-George S. Baugh <george@troglodyne.net>
+George S. Baugh <george.b@cpanel.net>
+
+=item *
+
+Gerhard Jungwirth <gjungwirth@sipwise.com>
 
 =item *
 
@@ -2904,7 +3807,31 @@ Ken Swanson <kswanson@genome.wustl.edu>
 
 =item *
 
-Allen Lew <allen@alew.org>
+lembark <lembark@wrkhors.com>
+
+=item *
+
+Luke Closs <lukec@users.noreply.github.com>
+
+=item *
+
+Martin Gruner <martin.gruner@otrs.com>
+
+=item *
+
+Matthew Spahr <matthew.spahr@cpanel.net>
+
+=item *
+
+Max O'Cull <maxattax97@gmail.com>
+
+=item *
+
+Michael Prokop <mprokop@sipwise.com>
+
+=item *
+
+Peter Mottram (SysPete) <peter@sysnix.com>
 
 =item *
 
@@ -2916,6 +3843,10 @@ Phil Mitchell <phil.mitchell@pobox.com>
 
 =item *
 
+Prateek Goyal <prateek.goyal5@gmail.com>
+
+=item *
+
 Richard Sailer <richard@weltraumpflege.org>
 
 =item *
@@ -2924,7 +3855,15 @@ Robert Utter <utter.robert@gmail.com>
 
 =item *
 
+rouzier <rouzier@gmail.com>
+
+=item *
+
 Tetsuya Tatsumi <ttatsumi@ra2.so-net.ne.jp>
+
+=item *
+
+Tod Hagan <42418406+tod222@users.noreply.github.com>
 
 =item *
 
@@ -2944,55 +3883,11 @@ Vishwanath Janmanchi <jvishwanath@gmail.com>
 
 =item *
 
-amacleay <a.macleay@gmail.com>
+Viťas Strádal <vitas@matfyz.cz>
 
 =item *
 
-Andy Jack <andyjack@users.noreply.github.com>
-
-=item *
-
-jamadam <sugama@jamadam.com>
-
-=item *
-
-lembark <lembark@wrkhors.com>
-
-=item *
-
-richi235 <richard@weltraumpflege.org>
-
-=item *
-
-rouzier <rouzier@gmail.com>
-
-=item *
-
-Bas Bloemsaat <bas@bloemsaat.com>
-
-=item *
-
-Brian Horakh <brianh@zoovy.com>
-
-=item *
-
-Charles Howes <charles.howes@globalrelay.net>
-
-=item *
-
-Chris Davies <FMQA@users.noreply.github.com>
-
-=item *
-
-Daniel Fackrell <dfackrell@bluehost.com>
-
-=item *
-
-Dave Rolsky <autarch@urth.org>
-
-=item *
-
-Dmitry Karasik <dmitry@karasik.eu.org>
+Yves Lavoie <ylavoie@yveslavoie.com>
 
 =back
 
@@ -3000,7 +3895,7 @@ Dmitry Karasik <dmitry@karasik.eu.org>
 
 Copyright (c) 2010-2011 Aditya Ivaturi, Gordon Child
 
-Copyright (c) 2014-2016 Daniel Gempesaw
+Copyright (c) 2014-2017 Daniel Gempesaw
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

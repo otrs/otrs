@@ -1,26 +1,24 @@
 #!/bin/sh
 # --
 # auto_build.sh - build automatically OTRS tar, rpm and src-rpm
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU AFFERO General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# any later version.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
-# or see http://www.gnu.org/licenses/agpl.txt.
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 echo "auto_build.sh - build OTRS release files"
-echo "Copyright (C) 2001-2017 OTRS AG, http://otrs.com/";
+echo "Copyright (C) 2001-2019 OTRS AG, https://otrs.com/";
 
 PATH_TO_CVS_SRC=$1
 PRODUCT=OTRS
@@ -102,11 +100,19 @@ cp -a $PATH_TO_CVS_SRC/* $PACKAGE_BUILD_DIR/$ARCHIVE_DIR/ || exit 1;
 # --
 # update RELEASE
 # --
+COMMIT_ID=$( cd $(dirname "$0")/../..; git rev-parse HEAD)
+if ! test $COMMIT_ID
+then
+    echo "Error: could not determine git commit id."
+    exit 1
+fi
+
 RELEASEFILE=$PACKAGE_BUILD_DIR/$ARCHIVE_DIR/RELEASE
 echo "PRODUCT = $PRODUCT" > $RELEASEFILE
 echo "VERSION = $VERSION" >> $RELEASEFILE
 echo "BUILDDATE = `date`" >> $RELEASEFILE
 echo "BUILDHOST = `hostname -f`" >> $RELEASEFILE
+echo "COMMIT_ID = $COMMIT_ID" >> $RELEASEFILE
 
 # --
 # cleanup
@@ -186,7 +192,7 @@ else
     echo "No md5sum found in \$PATH!"
 fi
 echo "--------------------------------------------------------------------------";
-echo "Note: You may have to tag your git tree: git tag rel-3_x_x -a -m \"3.x.x\"";
+echo "Note: You may have to tag your git tree: git tag rel-6_x_x -a -m \"6.x.x\"";
 echo "--------------------------------------------------------------------------";
 
 # --

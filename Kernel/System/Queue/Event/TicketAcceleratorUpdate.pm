@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 package Kernel::System::Queue::Event::TicketAcceleratorUpdate;
 use strict;
@@ -14,7 +14,7 @@ use Kernel::System::VariableCheck qw(:all);
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Log',
-    'Kernel::System::Ticket',
+    'Kernel::System::Ticket::IndexAccelerator::StaticDB',
 );
 
 sub new {
@@ -42,9 +42,9 @@ sub Run {
         }
     }
 
-    # only run for StaticDB
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-    return 1 if ( !$TicketObject->isa('Kernel::System::Ticket::IndexAccelerator::StaticDB') );
+    # Only run for StaticDB IndexModule.
+    my $IndexModule = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::IndexModule');
+    return 1 if $IndexModule ne 'Kernel::System::Ticket::IndexAccelerator::StaticDB';
 
     # only run if we have the correct data
     for my $Needed (qw(Queue OldQueue)) {
@@ -62,7 +62,7 @@ sub Run {
     return 1 if $Param{Data}->{Queue}->{Name} eq $Param{Data}->{OldQueue}->{Name};
 
     # update ticket_index
-    return $TicketObject->TicketAcceleratorUpdateOnQueueUpdate(
+    return $Kernel::OM->Get('Kernel::System::Ticket::IndexAccelerator::StaticDB')->TicketAcceleratorUpdateOnQueueUpdate(
         NewQueueName => $Param{Data}->{Queue}->{Name},
         OldQueueName => $Param{Data}->{OldQueue}->{Name},
     );

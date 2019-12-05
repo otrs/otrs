@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentCustomerUserAddressBook;
@@ -53,20 +53,20 @@ sub Run {
     }
 
     # Get the diffrent values from the params or the config to set the default values.
-    $Self->{StartHit} = int( $ParamObject->GetParam( Param => 'StartHit' ) || 1 );
+    $Self->{StartHit}    = int( $ParamObject->GetParam( Param => 'StartHit' ) || 1 );
     $Self->{SearchLimit} = $Self->{Config}->{SearchParameters}->{ $Self->{RecipientType} }->{SearchLimit} || 500;
-    $Self->{SortBy} = $ParamObject->GetParam( Param => 'SortBy' )
+    $Self->{SortBy}      = $ParamObject->GetParam( Param => 'SortBy' )
         || $Self->{Config}->{SearchParameters}->{ $Self->{RecipientType} }->{'SortBy::Default'}
         || 'UserLogin';
     $Self->{OrderBy} = $ParamObject->GetParam( Param => 'OrderBy' )
         || $Self->{Config}->{SearchParameters}->{ $Self->{RecipientType} }->{'Order::Default'}
         || 'Up';
-    $Self->{Profile}             = $ParamObject->GetParam( Param => 'Profile' )             || '';
-    $Self->{SaveProfile}         = $ParamObject->GetParam( Param => 'SaveProfile' )         || '';
-    $Self->{TakeLastSearch}      = $ParamObject->GetParam( Param => 'TakeLastSearch' )      || '';
-    $Self->{SelectTemplate}      = $ParamObject->GetParam( Param => 'SelectTemplate' )      || '';
-    $Self->{EraseTemplate}       = $ParamObject->GetParam( Param => 'EraseTemplate' )       || '';
-    $Self->{RecipientField}      = $ParamObject->GetParam( Param => 'RecipientField' );
+    $Self->{Profile}        = $ParamObject->GetParam( Param => 'Profile' )        || '';
+    $Self->{SaveProfile}    = $ParamObject->GetParam( Param => 'SaveProfile' )    || '';
+    $Self->{TakeLastSearch} = $ParamObject->GetParam( Param => 'TakeLastSearch' ) || '';
+    $Self->{SelectTemplate} = $ParamObject->GetParam( Param => 'SelectTemplate' ) || '';
+    $Self->{EraseTemplate}  = $ParamObject->GetParam( Param => 'EraseTemplate' )  || '';
+    $Self->{RecipientField} = $ParamObject->GetParam( Param => 'RecipientField' );
     $Self->{RecipientFieldLabel} = $ParamObject->GetParam( Param => 'RecipientFieldLabel' ) || $Self->{RecipientField};
 
     if ( !$Self->{RecipientField} ) {
@@ -723,16 +723,18 @@ sub _MaskForm {
     }
 
     $Param{AttributesStrg} = $LayoutObject->BuildSelection(
-        Data     => \@Attributes,
-        Name     => 'Attribute',
-        Multiple => 0,
-        Class    => 'Modernize',
+        PossibleNone => 1,
+        Data         => \@Attributes,
+        Name         => 'Attribute',
+        Multiple     => 0,
+        Class        => 'Modernize',
     );
     $Param{AttributesOrigStrg} = $LayoutObject->BuildSelection(
-        Data     => \@Attributes,
-        Name     => 'AttributeOrig',
-        Multiple => 0,
-        Class    => 'Modernize',
+        PossibleNone => 1,
+        Data         => \@Attributes,
+        Name         => 'AttributeOrig',
+        Multiple     => 0,
+        Class        => 'Modernize',
     );
 
     my @OutputSearchFields;
@@ -826,6 +828,7 @@ sub _MaskForm {
         Name       => 'Profile',
         ID         => 'SearchProfile',
         SelectedID => $Self->{Profile},
+        Class      => 'Modernize',
 
         # Do not modernize this field as this causes problems with the automatic focussing of the first element.
     );

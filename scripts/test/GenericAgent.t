@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -186,7 +186,7 @@ my %NewJob = (
         DynamicField_TicketFreeText1 => 'Test 1',
         NewSendNoNotification        => 0,
         NewDelete                    => 0,
-        NewCustomerID                => '',
+        NewCustomerID                => 'TestCustomerID',
         NewNoteFrom                  => 'From',
         NewNoteBody                  => 'Body',
         NewNoteSubject               => 'Subject',
@@ -378,6 +378,12 @@ $Self->Is(
     $Ticket{DynamicField_TicketFreeText2} || '',
     'Value 2',
     "TicketGet() - DynamicField_TicketFreeText2",
+);
+
+$Self->Is(
+    $Ticket{CustomerUserID} || '',
+    'customerUnitTest@example.com',
+    "TicketGet() - CustomerUserLogin",
 );
 
 my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');

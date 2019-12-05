@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package scripts::DBUpdateTo6::MigrateTimeZoneConfiguration;    ## no critic
@@ -18,26 +18,28 @@ use parent qw(scripts::DBUpdateTo6::Base);
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::DB',
+    'Kernel::System::Main',
     'Kernel::System::SysConfig',
 );
 
 sub CheckPreviousRequirement {
     my ( $Self, %Param ) = @_;
 
-    if ( $Param{CommandlineOptions}->{NonInteractive} || !is_interactive() ) {
-        return 1;
-    }
+    # Check if following table already exists. In this case, time zone configuration is already done.
+    my $TableExists = $Self->TableExists(
+        Table => 'ticket_number_counter',
+    );
+
+    return 1 if $TableExists;
+
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # Check if configuration was already made.
-    my $OTRSTimeZone        = $Kernel::OM->Get('Kernel::Config')->Get('OTRSTimeZone')        // 'UTC';
-    my $UserDefaultTimeZone = $Kernel::OM->Get('Kernel::Config')->Get('UserDefaultTimeZone') // 'UTC';
-    if ( $OTRSTimeZone ne 'UTC' || $UserDefaultTimeZone ne 'UTC' ) {
+    my $OTRSTimeZone        = $ConfigObject->Get('OTRSTimeZone')        // '';
+    my $UserDefaultTimeZone = $ConfigObject->Get('UserDefaultTimeZone') // '';
+    if ( $OTRSTimeZone && $UserDefaultTimeZone ) {
         return 1;
     }
-
-    #
-    # OTRSTimeZone
-    #
 
     # Get system time zone
     my $DateTimeObject = $Kernel::OM->Create(
@@ -49,16 +51,31 @@ sub CheckPreviousRequirement {
     my $SystemTimeZone = $DateTimeObject->SystemTimeZoneGet() || 'UTC';
     $DateTimeObject->ToTimeZone( TimeZone => $SystemTimeZone );
 
-    # Get configured deprecated time zone offset
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    # Get configured deprecated time zone offset.
     my $TimeOffset = int( $ConfigObject->Get('TimeZone') || 0 );
 
-    # Calculate complete time offset (server time zone + OTRS time offset)
+    # Calculate complete time offset (server time zone + OTRS time offset).
     my $SuggestedTimeZone = $TimeOffset ? '' : $SystemTimeZone;
     $TimeOffset += $DateTimeObject->Format( Format => '%{offset}' ) / 60 / 60;
 
+    if ( ( $Param{CommandlineOptions}->{NonInteractive} || !is_interactive() ) && $TimeOffset != 0 ) {
+
+        # Check for a file containing target time zones and read it. If it doesn't exist, create it.
+        return $Self->_CheckForTimeZones(
+            DateTimeObject => $DateTimeObject,
+        );
+    }
+
+    if ( $Param{CommandlineOptions}->{NonInteractive} || !is_interactive() ) {
+        return 1;
+    }
+
+    #
+    # OTRSTimeZone
+    #
+
     # Show suggestions for time zone
-    my %TimeZones = map { $_ => 1 } @{ $DateTimeObject->TimeZoneList() };
+    my %TimeZones        = map { $_ => 1 } @{ $DateTimeObject->TimeZoneList() };
     my $TimeZoneByOffset = $DateTimeObject->TimeZoneByOffsetList();
     if ( exists $TimeZoneByOffset->{$TimeOffset} ) {
         print
@@ -113,30 +130,19 @@ scripts::DBUpdateTo6::MigrateTimeZoneConfiguration - Migrate timezone configurat
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    #
-    # Remove agent and customer UserTimeZone preferences because they contain
-    # offsets instead of time zones
-    #
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-    return if !$DBObject->Do(
-        SQL  => 'DELETE FROM user_preferences WHERE preferences_key = ?',
-        Bind => [
-            \'UserTimeZone',
-        ],
-    );
-    return if !$DBObject->Do(
-        SQL  => 'DELETE FROM customer_preferences WHERE preferences_key = ?',
-        Bind => [
-            \'UserTimeZone',
-        ],
+    my $Verbose = $Param{CommandlineOptions}->{Verbose} || 0;
+
+    # Check if following table already exists. In this case, time zone configuration is already done.
+    my $TableExists = $Self->TableExists(
+        Table => 'ticket_number_counter',
     );
 
-    my $Verbose = $Param{CommandlineOptions}->{Verbose} || 0;
+    return 1 if $TableExists;
 
     #
     # Check for interactive mode
     #
-    if ( $Param{CommandlineOptions}->{NonInteractive} || !is_interactive() ) {
+    if ( !$Self->{TargetTimeZones} && ( $Param{CommandlineOptions}->{NonInteractive} || !is_interactive() ) ) {
 
         if ($Verbose) {
             print
@@ -149,24 +155,16 @@ sub Run {
         return 1;
     }
 
-    my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-
     for my $ConfigKey ( sort keys %{ $Self->{TargetTimeZones} // {} } ) {
-        my $ExclusiveLockGUID = $SysConfigObject->SettingLock(
-            Name   => $ConfigKey,
-            Force  => 1,
-            UserID => 1,
+
+        my $Result = $Self->SettingUpdate(
+            Name           => $ConfigKey,
+            IsValid        => 1,
+            EffectiveValue => $Self->{TargetTimeZones}->{$ConfigKey},
+            UserID         => 1,
         );
 
-        my %Result = $SysConfigObject->SettingUpdate(
-            Name              => $ConfigKey,
-            IsValid           => 1,
-            EffectiveValue    => $Self->{TargetTimeZones}->{$ConfigKey},
-            ExclusiveLockGUID => $ExclusiveLockGUID,
-            UserID            => 1,
-        );
-
-        return if !$Result{Success};
+        return if !$Result;
     }
 
     return 1;
@@ -199,14 +197,85 @@ sub _AskForTimeZone {
     return $TimeZone;
 }
 
+sub _CheckForTimeZones {
+    my ( $Self, %Param ) = @_;
+
+    # Gather list of to-be-set time zones.
+    my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
+    my $SystemOffset    = $Param{DateTimeObject}->Format( Format => '%{offset}' ) / 60 / 60;
+    my $OTRSTimeOffset  = int( $ConfigObject->Get('TimeZone') // 0 ) + $SystemOffset;
+    my %TimeZone2Offset = (
+        OTRSTimeZone        => $OTRSTimeOffset,
+        UserDefaultTimeZone => $OTRSTimeOffset,
+    );
+
+    CALENDAR:
+    for my $Calendar ( 1 .. 9 ) {
+        my $ConfigKey        = "TimeZone::Calendar$Calendar";
+        my $CalendarTimeZone = int( $ConfigObject->Get($ConfigKey) // 0 ) + $OTRSTimeOffset;
+        next CALENDAR if !$CalendarTimeZone || $CalendarTimeZone == 0;
+
+        $TimeZone2Offset{$ConfigKey} = $CalendarTimeZone;
+    }
+
+    # If we already have a file for time zone configurations, check if it contains a setting for each needed time zone.
+    my $TaskConfig  = $Self->GetTaskConfig( Module => 'MigrateTimeZoneConfiguration' );
+    my $ConfigFound = $TaskConfig ? 1 : 0;
+    my $ConfigValid;
+    if ($ConfigFound) {
+        $ConfigValid = 1;
+
+        TIMEZONE:
+        for my $TimeZone ( sort keys %TimeZone2Offset ) {
+            if ( !$TaskConfig->{$TimeZone} ) {
+                $ConfigValid = 0;
+                last TIMEZONE;
+            }
+
+            $Self->{TargetTimeZones}->{$TimeZone} = $TaskConfig->{$TimeZone};
+        }
+    }
+
+    # We have a file containing all necessary settings.
+    return 1 if $ConfigValid;
+
+    # We have no valid file - create one as template (even if a template already exists).
+
+    # Gather list of possible time zones per config option.
+    my $OutputYAML       = "---\n";
+    my $TimeZones        = $Param{DateTimeObject}->TimeZoneList();
+    my $TimeZoneByOffset = $Param{DateTimeObject}->TimeZoneByOffsetList();
+    for my $TimeZone ( sort keys %TimeZone2Offset ) {
+        my $TimeZoneList = $TimeZoneByOffset->{ $TimeZone2Offset{$TimeZone} } // $TimeZones;
+
+        $OutputYAML .= "# Please uncomment the desired time zone for '$TimeZone' out of the following entries.\n";
+        $OutputYAML .= join "\n", map { "#$TimeZone: " . $_ } @{$TimeZoneList};
+        $OutputYAML .= "\n\n";
+    }
+
+    # Write template to a file.
+    my $Location = $ConfigObject->Get('Home') . '/scripts/DBUpdateTo6/TaskConfig/MigrateTimeZoneConfiguration.yml.dist';
+    my $FileLocation = $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
+        Location => $Location,
+        Content  => \$OutputYAML,
+        Mode     => 'utf8',
+    );
+
+    print
+        "\n\n      Error: There is a time offset configured which currently prevents this script from running in non-interactive mode.\n"
+        . "        A config file with proposed time zones has been written to '$Location'.\n"
+        . "        Please either uncomment the relevant time zone(s) in the file or execute the script in interactive mode and select the time zone(s) manually.\n\n";
+    return;
+}
+
 1;
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Stats::Dynamic::TicketSolutionResponseTime;
@@ -27,6 +27,7 @@ our @ObjectDependencies = (
     'Kernel::System::Service',
     'Kernel::System::SLA',
     'Kernel::System::State',
+    'Kernel::System::Stats',
     'Kernel::System::Ticket',
     'Kernel::System::DateTime',
     'Kernel::System::Type',
@@ -842,6 +843,9 @@ sub GetStatElement {
             DynamicFields => 0,
         );
 
+        # If ticket does not have closed time, skip to next ticket.
+        next TICKET if !defined $Ticket{Closed};
+
         my $CreatedDateTimeObject = $Kernel::OM->Create(
             'Kernel::System::DateTime',
             ObjectParams => {
@@ -1042,9 +1046,9 @@ sub GetStatElement {
 
     # Convert min in hh:mm.
     if ( $SelectedKindOfReporting ne 'NumberOfTickets' && $SelectedKindOfReporting ne 'NumberOfTicketsAllOver' ) {
-        my $Hours   = int( $Reporting / 60 );
-        my $Minutes = int( $Reporting % 60 );
-        $Reporting = $Hours . 'h ' . $Minutes . 'm';
+        $Reporting = $Kernel::OM->Get('Kernel::System::Stats')->_HumanReadableAgeGet(
+            Age => $Reporting * 60,
+        );
     }
 
     return $Reporting;

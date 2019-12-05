@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 /*eslint-disable no-window*/
@@ -31,6 +31,7 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
      *      This function initializes the module functionality.
      */
     TargetNS.Init = function () {
+        var Subaction = Core.Config.Get('Subaction');
 
         // Initialize Popup response (Redirect and close Popup)
         InitProcessPopupsResponse();
@@ -39,26 +40,35 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
         Core.UI.Table.InitTableFilter($('#Filter'), $('#Processes'), 0);
 
         // Depending on Subaction initialize specific functions
-        if (Core.Config.Get('Subaction') === 'ActivityNew' ||
-          Core.Config.Get('Subaction') === 'ActivityEdit') {
+        if (Subaction === 'ActivityNew' ||
+            Subaction === 'ActivityNewAction' ||
+            Subaction === 'ActivityEdit' ||
+            Subaction === 'ActivityEditAction') {
             TargetNS.InitActivityEdit();
         }
-        else if (Core.Config.Get('Subaction') === 'ActivityDialogNew' ||
-          Core.Config.Get('Subaction') === 'ActivityDialogEdit') {
+        else if (Subaction === 'ActivityDialogNew' ||
+            Subaction === 'ActivityDialogNewAction' ||
+            Subaction === 'ActivityDialogEdit' ||
+            Subaction === 'ActivityDialogEditAction') {
             TargetNS.InitActivityDialogEdit();
         }
-        else if (Core.Config.Get('Subaction') === 'TransitionNew' ||
-          Core.Config.Get('Subaction') === 'TransitionEdit') {
+        else if (Subaction === 'TransitionNew' ||
+            Subaction === 'TransitionNewAction' ||
+            Subaction === 'TransitionEdit' ||
+            Subaction === 'TransitionEditAction') {
             TargetNS.InitTransitionEdit();
         }
-        else if (Core.Config.Get('Subaction') === 'TransitionActionNew' ||
-          Core.Config.Get('Subaction') === 'TransitionActionEdit') {
+        else if (Subaction === 'TransitionActionNew' ||
+            Subaction === 'TransitionActionNewAction' ||
+            Subaction === 'TransitionActionEdit' ||
+            Subaction === 'TransitionActionEditAction') {
             TargetNS.InitTransitionActionEdit();
         }
-        else if (Core.Config.Get('Subaction') === 'ProcessEdit') {
+        else if (Subaction === 'ProcessEdit' ||
+            Subaction === 'ProcessEditAction') {
             TargetNS.InitProcessEdit();
         }
-        else if (Core.Config.Get('Subaction') === 'ProcessPrint') {
+        else if (Subaction === 'ProcessPrint') {
             $('.ProcessPrint').on('click', function() {
                 window.print();
                 return false;
@@ -66,7 +76,7 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
         }
 
         // Depending on Action initialize specific functions
-        if (Core.Config.Get('Action') === 'AdminProcessManagementPath') {
+        if (Core.Config.Get('Action') === 'AdminProcessManagementPath' && Subaction !== 'ClosePopup') {
            TargetNS.InitPathEdit();
         }
     };
@@ -807,10 +817,8 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
                 Action: 'AdminProcessManagement',
                 Subaction: 'UpdateAccordion'
             },
-            ActiveElement;
-
-        // get active accordion element to open the same element again after updating
-        ActiveElement = $('ul#ProcessElements > li.Active').index();
+            ActiveElementIndex = parseInt($('ul#ProcessElements > li.Active').index(), 10),
+            ActiveElementValue = $('ul#ProcessElements > li:eq(' + ActiveElementIndex + ') .ProcessElementFilter').val();
 
         // Call the ajax function
         Core.AJAX.FunctionCall(Core.Config.Get('CGIHandle'), Data, function (Response) {
@@ -819,14 +827,17 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
             // Initialize Accordion in the sidebar
             Core.UI.Accordion.Init($('ul#ProcessElements'), 'li.AccordionElement h2 a', 'div.Content');
 
-            // open accordion element again, which was active before the update
-            Core.UI.Accordion.OpenElement($('ul#ProcessElements > li:nth-child(' + (parseInt(ActiveElement, 10) + 1) + ')'));
+            // Open accordion element again, which was active before the update.
+            Core.UI.Accordion.OpenElement($('ul#ProcessElements > li:eq(' + ActiveElementIndex + ')'));
 
             // Initialize filters
             Core.UI.Table.InitTableFilter($('#ActivityFilter'), $('#Activities'));
             Core.UI.Table.InitTableFilter($('#ActivityDialogFilter'), $('#ActivityDialogs'));
             Core.UI.Table.InitTableFilter($('#TransitionFilter'), $('#Transitions'));
             Core.UI.Table.InitTableFilter($('#TransitionActionFilter'), $('#TransitionActions'));
+
+            // Set previous value and filter.
+            $('ul#ProcessElements > li:eq(' + ActiveElementIndex + ') .ProcessElementFilter').trigger('keydown').val(ActiveElementValue);
 
             // Init DnD on Accordion
             TargetNS.InitAccordionDnD();
@@ -992,9 +1003,10 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
 
             // get start activity and dialogs and store it into hidden fields as JSON string
             StartActivity = TargetNS.ProcessData.Process[ProcessEntityID].StartActivity;
-            $('input[name=StartActivity]').val(StartActivity);
-            $('input[name=StartActivityDialog]').val(TargetNS.ProcessData.Activity[StartActivity].ActivityDialog["1"]);
-
+            if (StartActivity !== '') {
+                $('input[name=StartActivity]').val(StartActivity);
+                $('input[name=StartActivityDialog]').val(TargetNS.ProcessData.Activity[StartActivity].ActivityDialog["1"]);
+            }
             $('#ProcessForm').submit();
             return false;
         });

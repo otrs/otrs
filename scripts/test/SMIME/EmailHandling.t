@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -62,7 +62,7 @@ my $OpenSSLVersionString = qx{$OpenSSLBin version};
 my $OpenSSLMajorVersion;
 
 # get the openssl major version, e.g. 1 for version 1.0.0
-if ( $OpenSSLVersionString =~ m{ \A (?: OpenSSL )? \s* ( \d )  }xmsi ) {
+if ( $OpenSSLVersionString =~ m{ \A (?: (?: Open|Libre)SSL )? \s* ( \d )  }xmsi ) {
     $OpenSSLMajorVersion = $1;
 }
 
@@ -650,6 +650,16 @@ for my $Test (@TestVariations) {
 
     my @CheckResult = $CheckObject->Check( Article => \%Article );
 
+    # Run check a second time to simulate repeated views.
+    my @FirstCheckResult = @CheckResult;
+    @CheckResult = $CheckObject->Check( Article => \%Article );
+
+    $Self->IsDeeply(
+        \@FirstCheckResult,
+        \@CheckResult,
+        "$Test->{Name} - CheckObject() stable",
+    );
+
     if ( $Test->{VerifySignature} ) {
         my $SignatureVerified =
             grep {
@@ -726,6 +736,22 @@ for my $Test (@TestVariations) {
                 "$Test->{Name} - Attachment '$Attachment->{Filename}' was found"
             );
         }
+
+        # Remove all attachments, then run CheckObject again to verify they are not written again.
+        $ArticleBackendObject->ArticleDeleteAttachment(
+            ArticleID => $ArticleID,
+            UserID    => 1,
+        );
+
+        $CheckObject->Check( Article => \%Article );
+
+        %Index = $ArticleBackendObject->ArticleAttachmentIndex(
+            ArticleID => $ArticleID,
+        );
+        $Self->False(
+            scalar keys %Index,
+            "$Test->{Name} - Attachments not rewritten by ArticleCheck module"
+        );
     }
 }
 

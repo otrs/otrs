@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::CustomerTicketArticleContent;
@@ -38,7 +38,9 @@ sub Run {
 
     # check params
     if ( !$ArticleID ) {
-        my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
+        my $Output = $LayoutObject->CustomerHeader(
+            Title => Translatable('Error'),
+        );
         $Output .= $LayoutObject->CustomerError(
             Message => Translatable('ArticleID is needed!'),
             Comment => Translatable('Please contact the administrator.'),
@@ -52,7 +54,9 @@ sub Run {
     }
 
     if ( !$TicketID ) {
-        my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
+        my $Output = $LayoutObject->CustomerHeader(
+            Title => Translatable('Error'),
+        );
         $Output .= $LayoutObject->CustomerError(
             Message => $LayoutObject->{LanguageObject}->Translate( 'No TicketID for ArticleID (%s)!', $ArticleID ),
             Comment => Translatable('Please contact the administrator.'),
@@ -108,14 +112,16 @@ sub Run {
     );
 
     if ( !$ArticleContent ) {
-        my $Output = $LayoutObject->CustomerHeader( Title => 'Error' );
+        my $Output = $LayoutObject->CustomerHeader(
+            Title => Translatable('Error'),
+        );
         $Output .= $LayoutObject->CustomerError(
             Message => $LayoutObject->{LanguageObject}->Translate('HTML body attachment is missing!'),
             Comment => Translatable('Please contact the administrator.'),
         );
         $LogObject->Log(
-            Message  => "HTML body attachment is missing! May be an attack!!!",
             Priority => 'error',
+            Message  => 'HTML body attachment is missing!',
         );
         $Output .= $LayoutObject->CustomerFooter();
         return $Output;
@@ -130,9 +136,9 @@ sub Run {
 
     my %Data = (
         Content            => $Content,
-        ContentAlternative => "",
-        ContentID          => "",
-        ContentType        => "text/html; charset=\"utf-8\"",
+        ContentAlternative => '',
+        ContentID          => '',
+        ContentType        => 'text/html; charset="utf-8"',
         Disposition        => "inline",
         FilesizeRaw        => bytes::length($Content),
     );
@@ -143,14 +149,6 @@ sub Run {
         Value => 'inline'
     );
 
-    # just return for non-html attachment (e. g. images)
-    if ( $Data{ContentType} !~ /text\/html/i ) {
-        return $LayoutObject->Attachment(
-            %Data,
-            Sandbox => 1,
-        );
-    }
-
     my $TicketNumber = $Kernel::OM->Get('Kernel::System::Ticket')->TicketNumberLookup(
         TicketID => $TicketID,
     );
@@ -158,22 +156,30 @@ sub Run {
     # unset filename for inline viewing
     $Data{Filename} = "Ticket-$TicketNumber-ArticleID-$Article{ArticleID}.html";
 
-    # safety check only on customer article
-    my $LoadExternalImages = $ParamObject->GetParam(
-        Param => 'LoadExternalImages'
-    ) || 0;
-    if ( !$LoadExternalImages && $Article{SenderType} ne 'customer' ) {
-        $LoadExternalImages = 1;
-    }
-
     # generate base url
     my $URL = 'Action=CustomerTicketAttachment;Subaction=HTMLView'
-        . ";ArticleID=$ArticleID;FileID=";
+        . ";TicketID=$TicketID;ArticleID=$ArticleID;FileID=";
 
     # replace links to inline images in html content
     my %AtmBox = $ArticleBackendObject->ArticleAttachmentIndex(
         ArticleID => $ArticleID,
     );
+
+    # Do not load external images if 'BlockLoadingRemoteContent' is enabled.
+    my $LoadExternalImages;
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::BlockLoadingRemoteContent') ) {
+        $LoadExternalImages = 0;
+    }
+    else {
+        $LoadExternalImages = $ParamObject->GetParam(
+            Param => 'LoadExternalImages'
+        ) || 0;
+
+        # Safety check only on customer article.
+        if ( !$LoadExternalImages && $Article{SenderType} ne 'customer' ) {
+            $LoadExternalImages = 1;
+        }
+    }
 
     # reformat rich text document to have correct charset and links to
     # inline documents
@@ -189,7 +195,6 @@ sub Run {
         %Data,
         Sandbox => 1,
     );
-
 }
 
 1;

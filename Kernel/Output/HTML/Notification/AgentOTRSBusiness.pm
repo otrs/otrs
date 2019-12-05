@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::Notification::AgentOTRSBusiness;
@@ -14,7 +14,10 @@ use strict;
 use warnings;
 use utf8;
 
+use Kernel::Language qw(Translatable);
+
 our @ObjectDependencies = (
+    'Kernel::Config',
     'Kernel::Output::HTML::Layout',
     'Kernel::System::Group',
     'Kernel::System::OTRSBusiness',
@@ -29,9 +32,18 @@ sub Run {
     my $OTRSBusinessObject = $Kernel::OM->Get('Kernel::System::OTRSBusiness');
 
     # get config options
-    my $Group             = $Param{Config}->{Group} || 'admin';
-    my $IsInstalled       = $OTRSBusinessObject->OTRSBusinessIsInstalled();
-    my $OTRSBusinessLabel = '<b>OTRS Business Solution</b>™';
+    my $Group       = $Param{Config}->{Group} || 'admin';
+    my $IsInstalled = $OTRSBusinessObject->OTRSBusinessIsInstalled();
+    my $OTRSBusinessLabel;
+    if ( $OTRSBusinessObject->OTRSSTORMIsInstalled() ) {
+        $OTRSBusinessLabel = '<b>STORM powered by OTRS</b>™';
+    }
+    elsif ( $OTRSBusinessObject->OTRSCONTROLIsInstalled() ) {
+        $OTRSBusinessLabel = '<b>CONTROL powered by OTRS</b>™';
+    }
+    else {
+        $OTRSBusinessLabel = '<b>OTRS Business Solution</b>™';
+    }
 
     # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
@@ -92,8 +104,13 @@ if (!window.location.search.match(/^[?]Action=(AgentOTRSBusiness|Admin.*)/)) {
     elsif ( $EntitlementStatus eq 'warning' ) {
 
         $Output .= $LayoutObject->Notify(
-            Info =>
-                "Connection to cloud.otrs.com via HTTPS couldn't be established. Please make sure that your OTRS can connect to cloud.otrs.com via port 443.",
+            Info => $OTRSBusinessObject->OTRSSTORMIsInstalled()
+            ?
+                Translatable('Please verify your license data!')
+            :
+                Translatable(
+                'Connection to cloud.otrs.com via HTTPS couldn\'t be established. Please make sure that your OTRS can connect to cloud.otrs.com via port 443.'
+                ),
             Priority => 'Error',
         );
     }

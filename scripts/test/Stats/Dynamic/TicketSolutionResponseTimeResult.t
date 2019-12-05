@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -163,7 +163,7 @@ for my $Ticket (@Tickets) {
         'Kernel::System::DateTime',
         ObjectParams => {
             String => $Ticket->{TimeStamp},
-            }
+        }
     )->ToEpoch();
 
     # set the fixed time
@@ -330,42 +330,42 @@ my @Tests = (
             ],
             [
                 $QueueNames[0],
-                '0h 17m',
-                '0h 6m',
-                '0h 30m',
+                '17 m',
+                '6 m',
+                '30 m',
                 3,
-                '0h 17m',
-                '0h 6m',
-                '0h 30m',
-                '0h 2m',
-                '0h 0m',
-                '0h 6m',
-                '0h 0m',
-                '0h 0m',
-                '0h 0m',
-                '0h 0m',
-                '0h 0m',
-                '0h 0m',
+                '17 m',
+                '6 m',
+                '30 m',
+                '2 m',
+                '0 m',
+                '6 m',
+                '0 m',
+                '0 m',
+                '0 m',
+                '0 m',
+                '0 m',
+                '0 m',
                 3,
             ],
             [
                 $QueueNames[1],
-                '0h 3m',
-                '0h 3m',
-                '0h 3m',
+                '3 m',
+                '3 m',
+                '3 m',
                 1,
-                '0h 3m',
-                '0h 3m',
-                '0h 3m',
-                '0h 3m',
-                '0h 3m',
-                '0h 3m',
-                '0h 0m',
-                '0h 0m',
-                '0h 0m',
-                '0h 0m',
-                '0h 0m',
-                '0h 0m',
+                '3 m',
+                '3 m',
+                '3 m',
+                '3 m',
+                '3 m',
+                '3 m',
+                '0 m',
+                '0 m',
+                '0 m',
+                '0 m',
+                '0 m',
+                '0 m',
                 1,
             ],
         ],
@@ -412,7 +412,7 @@ for my $Test (@Tests) {
         'Kernel::System::DateTime',
         ObjectParams => {
             String => $Test->{TimeStamp},
-            }
+        }
     )->ToEpoch();
     $Helper->FixedTimeSet($SystemTime);
 

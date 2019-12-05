@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -106,7 +106,7 @@ my $OpenSSLVersionString = qx{$OpenSSLBin version};
 my $OpenSSLMajorVersion;
 
 # get the openssl major version, e.g. 1 for version 1.0.0
-if ( $OpenSSLVersionString =~ m{ \A (?: OpenSSL )? \s* ( \d )  }xmsi ) {
+if ( $OpenSSLVersionString =~ m{ \A (?: (?: Open|Libre)SSL )? \s* ( \d )  }xmsi ) {
     $OpenSSLMajorVersion = $1;
 }
 
@@ -535,6 +535,58 @@ my @Tests = (
         VerifyDecryption => 0,
         Success          => 0,
     },
+    {
+        Name         => 'SMIME key expired - skip delivery',
+        FixedTimeSet => 1,
+        Data         => {
+            Events                   => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
+            RecipientEmail           => ['unittest@example.org'],
+            EmailSecuritySettings    => ['1'],
+            EmailSigningCrypting     => ['SMIMECrypt'],
+            EmailMissingCryptingKeys => ['Skip'],
+        },
+        VerifyDecryption => 0,
+        Success          => 0,
+    },
+    {
+        Name         => 'SMIME key expired - send uncrypted',
+        FixedTimeSet => 1,
+        Data         => {
+            Events                   => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
+            RecipientEmail           => ['unittest@example.org'],
+            EmailSecuritySettings    => ['1'],
+            EmailSigningCrypting     => ['SMIMECrypt'],
+            EmailMissingCryptingKeys => ['Send'],
+        },
+        VerifyDecryption => 0,
+        Success          => 1,
+    },
+    {
+        Name         => 'SMIME key expired - skip delivery',
+        FixedTimeSet => 1,
+        Data         => {
+            Events                   => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
+            RecipientEmail           => ['unittest@example.org'],
+            EmailSecuritySettings    => ['1'],
+            EmailSigningCrypting     => ['SMIMESignCrypt'],
+            EmailMissingCryptingKeys => ['Skip'],
+        },
+        VerifyDecryption => 0,
+        Success          => 0,
+    },
+    {
+        Name         => 'SMIME key expired - send uncrypted',
+        FixedTimeSet => 1,
+        Data         => {
+            Events                   => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
+            RecipientEmail           => ['unittest@example.org'],
+            EmailSecuritySettings    => ['1'],
+            EmailSigningCrypting     => ['SMIMESignCrypt'],
+            EmailMissingCryptingKeys => ['Send'],
+        },
+        VerifyDecryption => 0,
+        Success          => 1,
+    },
 
 );
 
@@ -548,6 +600,19 @@ for my $Test (@Tests) {
 
     # add transport setting
     $Test->{Data}->{Transports} = ['Email'];
+
+    if ( $Test->{FixedTimeSet} ) {
+
+        # create isolated time environment during test
+        $Helper->FixedTimeSet(
+            $Kernel::OM->Create(
+                'Kernel::System::DateTime',
+                ObjectParams => {
+                    String => '2026-10-20 00:00:00',
+                },
+            )->ToEpoch()
+        );
+    }
 
     $NotificationID = $NotificationEventObject->NotificationAdd(
         Name    => "JobName$Count-$RandomID",
@@ -599,6 +664,7 @@ for my $Test (@Tests) {
         );
     }
     else {
+
         # sanity check
         $Self->False(
             scalar @{$Emails},

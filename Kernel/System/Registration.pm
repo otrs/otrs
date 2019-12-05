@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Registration;
@@ -20,6 +20,7 @@ our @ObjectDependencies = (
     'Kernel::System::DB',
     'Kernel::System::Environment',
     'Kernel::System::Log',
+    'Kernel::System::OTRSBusiness',
     'Kernel::System::SupportDataCollector',
     'Kernel::System::SystemData',
     'Kernel::System::DateTime',
@@ -584,7 +585,12 @@ or
 sub RegistrationUpdateSend {
     my ( $Self, %Param ) = @_;
 
-    if ( $Self->{CloudServicesDisabled} ) {
+    # If OTRSSTORM package is installed, system is able to do a Cloud request even if CloudService is disabled.
+    if (
+        !$Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSSTORMIsInstalled()
+        && $Self->{CloudServicesDisabled}
+        )
+    {
         return (
             Success => 0,
             Reason  => 'Cloud services are disabled!',
@@ -730,7 +736,7 @@ sub RegistrationUpdateSend {
     }
     elsif ( !$OperationResult->{Success} ) {
 
-        my $Reason = $OperationResult->{ErrorMessage} || $OperationResult->{Data}->{Reason} || '';
+        my $Reason  = $OperationResult->{ErrorMessage} || $OperationResult->{Data}->{Reason} || '';
         my $Message = "RegistrationUpdate - Can not update system $Reason";
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
@@ -959,7 +965,7 @@ sub Deregister {
     }
     elsif ( !$OperationResult->{Success} ) {
 
-        my $Reason = $OperationResult->{ErrorMessage} || $OperationResult->{Data}->{Reason} || '';
+        my $Reason  = $OperationResult->{ErrorMessage} || $OperationResult->{Data}->{Reason} || '';
         my $Message = "Deregistration - Can not deregister system: $Reason";
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
@@ -990,10 +996,10 @@ sub Deregister {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

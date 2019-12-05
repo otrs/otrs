@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -161,6 +161,13 @@ $Selenium->RunTest(
             $Element->is_displayed();
         }
 
+        my $Message = 'Article subject will be empty if the subject contains only the ticket hook!';
+
+        $Self->True(
+            $Selenium->execute_script("return \$('.MessageBox.Notice:contains(\"$Message\")').length;"),
+            "Notification about empty subject is found",
+        );
+
         # get state ID for 'open' state
         my $StateObject = $Kernel::OM->Get('Kernel::System::State');
         my $StateID     = $StateObject->StateLookup(
@@ -173,8 +180,9 @@ $Selenium->RunTest(
             0,
             "AJAX Loader for '$DFName' does not exist",
         );
-        $Selenium->execute_script(
-            "\$('#ComposeStateID').val('$StateID').trigger('redraw.InputField').trigger('change')"
+        $Selenium->InputFieldValueSet(
+            Element => '#ComposeStateID',
+            Value   => $StateID,
         );
 
         # wait for appearance of ajax update field
@@ -192,9 +200,20 @@ $Selenium->RunTest(
 
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length' );
 
-        $Selenium->find_element("//*[text()='$TestCustomer']")->VerifiedClick();
-        $Selenium->find_element( "#Subject",    'css' )->send_keys("TestSubject");
-        $Selenium->find_element( "#ToCustomer", 'css' )->VerifiedSubmit();
+        $Selenium->execute_script("\$('li.ui-menu-item:contains($TestCustomer)').click()");
+        $Selenium->find_element( "#Subject",        'css' )->send_keys("TestSubject");
+        $Selenium->find_element( "#submitRichText", 'css' )->VerifiedClick();
+
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#ArticleTree td.Direction i").hasClass("fa-long-arrow-right")'
+        );
+
+        # See the bug #13752
+        $Self->True(
+            $Selenium->execute_script("return \$('#ArticleTree td.Direction i').hasClass('fa-long-arrow-right')"),
+            "There is right direction arrow",
+        ) || die;
 
         # navigate to AgentTicketHistory of created test ticket
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketHistory;TicketID=$TicketID");
@@ -205,11 +224,40 @@ $Selenium->RunTest(
             'Ticket email outbound completed'
         );
 
+        # Check email sending multiplication (see bug#14694 - https://bugs.otrs.org/show_bug.cgi?id=14694).
+        # Navigate to AgentTicketEmailOutbound screen of created test ticket.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketEmailOutbound;TicketID=$TicketID");
+
+        my $Subject      = "TestSubject-$RandomID";
+        my $EmailAddress = "$RandomID\@example.com";
+
+        $Selenium->find_element( "#Subject",        'css' )->send_keys($Subject);
+        $Selenium->find_element( "#ToCustomer",     'css' )->send_keys($EmailAddress);
+        $Selenium->find_element( "#submitRichText", 'css' )->VerifiedClick();
+
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#ArticleTable").length;' );
+
+        # Verify that exactly one email is sent (one article is created).
+        $Self->Is(
+            $Selenium->execute_script("return \$('#ArticleTable tbody td.Subject:contains(\"$Subject\")').length;"),
+            1,
+            "Exactly one email is sent to '$EmailAddress' with subject '$Subject'",
+        );
+
         # delete created test tickets
         my $Success = $TicketObject->TicketDelete(
             TicketID => $TicketID,
             UserID   => $TestUserID,
         );
+
+        # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+        if ( !$Success ) {
+            sleep 3;
+            $Success = $TicketObject->TicketDelete(
+                TicketID => $TicketID,
+                UserID   => 1,
+            );
+        }
         $Self->True(
             $Success,
             "TicketID $TicketID is deleted",

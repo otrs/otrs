@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 [% RenderBlockStart("Properties") %]
@@ -55,7 +55,7 @@
 [% RenderBlockStart("PropertiesLock") %]
             <p>
                 [% Translate("The ticket has been locked") | html %].
-                <a class="UndoClosePopup" href="[% Env("Baselink") %]Action=AgentTicketLock;Subaction=Unlock;TicketID=[% Data.TicketID %];[% Env("ChallengeTokenParam") | html %]">
+                <a class="UndoClosePopup" href="[% Env("Baselink") %]Action=AgentTicketLock;Subaction=Unlock;TicketID=[% Data.TicketID %][% IF Data.PreviousOwner %];PreviousOwner=[% Data.PreviousOwner %][% END %];[% Env("ChallengeTokenParam") | html %]">
                     [% Translate("Undo & close") | html %]
                 </a>
             </p>
@@ -261,10 +261,9 @@
                         </div>
 [% RenderBlockEnd("TicketTypeDynamicField") %]
 
-# example of how to use fixed dynamic field blocks for customizations
-# Note: Field1 and Field2 are the names of the fields and had to be replaced with the actual
-# field names
-#[% RenderBlockStart("DynamicField_Field1") %]
+# Example of how to use fixed dynamic field blocks for customizations. Block below is for fields of type 'Ticket'.
+#   NOTE: Field1 and Field2 are the names of the dynamic fields and have to be replaced with the actual field names.
+#[% RenderBlockStart("TicketTypeDynamicField_Field1") %]
 #                       <div class="Row Row_DynamicField_[% Data.Name | html %]">
 #                           [% Data.Label %]
 #                           <div class="Field">
@@ -272,8 +271,8 @@
 #                           </div>
 #                           <div class="Clear"></div>
 #                       </div>
-#[% RenderBlockEnd("DynamicField_Field1") %]
-#[% RenderBlockStart("DynamicField_Field2") %]
+#[% RenderBlockEnd("TicketTypeDynamicField_Field2") %]
+#[% RenderBlockStart("TicketTypeDynamicField_Field2") %]
 #                       <div class="Row Row_DynamicField_[% Data.Name | html %]">
 #                           [% Data.Label %]
 #                           <div class="Field">
@@ -281,7 +280,7 @@
 #                           </div>
 #                           <div class="Clear"></div>
 #                       </div>
-#[% RenderBlockEnd("DynamicField_Field2") %]
+#[% RenderBlockEnd("TicketTypeDynamicField_Field2") %]
                     </fieldset>
                 </div>
             </div>
@@ -326,7 +325,7 @@
 [% RenderBlockEnd("InvolvedAgent") %]
                             <div class="Field">
                                 <p class="FieldExplanation">
-                                    [% Translate("Here you can select additional agents which should receive a notification regarding the new article.") %]
+                                    [% Translate("Here you can select additional agents which should receive a notification regarding the new article.") | html %]
                                 </p>
                             </div>
                         </fieldset>
@@ -374,7 +373,7 @@
                             <label for="StandardTemplateID">[% Translate("Text Template") | html %]:</label>
                             <div class="Field">
                                 [% Data.StandardTemplateStrg %]
-                                <p class="FieldExplanation">[% Translate("Setting a template will overwrite any text or attachment.") %]</p>
+                                <p class="FieldExplanation">[% Translate("Setting a template will overwrite any text or attachment.") | html %]</p>
                             </div>
                             <div class="Clear"></div>
 [% RenderBlockEnd("StandardTemplate") %]
@@ -436,6 +435,36 @@
                             </div>
 [% RenderBlockEnd("ArticleTypeDynamicField") %]
 
+# Example of how to use fixed dynamic field blocks for customizations. Block below is for fields of type 'Article'.
+#   NOTE: Field1 and Field2 are the names of the dynamic fields and have to be replaced with the actual field names.
+#[% RenderBlockStart("ArticleTypeDynamicField_Field1") %]
+#                            <div class="Row Row_DynamicField_[% Data.Name | html %]">
+#                                [% Data.Label %]
+#                                <div class="Field">
+#                                [% Data.Field %]
+#                                [% IF (Data.MandatoryTooltip) %]
+#                                    <div id="DynamicField_[% Data.Name %]Error" class="TooltipErrorMessage">
+#                                        <p>[% Translate("This field is required.") | html %]</p>
+#                                    </div>
+#                                [% END %]
+#                                </div>
+#                                <div class="Clear"></div>
+#                            </div>
+#[% RenderBlockEnd("ArticleTypeDynamicField_Field1") %]
+#[% RenderBlockStart("ArticleTypeDynamicField_Field2") %]
+#                            <div class="Row Row_DynamicField_[% Data.Name | html %]">
+#                                [% Data.Label %]
+#                                <div class="Field">
+#                                [% Data.Field %]
+#                                [% IF (Data.MandatoryTooltip) %]
+#                                    <div id="DynamicField_[% Data.Name %]Error" class="TooltipErrorMessage">
+#                                        <p>[% Translate("This field is required.") | html %]</p>
+#                                    </div>
+#                                [% END %]
+#                                </div>
+#                                <div class="Clear"></div>
+#                            </div>
+#[% RenderBlockEnd("ArticleTypeDynamicField_Field2") %]
                         </fieldset>
                     </div>
                 </div>

@@ -1,11 +1,10 @@
-/**
- * This file containts the CSS Styles for the header
- * with it's toolbar, the userbar and the whole main navigation
- *
- * @project     OTRS (http://www.otrs.org) - Agent Frontend
- * @copyright   OTRS AG
- * @license     AGPL (http://www.gnu.org/licenses/agpl.txt)
- */
+/*
+Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+
+This software comes with ABSOLUTELY NO WARRANTY. For details, see
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
+*/
 
 /**
  * @package     Skin "Slim"
@@ -13,14 +12,6 @@
  */
 
 @media screen,projection,tv,handheld {
-
-#Header #Logo {
-    background-position: center;
-    height: 62px;
-    opacity: 0.53;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=53)";
-    top: 0px !important;
-}
 
 /**
  * @subsection  Header
@@ -30,16 +21,8 @@
     background-position: bottom;
 }
 
-/**
- * @subsection  Logo
- */
 #Logo {
-    right: 246px;
-}
-
-.RTL #Logo {
-    right: auto;
-    left: 246px;
+    opacity: 0.3;
 }
 
 /**

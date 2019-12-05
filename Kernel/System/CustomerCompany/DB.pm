@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::CustomerCompany::DB;
@@ -40,6 +40,7 @@ sub new {
     $Self->{CustomerCompanyValid} = $Self->{CustomerCompanyMap}->{'CustomerCompanyValid'};
     $Self->{SearchListLimit}      = $Self->{CustomerCompanyMap}->{'CustomerCompanySearchListLimit'} || 50000;
     $Self->{SearchPrefix}         = $Self->{CustomerCompanyMap}->{'CustomerCompanySearchPrefix'};
+
     if ( !defined( $Self->{SearchPrefix} ) ) {
         $Self->{SearchPrefix} = '';
     }
@@ -104,7 +105,7 @@ sub CustomerCompanyList {
     if ( $Self->{CacheObject} ) {
 
         $CacheType = $Self->{CacheType} . '_CustomerCompanyList';
-        $CacheKey = "CustomerCompanyList::${Valid}::${Limit}::" . ( $Param{Search} || '' );
+        $CacheKey  = "CustomerCompanyList::${Valid}::${Limit}::" . ( $Param{Search} || '' );
 
         my $Data = $Self->{CacheObject}->Get(
             Type => $CacheType,
@@ -134,7 +135,7 @@ sub CustomerCompanyList {
     my @Bind;
     my @Conditions;
 
-    if ($Valid) {
+    if ( $Valid && $Self->{CustomerCompanyValid} ) {
 
         # get valid object
         my $ValidObject = $Kernel::OM->Get('Kernel::System::Valid');

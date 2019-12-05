@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::Dashboard::CustomerCompanyInformation;
@@ -150,6 +150,9 @@ sub Run {
 
                 next VALUE if !IsHashRefWithData($RenderedValue) || !defined $RenderedValue->{Value};
 
+                # If there is configured show link in DF, save as map value.
+                $Entry->[6] = $RenderedValue->{Link} ? $RenderedValue->{Link} : $Entry->[6];
+
                 push @RenderedValues, $RenderedValue->{Value};
             }
 
@@ -227,7 +230,7 @@ sub Run {
 sub _AttributesGet {
     my ( $Self, %Param ) = @_;
 
-    my @AttributeArray = split ';', $Param{Attributes};
+    my @AttributeArray  = split ';', $Param{Attributes};
     my $CustomerCompany = $Param{CustomerCompany};
     my @Map;
 

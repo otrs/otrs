@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -211,7 +211,20 @@ $Selenium->RunTest(
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
         # Navigate to AdminCommunicationLog screen.
-        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminCommunicationLog");
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminCommunicationLog;Expand=1;");
+
+        $Selenium->execute_script('window.Core.App.PageLoadComplete = false;');
+
+        # Set Time Range to 'All Communication', see bug#14379
+        $Selenium->InputFieldValueSet(
+            Element => '#TimeRange',
+            Value   => '0',
+        );
+
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete'
+        );
 
         # Verify status widgets show successful accounts and failed communications.
         $Self->Is(
@@ -229,15 +242,8 @@ $Selenium->RunTest(
             'Failed communication'
         );
 
-        # Expand the widget.
-        $Selenium->find_element( "#CommunicationList .Toggle a", 'css' )->click();
-        $Selenium->WaitFor(
-            JavaScript =>
-                'return typeof($) === "function" && $(".WidgetSimple.Expanded").length;'
-        );
-
         # Filter for successful communications.
-        $Selenium->find_element( 'Successful (1)', 'partial_link_text' )->VerifiedClick();
+        $Selenium->find_element( 'Successful (1)', 'link_text' )->VerifiedClick();
 
         # Verify one communication is shown.
         $Self->Is(
@@ -451,21 +457,35 @@ $Selenium->RunTest(
         );
 
         # Limit log level to 'Error' only.
-        $Selenium->execute_script("\$('#PriorityFilter').val('Error').trigger('redraw.InputField').trigger('change');");
+        $Selenium->InputFieldValueSet(
+            Element => '#PriorityFilter',
+            Value   => 'Error',
+        );
 
         # Wait until page has loaded, if necessary.
         $Selenium->WaitFor(
-            JavaScript => 'return typeof($) === "function" && $("#CommunicationObjectWidget.Loading").length == 0;'
+            JavaScript =>
+                'return typeof($) === "function" && $("#CommunicationObjectWidget.Loading").length == 0 && $("#ObjectLogListTable tbody tr:visible").length == 1;'
         );
 
         # Verify only one log entry is shown.
         $Self->Is(
             $Selenium->execute_script(
-                "return \$('table#ObjectLogListTable tbody tr:visible').length;"
+                "return \$('#ObjectLogListTable tbody tr:visible').length;"
             ),
             1,
             'Error log filtered correctly'
         );
+
+        # Try to navigate to invalid Communication ID,
+        #   see bug#13523 (https://bugs.otrs.org/show_bug.cgi?id=13523).
+        my $RandomNumber = $Helper->GetRandomNumber();
+        $Selenium->VerifiedGet(
+            "${ScriptAlias}index.pl?Action=AdminCommunicationLog;Subaction=Zoom;CommunicationID=$RandomNumber"
+        );
+
+        # Verify error screen.
+        $Selenium->find_element( 'div.ErrorScreen', 'css' );
 
         # Clean up all communications created by the test.
         $Self->True(

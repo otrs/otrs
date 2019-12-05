@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Console::Command::Maint::Stats::Dashboard::Generate;
@@ -28,7 +28,7 @@ sub Configure {
     $Self->Description('Generate statistics widgets for the dashboard.');
     $Self->AddOption(
         Name        => 'number',
-        Description => "Stats number (as shown on overview in AgentStats).",
+        Description => "Statistic number as shown in the overview of AgentStats.",
         Required    => 0,
         HasValue    => 1,
         ValueRegex  => qr/\d+/smx,
@@ -92,7 +92,7 @@ sub Run {
         $Self->Print("<yellow>Stat $Stat{StatNumber}: $Stat{Title}</yellow>\n");
 
         # now find out all users which have this statistic enabled in their dashboard
-        my $DashboardActiveSetting = 'UserDashboard' . ( 1000 + $StatID ) . "-Stats";
+        my $DashboardActiveSetting   = 'UserDashboard' . ( 1000 + $StatID ) . "-Stats";
         my %UsersWithActivatedWidget = $Kernel::OM->Get('Kernel::System::User')->SearchPreferences(
             Key   => $DashboardActiveSetting,
             Value => 1,
@@ -104,6 +104,8 @@ sub Run {
         #   for a stat, the cache will not be recalculated.
         USERID:
         for my $UserID ( sort keys %UsersWithActivatedWidget ) {
+
+            my $StartTime = time();    ## no critic
 
             # ignore invalid users
             my %UserData = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
@@ -148,6 +150,10 @@ sub Run {
                 },
                 UserID => $UserID
             );
+
+            if ( $Self->GetOption('debug') ) {
+                print STDERR sprintf( "DEBUG: time taken: %ss\n", time() - $StartTime );    ## no critic
+            }
 
             if ( !$Result ) {
                 $Self->PrintError("        Stat calculation was not successful.");

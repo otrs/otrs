@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -30,6 +30,10 @@ my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->
     ChannelName => 'Internal',
 );
 
+my ( $TestUserLogin, $UserID ) = $Helper->TestUserCreate(
+    Groups => [ 'admin', 'users', ],
+);
+
 my @TicketIDs;
 my $TicketID = $TicketObject->TicketCreate(
     Title        => 'Some Ticket_Title - ticket index accelerator tests',
@@ -39,8 +43,8 @@ my $TicketID = $TicketObject->TicketCreate(
     State        => 'new',
     CustomerNo   => '123465',
     CustomerUser => 'customer@example.com',
-    OwnerID      => 1,
-    UserID       => 1,
+    OwnerID      => $UserID,
+    UserID       => $UserID,
 );
 push( @TicketIDs, $TicketID );
 $Self->True(
@@ -49,7 +53,7 @@ $Self->True(
 );
 
 my %IndexBefore = $TicketObject->TicketAcceleratorIndex(
-    UserID        => 1,
+    UserID        => $UserID,
     QueueID       => [ 1, 2, 3, 4, 5, $QueueID ],
     ShownQueueIDs => [ 1, 2, 3, 4, 5, $QueueID ],
 );
@@ -61,8 +65,8 @@ $TicketID = $TicketObject->TicketCreate(
     State        => 'closed successful',
     CustomerNo   => '123465',
     CustomerUser => 'customer@example.com',
-    OwnerID      => 1,
-    UserID       => 1,
+    OwnerID      => $UserID,
+    UserID       => $UserID,
 );
 push( @TicketIDs, $TicketID );
 $Self->True(
@@ -77,8 +81,8 @@ $TicketID = $TicketObject->TicketCreate(
     State        => 'closed successful',
     CustomerNo   => '123465',
     CustomerUser => 'customer@example.com',
-    OwnerID      => 1,
-    UserID       => 1,
+    OwnerID      => $UserID,
+    UserID       => $UserID,
 );
 push( @TicketIDs, $TicketID );
 $Self->True(
@@ -93,8 +97,8 @@ $TicketID = $TicketObject->TicketCreate(
     State        => 'open',
     CustomerNo   => '123465',
     CustomerUser => 'customer@example.com',
-    OwnerID      => 1,
-    UserID       => 1,
+    OwnerID      => $UserID,
+    UserID       => $UserID,
 );
 push( @TicketIDs, $TicketID );
 $Self->True(
@@ -109,8 +113,8 @@ $TicketID = $TicketObject->TicketCreate(
     State        => 'open',
     CustomerNo   => '123465',
     CustomerUser => 'customer@example.com',
-    OwnerID      => 1,
-    UserID       => 1,
+    OwnerID      => $UserID,
+    UserID       => $UserID,
 );
 push( @TicketIDs, $TicketID );
 $Self->True(
@@ -119,7 +123,7 @@ $Self->True(
 );
 
 my %IndexNow = $TicketObject->TicketAcceleratorIndex(
-    UserID        => 1,
+    UserID        => $UserID,
     QueueID       => [ 1, 2, 3, 4, 5, $QueueID ],
     ShownQueueIDs => [ 1, 2, 3, 4, 5, $QueueID ],
 );
@@ -145,14 +149,14 @@ my $TicketLock = $TicketObject->LockSet(
     Lock               => 'lock',
     TicketID           => $TicketIDs[1],
     SendNoNotification => 1,
-    UserID             => 1,
+    UserID             => $UserID,
 );
 $Self->True(
     $TicketLock,
     "LockSet()",
 );
 %IndexNow = $TicketObject->TicketAcceleratorIndex(
-    UserID        => 1,
+    UserID        => $UserID,
     QueueID       => [ 1, 2, 3, 4, 5, $QueueID ],
     ShownQueueIDs => [ 1, 2, 3, 4, 5, $QueueID ],
 );
@@ -178,14 +182,14 @@ $TicketLock = $TicketObject->LockSet(
     Lock               => 'lock',
     TicketID           => $TicketIDs[4],
     SendNoNotification => 1,
-    UserID             => 1,
+    UserID             => $UserID,
 );
 $Self->True(
     $TicketLock,
     "LockSet()",
 );
 %IndexNow = $TicketObject->TicketAcceleratorIndex(
-    UserID        => 1,
+    UserID        => $UserID,
     QueueID       => [ 1, 2, 3, 4, 5, $QueueID ],
     ShownQueueIDs => [ 1, 2, 3, 4, 5, $QueueID ],
 );
@@ -211,14 +215,14 @@ $TicketLock = $TicketObject->LockSet(
     Lock               => 'unlock',
     TicketID           => $TicketIDs[4],
     SendNoNotification => 1,
-    UserID             => 1,
+    UserID             => $UserID,
 );
 $Self->True(
     $TicketLock,
     "LockSet()",
 );
 %IndexNow = $TicketObject->TicketAcceleratorIndex(
-    UserID        => 1,
+    UserID        => $UserID,
     QueueID       => [ 1, 2, 3, 4, 5, $QueueID ],
     ShownQueueIDs => [ 1, 2, 3, 4, 5, $QueueID ],
 );
@@ -244,7 +248,7 @@ my $TicketState = $TicketObject->StateSet(
     State              => 'open',
     TicketID           => $TicketIDs[1],
     SendNoNotification => 1,
-    UserID             => 1,
+    UserID             => $UserID,
 );
 $Self->True(
     $TicketState,
@@ -254,14 +258,14 @@ $TicketLock = $TicketObject->LockSet(
     Lock               => 'unlock',
     TicketID           => $TicketIDs[1],
     SendNoNotification => 1,
-    UserID             => 1,
+    UserID             => $UserID,
 );
 $Self->True(
     $TicketLock,
     "LockSet()",
 );
 %IndexNow = $TicketObject->TicketAcceleratorIndex(
-    UserID        => 1,
+    UserID        => $UserID,
     QueueID       => [ 1, 2, 3, 4, 5, $QueueID ],
     ShownQueueIDs => [ 1, 2, 3, 4, 5, $QueueID ],
 );
@@ -304,7 +308,7 @@ for my $TicketID (@TicketIDs) {
             MimeType             => 'text/plain',
             HistoryType          => 'OwnerUpdate',
             HistoryComment       => 'Some free text!',
-            UserID               => 1,
+            UserID               => $UserID,
         );
 
         # add accounted time
@@ -313,7 +317,7 @@ for my $TicketID (@TicketIDs) {
                 TicketID  => $TicketID,
                 ArticleID => $ArticleID,
                 TimeUnit  => $Index,
-                UserID    => 1,
+                UserID    => $UserID,
             ),
             "Add accounted time",
         );
@@ -337,7 +341,7 @@ $Self->True(
     $TicketObject->TicketMerge(
         MainTicketID  => $TicketIDs[0],
         MergeTicketID => $TicketIDs[ $ArraySize - 1 ],
-        UserID        => 1,
+        UserID        => $UserID,
     ),
     'Merge tickets',
 );
@@ -358,7 +362,7 @@ my $NewQueueID  = $QueueObject->QueueAdd(
     SystemAddressID => 1,
     SalutationID    => 1,
     SignatureID     => 1,
-    UserID          => 1,
+    UserID          => $UserID,
     Comment         => 'Some Comment',
 );
 
@@ -376,8 +380,8 @@ for my $Index ( 1 .. 3 ) {
         State        => 'open',
         CustomerNo   => '123465',
         CustomerUser => 'customer@example.com',
-        OwnerID      => 1,
-        UserID       => 1,
+        OwnerID      => $UserID,
+        UserID       => $UserID,
     );
     $Self->True(
         $TicketID,
@@ -387,7 +391,7 @@ for my $Index ( 1 .. 3 ) {
     sleep($Index);
 }
 %IndexNow = $TicketObject->TicketAcceleratorIndex(
-    UserID        => 1,
+    UserID        => $UserID,
     QueueID       => [ 1, 2, 3, 4, 5, $NewQueueID ],
     ShownQueueIDs => [ 1, 2, 3, 4, 5, $NewQueueID ],
 );

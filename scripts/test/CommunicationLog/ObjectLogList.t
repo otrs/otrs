@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -18,7 +18,15 @@ $Kernel::OM->ObjectParamAdd(
     },
 );
 
-my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $HelperObject          = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $CommunicationDBObject = $Kernel::OM->Get('Kernel::System::CommunicationLog::DB');
+
+my $Success = $CommunicationDBObject->CommunicationDelete();
+
+$Self->True(
+    $Success,
+    'Communication log cleanup.',
+);
 
 # Start a communication.
 my $CommunicationLogObject = $Kernel::OM->Create(
@@ -28,6 +36,10 @@ my $CommunicationLogObject = $Kernel::OM->Create(
         Direction => 'Incoming',
     },
 );
+
+# Remember the start result count to prevent wrong list count values.
+my $StartResult      = $CommunicationDBObject->ObjectLogList();
+my $StartResultCount = scalar @{$StartResult};
 
 # Create some logging for 'Connection' and 'Message'
 for my $ObjectLogType (qw( Connection Message )) {
@@ -57,11 +69,9 @@ $CommunicationLogObject->CommunicationStop(
 my $Result;
 
 # Get the Objects list.
-my $CommunicationDBObject = $Kernel::OM->Get('Kernel::System::CommunicationLog::DB');
-
 $Result = $CommunicationDBObject->ObjectLogList();
 $Self->True(
-    $Result && scalar @{$Result} == 2,
+    $Result && scalar @{$Result} == ( $StartResultCount + 2 ),
     'Communication objects list.'
 );
 
@@ -69,14 +79,14 @@ $Self->True(
 $Result = $CommunicationDBObject->ObjectLogList( ObjectLogStatus => 'Failed' );
 
 $Self->True(
-    $Result && scalar @{$Result} == 1,
+    $Result && scalar @{$Result} == ( $StartResultCount + 1 ),
     'Communication objects list by status "Failed".'
 );
 
 # Filter by ObjectLogType
 $Result = $CommunicationDBObject->ObjectLogList( ObjectLogType => 'Message' );
 $Self->True(
-    $Result && scalar @{$Result} == 1,
+    $Result && scalar @{$Result} == ( $StartResultCount + 1 ),
     'Communication objects list by object-type "Message".'
 );
 
@@ -86,7 +96,7 @@ $Result = $CommunicationDBObject->ObjectLogList(
     ObjectLogStatus => 'Successful'
 );
 $Self->True(
-    $Result && scalar @{$Result} == 0,
+    $Result && scalar @{$Result} == $StartResultCount,
     'Communication objects list by object-type "Message" and Status "Successful".'
 );
 
@@ -97,7 +107,7 @@ $CurSysDateTimeObject->Subtract(
 );
 $Result = $CommunicationDBObject->ObjectLogList( ObjectLogStartTime => $CurSysDateTimeObject->ToString() );
 $Self->True(
-    $Result && scalar @{$Result} == 0,
+    $Result && scalar @{$Result} == $StartResultCount,
     sprintf( 'Communication objects list by start-time "%s".', $CurSysDateTimeObject->ToString(), ),
 );
 

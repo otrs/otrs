@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 [% RenderBlockStart("Search") %]
@@ -45,11 +45,12 @@
                 <h2>[% Translate("Fulltext Search in Tickets (e. g. \"John*n\" or \"Will*\")") | html %]</h2>
 [% RenderBlockStart("SearchableArticleField") %]
                 <div>
-                    <label for="[% Data.ArticleFieldKey | html %]">[% Data.ArticleFieldLabel %]</label>
-                    <input title="[% Data.ArticleFieldLabel %]" type="text" id="[% Data.ArticleFieldKey %]" name="[% Data.ArticleFieldKey | html %]" value="[% Data.ArticleFieldValue | html %]" size="20" class="[% Data.ArticleFieldKey %]Invalid" />
+                    <label for="[% Data.ArticleFieldKey | html %]">[% Translate(Data.ArticleFieldLabel) | html %]</label>
+                    <input title="[% Translate(Data.ArticleFieldLabel) | html %]" type="text" id="[% Data.ArticleFieldKey %]" name="[% Data.ArticleFieldKey | html %]" value="[% Data.ArticleFieldValue | html %]" size="20" class="[% Data.ArticleFieldKey %]Invalid" />
                     <div id="[% Data.ArticleFieldKey %]ServerError" class="TooltipErrorMessage">
                         <p>[% Data.ArticleFieldKeyTooltip | html %]</p>
                     </div>
+                    <div class="Clear"></div>
                 </div>
 [% RenderBlockEnd("SearchableArticleField") %]
 

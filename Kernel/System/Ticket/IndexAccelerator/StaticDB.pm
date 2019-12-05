@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Ticket::IndexAccelerator::StaticDB;
@@ -20,6 +20,7 @@ our @ObjectDependencies = (
     'Kernel::System::State',
     'Kernel::System::Ticket',
     'Kernel::System::DateTime',
+    'Kernel::System::Queue',
 );
 
 sub new {
@@ -165,8 +166,10 @@ sub TicketAcceleratorUpdateOnQueueUpdate {
         }
     }
 
-    #update ticket_index for changed queue name
-    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # Update ticket_index for changed queue name.
+    return if !$DBObject->Do(
         SQL => '
             UPDATE ticket_index
             SET queue = ?
@@ -176,6 +179,36 @@ sub TicketAcceleratorUpdateOnQueueUpdate {
             \$Param{OldQueueName},
         ],
     );
+
+    # Updated ticket_index for all sub queue names when parent name is changed.
+    #   See bug#13570 for more information.
+    my %AllQueue    = $Kernel::OM->Get('Kernel::System::Queue')->QueueList( Valid => 0 );
+    my @ParentQueue = split( /::/, $Param{OldQueueName} );
+
+    for my $QueueID ( sort keys %AllQueue ) {
+
+        my @SubQueue = split( /::/, $AllQueue{$QueueID} );
+
+        if ( $#SubQueue > $#ParentQueue ) {
+
+            if ( $AllQueue{$QueueID} =~ /^\Q$Param{OldQueueName}::\E/i ) {
+
+                my $NewQueueName = $AllQueue{$QueueID};
+                $NewQueueName =~ s/\Q$Param{OldQueueName}\E/$Param{NewQueueName}/;
+
+                return if !$DBObject->Do(
+                    SQL => '
+                        UPDATE ticket_index
+                        SET queue = ?
+                        WHERE queue = ?',
+                    Bind => [
+                        \$NewQueueName,
+                        \$AllQueue{$QueueID},
+                    ],
+                );
+            }
+        }
+    }
 
     return 1;
 }
@@ -489,7 +522,7 @@ sub TicketAcceleratorIndex {
                 },
             );
 
-            my $Delta = $TicketCreatedDTObj->Delta( DateTimeObject => $CurrentDateTimeObject );
+            my $Delta  = $TicketCreatedDTObj->Delta( DateTimeObject => $CurrentDateTimeObject );
             my $MaxAge = $Delta->{AbsoluteSeconds};
             $QueueData->{MaxAge} = $MaxAge if $MaxAge > $QueueData->{MaxAge};
 
@@ -561,7 +594,7 @@ sub TicketAcceleratorRebuild {
             SQL => '
                 INSERT INTO ticket_index
                     (ticket_id, queue_id, queue, group_id, s_lock, s_state, create_time)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    VALUES (?, ?, ?, ?, ?, ?, ?)',
             Bind => [
                 \$Data{TicketID}, \$Data{QueueID}, \$Data{Queue}, \$Data{GroupID},
                 \$Data{Lock}, \$Data{State}, \$Data{CreateTime},

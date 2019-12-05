@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -121,8 +121,9 @@ $Selenium->RunTest(
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID");
 
         # Click on Reply, we should try to send an email first.
-        $Selenium->execute_script(
-            "\$('#ResponseID$ArticleID').val('1').trigger('redraw.InputField').trigger('change');"
+        $Selenium->InputFieldValueSet(
+            Element => "#ResponseID$ArticleID",
+            Value   => 1,
         );
 
         # Switch to compose window.
@@ -157,10 +158,10 @@ $Selenium->RunTest(
 
                 # It's necessary to hide drag&drop upload and show input field.
                 $Selenium->execute_script(
-                    "\$('.DnDUpload').css('display', 'none')"
+                    "\$('.DnDUpload').css('display', 'none');"
                 );
                 $Selenium->execute_script(
-                    "\$('#FileUpload').css('display', 'block')"
+                    "\$('#FileUpload').css('display', 'block');"
                 );
             }
 
@@ -175,7 +176,7 @@ $Selenium->RunTest(
             if ( $Field eq 'FileUpload' ) {
                 $Selenium->WaitFor(
                     JavaScript =>
-                        "return \$('#AttachmentList tbody tr td.Filename:contains($ComposeData{$Field})').length;"
+                        "return \$('.AttachmentList tbody tr td.Filename:contains($ComposeData{$Field})').length;"
                 );
             }
             else {
@@ -190,21 +191,16 @@ $Selenium->RunTest(
         $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
-        # Wait until page has loaded, if necessary.
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function";' );
-
-        # Verify transmission status is shown as processing.
-        $Self->Is(
-            $Selenium->execute_script("return \$('#Row2 td.Channel span i.Warning').length;"),
-            1,
-            'Transmission status is shown as processing'
+        $Selenium->WaitForjQueryEventBound(
+            CSSSelector => '.WidgetAction.Expand',
         );
 
-        # Check if transmission processing message is shown.
-        my $DisplayedTransmissionMessage = $Selenium->find_element( '.MessageBox.SmallBox.Warning', 'css' )->get_text();
-        $Self->True(
-            ( $DisplayedTransmissionMessage =~ /This message has been queued for sending./ ) || 0,
-            'Transmission processing message displayed correctly (1)'
+        # Click to expand article widget information and verify css.
+        $Selenium->execute_script("\$('.WidgetAction.Expand').click();");
+
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $(".WidgetSimple.agent.Outgoing.VisibleForCustomer").hasClass("Expanded");'
         );
 
         # Get article ID of last message.
@@ -233,23 +229,18 @@ $Selenium->RunTest(
 
         $Selenium->VerifiedRefresh();
 
-        # Verify transmission status is still shown as processing.
-        $Self->Is(
-            $Selenium->execute_script("return \$('#Row2 td.Channel span i.Warning').length;"),
-            1,
-            'Transmission status is still shown as processing'
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $(".Avatar").length;'
         );
 
         # Check if transmission processing message contains information about temporary error.
-        my %RelativeTime = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->FormatRelativeTime(
-            DateTimeObject => $DateTimeObject,
-        );
         my $ProcessingMessage = sprintf(
             'This message is being processed. Already tried to send %s time(s). Next try will be %s.',
             '1',
-            sprintf( $RelativeTime{Message}, $RelativeTime{Value} ),
+            $DateTimeObject->Format( 'Format' => '%m/%d/%Y %H:%M' ),
         );
-        my $DisplayedProcessingMessage = $Selenium->find_element( '.MessageBox.SmallBox.Warning', 'css' )->get_text();
+        my $DisplayedProcessingMessage = $Selenium->find_element( '.WidgetMessage.Top.Warning', 'css' )->get_text();
+
         $Self->True(
             ( $DisplayedProcessingMessage =~ /\Q$ProcessingMessage\E/ ) || 0,
             'Transmission processing message displayed correctly (2)'
@@ -268,15 +259,12 @@ $Selenium->RunTest(
 
         $Selenium->VerifiedRefresh();
 
-        # Verify transmission status is shown as error.
-        $Self->Is(
-            $Selenium->execute_script("return \$('#Row2 td.Channel span i.Error').length;"),
-            1,
-            'Transmission status is shown as error'
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $(".Avatar").length;'
         );
 
         # Check if transmission error message is shown.
-        my $DisplayedErrorMessage = $Selenium->find_element( '.MessageBox.SmallBox.Error', 'css' )->get_text();
+        my $DisplayedErrorMessage = $Selenium->find_element( '.WidgetMessage.Top.Error', 'css' )->get_text();
         $Self->True(
             ( $DisplayedErrorMessage =~ /Sending of this message has failed./ ) || 0,
             'Transmission error message displayed correctly (1)'
@@ -287,7 +275,7 @@ $Selenium->RunTest(
         );
 
         # Check for existence of resend action.
-        $Selenium->find_element("//a[text()='Resend']")->VerifiedClick();
+        $Selenium->find_element("//a[text()='Resend']")->click();
 
         $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
@@ -304,6 +292,9 @@ $Selenium->RunTest(
 
             # Text body.
             if ( $Field eq 'RichText' ) {
+                $Selenium->WaitFor(
+                    JavaScript => "return \$('#$Selector').length;"
+                );
                 $Self->Is(
                     $Selenium->find_element( "#$Selector", 'css' )->get_value(),
                     $ComposeData{$Field},
@@ -313,9 +304,13 @@ $Selenium->RunTest(
 
             # Attachment.
             elsif ( $Field eq 'FileUpload' ) {
+                $Selenium->WaitFor(
+                    JavaScript =>
+                        "return \$('.AttachmentList tbody tr td.Filename:contains($ComposeData{$Field})').length;"
+                );
                 $Self->True(
                     $Selenium->execute_script(
-                        "return \$('#AttachmentList tbody tr td.Filename:contains($ComposeData{$Field})').length;"
+                        "return \$('.AttachmentList tbody tr td.Filename:contains($ComposeData{$Field})').length;"
                     ),
                     "Value for '$Field'"
                 );
@@ -328,6 +323,10 @@ $Selenium->RunTest(
                 if ( $Field eq 'ToCustomer' ) {
                     $Selector =~ s{^To}{}x;
                 }
+
+                $Selenium->WaitFor(
+                    JavaScript => "return \$('#${Selector}TicketText_1').length;"
+                );
 
                 $Self->Is(
                     $Selenium->find_element( "#${Selector}TicketText_1", 'css' )->get_value(),
@@ -347,42 +346,23 @@ $Selenium->RunTest(
         $Selenium->find_element( '#ToCustomer', 'css' )->send_keys($ToCustomer);
         $Selenium->find_element( 'body',        'css' )->click();
 
-        $Selenium->find_element( '#submitRichText', 'css' )->click();
+        $Selenium->execute_script("\$('#submitRichText').click();");
 
         $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
-        # Wait until page has loaded, if necessary.
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function";' );
-
-        # Verify transmission status is shown as processing.
-        $Self->Is(
-            $Selenium->execute_script("return \$('#Row3 td.Channel span i.Warning').length;"),
-            1,
-            'Transmission status is shown as processing'
-        );
-
-        # Check if transmission processing message is shown.
-        $DisplayedTransmissionMessage = $Selenium->find_element( '.MessageBox.SmallBox.Warning', 'css' )->get_text();
-        $Self->True(
-            ( $DisplayedTransmissionMessage =~ /This message has been queued for sending./ ) || 0,
-            'Transmission processing message displayed correctly (2)'
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $(".Avatar").length;'
         );
 
         # Verify message log details button is shown.
         $Selenium->find_element( 'Message Log', 'link_text' );
 
-        # Expand sub-menus in order to be able to click one of the links.
-        $Selenium->execute_script("\$('.Cluster ul ul').addClass('ForceVisible');");
-
-        $Selenium->find_element("//*[text()='History']")->VerifiedClick();
-
-        $Selenium->WaitFor( WindowCount => 2 );
-        $Handles = $Selenium->get_window_handles();
-        $Selenium->switch_to_window( $Handles->[1] );
+        # Navigate to AgentTicketHistory screen.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketHistory;TicketID=$TicketID");
 
         # Wait until page has loaded, if necessary.
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".CancelClosePopup").length' );
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".CancelClosePopup").length;' );
 
         # Verify that resend screen worked as expected.
         my $HistoryText = "Resent email to \"$ToCustomer\".";
@@ -396,6 +376,15 @@ $Selenium->RunTest(
             TicketID => $TicketID,
             UserID   => 1,
         );
+
+        # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+        if ( !$Success ) {
+            sleep 3;
+            $Success = $TicketObject->TicketDelete(
+                TicketID => $TicketID,
+                UserID   => 1,
+            );
+        }
         $Self->True(
             $Success,
             "Ticket with ticket ID $TicketID is deleted"

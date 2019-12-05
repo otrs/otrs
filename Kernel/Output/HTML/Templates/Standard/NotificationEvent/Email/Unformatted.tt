@@ -1,16 +1,15 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>[% Data.Subject | html %]</title>
 </head>
 <body>
     [% Data.Subject | html %]
@@ -19,7 +18,7 @@
     <br />
 [% IF !Config("Secure::DisableBanner") %]
     <hr>
-    [% Translate("Powered by") | html %] [% Config("Product") %] [% Config("Version").remove('\.0\..*') %]
+    [% Translate("Powered by") | html %] [% Config("Product") | html %] [% Config("Version").remove('\.0\..*') | html %]
 [% END %]
     <br /><br />
 </body>

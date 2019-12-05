@@ -1,21 +1,19 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU AFFERO General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# any later version.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-# or see http://www.gnu.org/licenses/agpl.txt.
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -125,18 +123,12 @@ GetOptions(
 
 # check needed params
 if ($Help) {
-    print "otrs.CheckModules.pl - OTRS CheckModules\n";
-    print "Copyright (C) 2001-2017 OTRS AG, http://otrs.com/\n";
-    print "usage: otrs.CheckModules.pl [-list|all] \n";
-    print "
-   otrs.CheckModules.pl
-       Returns all required and optional packages of OTRS.\n";
-    print "
-   otrs.CheckModules.pl -list
-       Returns a install command with all required packages.\n";
-    print "
-   otrs.CheckModules.pl -all
-       Returns all required, optional and bundled packages of OTRS.\n";
+    print "\nReturn all required and optional packages of OTRS.\n\n";
+    print "Usage:\n";
+    print " otrs.CheckModules.pl [-list|all]\n\n";
+    print "Options:\n";
+    printf " %-22s - %s", '[-list]', 'Return an install command with all required packages.' . "\n";
+    printf " %-22s - %s", '[-all]',  'Return all required, optional and bundled packages of OTRS.' . "\n\n";
     exit 1;
 }
 
@@ -206,17 +198,6 @@ my @NeededModules = (
         },
     },
     {
-        Module    => 'Crypt::SSLeay',
-        Required  => 0,
-        Comment   => 'Required for Generic Interface REST transport and SOAP SSL connections.',
-        InstTypes => {
-            aptget => 'libcrypt-ssleay-perl',
-            emerge => 'dev-perl/Crypt-SSLeay',
-            zypper => 'perl-Crypt-SSLeay',
-            ports  => 'security/p5-Crypt-SSLeay',
-        },
-    },
-    {
         Module    => 'Date::Format',
         Required  => 1,
         InstTypes => {
@@ -258,9 +239,9 @@ my @NeededModules = (
         },
     },
     {
-        Module       => 'DBD::ODBC',
-        Required     => 0,
-        NotSupported => [
+        Module               => 'DBD::ODBC',
+        Required             => 0,
+        VersionsNotSupported => [
             {
                 Version => '1.23',
                 Comment =>
@@ -310,11 +291,11 @@ my @NeededModules = (
         },
     },
     {
-        Module    => 'Encode::HanExtra',
-        Version   => '0.23',
-        Required  => 0,
-        Comment   => 'Required to handle mails with several Chinese character sets.',
-        InstTypes => {
+        Module          => 'Encode::HanExtra',
+        VersionRequired => '0.23',
+        Required        => 0,
+        Comment         => 'Required to handle mails with several Chinese character sets.',
+        InstTypes       => {
             aptget => 'libencode-hanextra-perl',
             emerge => 'dev-perl/Encode-HanExtra',
             zypper => 'perl-Encode-HanExtra',
@@ -322,9 +303,15 @@ my @NeededModules = (
         },
     },
     {
-        Module    => 'IO::Socket::SSL',
-        Required  => 0,
-        Comment   => 'Required for SSL connections to web and mail servers.',
+        Module              => 'IO::Socket::SSL',
+        Required            => 0,
+        Comment             => 'Required for SSL connections to web and mail servers.',
+        VersionsRecommended => [
+            {
+                Version => '2.066',
+                Comment => 'This version fixes email sending (bug#14357).',
+            },
+        ],
         InstTypes => {
             aptget => 'libio-socket-ssl-perl',
             emerge => 'dev-perl/IO-Socket-SSL',
@@ -366,11 +353,11 @@ my @NeededModules = (
         },
     },
     {
-        Module    => 'Mail::IMAPClient',
-        Version   => '3.22',
-        Comment   => 'Required for IMAP TLS connections.',
-        Required  => 0,
-        InstTypes => {
+        Module          => 'Mail::IMAPClient',
+        VersionRequired => '3.22',
+        Comment         => 'Required for IMAP TLS connections.',
+        Required        => 0,
+        InstTypes       => {
             aptget => 'libmail-imapclient-perl',
             emerge => 'dev-perl/Mail-IMAPClient',
             zypper => 'perl-Mail-IMAPClient',
@@ -378,9 +365,15 @@ my @NeededModules = (
         },
         Depends => [
             {
-                Module    => 'IO::Socket::SSL',
-                Required  => 0,
-                Comment   => 'Required for IMAP TLS connections.',
+                Module              => 'IO::Socket::SSL',
+                Required            => 0,
+                Comment             => 'Required for SSL connections to web and mail servers.',
+                VersionsRecommended => [
+                    {
+                        Version => '2.066',
+                        Comment => 'This version fixes email sending (bug#14357).',
+                    },
+                ],
                 InstTypes => {
                     aptget => 'libio-socket-ssl-perl',
                     emerge => 'dev-perl/IO-Socket-SSL',
@@ -422,9 +415,9 @@ my @NeededModules = (
         },
     },
     {
-        Module       => 'Net::DNS',
-        Required     => 1,
-        NotSupported => [
+        Module               => 'Net::DNS',
+        Required             => 1,
+        VersionsNotSupported => [
             {
                 Version => '0.60',
                 Comment =>
@@ -447,6 +440,23 @@ my @NeededModules = (
             emerge => 'dev-perl/perl-ldap',
             zypper => 'perl-ldap',
             ports  => 'net/p5-perl-ldap',
+        },
+    },
+    {
+        Module              => 'Net::SMTP',
+        Required            => 0,
+        Comment             => 'Simple Mail Transfer Protocol Client.',
+        VersionsRecommended => [
+            {
+                Version => '3.11',
+                Comment => 'This version fixes email sending (bug#14357).',
+            },
+        ],
+        InstTypes => {
+            aptget => undef,
+            emerge => undef,
+            zypper => undef,
+            ports  => undef,
         },
     },
     {
@@ -495,8 +505,8 @@ my @NeededModules = (
     },
     {
         Module    => 'XML::LibXML',
-        Required  => 0,
-        Comment   => 'Required for Generic Interface XSLT mapping module.',
+        Required  => 1,
+        Comment   => 'Required for XML processing.',
         InstTypes => {
             aptget => 'libxml-libxml-perl',
             zypper => 'perl-XML-LibXML',
@@ -516,7 +526,7 @@ my @NeededModules = (
     {
         Module    => 'XML::Parser',
         Required  => 0,
-        Comment   => 'Recommended for faster xml handling.',
+        Comment   => 'Recommended for XML processing.',
         InstTypes => {
             aptget => 'libxml-parser-perl',
             emerge => 'dev-perl/XML-Parser',
@@ -525,9 +535,21 @@ my @NeededModules = (
         },
     },
     {
-        Module    => 'YAML::XS',
-        Required  => 1,
-        Comment   => 'Very important',
+        Module   => 'YAML::XS',
+        Required => 1,
+        Comment  => 'Required for fast YAML processing.',
+
+        # Example of how to use VersionsRecommended option.
+        # VersionsRecommended => [
+        #     {
+        #         Version => '5.0.1',
+        #         Comment => 'This version fixes a bug.',
+        #     },
+        #     {
+        #         Version => '6.0.1',
+        #         Comment => 'This version fixes a critical issue.',
+        #     },
+        # ],
         InstTypes => {
             aptget => 'libyaml-libyaml-perl',
             emerge => 'dev-perl/YAML-LibYAML',
@@ -614,11 +636,11 @@ sub _Check {
         }
         ## use critic
 
-        if ( $Module->{NotSupported} ) {
+        if ( $Module->{VersionsNotSupported} ) {
 
-            my $NotSupported = 0;
+            my $VersionsNotSupported = 0;
             ITEM:
-            for my $Item ( @{ $Module->{NotSupported} } ) {
+            for my $Item ( @{ $Module->{VersionsNotSupported} } ) {
 
                 # cleanup item version number
                 my $ItemVersion = _VersionClean(
@@ -626,26 +648,45 @@ sub _Check {
                 );
 
                 if ( $CleanedVersion == $ItemVersion ) {
-                    $NotSupported = $Item->{Comment};
+                    $VersionsNotSupported = $Item->{Comment};
                     last ITEM;
                 }
             }
 
-            if ($NotSupported) {
-                $ErrorMessage .= "Version $Version not supported! $NotSupported ";
+            if ($VersionsNotSupported) {
+                $ErrorMessage .= "Version $Version not supported! $VersionsNotSupported ";
             }
         }
 
-        if ( $Module->{Version} ) {
+        my $AdditionalText = '';
+
+        if ( $Module->{VersionsRecommended} ) {
+
+            my $VersionsRecommended = 0;
+            ITEM:
+            for my $Item ( @{ $Module->{VersionsRecommended} } ) {
+
+                my $ItemVersion = _VersionClean(
+                    Version => $Item->{Version},
+                );
+
+                if ( $CleanedVersion < $ItemVersion ) {
+                    $AdditionalText
+                        .= "    Please consider updating to version $Item->{Version} or higher: $Item->{Comment}\n";
+                }
+            }
+        }
+
+        if ( $Module->{VersionRequired} ) {
 
             # cleanup item version number
             my $RequiredModuleVersion = _VersionClean(
-                Version => $Module->{Version},
+                Version => $Module->{VersionRequired},
             );
 
             if ( $CleanedVersion < $RequiredModuleVersion ) {
                 $ErrorMessage
-                    .= "Version $Version installed but $Module->{Version} or higher is required! ";
+                    .= "Version $Version installed but $Module->{VersionRequired} or higher is required! ";
             }
         }
 
@@ -666,10 +707,15 @@ sub _Check {
             }
 
             if ($NoColors) {
-                print "ok ($OutputVersion)\n";
+                print "ok ($OutputVersion)\n" . color('yellow') . "$AdditionalText" . color('reset');
             }
             else {
-                print color('green') . 'ok' . color('reset') . " ($OutputVersion)\n";
+                print color('green') . 'ok'
+                    . color('reset')
+                    . " ($OutputVersion)\n"
+                    . color('yellow')
+                    . "$AdditionalText"
+                    . color('reset');
             }
         }
     }
@@ -689,7 +735,7 @@ sub _Check {
                 $CMD = sprintf $InstallCommand{CMD}, $InstallCommand{SubCMD};
             }
 
-            $InstallText = " Use: '" . sprintf( $CMD, $InstallCommand{Package} ) . "'";
+            $InstallText = " To install, you can use: '" . sprintf( $CMD, $InstallCommand{Package} ) . "'.";
         }
 
         if ($Required) {
@@ -732,7 +778,7 @@ sub _PackageList {
     for my $Module ( @{$PackageList} ) {
 
         my $Required = $Module->{Required};
-        my $Version = Kernel::System::Environment->ModuleVersionGet( Module => $Module->{Module} );
+        my $Version  = Kernel::System::Environment->ModuleVersionGet( Module => $Module->{Module} );
         if ( !$Version ) {
             my %InstallCommand = _GetInstallCommand($Module);
 

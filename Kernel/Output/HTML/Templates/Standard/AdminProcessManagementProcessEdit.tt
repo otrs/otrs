@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst ProcessManagementEditScreen">
@@ -255,15 +255,12 @@
             </div>
 
             <div class="WidgetSimple ScreenXL">
-                <div class="Header Expanded">
-                    <div class="WidgetAction Toggle">
-                        <a href="#" title="[% Translate("Save settings") | html %]"></a>
-                    </div>
+                <div class="Header">
                     <h2>[% Translate("Save Activities, Activity Dialogs and Transitions") | html %]</h2>
                 </div>
                 <div class="Content">
                     <fieldset class="TableLike">
-                        <div class="Field SpacingTop SaveButtons">
+                        <div class="Field SaveButtons">
                             <button class="CallForAction Primary" id="SubmitAndContinue" type="button" value="[% Translate("Save") | html %]"><span>[% Translate("Save") | html %]</span></button>
                             [% Translate("or") | html %]
                             <button class="CallForAction Primary" id="Submit" type="submit" value="[% Translate("Save") | html %]"><span>[% Translate("Save and finish") | html %]</span></button>

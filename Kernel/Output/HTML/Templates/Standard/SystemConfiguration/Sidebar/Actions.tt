@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 <div class="WidgetSimple [% IF Env("UserWidgetState_SystemConfiguration_Actions") == 0 %]Collapsed[% END %]" id="UserWidgetState_SystemConfiguration_Actions">
@@ -45,7 +45,7 @@
             </li>
 [% END %]
             <li>
-                <a href="[% Env("Baselink") %]Action=AdminSystemConfiguration;Subaction=ImportExport" class="CallForAction Fullsize Center"><span><i class="fa fa-exchange"></i>[% Translate("Import & Export") | html %]</span></a>
+                <a href="[% Env("Baselink") %]Action=AdminSystemConfiguration;Subaction=ImportExport" class="CallForAction Fullsize Center"><span><i class="fa fa-exchange"></i>[% IF Config("ConfigImportAllowed") %][% Translate("Import & Export") | html %][% ELSE %][% Translate("Export") | html %][% END %]</span></a>
             </li>
         </ul>
     </div>

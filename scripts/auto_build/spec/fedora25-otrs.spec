@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 #
@@ -14,10 +14,10 @@
 Summary:      OTRS Help Desk.
 Name:         otrs
 Version:      0.0
-Copyright:    GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+Copyright:    GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
 Group:        Applications/Mail
 Provides:     otrs
-Requires:     bash-completion cronie httpd mod_perl perl perl(Archive::Zip) perl(Crypt::Eksblowfish::Bcrypt) perl(Crypt::SSLeay) perl(Date::Format) perl(DateTime) perl(DBI) perl(Encode::HanExtra) perl(IO::Socket::SSL) perl(JSON::XS) perl(LWP::UserAgent) perl(Mail::IMAPClient) perl(Net::DNS) perl(Net::LDAP) perl(Template) perl(Text::CSV) perl(Text::CSV_XS) perl(URI) perl(XML::LibXML) perl(XML::LibXSLT) perl(XML::Parser) perl(YAML::XS) perl-core procmail
+Requires:     bash-completion cronie httpd mod_perl perl perl(Archive::Zip) perl(Crypt::Eksblowfish::Bcrypt) perl(Date::Format) perl(DateTime) perl(DBI) perl(Encode::HanExtra) perl(IO::Socket::SSL) perl(JSON::XS) perl(LWP::UserAgent) perl(Mail::IMAPClient) perl(Net::DNS) perl(Net::LDAP) perl(Template) perl(Text::CSV) perl(Text::CSV_XS) perl(URI) perl(XML::LibXML) perl(XML::LibXSLT) perl(XML::Parser) perl(YAML::XS) perl-core procmail
 AutoReqProv:  no
 Release:      01
 Source0:      otrs-%{version}.tar.bz2
@@ -27,9 +27,9 @@ BuildRoot:    %{_tmppath}/%{name}-%{version}-build
 %description
 OTRS is an Open source Ticket Request System with many features to manage
 customer telephone calls and e-mails. It is distributed under the GNU
-AFFERO General Public License (AGPL) and tested on Linux, Solaris, AIX,
-FreeBSD, OpenBSD and Mac OS. Do you receive many e-mails and want to
-answer them with a team of agents? You're going to love OTRS!
+General Public License (GPL) and tested on Linux and Mac OS. Do you
+receive many e-mails and want to answer them with a team of agents?
+You're going to love OTRS!
 
 %prep
 %setup
@@ -83,10 +83,6 @@ fi
 
 %post
 export OTRSUSER=otrs
-if test -e /opt/otrs/Kernel/Config/Files/ZZZAAuto.pm; then
-    su $OTRSUSER -s /bin/bash -c "/opt/otrs/bin/otrs.Console.pl Maint::Config::Rebuild";
-    su $OTRSUSER -s /bin/bash -c "/opt/otrs/bin/otrs.Console.pl Maint::Cache::Delete";
-fi
 
 # note
 HOST=`hostname -f`
@@ -146,6 +142,7 @@ rm -rf $RPM_BUILD_ROOT
 /opt/otrs/Kernel/Language/*.pm
 
 /opt/otrs/bin*
+/opt/otrs/Kernel/Autoload*
 /opt/otrs/Kernel/Modules*
 /opt/otrs/Kernel/Output*
 /opt/otrs/Kernel/System*

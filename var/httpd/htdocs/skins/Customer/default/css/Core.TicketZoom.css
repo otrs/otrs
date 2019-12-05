@@ -1,8 +1,10 @@
-/**
- * @project     OTRS (http://www.otrs.org) - Customer Frontend
- * @copyright   OTRS AG
- * @license     AGPL (http://www.gnu.org/licenses/agpl.txt)
- */
+/*
+Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+
+This software comes with ABSOLUTELY NO WARRANTY. For details, see
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
+*/
 
 @media screen,projection,tv,handheld {
 
@@ -27,7 +29,7 @@
 
 .TicketHeader h2 {
     margin: 3px 0 0;
-    padding: 10px 0px 15px 36px;
+    padding: 10px 64px 15px 36px;
     font-size: 24px;
     line-height: 24px;
     position: relative;
@@ -151,7 +153,7 @@
 }
 
 #TicketOptions li {
-    float: left;
+    display: inline-block;
     margin-left: 5px;
 }
 
@@ -164,12 +166,6 @@
 #TicketOptions .Print:hover,
 #TicketOptions .ZoomExpand:hover {
     color: #f92;
-}
-
-#TicketOptions .Print span,
-#TicketOptions .ZoomExpand span {
-    text-indent: -9999px;
-    display: block;
 }
 
 #TicketOptions .ZoomExpand.ExpandAll .fa-minus {
@@ -238,6 +234,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 90%;
+    line-height: 130%;
 }
 
 .MessageHeader h3 span {

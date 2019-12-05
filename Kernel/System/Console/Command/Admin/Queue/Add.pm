@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Console::Command::Admin::Queue::Add;
@@ -46,7 +46,7 @@ sub Configure {
     );
     $Self->AddOption(
         Name        => 'system-address-name',
-        Description => 'Name of the system address which should be assigned to the new queue.',
+        Description => 'System email address which should be assigned to the new queue.',
         Required    => 0,
         HasValue    => 1,
         ValueRegex  => qr/.*/smx,
@@ -67,14 +67,14 @@ sub Configure {
     );
     $Self->AddOption(
         Name        => 'first-response-time',
-        Description => 'Ticket first respone time in minutes for the new queue.',
+        Description => 'Ticket first response time in minutes for the new queue.',
         Required    => 0,
         HasValue    => 1,
         ValueRegex  => qr/\d/smx,
     );
     $Self->AddOption(
         Name        => 'update-time',
-        Description => 'Ticket update in minutes for the new queue.',
+        Description => 'Ticket update time in minutes for the new queue.',
         Required    => 0,
         HasValue    => 1,
         ValueRegex  => qr/\d/smx,
@@ -88,7 +88,7 @@ sub Configure {
     );
     $Self->AddOption(
         Name        => 'calendar',
-        Description => 'Name of the calendar for the new queue.',
+        Description => 'Calendar order number for the new queue.',
         Required    => 0,
         HasValue    => 1,
         ValueRegex  => qr/.*/smx,
@@ -103,7 +103,7 @@ sub Run {
     $Self->Print("<yellow>Adding a new queue...</yellow>\n");
 
     # check group
-    my $Group = $Self->GetOption('group');
+    my $Group   = $Self->GetOption('group');
     my $GroupID = $Kernel::OM->Get('Kernel::System::Group')->GroupLookup( Group => $Group );
     if ( !$GroupID ) {
         $Self->PrintError("Found no GroupID for $Group\n");

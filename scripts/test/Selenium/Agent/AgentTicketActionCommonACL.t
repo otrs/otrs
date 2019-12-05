@@ -1,23 +1,24 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 use strict;
 use warnings;
 use utf8;
 use vars (qw($Self));
 
-# note: this UT covers bug #11874 - Restrict service based on state when posting a note
+# Note: this UT covers bug #11874 - Restrict service based on state when posting a note
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
-        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $Helper       = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $ACLObject    = $Kernel::OM->Get('Kernel::System::ACL::DB::ACL');
+        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
         my $RandomID = $Helper->GetRandomID();
 
@@ -124,10 +125,7 @@ $Selenium->RunTest(
             },
         );
 
-        # get ACL object
-        my $ACLObject = $Kernel::OM->Get('Kernel::System::ACL::DB::ACL');
-
-        # import test ACL
+        # Import test ACL.
         $ACLObject->ACLImport(
             Content => <<"EOF",
 - ChangeBy: root\@localhost
@@ -236,7 +234,7 @@ EOF
             UserID                    => 1,
         );
 
-        # create test user and login
+        # Create test user and login.
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => [ 'admin', 'users' ],
         ) || die "Did not get test user";
@@ -247,13 +245,9 @@ EOF
             Password => $TestUserLogin,
         );
 
-        # get config object
-        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+        my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # get script alias
-        my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
-
-        # after login, we need to navigate to the ACL deployment to make the imported ACL work
+        # After login, we need to navigate to the ACL deployment to make the imported ACL work.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminACL;Subaction=ACLDeploy");
         $Self->False(
             index(
@@ -264,7 +258,7 @@ EOF
             "ACL deployment successful."
         );
 
-        # add a customer
+        # Add a customer.
         my $CustomerUserLogin = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserAdd(
             UserFirstname  => 'Huber',
             UserLastname   => 'Manfred',
@@ -276,10 +270,7 @@ EOF
             UserID         => 1,
         );
 
-        # get ticket object
-        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
-        # create test ticket
+        # Create test ticket.
         my $TicketID = $TicketObject->TicketCreate(
             Title        => 'Selenium Ticket',
             Queue        => 'Raw',
@@ -350,45 +341,54 @@ EOF
             push @SLAs, $SLAID;
         }
 
-        # navigate to AgentTicketZoom screen of created test ticket
+        # Navigate to AgentTicketZoom screen of created test ticket.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID");
 
-        # wait for displaying submenu items for 'People' ticket menu item
+        # Wait until page has loaded.
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function";' );
+
+        $Selenium->execute_script("\$('#nav-Communication-container').css('height', 'auto');");
+        $Selenium->execute_script("\$('#nav-Communication-container').css('opacity', '1');");
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#nav-Communication ul").css({ "height": "auto", "opacity": "100" });'
+                "return \$('#nav-Communication-container').css('height') !== '0px' && \$('#nav-Communication-container').css('opacity') == '1';"
         );
 
-        # click on 'Note' and switch window
-        $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketNote;TicketID=$TicketID' )]")
-            ->VerifiedClick();
+        # Click on 'Note' and switch window
+        $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketNote;TicketID=$TicketID' )]")->click();
 
         $Selenium->WaitFor( WindowCount => 2 );
         my $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
-        # wait until page has loaded
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#ServiceID").length' );
+        # Wait until page has loaded
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#ServiceID").length;' );
 
-        # check for entries in the service selection, there should be only one
+        # Check for entries in the service selection, there should be only one
         $Self->Is(
             $Selenium->execute_script(
-                "return \$('#ServiceID option:not([value=\"\"])').length"
+                "return \$('#ServiceID option:not([value=\"\"])').length;"
             ),
             1,
             "There is only one entry in the service selection",
         );
 
+        Time::HiRes::sleep(0.5);
+
         # Set test service and trigger AJAX refresh.
-        $Selenium->execute_script(
-            "\$('#ServiceID option:not([value=\"\"])').attr('selected', true).trigger('redraw.InputField').trigger('change');"
+        $Selenium->InputFieldValueSet(
+            Element => '#ServiceID',
+            Value   => $Services[0],
         );
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length' );
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return !$(".AJAXLoader:visible").length && $("#SLAID option:not([value=\'\'])").length == 1;'
+        );
 
         # Check for restricted entries in the SLA selection, there should be only one.
         $Self->Is(
             $Selenium->execute_script(
-                "return \$('#SLAID option:not([value=\"\"])').length"
+                "return \$('#SLAID option:not([value=\"\"])').length;"
             ),
             1,
             "There is only one entry in the SLA selection",
@@ -399,17 +399,73 @@ EOF
             Name => 'Junk',
         );
         $Self->True(
-            $Selenium->execute_script("return \$('#NewQueueID option[value=\"$JunkQueue{QueueID}\"]').length > 0"),
+            $Selenium->execute_script("return \$('#NewQueueID option[value=\"$JunkQueue{QueueID}\"]').length > 0;"),
             "Junk queue is available in selection before ACL trigger"
         );
 
         # Trigger ACL on priority change.
-        $Selenium->execute_script("\$('#NewPriorityID').val('2').trigger('redraw.InputField').trigger('change');");
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length' );
+        $Selenium->InputFieldValueSet(
+            Element => "#NewPriorityID",
+            Value   => 2,
+        );
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length;' );
 
         $Self->False(
-            $Selenium->execute_script("return \$('#NewQueueID option[value=\"$JunkQueue{QueueID}\"]').length > 0"),
+            $Selenium->execute_script("return \$('#NewQueueID option[value=\"$JunkQueue{QueueID}\"]').length > 0;"),
             "Junk queue is not available in selection after ACL trigger"
+        );
+
+        # Turn off priority and try again. Please see bug#13312 for more information.
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'Ticket::Frontend::AgentTicketNote###Priority',
+            Value => 0,
+        );
+
+        # Close the new note popup.
+        $Selenium->find_element( '.CancelClosePopup', 'css' )->click();
+
+        $Selenium->WaitFor( WindowCount => 1 );
+        $Selenium->switch_to_window( $Handles->[0] );
+
+        # Click on 'Note' and switch window.
+        $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketNote;TicketID=$TicketID' )]")->click();
+
+        $Selenium->WaitFor( WindowCount => 2 );
+        $Handles = $Selenium->get_window_handles();
+        $Selenium->switch_to_window( $Handles->[1] );
+
+        # Wait until page has loaded.
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#ServiceID").length;' );
+
+        # Check for entries in the service selection, there should be only one.
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#ServiceID option:not([value=\"\"])').length;"
+            ),
+            1,
+            'There is only one entry in the service selection'
+        );
+
+        Time::HiRes::sleep(0.5);
+
+        # Set test service and trigger AJAX refresh.
+        $Selenium->InputFieldValueSet(
+            Element => '#ServiceID',
+            Value   => $Services[0],
+        );
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return !$(".AJAXLoader:visible").length && $("#SLAID option:not([value=\'\'])").length == 1;'
+        );
+
+        # Check for restricted entries in the SLA selection, there should be only one.
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#SLAID option:not([value=\"\"])').length;"
+            ),
+            1,
+            'There is only one entry in the SLA selection'
         );
 
         # Close the new note popup.
@@ -430,9 +486,8 @@ EOF
             UserID => 1,
         );
 
-        # click on 'Note' and switch window
-        $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketNote;TicketID=$TicketID' )]")
-            ->VerifiedClick();
+        # Click on 'Note' and switch window.
+        $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketNote;TicketID=$TicketID' )]")->click();
 
         $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
@@ -440,26 +495,28 @@ EOF
 
         # Wait until page has loaded.
         $Selenium->WaitFor(
-            JavaScript => 'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete'
+            JavaScript =>
+                'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete;'
         );
 
         $Self->Is(
             $Selenium->execute_script(
-                "return \$('#DynamicField_Field2$RandomID option:not([value=\"\"])').length"
+                "return \$('#DynamicField_Field2$RandomID option:not([value=\"\"])').length;"
             ),
             2,
             "There are only two entries in the dynamic field 2 selection",
         );
 
         # De-select the dynamic field value for the first field.
-        $Selenium->execute_script(
-            "return \$('#DynamicField_Field$RandomID').val('').trigger('redraw.InputField').trigger('change');"
+        $Selenium->InputFieldValueSet(
+            Element => "#DynamicField_Field$RandomID",
+            Value   => '',
         );
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length' );
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length;' );
 
         $Self->Is(
             $Selenium->execute_script(
-                "return \$('#DynamicField_Field2$RandomID option:not([value=\"\"])').length"
+                "return \$('#DynamicField_Field2$RandomID option:not([value=\"\"])').length;"
             ),
             4,
             "There are all four entries in the dynamic field 2 selection",
@@ -472,8 +529,7 @@ EOF
         $Selenium->switch_to_window( $Handles->[0] );
 
         # Click on 'Close' action and switch to it.
-        $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketClose;TicketID=$TicketID' )]")
-            ->VerifiedClick();
+        $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketClose;TicketID=$TicketID' )]")->click();
 
         $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
@@ -487,24 +543,31 @@ EOF
         #   Then, close the ticket and verify it was actually closed.
         #   Please see bug#12671 for more information.
         $Self->True(
-            $Selenium->execute_script("return \$('#NewStateID option:contains(\"closed successful\")').length == 0"),
+            $Selenium->execute_script('return $("#NewStateID option:contains(\'closed successful\')").length == 0;'),
             "State 'closed successful' not available in new state selection before DF update"
         );
 
+        Time::HiRes::sleep(0.5);
+
         # Set dynamic field value to non-zero, and wait for AJAX to complete.
-        $Selenium->execute_script(
-            "return \$('#DynamicField_Field$RandomID').val('1').trigger('redraw.InputField').trigger('change');"
+        $Selenium->InputFieldValueSet(
+            Element => "#DynamicField_Field$RandomID",
+            Value   => 1,
         );
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length' );
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return !$(".AJAXLoader:visible").length && $("#NewStateID option:contains(\'closed successful\')").length == 1;'
+        );
 
         $Self->True(
-            $Selenium->execute_script("return \$('#NewStateID option:contains(\"closed successful\")').length == 1"),
+            $Selenium->execute_script('return $("#NewStateID option:contains(\'closed successful\')").length == 1;'),
             "State 'closed successful' available in new state selection after DF update"
         );
 
         # Close the ticket.
-        $Selenium->execute_script(
-            "return \$('#NewStateID').val('2').trigger('redraw.InputField').trigger('change');"
+        $Selenium->InputFieldValueSet(
+            Element => "#NewStateID",
+            Value   => 2,
         );
         $Selenium->find_element( '#Subject',        'css' )->send_keys('Close');
         $Selenium->find_element( '#RichText',       'css' )->send_keys('Closing...');
@@ -542,7 +605,7 @@ EOF
             );
         }
 
-        # deploy again after we deleted the test acl
+        # Deploy again after we deleted the test acl.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminACL;Subaction=ACLDeploy");
         $Self->False(
             index(
@@ -553,17 +616,26 @@ EOF
             "ACL deployment successful."
         );
 
-        # delete created test tickets
+        # Delete created test tickets.
         $Success = $TicketObject->TicketDelete(
             TicketID => $TicketID,
             UserID   => 1,
         );
+
+        # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+        if ( !$Success ) {
+            sleep 3;
+            $Success = $TicketObject->TicketDelete(
+                TicketID => $TicketID,
+                UserID   => 1,
+            );
+        }
         $Self->True(
             $Success,
             "Ticket with ticket ID $TicketID is deleted"
         );
 
-        # make sure the cache is correct
+        # Make sure the cache is correct.
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'Ticket' );
 
         # Delete test SLAs.
@@ -579,7 +651,7 @@ EOF
             );
         }
 
-        # delete services and relations
+        # Delete services and relations.
         $Success = $DBObject->Do(
             SQL  => "DELETE FROM service_customer_user WHERE customer_user_login = ?",
             Bind => [ \$CustomerUserLogin ],
@@ -627,9 +699,11 @@ EOF
             "DynamicFieldDelete - Deleted test dynamic field $DynamicFieldID2",
         );
 
-        # make sure the cache is correct
+        my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
+        # Make sure the cache is correct.
         for my $Cache (qw( Service SLA CustomerUser DynamicField )) {
-            $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => $Cache );
+            $CacheObject->CleanUp( Type => $Cache );
         }
     },
 );

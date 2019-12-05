@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminCustomerCompany;
@@ -39,9 +39,9 @@ sub Run {
     my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    my $Nav = $ParamObject->GetParam( Param => 'Nav' ) || 0;
+    my $Nav               = $ParamObject->GetParam( Param => 'Nav' ) || 0;
     my $NavigationBarType = $Nav eq 'Agent' ? 'Customers' : 'Admin';
-    my $Search = $ParamObject->GetParam( Param => 'Search' );
+    my $Search            = $ParamObject->GetParam( Param => 'Search' );
     $Search
         ||= $ConfigObject->Get('AdminCustomerCompany::RunInitialWildcardSearch') ? '*' : '';
     my $LayoutObject          = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
@@ -57,7 +57,7 @@ sub Run {
         my $CustomerID
             = $ParamObject->GetParam( Param => 'CustomerID' ) || $ParamObject->GetParam( Param => 'ID' ) || '';
         my $Notification = $ParamObject->GetParam( Param => 'Notification' ) || '';
-        my %Data = $CustomerCompanyObject->CustomerCompanyGet(
+        my %Data         = $CustomerCompanyObject->CustomerCompanyGet(
             CustomerID => $CustomerID,
         );
         $Data{CustomerCompanyID} = $CustomerID;
@@ -179,7 +179,12 @@ sub Run {
                     my $DynamicFieldConfig = $Self->{DynamicFieldLookup}->{ $Entry->[2] };
 
                     if ( !IsHashRefWithData($DynamicFieldConfig) ) {
-                        $SetDFError .= $LayoutObject->Notify( Info => "DynamicField $Entry->[2] not found!" );
+                        $SetDFError .= $LayoutObject->Notify(
+                            Info => $LayoutObject->{LanguageObject}->Translate(
+                                'Dynamic field %s not found!',
+                                $Entry->[2],
+                            )
+                        );
                         next ENTRY;
                     }
 
@@ -192,7 +197,12 @@ sub Run {
 
                     if ( !$ValueSet ) {
                         $SetDFError
-                            .= $LayoutObject->Notify( Info => "Unable to set value for dynamic field $Entry->[2]!" );
+                            .= $LayoutObject->Notify(
+                            Info => $LayoutObject->{LanguageObject}->Translate(
+                                'Unable to set value for dynamic field %s!',
+                                $Entry->[2],
+                            ),
+                            );
                         next ENTRY;
                     }
                 }
@@ -416,7 +426,12 @@ sub Run {
                     my $DynamicFieldConfig = $Self->{DynamicFieldLookup}->{ $Entry->[2] };
 
                     if ( !IsHashRefWithData($DynamicFieldConfig) ) {
-                        $Output .= $LayoutObject->Notify( Info => "DynamicField $Entry->[2] not found!" );
+                        $Output .= $LayoutObject->Notify(
+                            Info => $LayoutObject->{LanguageObject}->Translate(
+                                'Dynamic field %s not found!',
+                                $Entry->[2],
+                            ),
+                        );
                         next ENTRY;
                     }
 
@@ -429,7 +444,12 @@ sub Run {
 
                     if ( !$ValueSet ) {
                         $Output
-                            .= $LayoutObject->Notify( Info => "Unable to set value for dynamic field $Entry->[2]!" );
+                            .= $LayoutObject->Notify(
+                            Info => $LayoutObject->{LanguageObject}->Translate(
+                                'Unable to set value for dynamic field %s!',
+                                $Entry->[2],
+                            ),
+                            );
                         next ENTRY;
                     }
                 }
@@ -485,7 +505,7 @@ sub Run {
             Search => $Search,
             %GetParam,
         );
-        my $Output = $LayoutObject->Header();
+        my $Output       = $LayoutObject->Header();
         my $Notification = $ParamObject->GetParam( Param => 'Notification' ) || '';
         $Output .= $LayoutObject->NavigationBar(
             Type => $NavigationBarType,

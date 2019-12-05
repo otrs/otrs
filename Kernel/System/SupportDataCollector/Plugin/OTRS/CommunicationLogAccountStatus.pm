@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::SupportDataCollector::Plugin::OTRS::CommunicationLogAccountStatus;
@@ -13,6 +13,7 @@ use warnings;
 
 use parent qw(Kernel::System::SupportDataCollector::PluginBase);
 
+use Kernel::System::VariableCheck qw(:all);
 use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
@@ -47,7 +48,9 @@ sub Run {
 
     my %Account;
 
+    CONNECTION:
     for my $Connection ( @{$Connections} ) {
+        next CONNECTION if !$Connection->{AccountType};
 
         my $AccountKey = $Connection->{AccountType};
         if ( $Connection->{AccountID} ) {
@@ -68,24 +71,21 @@ sub Run {
 
     my @AllMailAccounts = $Kernel::OM->Get('Kernel::System::MailAccount')->MailAccountGetAll();
 
-    my %Accounts = map {
-        $_->{ID}
-            ?
-            ( "$_->{Type}::$_->{ID}" => $_ )
-            :
-            ( $_->{Type} => $_ )
-    } @AllMailAccounts;
+    my %MailAccounts = map { $_->{ID} ? ( "$_->{Type}::$_->{ID}" => $_ ) : ( $_->{Type} => $_ ) } @AllMailAccounts;
 
     for my $AccountKey ( sort keys %Account ) {
 
         my $HealthStatus = $Self->_CheckHealth( $Account{$AccountKey} );
 
         my $AccountLabel = $Account{$AccountKey}->{AccountType};
-        if ( $Account{$AccountKey}->{AccountID} ) {
+        if ( $Account{$AccountKey}->{AccountID} && $MailAccounts{$AccountKey} ) {
 
-            my $MailAccount = $Accounts{$AccountKey};
+            my $MailAccount = $MailAccounts{$AccountKey};
 
             $AccountLabel = "$MailAccount->{Host} / $MailAccount->{Login} ($Account{$AccountKey}->{AccountType})";
+        }
+        elsif ( $Account{$AccountKey}->{AccountID} ) {
+            $AccountLabel = $AccountKey;
         }
 
         if ( $HealthStatus eq 'Success' ) {
@@ -125,9 +125,9 @@ sub _CheckHealth {
 
     my $Health = 'Success';
 
-    if ( scalar $Connections->{Failed} ) {
+    if ( IsArrayRefWithData( $Connections->{Failed} ) ) {
         $Health = 'Failed';
-        if ( scalar $Connections->{Successful} ) {
+        if ( IsArrayRefWithData( $Connections->{Successful} ) ) {
             $Health = 'Warning';
         }
     }

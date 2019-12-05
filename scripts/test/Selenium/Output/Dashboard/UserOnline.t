@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -12,7 +12,6 @@ use utf8;
 
 use vars (qw($Self));
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
@@ -23,13 +22,13 @@ $Selenium->RunTest(
 
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-        # get UserOnline config
+        # Get UserOnline config.
         my %UserOnlineSysConfig = $Kernel::OM->Get('Kernel::System::SysConfig')->SettingGet(
             Name    => 'DashboardBackend###0400-UserOnline',
             Default => 1,
         );
 
-        # enable UserOnline and set it to load as default plugin
+        # Enable UserOnline and set it to load as default plugin.
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'DashboardBackend###0400-UserOnline',
@@ -39,16 +38,25 @@ $Selenium->RunTest(
             },
         );
 
-        # create test customer user and login
+        # Create test customer user and login several times in order to rack up number of user sessions.
         my $TestCustomerUserLogin = $Helper->TestCustomerUserCreate(
         ) || die "Did not get test customer user";
-        $Selenium->Login(
-            Type     => 'Customer',
-            User     => $TestCustomerUserLogin,
-            Password => $TestCustomerUserLogin,
-        );
 
-        # create test user and login
+        for ( 1 .. 5 ) {
+            $Selenium->Login(
+                Type     => 'Customer',
+                User     => $TestCustomerUserLogin,
+                Password => $TestCustomerUserLogin,
+            );
+
+            # Remove all cookies for current session.
+            $Selenium->delete_all_cookies();
+        }
+
+        # Clean up the dashboard cache.
+        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'Dashboard' );
+
+        # Create test user and login.
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => [ 'admin', 'users' ],
         ) || die "Did not get test user";
@@ -59,11 +67,23 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        # clean up dashboard cache and refresh screen
-        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'Dashboard' );
-        $Selenium->VerifiedRefresh();
+        # Verify only one agent user is accounted for.
+        my $AgentsLink = $Selenium->find_element("//a[contains(\@id, \'UserOnlineAgent' )]");
+        $Self->Is(
+            $AgentsLink->get_text() // '',
+            'Agents (1)',
+            'Only one agent user accounted for'
+        );
 
-        # test UserOnline plugin for agent
+        if ( $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Agent::UnavailableForExternalChatsOnLogin') ) {
+            $Self->True(
+                1,
+                "UnavailableForExternalChatsOnLogin config is set, skipping test..."
+            );
+            return 1;
+        }
+
+        # Test UserOnline plugin for agent.
         my $ExpectedAgent = "$TestUserLogin";
         $Self->True(
             index( $Selenium->get_page_source(), $ExpectedAgent ) > -1,
@@ -74,16 +94,23 @@ $Selenium->RunTest(
                 "return \$('table.DashboardUserOnline span.UserStatusIcon.Inline.Active:visible').length"
             ),
             "$TestUserLogin - found active status icon",
+        ) || die;
+
+        # Verify only one customer user is accounted for.
+        my $CustomersLink = $Selenium->find_element("//a[contains(\@id, \'UserOnlineCustomer' )]");
+        $Self->Is(
+            $CustomersLink->get_text() // '',
+            'Customers (1)',
+            'Only one customer user accounted for'
         );
 
-        # switch to online customers and test UserOnline plugin for customers
-        $Selenium->find_element("//a[contains(\@id, \'Customer' )]")->VerifiedClick();
+        # Switch to online customers and test UserOnline plugin for customers.
+        $CustomersLink->click();
 
-        # Wait for AJAX
-        my $ExpectedCustomer = "$TestCustomerUserLogin";
+        # Wait for AJAX.
         $Selenium->WaitFor(
             JavaScript =>
-                "return typeof(\$) === 'function' && \$('table.DashboardUserOnline a:contains(\"$ExpectedCustomer\")').length;"
+                "return typeof(\$) === 'function' && \$('table.DashboardUserOnline a:contains(\"$TestCustomerUserLogin\")').length;"
         );
 
         $Self->True(
@@ -91,11 +118,11 @@ $Selenium->RunTest(
                 "return \$('table.DashboardUserOnline span.UserStatusIcon.Inline.Active:visible').length"
             ),
             "$TestCustomerUserLogin - found active status icon",
-        );
+        ) || die;
 
         $Self->Is(
             $Selenium->execute_script(
-                "return \$('table.DashboardUserOnline a:contains(\"$ExpectedCustomer\")').length;"
+                "return \$('table.DashboardUserOnline a:contains(\"$TestCustomerUserLogin\")').length;"
             ),
             1,
             "$TestCustomerUserLogin - found on UserOnline plugin"

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -54,12 +54,22 @@ my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
 my $QueueID = $Kernel::OM->Get('Kernel::System::Queue')->QueueLookup( Queue => 'Raw' );
 my $StateID = $Kernel::OM->Get('Kernel::System::State')->StateLookup( State => 'new' );
-my $TypeID = $Kernel::OM->Get('Kernel::System::Type')->TypeLookup( Type => 'undefined' );
+
+# Disable service and type
+$Helper->ConfigSettingChange(
+    Valid => 1,
+    Key   => 'Ticket::Service',
+    Value => 0,
+);
+$Helper->ConfigSettingChange(
+    Valid => 1,
+    Key   => 'Ticket::Type',
+    Value => 0,
+);
 
 # create ticket
 my $TicketID1 = $TicketObject->TicketCreate(
     Title        => 'Ticket One Title',
-    TypeID       => $TypeID,
     QueueID      => $QueueID,
     Lock         => 'unlock',
     Priority     => '3 normal',
@@ -79,7 +89,6 @@ $Self->True(
 # create ticket
 my $TicketID2 = $TicketObject->TicketCreate(
     Title        => 'Ticket One Title',
-    TypeID       => $TypeID,
     QueueID      => $QueueID,
     Lock         => 'unlock',
     Priority     => '3 normal',
@@ -201,6 +210,7 @@ my $WebserviceConfig = {
                 NameSpace => 'http://otrs.org/SoapTestInterface/',
                 Encoding  => 'UTF-8',
                 Endpoint  => $RemoteSystem,
+                Timeout   => 120,
             },
         },
         Invoker => {
@@ -260,7 +270,7 @@ my @Tests = (
                 Error => {
                     ErrorCode    => 'TicketHistoryGet.MissingParameter',
                     ErrorMessage => 'TicketHistoryGet: TicketID parameter is missing!'
-                    }
+                }
             },
             Success => 1
         },
@@ -269,7 +279,7 @@ my @Tests = (
                 Error => {
                     ErrorCode    => 'TicketHistoryGet.MissingParameter',
                     ErrorMessage => 'TicketHistoryGet: TicketID parameter is missing!'
-                    }
+                }
             },
             Success => 1
         },
@@ -287,7 +297,7 @@ my @Tests = (
                     ErrorCode => 'TicketHistoryGet.AccessDenied',
                     ErrorMessage =>
                         'TicketHistoryGet: User does not have access to the ticket NotTicketID!'
-                    }
+                }
             },
             Success => 1
         },
@@ -297,7 +307,7 @@ my @Tests = (
                     ErrorCode => 'TicketHistoryGet.AccessDenied',
                     ErrorMessage =>
                         'TicketHistoryGet: User does not have access to the ticket NotTicketID!'
-                    }
+                }
             },
             Success => 1
         },

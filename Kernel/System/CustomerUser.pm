@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::CustomerUser;
@@ -14,8 +14,6 @@ use warnings;
 use Kernel::System::VariableCheck qw(:all);
 
 use parent qw(Kernel::System::EventHandler);
-
-use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -123,10 +121,10 @@ sub CustomerSourceList {
         if ( defined $Param{ReadOnly} ) {
             my $CustomerBackendConfig = $ConfigObject->Get("CustomerUser$Count");
             if ( $Param{ReadOnly} ) {
-                next SOURCE if !$CustomerBackendConfig->{ReadOnly};
+                next SOURCE if !$CustomerBackendConfig->{ReadOnly} || $CustomerBackendConfig->{Module} !~ /LDAP/i;
             }
             else {
-                next SOURCE if $CustomerBackendConfig->{ReadOnly};
+                next SOURCE if $CustomerBackendConfig->{ReadOnly} || $CustomerBackendConfig->{Module} =~ /LDAP/i;
             }
         }
         $Data{"CustomerUser$Count"} = $ConfigObject->Get("CustomerUser$Count")->{Name}
@@ -288,26 +286,6 @@ sub CustomerSearch {
 
         # get customer search result of backend and merge it
         my %SubData = $Self->{"CustomerUser$Count"}->CustomerSearch(%Param);
-
-        # get configuration for the full name order
-        my $FirstnameLastNameOrder = $Kernel::OM->Get('Kernel::Config')->Get('FirstnameLastnameOrder') || 0;
-
-        for my $CustomerLogin ( sort keys %SubData ) {
-            my %User = $Self->{"CustomerUser$Count"}->CustomerUserDataGet(
-                User => $CustomerLogin,
-            );
-
-            # generate the full name and save it in the hash
-            my $UserFullname = $Self->_CustomerUserFullname(
-                UserFirstname => $User{UserFirstname},
-                UserLastname  => $User{UserLastname},
-                UserLogin     => $User{UserLogin},
-                NameOrder     => $FirstnameLastNameOrder,
-            );
-
-            $SubData{$CustomerLogin} = $UserFullname . ' ' . $User{UserEmail};
-            $SubData{$CustomerLogin} =~ s/^(.*)\s(.+?\@.+?\..+?)(\s|)$/"$1" <$2>/;
-        }
 
         %Data = ( %SubData, %Data );
     }
@@ -755,22 +733,10 @@ sub CustomerName {
 
         next SOURCE if !$Self->{"CustomerUser$Count"};
 
-        # get customer name and return it
-        my %Name = $Self->{"CustomerUser$Count"}->CustomerUserDataGet( User => $Param{UserLogin} );
-
-        # get configuration for the full name order
-        my $FirstnameLastNameOrder = $Kernel::OM->Get('Kernel::Config')->Get('FirstnameLastnameOrder') || 0;
-
-        if (%Name) {
-
-            # generate the full name and save it in the hash
-            my $UserFullname = $Self->_CustomerUserFullname(
-                UserFirstname => $Name{UserFirstname},
-                UserLastname  => $Name{UserLastname},
-                UserLogin     => $Name{UserLogin},
-                NameOrder     => $FirstnameLastNameOrder,
-            );
-            return $UserFullname;
+        # Get customer name and return it.
+        my $Name = $Self->{"CustomerUser$Count"}->CustomerName(%Param);
+        if ($Name) {
+            return $Name;
         }
     }
     return;
@@ -861,9 +827,6 @@ sub CustomerUserDataGet {
     my $CustomerCompanyObject     = $Kernel::OM->Get('Kernel::System::CustomerCompany');
     my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
 
-    # get configuration for the full name order
-    my $FirstnameLastNameOrder = $ConfigObject->Get('FirstnameLastnameOrder') || 0;
-
     SOURCE:
     for my $Count ( '', 1 .. 10 ) {
 
@@ -873,10 +836,7 @@ sub CustomerUserDataGet {
         next SOURCE if !%Customer;
 
         # generate the full name and save it in the hash
-        my $UserFullname = $Self->_CustomerUserFullname(
-            %Customer,
-            NameOrder => $FirstnameLastNameOrder,
-        );
+        my $UserFullname = $Self->CustomerName(%Customer);
 
         # save the generated fullname in the hash.
         $Customer{UserFullname} = $UserFullname;
@@ -1144,6 +1104,35 @@ sub SetPreferences {
         return;
     }
 
+    # Don't allow overwriting of native user data.
+    my %Blacklisted = (
+        UserID         => 1,
+        UserLogin      => 1,
+        UserPassword   => 1,
+        UserFirstname  => 1,
+        UserLastname   => 1,
+        UserFullname   => 1,
+        UserStreet     => 1,
+        UserCity       => 1,
+        UserZip        => 1,
+        UserCountry    => 1,
+        UserComment    => 1,
+        UserCustomerID => 1,
+        UserTitle      => 1,
+        UserEmail      => 1,
+        ChangeTime     => 1,
+        ChangeBy       => 1,
+        CreateTime     => 1,
+        CreateBy       => 1,
+        UserPhone      => 1,
+        UserMobile     => 1,
+        UserFax        => 1,
+        UserMailString => 1,
+        ValidID        => 1,
+    );
+
+    return 0 if $Blacklisted{ $Param{Key} };
+
     # check if user exists
     my %User = $Self->CustomerUserDataGet( User => $Param{UserID} );
     if ( !%User ) {
@@ -1245,7 +1234,7 @@ sub SearchPreferences {
 
 generate a random token
 
-    my $Token = $UserObject->TokenGenerate(
+    my $Token = $CustomerUserObject->TokenGenerate(
         UserID => 123,
     );
 
@@ -1281,7 +1270,7 @@ sub TokenGenerate {
 
 check password token
 
-    my $Valid = $UserObject->TokenCheck(
+    my $Valid = $CustomerUserObject>TokenCheck(
         Token  => $Token,
         UserID => 123,
     );
@@ -1343,91 +1332,6 @@ sub CustomerUserCacheClear {
 
     return 1;
 }
-
-=begin Internal:
-
-=head2 _CustomerUserFullname()
-
-Builds the customer user full name based on first name, last name. The order
-can be configured.
-
-    my $Fullname = $Object->_CustomerUserFullname(
-        UserFirstname => 'Test',
-        UserLastname  => 'Person',
-        UserLogin     => 'tp',
-        NameOrder     => 0,         # optional 0, 1, 2, 3, 4, 5
-    );
-
-=cut
-
-sub _CustomerUserFullname {
-    my ( $Self, %Param ) = @_;
-
-    for my $Needed (qw(UserFirstname UserLastname UserLogin)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!",
-            );
-
-            return;
-        }
-    }
-
-    my $FirstnameLastNameOrder = $Param{NameOrder} || 0;
-
-    my $UserFullname;
-    if ( $FirstnameLastNameOrder eq '0' ) {
-        $UserFullname = $Param{UserFirstname} . ' '
-            . $Param{UserLastname};
-    }
-    elsif ( $FirstnameLastNameOrder eq '1' ) {
-        $UserFullname = $Param{UserLastname} . ', '
-            . $Param{UserFirstname};
-    }
-    elsif ( $FirstnameLastNameOrder eq '2' ) {
-        $UserFullname = $Param{UserFirstname} . ' '
-            . $Param{UserLastname} . ' ('
-            . $Param{UserLogin} . ')';
-    }
-    elsif ( $FirstnameLastNameOrder eq '3' ) {
-        $UserFullname = $Param{UserLastname} . ', '
-            . $Param{UserFirstname} . ' ('
-            . $Param{UserLogin} . ')';
-    }
-    elsif ( $FirstnameLastNameOrder eq '4' ) {
-        $UserFullname = '(' . $Param{UserLogin}
-            . ') ' . $Param{UserFirstname}
-            . ' ' . $Param{UserLastname};
-    }
-    elsif ( $FirstnameLastNameOrder eq '5' ) {
-        $UserFullname = '(' . $Param{UserLogin}
-            . ') ' . $Param{UserLastname}
-            . ', ' . $Param{UserFirstname};
-    }
-    elsif ( $FirstnameLastNameOrder eq '6' ) {
-        $UserFullname = $Param{UserLastname} . ' '
-            . $Param{UserFirstname};
-    }
-    elsif ( $FirstnameLastNameOrder eq '7' ) {
-        $UserFullname = $Param{UserLastname} . ' '
-            . $Param{UserFirstname} . ' ('
-            . $Param{UserLogin} . ')';
-    }
-    elsif ( $FirstnameLastNameOrder eq '8' ) {
-        $UserFullname = '(' . $Param{UserLogin}
-            . ') ' . $Param{UserLastname}
-            . ' ' . $Param{UserFirstname};
-    }
-    elsif ( $FirstnameLastNameOrder eq '9' ) {
-        $UserFullname = $Param{UserLastname} . $Param{UserFirstname};
-    }
-    return $UserFullname;
-}
-
-=end Internal:
-
-=cut
 
 =head2 CustomerUserCustomerMemberAdd()
 
@@ -1625,10 +1529,10 @@ sub DESTROY {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

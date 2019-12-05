@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::Article::MIMEBase;
@@ -23,6 +23,7 @@ our @ObjectDependencies = (
     'Kernel::Output::HTML::Layout',
     'Kernel::System::CheckItem',
     'Kernel::System::CustomerUser',
+    'Kernel::System::Encode',
     'Kernel::System::Log',
     'Kernel::System::Main',
     'Kernel::System::Ticket',
@@ -42,7 +43,7 @@ sub new {
 
 Returns common article fields for a MIMEBase article.
 
-    my %ArticleFields = $MIMEBaseObject->ArticleFields(
+    my %ArticleFields = $LayoutObject->ArticleFields(
         TicketID  => 123,   # (required)
         ArticleID => 123,   # (required)
     );
@@ -150,6 +151,7 @@ sub ArticleFields {
                     Label => $DataRef->{Key},
                     Value => $DataRef->{Value},
                     Class => $DataRef->{Result},
+                    Type  => 'ArticleOption',
                 };
 
                 for my $Warning ( @{ $DataRef->{Warnings} } ) {
@@ -157,6 +159,7 @@ sub ArticleFields {
                         Label => $Warning->{Key},
                         Value => $Warning->{Value},
                         Class => $Warning->{Result},
+                        Type  => 'ArticleOption',
                     };
                 }
             }
@@ -169,8 +172,6 @@ sub ArticleFields {
             # );
         }
     }
-
-    # TODO: RowData is not used anywhere? Check block in the TT.
 
     # do some strips && quoting
     my $RecipientDisplayType = $ConfigObject->Get('Ticket::Frontend::DefaultRecipientDisplayType') || 'Realname';
@@ -210,10 +211,11 @@ sub ArticleFields {
         }
     }
 
-    my @FieldsWithoutPrio = grep { !$Result{$_}->{Prio} } keys %Result;
+    my @FieldsWithoutPrio = grep { !$Result{$_}->{Prio} } sort keys %Result;
 
+    my $BasePrio = 100000;
     for my $Key (@FieldsWithoutPrio) {
-        $Result{$Key}->{Prio} = 100000;
+        $Result{$Key}->{Prio} = $BasePrio++;
     }
 
     return %Result;
@@ -223,7 +225,7 @@ sub ArticleFields {
 
 Returns article preview for a MIMEBase article.
 
-    $ArticleBaseObject->ArticlePreview(
+    $LayoutObject->ArticlePreview(
         TicketID   => 123,     # (required)
         ArticleID  => 123,     # (required)
         ResultType => 'plain', # (optional) plain|HTML. Default HTML.
@@ -292,7 +294,23 @@ sub ArticlePreview {
                 FileID    => $HTMLBodyAttachmentID,
             );
 
-            $Result = $Data{Content};
+            # Get the charset directly from the attachment hash and convert content to the internal charset (utf-8).
+            #   Please see bug#13367 for more information.
+            my $Charset;
+            if ( $Data{ContentType} =~ m/.+?charset=("|'|)(?<Charset>.+)/ig ) {
+                $Charset = $+{Charset};
+                $Charset =~ s/"|'//g;
+            }
+            else {
+                $Charset = 'us-ascii';
+            }
+
+            $Result = $Kernel::OM->Get('Kernel::System::Encode')->Convert(
+                Text  => $Data{Content},
+                From  => $Charset,
+                To    => 'utf-8',
+                Check => 1,
+            );
         }
     }
 
@@ -303,7 +321,7 @@ sub ArticlePreview {
 
 Returns HTMLBodyAttachmentID.
 
-    my $HTMLBodyAttachmentID = $ArticleBaseObject->HTMLBodyAttachmentIDGet(
+    my $HTMLBodyAttachmentID = $LayoutObject->HTMLBodyAttachmentIDGet(
         TicketID  => 123,     # (required)
         ArticleID => 123,     # (required)
     );

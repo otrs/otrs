@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -56,10 +56,7 @@ $ConfigObject->Set(
 );
 
 # set user details
-my $TestUserLogin = $Helper->TestUserCreate();
-my $TestUserID    = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-    UserLogin => $TestUserLogin,
-);
+my ( $TestUserLogin, $TestUserID ) = $Helper->TestUserCreate();
 
 my @CustomerUserIDs;
 my @CustomerCompanyIDs;
@@ -225,7 +222,7 @@ my @Tests = (
                         ro => 1,
                     },
                 },
-                }
+            }
         },
         Search => {
             CustomerUserLoginRaw => $CustomerUserIDs[1],
@@ -279,7 +276,7 @@ my @Tests = (
                 Permission => {
                     ro => 1,
                 },
-                }
+            }
         },
         Search => {
             CustomerUserLoginRaw => $CustomerUserIDs[0],
@@ -309,7 +306,7 @@ my @Tests = (
                 Permission => {
                     ro => 1,
                 },
-                }
+            }
         },
         ChangeCompany => {
             CustomerUserID => $CustomerUserIDs[2],
@@ -331,7 +328,7 @@ my @Tests = (
                 Permission => {
                     ro => 1,
                 },
-                }
+            }
         },
         Search => {
             CustomerUserID => $CustomerUserIDs[2],
@@ -408,8 +405,8 @@ for my $Test (@Tests) {
         Result  => 'ARRAY',
     );
 
-    # sort result
-    @ReturnedTicketIDs = sort @ReturnedTicketIDs;
+    @ReturnedTicketIDs = sort { int $a <=> int $b } @ReturnedTicketIDs;
+    @{ $Test->{Result} } = sort { int $a <=> int $b } @{ $Test->{Result} };
 
     $Self->IsDeeply(
         \@ReturnedTicketIDs,

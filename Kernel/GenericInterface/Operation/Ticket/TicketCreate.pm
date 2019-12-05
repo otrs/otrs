@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::GenericInterface::Operation::Ticket::TicketCreate;
@@ -349,7 +349,7 @@ sub Run {
 
     my $PermissionUserID = $UserID;
     if ( $UserType eq 'Customer' ) {
-        $UserID = $Kernel::OM->Get('Kernel::Config')->Get('CustomerPanelUserID')
+        $UserID = $Kernel::OM->Get('Kernel::Config')->Get('CustomerPanelUserID');
     }
 
     # check needed hashes
@@ -427,8 +427,6 @@ sub Run {
 
     # isolate Article parameter
     my $Article = $Param{Data}->{Article};
-
-    # add UserType to Validate ArticleType
     $Article->{UserType} = $UserType;
 
     # remove leading and trailing spaces
@@ -776,7 +774,7 @@ sub _CheckTicket {
     # if everything is OK then return Success
     return {
         Success => 1,
-        }
+    };
 }
 
 =head2 _CheckArticle()
@@ -820,8 +818,7 @@ sub _CheckArticle {
 
         # return internal server error
         return {
-            ErrorMessage => "TicketCreate: Article->AutoResponseType parameter is required and"
-                . " Sysconfig ArticleTypeID setting could not be read!"
+            ErrorMessage => "TicketCreate: Article->AutoResponseType parameter is required!"
         };
     }
 
@@ -1147,7 +1144,7 @@ sub _CheckAttachment {
 
     # check attachment item internally
     for my $Needed (qw(Content ContentType Filename)) {
-        if ( !$Attachment->{$Needed} ) {
+        if ( !IsStringWithData( $Attachment->{$Needed} ) ) {
             return {
                 ErrorCode    => 'TicketCreate.MissingParameter',
                 ErrorMessage => "TicketCreate: Attachment->$Needed  parameter is missing!",
@@ -1435,12 +1432,22 @@ sub _TicketCreate {
         ChannelName => $Article->{CommunicationChannel},
     );
 
+    my $PlainBody = $Article->{Body};
+
+    # Convert article body to plain text, if HTML content was supplied. This is necessary since auto response code
+    #   expects plain text content. Please see bug#13397 for more information.
+    if ( $Article->{ContentType} =~ /text\/html/i || $Article->{MimeType} =~ /text\/html/i ) {
+        $PlainBody = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToAscii(
+            String => $Article->{Body},
+        );
+    }
+
     # Create article.
     my $ArticleID = $ArticleBackendObject->ArticleCreate(
-        NoAgentNotify => $Article->{NoAgentNotify} || 0,
-        TicketID      => $TicketID,
-        SenderTypeID  => $Article->{SenderTypeID}  || '',
-        SenderType    => $Article->{SenderType}    || '',
+        NoAgentNotify        => $Article->{NoAgentNotify} || 0,
+        TicketID             => $TicketID,
+        SenderTypeID         => $Article->{SenderTypeID} || '',
+        SenderType           => $Article->{SenderType} || '',
         IsVisibleForCustomer => $Article->{IsVisibleForCustomer},
         From                 => $From,
         To                   => $To,
@@ -1457,7 +1464,7 @@ sub _TicketCreate {
             From    => $From,
             To      => $To,
             Subject => $Article->{Subject},
-            Body    => $Article->{Body},
+            Body    => $PlainBody,
         },
     );
 
@@ -1583,10 +1590,10 @@ sub _TicketCreate {
             Success      => 0,
             ErrorMessage => 'Could not get new ticket information, please contact the system'
                 . ' administrator',
-            }
+        };
     }
 
-    # get webservice configuration
+    # get web service configuration
     my $Webservice = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceGet(
         ID => $Self->{WebserviceID},
     );
@@ -1676,8 +1683,8 @@ sub _TicketCreate {
 
             next ATTACHMENT if !IsHashRefWithData( \%Attachment );
 
-            # convert content to base64
-            $Attachment{Content} = MIME::Base64::encode_base64( $Attachment{Content} );
+            # convert content to base64, but prevent 76 chars brake, see bug#14500.
+            $Attachment{Content} = MIME::Base64::encode_base64( $Attachment{Content}, '' );
             push @Attachments, {%Attachment};
         }
 
@@ -1706,10 +1713,10 @@ sub _TicketCreate {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

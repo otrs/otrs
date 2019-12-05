@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -86,10 +86,12 @@ $Selenium->RunTest(
             },
         );
 
+        my $CustomerCompanyID;
+
         # create two tickets and customer companies
         my ( @CustomerIDs, @GroupIDs, @QueueIDs, @TicketNumbers, @TicketIDs );
         for my $Count ( 1 .. 2 ) {
-            my $CustomerCompanyID = $CustomerCompanyObject->CustomerCompanyAdd(
+            $CustomerCompanyID = $CustomerCompanyObject->CustomerCompanyAdd(
                 CustomerID          => "$TestCustomerUserLogin-$Count",
                 CustomerCompanyName => "$TestCustomerUserLogin-$Count",
                 ValidID             => 1,
@@ -213,6 +215,11 @@ $Selenium->RunTest(
 
         $Selenium->VerifiedGet("${ScriptAlias}customer.pl?Action=CustomerTicketOverview;Subaction=CompanyTickets");
 
+        # Wait until new screen has loaded.
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('.Overview .MasterAction a').length;"
+        );
+
         # search for both tickets on Company Tickets screen (default filter is Open)
         for my $Count ( 0 .. 1 ) {
             $Self->True(
@@ -227,12 +234,16 @@ $Selenium->RunTest(
         for my $Count ( 0 .. 1 ) {
 
             # select customer company
-            $Selenium->execute_script(
-                "return \$('#CustomerIDs').val('$CustomerIDs[$Count]').trigger('redraw.InputField').trigger('change');"
+            $Selenium->InputFieldValueSet(
+                Element => '#CustomerIDs',
+                Value   => $CustomerIDs[$Count],
             );
 
-            # wait until new screen has loaded
-            $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function'" );
+            # Wait until new screen has loaded.
+            $Selenium->WaitFor(
+                JavaScript => "return typeof(\$) === 'function' && \$('.Overview .MasterAction a').length;"
+            );
+            sleep 1;
 
             $Self->True(
                 $Selenium->find_element(
@@ -248,12 +259,109 @@ $Selenium->RunTest(
             );
         }
 
+        # CustomerCompanyFilter resets on next page. See bug#14852.
+        # Create test tickets.
+        for ( 1 .. 35 ) {
+            my $TicketNumber = $TicketObject->TicketCreateNumber();
+            my $TicketID     = $TicketObject->TicketCreate(
+                TN           => $TicketNumber,
+                Title        => $CustomerCompanyID,
+                Queue        => $CustomerCompanyID,
+                Lock         => 'unlock',
+                Priority     => '3 normal',
+                State        => 'open',
+                CustomerUser => '',                   # empty
+                CustomerID   => $CustomerCompanyID,
+                OwnerID      => 1,
+                UserID       => 1,
+            );
+            $Self->True(
+                $TicketID,
+                "Created test ticket $CustomerCompanyID ($TicketID)",
+            );
+            push @TicketIDs, $TicketID;
+        }
+
+        # Go to Company tickets.
+        $Selenium->VerifiedGet("${ScriptAlias}customer.pl?Action=CustomerTicketOverview;Subaction=CompanyTickets");
+
+        # Wait until new screen has loaded.
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return typeof(\$) === 'function' && \$('.Overview .MasterAction a').length && \$('#CustomerIDs').length;"
+        );
+
+        $Selenium->execute_script('window.Core.App.PageLoadComplete = false;');
+
+        # Select Company.
+        $Selenium->InputFieldValueSet(
+            Element => '#CustomerIDs',
+            Value   => $CustomerCompanyID,
+        );
+
+        $Selenium->WaitFor(
+            Time => 20,
+            JavaScript =>
+                'return typeof(Core) == "object" && typeof(Core.App) == "object" && Core.App.PageLoadComplete'
+        );
+
+        $Selenium->find_element( '#CustomerTicketOverviewPage2', 'css' )->VerifiedClick();
+
+        # Wait until new screen has loaded.
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return typeof(\$) === 'function' && \$('#CustomerTicketOverviewPage2.Selected').length && \$('#CustomerIDs').val()[0] == '$CustomerCompanyID';"
+        );
+
+        # Check if on second page.
+        $Self->Is(
+            $Selenium->execute_script("return \$('#CustomerTicketOverviewPage2').hasClass('Selected')"),
+            1,
+            "Correct page is shown.",
+        );
+
+        # Check if company filter preserve previously selected company.
+        $Self->Is(
+            $Selenium->execute_script("return \$('#CustomerIDs').val()[0];"),
+            $CustomerCompanyID,
+            "Correct CustomerCompanyID is selected in filter."
+        );
+
+        $Selenium->WaitFor(
+            JavaScript => "return \$('#BottomActionRow a[href*=\"Filter=All\"]').length;"
+        );
+
+        # Set filter to All ticket by company.
+        $Selenium->find_element("//div[contains(\@id, \'BottomActionRow')]//ul//li//a[contains(\@href, 'Filter=All' )]")
+            ->VerifiedClick();
+
+        # Wait until new screen has loaded.
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('#CustomerIDs').val()[0] == '$CustomerCompanyID';"
+        );
+
+        # Check if company filter preserve previously selected company.
+        $Self->Is(
+            $Selenium->execute_script("return \$('#CustomerIDs').val()[0];"),
+            $CustomerCompanyID,
+            "Correct CustomerCompanyID is selected in filter."
+        );
+
         # clean up test data from the DB
         for my $TicketID (@TicketIDs) {
             my $Success = $TicketObject->TicketDelete(
                 TicketID => $TicketID,
                 UserID   => 1,
             );
+
+            # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+            if ( !$Success ) {
+                sleep 3;
+                $Success = $TicketObject->TicketDelete(
+                    TicketID => $TicketID,
+                    UserID   => 1,
+                );
+            }
             $Self->True(
                 $Success,
                 "Ticket with ticket ID $TicketID is deleted",
@@ -275,7 +383,8 @@ $Selenium->RunTest(
 
         for my $QueueID (@QueueIDs) {
             my $Success = $DBObject->Do(
-                SQL => "DELETE FROM queue WHERE id = $QueueID",
+                SQL  => "DELETE FROM queue WHERE id = ?",
+                Bind => [ \$QueueID ],
             );
             if ($Success) {
                 $Self->True(
@@ -287,7 +396,8 @@ $Selenium->RunTest(
 
         for my $GroupID (@GroupIDs) {
             my $Success = $DBObject->Do(
-                SQL => "DELETE FROM group_customer WHERE group_id = $GroupID",
+                SQL  => "DELETE FROM group_customer WHERE group_id = ?",
+                Bind => [ \$GroupID ],
             );
             if ($Success) {
                 $Self->True(
@@ -297,7 +407,8 @@ $Selenium->RunTest(
             }
 
             $Success = $DBObject->Do(
-                SQL => "DELETE FROM groups WHERE id = $GroupID",
+                SQL  => "DELETE FROM groups WHERE id = ?",
+                Bind => [ \$GroupID ],
             );
             $Self->True(
                 $Success,
@@ -305,12 +416,14 @@ $Selenium->RunTest(
             );
         }
 
+        my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
         # make sure the cache is correct
         for my $Cache (
             qw(Group CustomerGroup CustomerCompany Queue Ticket)
             )
         {
-            $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => $Cache );
+            $CacheObject->CleanUp( Type => $Cache );
         }
     },
 );

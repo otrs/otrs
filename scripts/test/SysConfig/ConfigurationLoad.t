@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -189,7 +189,7 @@ my @Tests = (
                 },
                 AgentLoginLogo123 => {
                     EffectiveValue => 'Test Modified URL',
-                    }
+                }
             },
         },
         Config => {
@@ -197,6 +197,46 @@ my @Tests = (
         },
         ExpectedResults => {
             Modified => {},
+        },
+        Success => 1,
+    },
+    {
+        Name              => 'Setting enabled',
+        ConfigurationPerl => {
+            Modified => {
+                'Stats::MaxXaxisAttributes' => {
+                    EffectiveValue => 1000,
+                    IsValid        => 1,
+                },
+            },
+        },
+        Config => {
+            UserID => 1,
+        },
+        ExpectedResults => {
+            Modified => {
+                'Stats::MaxXaxisAttributes' => '1000',
+            },
+        },
+        Success => 1,
+    },
+    {
+        Name              => 'Setting disabled',
+        ConfigurationPerl => {
+            Modified => {
+                'OutOfOfficeMessageTemplate' => {
+                    EffectiveValue => 'template',
+                    IsValid        => 0,
+                },
+            },
+        },
+        Config => {
+            UserID => 1,
+        },
+        ExpectedResults => {
+            Modified => {
+                'OutOfOfficeMessageTemplate' => 'template',
+            },
         },
         Success => 1,
     },
@@ -296,6 +336,21 @@ for my $Test (@Tests) {
         $Test->{ExpectedResults}->{Modified},
         "$Test->{Name} ExpectedResults - modified",
     );
+
+    for my $SettingName ( sort keys %{ $Test->{ConfigurationPerl}->{Modified} } ) {
+        if ( defined $Test->{ConfigurationPerl}->{Modified}->{$SettingName}->{IsValid} ) {
+            my %Setting = $SysConfigObject->SettingGet(
+                Name   => $SettingName,
+                UserID => 1,
+            );
+
+            $Self->Is(
+                $Setting{IsValid},
+                $Test->{ConfigurationPerl}->{Modified}->{$SettingName}->{IsValid},
+                "Make sure that $SettingName has correct IsValid value.",
+            );
+        }
+    }
 }
 
 1;

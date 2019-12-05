@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminACL;
@@ -64,7 +64,7 @@ sub Run {
         # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
 
-        my $FormID = $ParamObject->GetParam( Param => 'FormID' ) || '';
+        my $FormID      = $ParamObject->GetParam( Param => 'FormID' ) || '';
         my %UploadStuff = $ParamObject->GetUploadAll(
             Param  => 'FileUpload',
             Source => 'string',
@@ -472,9 +472,14 @@ sub Run {
         }
         else {
 
+            # Get all IDs from valid table including invalid-temporarily status.
+            # See bug#13592 (https://bugs.otrs.org/show_bug.cgi?id=13592).
+            my %ValidList    = $Kernel::OM->Get('Kernel::System::Valid')->ValidList();
+            my @ValidListIDs = grep { $ValidList{$_} } sort keys %ValidList;
+
             $ACLData = $ACLObject->ACLListGet(
                 UserID   => 1,
-                ValidIDs => [ '1', '2' ],
+                ValidIDs => \@ValidListIDs,
             );
         }
 
@@ -510,12 +515,20 @@ sub Run {
             );
         }
 
-        # create new ACL name
-        my $ACLName =
-            $ACLData->{Name}
-            . ' ('
-            . $LayoutObject->{LanguageObject}->Translate('Copy')
-            . ')';
+        # Create new ACL name.
+        my $Count   = 1;
+        my $ACLName = $LayoutObject->{LanguageObject}->Translate( '%s (copy) %s', $ACLData->{Name}, $Count );
+        while (
+            $ACLObject->ACLGet(
+                Name   => $ACLName,
+                UserID => $Self->{UserID}
+            )
+            && $Count < 100
+            )
+        {
+            $ACLName =~ s/\d+$/$Count/;
+            $Count++;
+        }
 
         # otherwise save configuration and return to overview screen
         my $ACLID = $ACLObject->ACLAdd(
@@ -525,7 +538,7 @@ sub Run {
             ConfigMatch    => $ACLData->{ConfigMatch} || '',
             ConfigChange   => $ACLData->{ConfigChange} || '',
             StopAfterMatch => $ACLData->{StopAfterMatch} || 0,
-            ValidID        => '1',
+            ValidID        => $ACLData->{ValidID},
             UserID         => $Self->{UserID},
         );
 
@@ -563,10 +576,8 @@ sub _ShowOverview {
         # show error notfy, don't work with user id 1
         $Output .= $LayoutObject->Notify(
             Priority => 'Error',
-            Data =>
-                Translatable(
-                "Please note that ACL restrictions will be ignored for the Superuser account (UserID 1)."
-                ),
+            Info =>
+                Translatable('Please note that ACL restrictions will be ignored for the Superuser account (UserID 1).'),
         );
     }
 

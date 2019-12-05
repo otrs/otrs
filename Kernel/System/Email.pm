@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Email;
@@ -621,7 +621,7 @@ sub Send {
     # set envelope sender for auto-responses and notifications
     if ( $Param{Loop} ) {
         my $NotificationEnvelopeFrom = $ConfigObject->Get('SendmailNotificationEnvelopeFrom') || '';
-        my $NotificationFallback = $ConfigObject->Get('SendmailNotificationEnvelopeFrom::FallbackToEmailFrom');
+        my $NotificationFallback     = $ConfigObject->Get('SendmailNotificationEnvelopeFrom::FallbackToEmailFrom');
         if ( $NotificationEnvelopeFrom || !$NotificationFallback ) {
             $RealFrom = $NotificationEnvelopeFrom;
         }
@@ -790,7 +790,7 @@ sub Check {
     my %Check = $Self->{Backend}->Check();
 
     if ( $Check{Successful} ) {
-        return ( Successful => 1 )
+        return ( Successful => 1 );
     }
     else {
         return (
@@ -815,18 +815,72 @@ Bounce an email
 sub Bounce {
     my ( $Self, %Param ) = @_;
 
+    # determine backend name
+    my $BackendName = '';
+    if ( ref( $Self->{Backend} ) =~ m{::([^:]+)$}xms ) {
+        $BackendName = $1;
+    }
+
+    # start a new outgoing communication
+    my $CommunicationLogObject = $Kernel::OM->Create(
+        'Kernel::System::CommunicationLog',
+        ObjectParams => {
+            Transport   => 'Email',
+            Direction   => 'Outgoing',
+            AccountType => $BackendName,
+        },
+    );
+
+    $CommunicationLogObject->ObjectLogStart( ObjectLogType => 'Message' );
+
+    $CommunicationLogObject->ObjectLog(
+        ObjectLogType => 'Message',
+        Priority      => 'Debug',
+        Key           => 'Kernel::System::Email',
+        Value         => 'Building message for bounce.',
+    );
+
+    my $SendSuccess = sub {
+        return {
+            Success => 1,
+            @_,
+        };
+    };
+
+    my $SendError = sub {
+        my %Param = @_;
+
+        $CommunicationLogObject->ObjectLog(
+            ObjectLogType => 'Message',
+            Priority      => 'Error',
+            Key           => 'Kernel::System::Email',
+            Value         => "Errors occurred during message bounce: $Param{ErrorMessage}",
+        );
+
+        $CommunicationLogObject->ObjectLogStop(
+            ObjectLogType => 'Message',
+            Status        => 'Failed',
+        );
+
+        $CommunicationLogObject->CommunicationStop( Status => 'Failed' );
+
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => $Param{ErrorMessage},
+        );
+
+        return {
+            Success => 0,
+            %Param,
+        };
+    };
+
     # check needed stuff
     for (qw(From To Email)) {
         if ( !$Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!"
+            return $SendError->(
+                ErrorMessage => "Need $_!",
             );
-
-            return {
-                Success      => 0,
-                ErrorMessage => "Need $_",
-            };
         }
     }
 
@@ -834,7 +888,7 @@ sub Bounce {
     my $MessageID = $Param{'Message-ID'} || $Self->_MessageIDCreate();
 
     # split body && header
-    my @EmailPlain = split( /\n/, $Param{Email} );
+    my @EmailPlain  = split( /\n/, $Param{Email} );
     my $EmailObject = Mail::Internet->new( \@EmailPlain );
 
     # get sender
@@ -855,10 +909,11 @@ sub Bounce {
         $BodyAsString .= $_ . "\n";
     }
     my $HeaderAsString = $HeaderObject->as_string();
+    my $OldMessageID   = $HeaderObject->get('Message-ID') || '??';
+    my $Subject        = $HeaderObject->get('Subject');
 
     # debug
     if ( $Self->{Debug} > 1 ) {
-        my $OldMessageID = $HeaderObject->get('Message-ID') || '??';
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'notice',
             Message  => "Bounced email to '$Param{To}' from '$RealFrom'. "
@@ -866,23 +921,57 @@ sub Bounce {
         );
     }
 
-    my $SentResult = $Self->{Backend}->Send(
-        From                   => $RealFrom,
-        ToArray                => [ $Param{To} ],
-        Header                 => \$HeaderAsString,
-        Body                   => \$BodyAsString,
-        CommunicationLogObject => $Param{CommunicationLogObject},
+    $CommunicationLogObject->ObjectLog(
+        ObjectLogType => 'Message',
+        Priority      => 'Info',
+        Key           => 'Kernel::System::Email',
+        Value         => "Queuing message for delivery.",
     );
 
-    return $SentResult if !$SentResult->{Success};
-
-    return {
-        Success => 1,
-        Data    => {
+    # Save it to the queue
+    my $MailQueueObject = $Kernel::OM->Get('Kernel::System::MailQueue');
+    my $MailQueued      = $MailQueueObject->Create(
+        MessageID => $MessageID,
+        Sender    => $RealFrom,
+        Recipient => [ $Param{To} ],
+        Message   => {
             Header => $HeaderAsString,
             Body   => $BodyAsString,
         },
-    };
+        CommunicationLogObject => $CommunicationLogObject,
+    );
+
+    if ( !$MailQueued ) {
+        return $SendError->(
+            ErrorMessage => sprintf(
+                "Error while queueing email to '%s' from '%s'. Subject => '%s';",
+                $Param{To},
+                $RealFrom,
+                $Subject,
+            ),
+        );
+    }
+
+    $CommunicationLogObject->ObjectLog(
+        ObjectLogType => 'Message',
+        Priority      => 'Info',
+        Key           => 'Kernel::System::Email',
+        Value         => 'Successfully bounced message '
+            . sprintf(
+            "(%sTo: '%s', From: '%s', Subject: '%s').",
+            ("MessageID: ${ OldMessageID }"),
+            $Param{To},
+            $RealFrom,
+            $Subject,
+            ),
+    );
+
+    return $SendSuccess->(
+        Data => {
+            Header => $HeaderAsString,
+            Body   => $BodyAsString,
+        },
+    );
 }
 
 =begin Internal:
@@ -1208,10 +1297,10 @@ sub _CreateMimeEntity {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

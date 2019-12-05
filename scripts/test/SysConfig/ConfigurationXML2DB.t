@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -60,6 +60,69 @@ my @Tests = (
         Description    => 'Without UserID',
         Config         => {},
         ExpectedResult => undef,
+    },
+    {
+        Description => 'Load ugly XML',
+        Config      => {
+            UserID    => 1,
+            Directory => "$ConfigObject->{Home}/scripts/test/sample/SysConfig/XMLUgly/",
+        },
+        ExpectedResult => [
+            {
+                'CreateBy'                 => 1,
+                'ChangeBy'                 => 1,
+                'UserModificationPossible' => '0',
+                'UserPreferencesGroup'     => '',
+                'Description'              => 'The identifier for a ticket.',
+                'EffectiveValue'           => 'Ticket#',
+                'UserModificationActive'   => '0',
+                'ExclusiveLockGUID'        => '0',
+                'ExclusiveLockUserID'      => undef,
+                'HasConfigLevel'           => '100',
+                'IsDirty'                  => '1',
+                'IsInvisible'              => '0',
+                'IsReadonly'               => '0',
+                'IsRequired'               => '1',
+                'IsValid'                  => '1',
+                'Name'                     => 'Ticket::Hook',
+                'Navigation'               => 'Core::Ticket',
+                'XMLFilename'              => 'Sample.xml',
+                'XMLContentParsed'         => {
+                    'Description' => [
+                        {
+                            'Content'      => 'The identifier for a ticket.',
+                            'Translatable' => '1',
+                        },
+                    ],
+                    'Name'       => 'Ticket::Hook',
+                    'Navigation' => [
+                        {
+                            'Content' => 'Core::Ticket',
+                        },
+                    ],
+                    'Required' => '1',
+                    'Valid'    => '1',
+                    'Value'    => [
+                        {
+                            'Item' => [
+                                {
+                                    'Content'    => 'Ticket#',
+                                    'ValueRegex' => '',
+                                    'ValueType'  => 'String',
+                                },
+                            ],
+                        },
+                    ],
+                },
+                'XMLContentRaw' => '<Setting Name="Ticket::Hook" Required="1" Valid="1">
+        <Description Translatable="1">The identifier for a ticket.</Description>
+        <Navigation>Core::Ticket</Navigation>
+        <Value>
+            <Item ValueType="String" ValueRegex="">Ticket#</Item>
+        </Value>
+    </Setting>'
+            },
+        ],
     },
     {
         Description => 'Load sample XML file',
@@ -224,7 +287,7 @@ my @Tests = (
                                 },
                             ],
                         },
-                        ]
+                    ]
                 },
                 'XMLContentRaw' =>
                     "<Setting Name=\"DashboardBackend###0100-TicketPendingReminder\" Required=\"0\" Valid=\"1\">
@@ -1242,6 +1305,67 @@ my @Tests = (
                     ],
                 },
                 EffectiveValue => [],
+            },
+        ],
+    },
+    {
+        # It contains same setting "Ticket::Hook" but the XML filename is different.
+        #     Make sure that it's recognized with a new filename.
+        Description => 'Load another sample XML file.',
+        Config      => {
+            UserID    => 1,
+            Directory => "$ConfigObject->{Home}/scripts/test/sample/SysConfig/XMLFilename/",
+            CleanUp   => 1,
+        },
+        ExpectedResult => [
+            {
+                "ChangeBy"                 => 1,
+                "CreateBy"                 => 1,
+                "Description"              => "The identifier for a ticket.",
+                "EffectiveValue"           => "Ticket#",
+                "ExclusiveLockGUID"        => 0,
+                "ExclusiveLockUserID"      => undef,
+                "HasConfigLevel"           => 100,
+                "IsDirty"                  => 1,
+                "IsInvisible"              => 0,
+                "IsReadonly"               => 0,
+                "IsRequired"               => 1,
+                "IsValid"                  => 1,
+                "Name"                     => "Ticket::Hook",
+                "Navigation"               => "Core::Ticket",
+                "UserModificationActive"   => 0,
+                "UserModificationPossible" => 0,
+                "UserPreferencesGroup"     => "",
+                "XMLContentParsed"         => {
+                    "Description" => [
+                        {
+                            "Content"      => "The identifier for a ticket.",
+                            "Translatable" => 1,
+                        },
+                    ],
+                    "Name"       => "Ticket::Hook",
+                    "Navigation" => [
+                        {
+                            "Content" => "Core::Ticket"
+                        },
+                    ],
+                    "Required" => 1,
+                    "Valid"    => 1,
+                    "Value"    => [
+                        {
+                            "Item" => [
+                                {
+                                    "Content"    => "Ticket#",
+                                    "ValueRegex" => "",
+                                    "ValueType"  => "String",
+                                },
+                            ],
+                        },
+                    ],
+                },
+                "XMLContentRaw" =>
+                    "<Setting Name=\"Ticket::Hook\" Required=\"1\" Valid=\"1\">\n        <Description Translatable=\"1\">The identifier for a ticket.</Description>\n        <Navigation>Core::Ticket</Navigation>\n        <Value>\n            <Item ValueType=\"String\" ValueRegex=\"\">Ticket#</Item>\n        </Value>\n    </Setting>",
+                "XMLFilename" => "SampleFilename.xml",
             },
         ],
     },

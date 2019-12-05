@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Web::InterfaceAgent;
@@ -232,7 +232,7 @@ sub Run {
 
         # get params
         my $PostUser = $ParamObject->GetParam( Param => 'User' ) || '';
-        my $PostPw = $ParamObject->GetParam(
+        my $PostPw   = $ParamObject->GetParam(
             Param => 'Password',
             Raw   => 1
         ) || '';
@@ -271,7 +271,7 @@ sub Run {
                             HTTPOnly => 1,
                         ),
                     },
-                    }
+                }
             );
             my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
@@ -306,8 +306,9 @@ sub Run {
 
         # login is successful
         my %UserData = $UserObject->GetUserData(
-            User  => $User,
-            Valid => 1
+            User          => $User,
+            Valid         => 1,
+            NoOutOfOffice => 1,
         );
 
         # check if the browser supports cookies
@@ -393,8 +394,8 @@ sub Run {
             },
         );
 
-        # get time zone
-        my $UserTimeZone = $UserData{UserTimeZone} || Kernel::System::DateTime->UserDefaultTimeZoneGet();
+        my $UserTimeZone = $Self->_UserTimeZoneGet(%UserData);
+
         $SessionObject->UpdateSessionID(
             SessionID => $NewSessionID,
             Key       => 'UserTimeZone',
@@ -410,7 +411,7 @@ sub Run {
             },
         );
         my $OTRSUserTimeZoneOffset = $DateTimeObject->Format( Format => '%{offset}' ) / 60;
-        my $BrowserTimeZoneOffset = ( $ParamObject->GetParam( Param => 'TimeZoneOffset' ) || 0 ) * -1;
+        my $BrowserTimeZoneOffset  = ( $ParamObject->GetParam( Param => 'TimeZoneOffset' ) || 0 ) * -1;
 
         # TimeZoneOffsetDifference contains the difference of the time zone offset between
         # the user's OTRS time zone setting and the one reported by the user's browser.
@@ -550,6 +551,8 @@ sub Run {
             SessionID => $Param{SessionID},
         );
 
+        $UserData{UserTimeZone} = $Self->_UserTimeZoneGet(%UserData);
+
         # create a new LayoutObject with %UserData
         $Kernel::OM->ObjectParamAdd(
             'Kernel::Output::HTML::Layout' => {
@@ -584,7 +587,7 @@ sub Run {
         # redirect to alternate login
         if ( $ConfigObject->Get('LogoutURL') ) {
             print $LayoutObject->Redirect(
-                ExtURL => $ConfigObject->Get('LogoutURL') . "?Reason=Logout",
+                ExtURL => $ConfigObject->Get('LogoutURL'),
             );
             return 1;
         }
@@ -652,7 +655,7 @@ sub Run {
         );
 
         # verify user is valid when requesting password reset
-        my @ValidIDs = $Kernel::OM->Get('Kernel::System::Valid')->ValidIDsGet();
+        my @ValidIDs    = $Kernel::OM->Get('Kernel::System::Valid')->ValidIDsGet();
         my $UserIsValid = grep { $UserData{ValidID} && $UserData{ValidID} == $_ } @ValidIDs;
         if ( !$UserData{UserID} || !$UserIsValid ) {
 
@@ -880,6 +883,8 @@ sub Run {
             SessionID => $Param{SessionID},
         );
 
+        $UserData{UserTimeZone} = $Self->_UserTimeZoneGet(%UserData);
+
         # check needed data
         if ( !$UserData{UserID} || !$UserData{UserLogin} || $UserData{UserType} ne 'User' ) {
 
@@ -1017,17 +1022,30 @@ sub Run {
         my $Home = $ConfigObject->Get('Home');
         my $File = "$Home/Kernel/Config/Files/User/$UserData{UserID}.pm";
         if ( -e $File ) {
-            if ( !require $File ) {
-                die "ERROR: $!\n";
-            }
+            eval {
+                if ( require $File ) {
 
-            # prepare file
-            $File =~ s/\Q$Home\E//g;
-            $File =~ s/^\///g;
-            $File =~ s/\/\//\//g;
-            $File =~ s/\//::/g;
-            $File =~ s/\.pm$//g;
-            $File->Load($ConfigObject);
+                    # Prepare file.
+                    $File =~ s/\Q$Home\E//g;
+                    $File =~ s/^\///g;
+                    $File =~ s/\/\//\//g;
+                    $File =~ s/\//::/g;
+                    $File =~ s/\.pm$//g;
+                    $File->Load($ConfigObject);
+                }
+                else {
+                    die "Cannot load file $File: $!\n";
+                }
+            };
+
+            # Log error and continue.
+            if ($@) {
+                my $ErrorMessage = $@;
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => $ErrorMessage,
+                );
+            }
         }
 
         # pre application module
@@ -1103,26 +1121,37 @@ sub Run {
                 $QueryString = 'Action=' . $Param{Action} . '&Subaction=' . $Param{Subaction};
             }
             my $File = $ConfigObject->Get('PerformanceLog::File');
-            ## no critic
-            if ( open my $Out, '>>', $File ) {
-                ## use critic
-                print $Out time()
-                    . '::Agent::'
-                    . ( time() - $Self->{PerformanceLogStart} )
-                    . "::$UserData{UserLogin}::$QueryString\n";
-                close $Out;
 
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'debug',
-                    Message  => "Response::Agent: "
+            # Write to PerformanceLog file only if it is smaller than size limit (see bug#14747).
+            if ( -s $File < ( 1024 * 1024 * $ConfigObject->Get('PerformanceLog::FileMax') ) ) {
+
+                ## no critic
+                if ( open my $Out, '>>', $File ) {
+                    ## use critic
+                    print $Out time()
+                        . '::Agent::'
                         . ( time() - $Self->{PerformanceLogStart} )
-                        . "s taken (URL:$QueryString:$UserData{UserLogin})",
-                );
+                        . "::$UserData{UserLogin}::$QueryString\n";
+                    close $Out;
+
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
+                        Priority => 'debug',
+                        Message  => "Response::Agent: "
+                            . ( time() - $Self->{PerformanceLogStart} )
+                            . "s taken (URL:$QueryString:$UserData{UserLogin})",
+                    );
+                }
+                else {
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
+                        Priority => 'error',
+                        Message  => "Can't write $File: $!",
+                    );
+                }
             }
             else {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
-                    Message  => "Can't write $File: $!",
+                    Message => "PerformanceLog file '$File' is too large, you need to reset it in PerformanceLog page!",
                 );
             }
         }
@@ -1133,6 +1162,7 @@ sub Run {
     my %Data = $SessionObject->GetSessionIDData(
         SessionID => $Param{SessionID},
     );
+    $Data{UserTimeZone} = $Self->_UserTimeZoneGet(%Data);
     $Kernel::OM->ObjectParamAdd(
         'Kernel::Output::HTML::Layout' => {
             %Param,
@@ -1144,6 +1174,44 @@ sub Run {
     );
     return;
 }
+
+=begin Internal:
+
+=head2 _UserTimeZoneGet()
+
+Get time zone for the current user. This function will validate passed time zone parameter and return default user time
+zone if it's not valid.
+
+    my $UserTimeZone = $Self->_UserTimeZoneGet(
+        UserTimeZone => 'Europe/Berlin',
+    );
+
+=cut
+
+sub _UserTimeZoneGet {
+    my ( $Self, %Param ) = @_;
+
+    my $UserTimeZone;
+
+    # Return passed time zone only if it's valid. It can happen that user preferences or session store an old-style
+    #   offset which is not valid anymore. In this case, return the default value.
+    #   Please see bug#13374 for more information.
+    if (
+        $Param{UserTimeZone}
+        && Kernel::System::DateTime->IsTimeZoneValid( TimeZone => $Param{UserTimeZone} )
+        )
+    {
+        $UserTimeZone = $Param{UserTimeZone};
+    }
+
+    $UserTimeZone ||= Kernel::System::DateTime->UserDefaultTimeZoneGet();
+
+    return $UserTimeZone;
+}
+
+=end Internal:
+
+=cut
 
 sub DESTROY {
     my $Self = shift;
@@ -1163,10 +1231,10 @@ sub DESTROY {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

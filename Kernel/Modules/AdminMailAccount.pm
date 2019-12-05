@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminMailAccount;
@@ -48,8 +48,28 @@ sub Run {
         # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
 
+        # Lock process with PID to prevent race conditions with console command
+        # Maint::PostMaster::MailAccountFetch executed by the OTRS daemon or manually.
+        # Please see bug#13235
+        my $PIDObject = $Kernel::OM->Get('Kernel::System::PID');
+
+        my $PIDCreated = $PIDObject->PIDCreate(
+            Name => 'MailAccountFetch',
+            TTL  => 600,                  # 10 minutes
+        );
+
+        if ( !$PIDCreated ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Unable to register the process in the database. Is another instance still running?"
+            );
+            return $LayoutObject->Redirect( OP => 'Action=AdminMailAccount;Locked=1' );
+        }
+
         my %Data = $MailAccount->MailAccountGet(%GetParam);
         if ( !%Data ) {
+
+            $PIDObject->PIDDelete( Name => 'MailAccountFetch' );
             return $LayoutObject->ErrorScreen();
         }
 
@@ -58,6 +78,9 @@ sub Run {
             Limit  => 15,
             UserID => $Self->{UserID},
         );
+
+        $PIDObject->PIDDelete( Name => 'MailAccountFetch' );
+
         if ( !$Ok ) {
             return $LayoutObject->ErrorScreen();
         }
@@ -265,12 +288,21 @@ sub Run {
     else {
         $Self->_Overview();
 
-        my $Ok = $ParamObject->GetParam( Param => 'Ok' );
+        my $Ok     = $ParamObject->GetParam( Param => 'Ok' );
+        my $Locked = $ParamObject->GetParam( Param => 'Locked' );
+
         my $Output = $LayoutObject->Header();
         $Output .= $LayoutObject->NavigationBar();
+
         if ($Ok) {
             $Output .= $LayoutObject->Notify( Info => Translatable('Finished') );
         }
+        if ($Locked) {
+            $Output .= $LayoutObject->Notify(
+                Info => Translatable('Email account fetch already fetched by another process. Please try again later!'),
+            );
+        }
+
         $Output .= $LayoutObject->Output(
             TemplateFile => 'AdminMailAccount',
             Data         => \%Param,
@@ -380,7 +412,7 @@ sub _MaskUpdateMailAccount {
         Name           => 'QueueID',
         SelectedID     => $Param{QueueID},
         OnChangeSubmit => 0,
-        Class => 'Modernize Validate_Required ' . ( $Param{Errors}->{'QueueIDInvalid'} || '' ),
+        Class          => 'Modernize Validate_Required ' . ( $Param{Errors}->{'QueueIDInvalid'} || '' ),
     );
     $LayoutObject->Block(
         Name => 'Overview',
@@ -428,9 +460,9 @@ sub _MaskAddMailAccount {
     );
 
     $Param{TrustedOption} = $LayoutObject->BuildSelection(
-        Data  => $Kernel::OM->Get('Kernel::Config')->Get('YesNoOptions'),
-        Name  => 'Trusted',
-        Class => 'Modernize ' . ( $Param{Errors}->{'TrustedInvalid'} || '' ),
+        Data       => $Kernel::OM->Get('Kernel::Config')->Get('YesNoOptions'),
+        Name       => 'Trusted',
+        Class      => 'Modernize ' . ( $Param{Errors}->{'TrustedInvalid'} || '' ),
         SelectedID => $Param{Trusted} || 0,
     );
 
@@ -449,7 +481,7 @@ sub _MaskAddMailAccount {
         Name           => 'QueueID',
         SelectedID     => $Param{QueueID},
         OnChangeSubmit => 0,
-        Class => 'Modernize Validate_Required ' . ( $Param{Errors}->{'QueueIDInvalid'} || '' ),
+        Class          => 'Modernize Validate_Required ' . ( $Param{Errors}->{'QueueIDInvalid'} || '' ),
     );
     $LayoutObject->Block(
         Name => 'Overview',

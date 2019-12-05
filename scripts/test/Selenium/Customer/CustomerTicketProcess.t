@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -11,6 +11,7 @@ use warnings;
 use utf8;
 
 use vars (qw($Self));
+use Kernel::System::VariableCheck qw(IsHashRefWithData);
 
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
@@ -66,16 +67,22 @@ $Selenium->RunTest(
         # Create test DynamicFields.
         for my $DynamicField (@DynamicFields) {
 
-            my $DynamicFieldID = $DynamicFieldObject->DynamicFieldAdd(
-                %{$DynamicField},
+            my $DynamicFieldGet = $DynamicFieldObject->DynamicFieldGet(
+                Name => $DynamicField->{Name},
             );
 
-            $Self->True(
-                $DynamicFieldID,
-                "Dynamic field $DynamicField->{Name} - ID $DynamicFieldID - created",
-            );
+            if ( !IsHashRefWithData($DynamicFieldGet) ) {
+                my $DynamicFieldID = $DynamicFieldObject->DynamicFieldAdd(
+                    %{$DynamicField},
+                );
 
-            push @DynamicFieldIDs, $DynamicFieldID;
+                $Self->True(
+                    $DynamicFieldID,
+                    "Dynamic field $DynamicField->{Name} - ID $DynamicFieldID - created",
+                );
+
+                push @DynamicFieldIDs, $DynamicFieldID;
+            }
         }
 
         my $RandomID = $Helper->GetRandomID();
@@ -97,7 +104,7 @@ $Selenium->RunTest(
             push @Types, {
                 ID   => $TypeID,
                 Name => $TypeName,
-                }
+            };
         }
 
         my $ACLObject = $Kernel::OM->Get('Kernel::System::ACL::DB::ACL');
@@ -226,8 +233,17 @@ $Selenium->RunTest(
 
         # Import test Selenium Process.
         my $Location = $ConfigObject->Get('Home') . "/scripts/test/sample/ProcessManagement/CustomerTicketProcess.yml";
+
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#FileUpload:visible").length;'
+        );
+        $Selenium->find_element( "#FileUpload",                      'css' )->clear();
         $Selenium->find_element( "#FileUpload",                      'css' )->send_keys($Location);
-        $Selenium->find_element( "#OverwriteExistingEntitiesImport", 'css' )->VerifiedClick();
+        $Selenium->find_element( "#OverwriteExistingEntitiesImport", 'css' )->click();
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && !\$('#OverwriteExistingEntitiesImport:checked').length"
+        );
         $Selenium->find_element("//button[\@value='Upload process configuration'][\@type='submit']")->VerifiedClick();
         $Selenium->find_element("//a[contains(\@href, \'Subaction=ProcessSync' )]")->VerifiedClick();
 
@@ -288,8 +304,9 @@ $Selenium->RunTest(
         $Selenium->VerifiedGet("${ScriptAlias}customer.pl?Action=CustomerTicketProcess");
 
         # Create first scenario for test CustomerTicketProcess.
-        $Selenium->execute_script(
-            "\$('#ProcessEntityID').val('$ListReverse{$ProcessName}').trigger('redraw.InputField').trigger('change');"
+        $Selenium->InputFieldValueSet(
+            Element => '#ProcessEntityID',
+            Value   => $ListReverse{$ProcessName},
         );
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Subject').length" );
 
@@ -300,8 +317,9 @@ $Selenium->RunTest(
             "All Types are visible before ACL"
         );
 
-        $Selenium->execute_script(
-            "\$('#DynamicField_TestDropdownACLProcess').val('c').trigger('redraw.InputField').trigger('change');"
+        $Selenium->InputFieldValueSet(
+            Element => '#DynamicField_TestDropdownACLProcess',
+            Value   => 'c',
         );
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length' );
 
@@ -309,8 +327,9 @@ $Selenium->RunTest(
             $Selenium->execute_script("return \$('#TypeID option:contains(\"$Types[0]->{Name}\")').length;"),
             "DynamicField change - ACL restricted Types"
         );
-        $Selenium->execute_script(
-            "\$('#TypeID').val('$Types[1]->{ID}').trigger('redraw.InputField').trigger('change');"
+        $Selenium->InputFieldValueSet(
+            Element => '#TypeID',
+            Value   => $Types[1]->{ID},
         );
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length' );
 
@@ -321,7 +340,10 @@ $Selenium->RunTest(
             "DynamicField filtered options count",
         );
 
-        $Selenium->execute_script("\$('#QueueID').val('4').trigger('redraw.InputField').trigger('change');");
+        $Selenium->InputFieldValueSet(
+            Element => '#QueueID',
+            Value   => 4,
+        );
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length' );
 
         $Self->Is(
@@ -338,7 +360,15 @@ $Selenium->RunTest(
 
         $Selenium->find_element( "#Subject",  'css' )->send_keys($SubjectRandom);
         $Selenium->find_element( "#RichText", 'css' )->send_keys($ContentRandom);
-        $Selenium->execute_script("\$('#QueueID').val('2').trigger('redraw.InputField').trigger('change');");
+        $Selenium->InputFieldValueSet(
+            Element => '#QueueID',
+            Value   => 2,
+        );
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length' );
+        $Selenium->InputFieldValueSet(
+            Element => '#TypeID',
+            Value   => $Types[1]->{ID},
+        );
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length' );
 
         # Hide DnDUpload and show input field.
@@ -349,6 +379,12 @@ $Selenium->RunTest(
             "\$('#FileUpload').css('display', 'block')"
         );
 
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#FileUpload:visible").length;'
+        );
+
+        $Selenium->find_element( "#FileUpload", 'css' )->clear();
         $Selenium->find_element( "#FileUpload", 'css' )->send_keys($AttachmentLocation);
         $Selenium->WaitFor(
             JavaScript => 'return typeof($) === "function" && $("[class^=\'AttachmentDelete\']").length'
@@ -361,16 +397,37 @@ $Selenium->RunTest(
         $Element->is_enabled();
         $Element->is_displayed();
 
-        my $FooterMessage = 'Powered by ' . $ConfigObject->Get('Product');
-        $Self->True(
-            index( $Selenium->get_page_source(), $FooterMessage ) > -1,
-            "$FooterMessage found in footer on page (after attachment upload)",
-        );
+        my $OTRSBusinessIsInstalled = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSBusinessIsInstalled();
+        my $OTRSSTORMIsInstalled    = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSSTORMIsInstalled();
+        my $OTRSCONTROLIsInstalled  = $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSCONTROLIsInstalled();
 
-        $Selenium->find_element( "#Subject", 'css' )->VerifiedSubmit();
+        my $FooterMessage;
+        if ($OTRSSTORMIsInstalled) {
+            $FooterMessage = 'STORM powered by OTRS';
+        }
+        elsif ($OTRSCONTROLIsInstalled) {
+            $FooterMessage = 'CONTROL powered by OTRS';
+        }
+        elsif ($OTRSBusinessIsInstalled) {
+            $FooterMessage = 'Powered by OTRS Business Solution';
+        }
+        else {
+            $FooterMessage = 'Powered by ' . $ConfigObject->Get('Product');
+        }
 
-        sleep 1;
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("div#MainBox").length;' );
+        # Get secure disable banner.
+        my $SecureDisableBanner = $ConfigObject->Get('Secure::DisableBanner');
+
+        if ( !$SecureDisableBanner ) {
+            $Self->True(
+                index( $Selenium->get_page_source(), $FooterMessage ) > -1,
+                "$FooterMessage found in footer on page (after attachment upload)",
+            );
+        }
+
+        $Selenium->find_element("//button[\@value='Submit'][\@type='submit']")->click();
+
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#Activities").length;' );
 
         # Check for inputed values for first step in test Process ticket.
         $Self->True(
@@ -390,22 +447,20 @@ $Selenium->RunTest(
         my @TicketID = split( 'TicketID=', $Selenium->get_current_url() );
         push @DeleteTicketIDs, $TicketID[1];
 
-        # Click on next step in Process ticket.
-        $Selenium->find_element("//a[contains(\@href, \'ProcessEntityID=$ListReverse{$ProcessName}' )]")
-            ->VerifiedClick();
+        # Go on next step in Process ticket.
+        my $URLNextAction = $Selenium->execute_script("return \$('#Activities a').attr('href');");
+        $URLNextAction =~ s/^\///s;
+        $Selenium->VerifiedGet($URLNextAction);
 
-        $Selenium->WaitFor( WindowCount => 2 );
-        my $Handles = $Selenium->get_window_handles();
-        $Selenium->switch_to_window( $Handles->[1] );
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#Subject").length;' );
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#PriorityID").length;' );
 
         # For test scenario to complete, in next step we set ticket priority to 5 very high.
-        $Selenium->execute_script("\$('#PriorityID').val('5').trigger('redraw.InputField').trigger('change');");
+        $Selenium->InputFieldValueSet(
+            Element => '#PriorityID',
+            Value   => 5,
+        );
         $Selenium->find_element("//button[\@value='Submit'][\@type='submit']")->click();
-
-        $Selenium->WaitFor( WindowCount => 1 );
-        $Selenium->switch_to_window( $Handles->[0] );
-        $Selenium->VerifiedRefresh();
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#Activities").length' );
 
         # Check for inputed values as final step in first scenario.
         $Self->True(
@@ -428,16 +483,21 @@ $Selenium->RunTest(
         $Selenium->VerifiedGet("${ScriptAlias}customer.pl?Action=CustomerTicketProcess");
 
         # Create second scenario for test CustomerTicketProcess.
-        $Selenium->execute_script(
-            "\$('#ProcessEntityID').val('$ListReverse{$ProcessName}').trigger('redraw.InputField').trigger('change');"
+        $Selenium->InputFieldValueSet(
+            Element => '#ProcessEntityID',
+            Value   => $ListReverse{$ProcessName},
         );
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#Subject").length;' );
 
         # In this scenario we just set ticket queue to junk to finish test.
-        $Selenium->execute_script("\$('#QueueID').val('3').trigger('redraw.InputField').trigger('change');");
+        $Selenium->InputFieldValueSet(
+            Element => '#QueueID',
+            Value   => 3,
+        );
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length' );
-        $Selenium->execute_script(
-            "\$('#TypeID').val('$Types[1]->{ID}').trigger('redraw.InputField').trigger('change');"
+        $Selenium->InputFieldValueSet(
+            Element => '#TypeID',
+            Value   => $Types[1]->{ID},
         );
         $Selenium->find_element("//button[\@value='Submit'][\@type='submit']")->VerifiedClick();
 
@@ -455,13 +515,23 @@ $Selenium->RunTest(
         @TicketID = split( 'TicketID=', $Selenium->get_current_url() );
         push @DeleteTicketIDs, $TicketID[1];
 
+        my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
         for my $TicketID (@DeleteTicketIDs) {
 
-            my $Success = $Kernel::OM->Get('Kernel::System::Ticket')->TicketDelete(
+            my $Success = $TicketObject->TicketDelete(
                 TicketID => $TicketID,
                 UserID   => $TestUserID,
             );
 
+            # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+            if ( !$Success ) {
+                sleep 3;
+                $Success = $TicketObject->TicketDelete(
+                    TicketID => $TicketID,
+                    UserID   => 1,
+                );
+            }
             $Self->True(
                 $Success,
                 "TicketID $TicketID is deleted",
@@ -616,14 +686,15 @@ $Selenium->RunTest(
             );
         }
 
+        my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
         # Make sure cache is correct.
         for my $Cache (
             qw(ProcessManagement_Activity ProcessManagement_ActivityDialog ProcessManagement_Process ProcessManagement_Transition ProcessManagement_TransitionAction )
             )
         {
-            $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => $Cache );
+            $CacheObject->CleanUp( Type => $Cache );
         }
-
     }
 );
 

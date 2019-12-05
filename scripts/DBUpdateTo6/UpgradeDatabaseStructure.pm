@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package scripts::DBUpdateTo6::UpgradeDatabaseStructure;    ## no critic
@@ -101,6 +101,14 @@ sub Run {
             Message => 'Replace column create_time_unix column by create_time column in ticket_index table',
             Module  => 'TicketIndexUpdate',
         },
+        {
+            Message => 'Index article_data_mime table',
+            Module  => 'IndexArticleDataMimeTable',
+        },
+        {
+            Message => 'Fix user preference keys',
+            Module  => 'FixUserPreferenceKeys',
+        },
     );
 
     print "\n" if $Verbose;
@@ -146,9 +154,9 @@ sub Run {
 
 =head2 CheckPreviousRequirement()
 
-check for initial conditions for running this migration step.
+Check for initial conditions for running this migration step.
 
-Returns 1 on success
+Returns 1 on success:
 
     my $Result = $DBUpdateTo6Object->CheckPreviousRequirement();
 
@@ -157,10 +165,25 @@ Returns 1 on success
 sub CheckPreviousRequirement {
     my ( $Self, %Param ) = @_;
 
-    print "\n";
+    my $Verbose = $Param{CommandlineOptions}->{Verbose} || 0;
 
-    # check DB connection is possible
-    my $ConnectionCheck = $Kernel::OM->Get('Kernel::System::Console::Command::Maint::Database::Check')->Execute();
+    print "\n" if $Verbose;
+
+    # Localize standard output and redirect it to a variable in order to decide whether should it be shown later.
+    my $StandardOutput;
+    my $ConnectionCheck;
+    {
+        local *STDOUT = *STDOUT;
+        undef *STDOUT;
+        open STDOUT, '>:utf8', \$StandardOutput;    ## no critic
+
+        # Check if DB connection is possible.
+        $ConnectionCheck = $Kernel::OM->Get('Kernel::System::Console::Command::Maint::Database::Check')->Execute();
+    }
+
+    print $StandardOutput if $Verbose;
+
+    print "\n" if $Verbose;
 
     if ( !defined $ConnectionCheck || $ConnectionCheck ne 0 ) {
         print "\n    Error: Not possible to perform DB connection!\n\n";
@@ -174,10 +197,10 @@ sub CheckPreviousRequirement {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::TemplateGenerator;
@@ -134,7 +134,7 @@ sub Salutation {
     my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
 
     my $SalutationText = $Self->_RemoveUnSupportedTag(
-        Text => $Salutation{Text} || '',
+        Text                 => $Salutation{Text} || '',
         ListOfUnSupportedTag => \@ListOfUnSupportedTag,
     );
 
@@ -243,7 +243,7 @@ sub Signature {
     my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
 
     my $SignatureText = $Self->_RemoveUnSupportedTag(
-        Text => $Signature{Text} || '',
+        Text                 => $Signature{Text} || '',
         ListOfUnSupportedTag => \@ListOfUnSupportedTag,
     );
 
@@ -432,6 +432,12 @@ sub Template {
         $Language = $User{UserLanguage};
     }
 
+    # If template type is 'Create' and there is customer user information, treat it as a ticket param in order to
+    # correctly replace customer user tags. See bug#14455.
+    if ( $Template{TemplateType} eq 'Create' && $Param{CustomerUserID} ) {
+        $Ticket{CustomerUserID} = $Param{CustomerUserID};
+    }
+
     # if customer language is not defined, set default language
     $Language //= $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage') || 'en';
 
@@ -439,7 +445,7 @@ sub Template {
     my @ListOfUnSupportedTag = qw(OTRS_AGENT_SUBJECT OTRS_AGENT_BODY OTRS_CUSTOMER_BODY OTRS_CUSTOMER_SUBJECT);
 
     my $TemplateText = $Self->_RemoveUnSupportedTag(
-        Text => $Template{Template} || '',
+        Text                 => $Template{Template} || '',
         ListOfUnSupportedTag => \@ListOfUnSupportedTag,
     );
 
@@ -761,9 +767,12 @@ sub AutoResponse {
             From => $Param{OrigHeader}->{To},
             To   => $Param{OrigHeader}->{From},
         },
-        TicketData => \%Ticket,
-        UserID     => $Param{UserID},
-        Language   => $Language,
+        TicketData      => \%Ticket,
+        UserID          => $Param{UserID},
+        Language        => $Language,
+        AddTimezoneInfo => {
+            AutoResponse => 1,
+        },
     );
     $AutoResponse{Subject} = $Self->_Replace(
         RichText => 0,
@@ -773,9 +782,12 @@ sub AutoResponse {
             From => $Param{OrigHeader}->{To},
             To   => $Param{OrigHeader}->{From},
         },
-        TicketData => \%Ticket,
-        UserID     => $Param{UserID},
-        Language   => $Language,
+        TicketData      => \%Ticket,
+        UserID          => $Param{UserID},
+        Language        => $Language,
+        AddTimezoneInfo => {
+            AutoResponse => 1,
+        },
     );
 
     $AutoResponse{Subject} = $TicketObject->TicketSubjectBuild(
@@ -944,6 +956,13 @@ sub NotificationEvent {
         $ArticleData->{TimeUnit} = $AccountedTime;
     }
 
+    # Populate the hash 'CustomerMessageParams' with all the customer-article data
+    # and overwrite it with 'CustomerMessageParams' passed in the Params (bug #13325).
+    $Param{CustomerMessageParams} = {
+        %CustomerArticle,
+        %{ $Param{CustomerMessageParams} || {} },
+    };
+
     # get system default language
     my $DefaultLanguage = $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage') || 'en';
 
@@ -972,11 +991,15 @@ sub NotificationEvent {
     }
 
     # Get customer article fields.
-    my %CustomerArticleFields = $LayoutObject->ArticleFields(
-        TicketID  => $CustomerArticle{TicketID},
-        ArticleID => $CustomerArticle{ArticleID},
-        UserID    => $Param{UserID},
-    );
+    my %CustomerArticleFields;
+
+    if (%CustomerArticle) {
+        %CustomerArticleFields = $LayoutObject->ArticleFields(
+            TicketID  => $CustomerArticle{TicketID},
+            ArticleID => $CustomerArticle{ArticleID},
+            UserID    => $Param{UserID},
+        );
+    }
 
     ARTICLE_FIELD:
     for my $ArticleField ( sort keys %CustomerArticleFields ) {
@@ -1011,7 +1034,11 @@ sub NotificationEvent {
     # fill up required attributes
     for my $Text (qw(Subject Body)) {
         if ( !$Param{CustomerMessageParams}->{$Text} ) {
-            $Param{CustomerMessageParams}->{$Text} = "No $Text";
+
+            # Set to last customer article attribute if it is empty string.
+            # For example, if Body is empty string (not undef!), it is maybe sent from NotificationOwnerUpdate event
+            # and overrides last customer article body (in %CustomerArticle) above - see bug#14678.
+            $Param{CustomerMessageParams}->{$Text} = $CustomerArticle{$Text} || "No $Text";
         }
     }
 
@@ -1029,7 +1056,7 @@ sub NotificationEvent {
 
         next KEY if !$Param{CustomerMessageParams}->{$Key};
 
-        $Notification{Body} =~ s/${Start}OTRS_CUSTOMER_DATA_$Key${End}/$Param{CustomerMessageParams}->{$Key}/gi;
+        $Notification{Body}    =~ s/${Start}OTRS_CUSTOMER_DATA_$Key${End}/$Param{CustomerMessageParams}->{$Key}/gi;
         $Notification{Subject} =~ s/<OTRS_CUSTOMER_DATA_$Key>/$Param{CustomerMessageParams}->{$Key}{$Key}/gi;
     }
 
@@ -1058,25 +1085,31 @@ sub NotificationEvent {
 
     # replace place holder stuff
     $Notification{Body} = $Self->_Replace(
-        RichText   => $Self->{RichText},
-        Text       => $Notification{Body},
-        Recipient  => $Param{Recipient},
-        Data       => $Param{CustomerMessageParams},
-        DataAgent  => \%AgentArticle,
-        TicketData => $Param{TicketData},
-        UserID     => $Param{UserID},
-        Language   => $Language,
+        RichText        => $Self->{RichText},
+        Text            => $Notification{Body},
+        Recipient       => $Param{Recipient},
+        Data            => $Param{CustomerMessageParams},
+        DataAgent       => \%AgentArticle,
+        TicketData      => $Param{TicketData},
+        UserID          => $Param{UserID},
+        Language        => $Language,
+        AddTimezoneInfo => {
+            NotificationEvent => 1,
+        },
     );
 
     $Notification{Subject} = $Self->_Replace(
-        RichText   => 0,
-        Text       => $Notification{Subject},
-        Recipient  => $Param{Recipient},
-        Data       => $Param{CustomerMessageParams},
-        DataAgent  => \%AgentArticle,
-        TicketData => $Param{TicketData},
-        UserID     => $Param{UserID},
-        Language   => $Language,
+        RichText        => 0,
+        Text            => $Notification{Subject},
+        Recipient       => $Param{Recipient},
+        Data            => $Param{CustomerMessageParams},
+        DataAgent       => \%AgentArticle,
+        TicketData      => $Param{TicketData},
+        UserID          => $Param{UserID},
+        Language        => $Language,
+        AddTimezoneInfo => {
+            NotificationEvent => 1,
+        },
     );
 
     # Keep the "original" (unmodified) subject and body for later use.
@@ -1166,6 +1199,51 @@ sub _Replace {
         %Ticket = %{ $Param{TicketData} };
     }
 
+    my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
+
+    # Determine recipient's timezone if needed.
+    my $RecipientTimeZone;
+    if ( $Param{AddTimezoneInfo} ) {
+        $RecipientTimeZone = $Kernel::OM->Create('Kernel::System::DateTime')->OTRSTimeZoneGet();
+
+        my %CustomerUser;
+        if ( IsHashRefWithData( \%Ticket ) && $Ticket{CustomerUserID} ) {
+            %CustomerUser = $CustomerUserObject->CustomerUserDataGet( User => $Ticket{CustomerUserID} );
+        }
+
+        my %UserPreferences;
+
+        if ( $Param{AddTimezoneInfo}->{NotificationEvent} && $Param{Recipient}->{Type} eq 'Agent' ) {
+            %UserPreferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
+                UserID => $Param{Recipient}->{UserID},
+            );
+        }
+        elsif (
+            $Param{AddTimezoneInfo}->{NotificationEvent}
+            && $Param{Recipient}->{Type} eq 'Customer'
+            && $Param{Recipient}->{UserID}
+            )
+        {
+            %UserPreferences = $CustomerUserObject->GetPreferences(
+                UserID => $Param{Recipient}->{UserID},
+            );
+        }
+        elsif (
+            $Param{AddTimezoneInfo}->{AutoResponse}
+            && $Ticket{CustomerUserID}
+            && IsHashRefWithData( \%CustomerUser )
+            )
+        {
+            %UserPreferences = $CustomerUserObject->GetPreferences(
+                UserID => $Ticket{CustomerUserID},
+            );
+        }
+
+        if ( $UserPreferences{UserTimeZone} ) {
+            $RecipientTimeZone = $UserPreferences{UserTimeZone};
+        }
+    }
+
     # Replace Unix time format tags.
     # If language is defined, they will be converted into a correct format in below IF statement.
     for my $UnixFormatTime (
@@ -1177,7 +1255,7 @@ sub _Replace {
                 'Kernel::System::DateTime',
                 ObjectParams => {
                     Epoch => $Ticket{$UnixFormatTime},
-                    }
+                },
             )->ToString();
         }
     }
@@ -1201,11 +1279,33 @@ sub _Replace {
             next ATTRIBUTE if !$Ticket{$Attribute};
 
             if ( $Ticket{$Attribute} =~ m{\A(\d\d\d\d)-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)\z}xi ) {
+
+                # Change time to recipient's timezone if needed
+                # and later append timezone information.
+                # For more information,
+                # see bug#13865 (https://bugs.otrs.org/show_bug.cgi?id=13865)
+                # and bug#14270 (https://bugs.otrs.org/show_bug.cgi?id=14270).
+                if ($RecipientTimeZone) {
+                    my $DateTimeObject = $Kernel::OM->Create(
+                        'Kernel::System::DateTime',
+                        ObjectParams => {
+                            String => $Ticket{$Attribute},
+                        },
+                    );
+                    $DateTimeObject->ToTimeZone( TimeZone => $RecipientTimeZone );
+                    $Ticket{$Attribute} = $DateTimeObject->ToString();
+                }
+
                 $Ticket{$Attribute} = $LanguageObject->FormatTimeString(
                     $Ticket{$Attribute},
                     'DateFormat',
                     'NoSeconds',
                 );
+
+                # Append timezone information if needed.
+                if ($RecipientTimeZone) {
+                    $Ticket{$Attribute} .= " ($RecipientTimeZone)";
+                }
             }
         }
 
@@ -1240,14 +1340,16 @@ sub _Replace {
     # Replace config options.
     my $Tag = $Start . 'OTRS_CONFIG_';
     $Param{Text} =~ s{$Tag(.+?)$End}{
-        my $Replace = '';
-        # Mask secret config options.
-        if ($1 =~ m{(Password|Pw)\d*$}smxi) {
-            $Replace = 'xxx';
-        }
-        else {
-            $Replace = $ConfigObject->Get($1) // '';
-        }
+        my $Key   = $1;
+        my $Value = $ConfigObject->Get($Key) // '';
+
+        # Mask sensitive config options.
+        my $Replace = $Self->_MaskSensitiveValue(
+            Key      => $Key,
+            Value    => $Value,
+            IsConfig => 1,
+        );
+
         $Replace;
     }egx;
 
@@ -1273,10 +1375,26 @@ sub _Replace {
         # Generate one single matching string for all keys to save performance.
         my $Keys = join '|', map {quotemeta} grep { defined $H{$_} } keys %H;
 
-        # Add all keys also as lowercase to be able to match case insensitive,
+        # Set all keys as lowercase to be able to match case insensitive,
         #   e. g. <OTRS_CUSTOMER_From> and <OTRS_CUSTOMER_FROM>.
-        for my $Key ( sort keys %H ) {
-            $H{ lc $Key } = $H{$Key};
+        #   Also mask any values containing sensitive data.
+        %H = map {
+            lc $_ => $Self->_MaskSensitiveValue(
+                Key   => $_,
+                Value => $H{$_},
+            )
+        } sort keys %H;
+
+        # If tag is 'OTRS_CUSTOMER_' add the body alias 'email/note' to be replaced.
+        if ( $Tag =~ m/OTRS_(CUSTOMER|AGENT)_/ ) {
+            KEY:
+            for my $Key (qw( email note )) {
+                my $Value = $H{$Key};
+                next KEY if defined($Value);
+
+                $H{$Key} = $H{'body'};
+                $Keys .= '|' . ucfirst $Key;
+            }
         }
 
         $Param{Text} =~ s/(?:$Tag)($Keys)$End/$H{ lc $1 }/ieg;
@@ -1457,6 +1575,25 @@ sub _Replace {
             );
         }
 
+        my $DateTimeObject;
+
+        # Change DateTime DF value for ticket if needed.
+        if (
+            defined $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} }
+            && $DynamicFieldConfig->{FieldType} eq 'DateTime'
+            && $RecipientTimeZone
+            )
+        {
+            $DateTimeObject = $Kernel::OM->Create(
+                'Kernel::System::DateTime',
+                ObjectParams => {
+                    String => $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} },
+                },
+            );
+            $DateTimeObject->ToTimeZone( TimeZone => $RecipientTimeZone );
+            $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} } = $DateTimeObject->ToString();
+        }
+
         # get the display value for each dynamic field
         my $DisplayValue = $DynamicFieldBackendObject->ValueLookup(
             DynamicFieldConfig => $DynamicFieldConfig,
@@ -1474,6 +1611,18 @@ sub _Replace {
         if ($DisplayValueStrg) {
             $DynamicFieldDisplayValues{ 'DynamicField_' . $DynamicFieldConfig->{Name} . '_Value' }
                 = $DisplayValueStrg->{Value};
+
+            # Add timezone info if needed.
+            if (
+                defined $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} }
+                && length $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} }
+                && $DynamicFieldConfig->{FieldType} eq 'DateTime'
+                && $RecipientTimeZone
+                )
+            {
+                $DynamicFieldDisplayValues{ 'DynamicField_' . $DynamicFieldConfig->{Name} . '_Value' }
+                    .= " ($RecipientTimeZone)";
+            }
         }
 
         # get the readable value (key) for each dynamic field
@@ -1485,6 +1634,17 @@ sub _Replace {
         # replace ticket content with the value from ReadableValueRender (if any)
         if ( IsHashRefWithData($ValueStrg) ) {
             $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} } = $ValueStrg->{Value};
+
+            # Add timezone info if needed.
+            if (
+                defined $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} }
+                && length $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} }
+                && $DynamicFieldConfig->{FieldType} eq 'DateTime'
+                && $RecipientTimeZone
+                )
+            {
+                $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} } .= " ($RecipientTimeZone)";
+            }
         }
     }
 
@@ -1535,7 +1695,14 @@ sub _Replace {
 
             # prepare body (insert old email) <OTRS_CUSTOMER_EMAIL[n]>, <OTRS_CUSTOMER_NOTE[n]>
             #   <OTRS_CUSTOMER_BODY[n]>, <OTRS_AGENT_EMAIL[n]>..., <OTRS_COMMENT>
-            if ( $Param{Text} =~ /$Start(?:(?:$DataType(EMAIL|NOTE|BODY)\[(.+?)\])|(?:OTRS_COMMENT))$End/g ) {
+
+            # Changed this to a 'while' to allow the same key/tag multiple times and different number of lines.
+            while (
+                $Param{Text} =~ /$Start(?:$DataType(EMAIL|NOTE|BODY)\[(.+?)\])$End/
+                ||
+                $Param{Text} =~ /$Start(?:OTRS_COMMENT(\[(.+?)\])?)$End/
+                )
+            {
 
                 my $Line       = $2 || 2500;
                 my $NewOldBody = '';
@@ -1584,7 +1751,7 @@ sub _Replace {
 
                 # replace tag
                 $Param{Text}
-                    =~ s/$Start(?:(?:$DataType(EMAIL|NOTE|BODY)\[(.+?)\])|(?:OTRS_COMMENT))$End/$NewOldBody/g;
+                    =~ s/$Start(?:(?:$DataType(EMAIL|NOTE|BODY)\[(.+?)\]|(?:OTRS_COMMENT(\[(.+?)\])?)))$End/$NewOldBody/;
             }
 
             # replace <OTRS_CUSTOMER_SUBJECT[]>  and  <OTRS_AGENT_SUBJECT[]> tags
@@ -1629,7 +1796,7 @@ sub _Replace {
 
                 if ( $Ticket{CustomerUserID} ) {
 
-                    $From = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerName(
+                    $From = $CustomerUserObject->CustomerName(
                         UserLogin => $Ticket{CustomerUserID}
                     );
                 }
@@ -1638,7 +1805,8 @@ sub _Replace {
                 $From //= $Recipient{Realname};
 
                 # get real name based on reply-to
-                if ( $Data{ReplyTo} ) {
+                if ( !$From && $Data{ReplyTo} ) {
+
                     $From = $Data{ReplyTo};
 
                     # remove email addresses
@@ -1675,7 +1843,7 @@ sub _Replace {
 
         my $CustomerUserID = $Param{Data}->{CustomerUserID} || $Ticket{CustomerUserID};
 
-        my %CustomerUser = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
+        my %CustomerUser = $CustomerUserObject->CustomerUserDataGet(
             User => $CustomerUserID,
         );
 
@@ -1739,12 +1907,50 @@ sub _RemoveUnSupportedTag {
         $Param{Text} =~ s/(\n|\r)//g;
     }
 
-    # cleanup all not supported tags
-    my $NotSupportedTag = $Start . "(?:" . join( "|", @{ $Param{ListOfUnSupportedTag} } ) . ")" . $End;
+    # Cleanup all not supported tags with and without number, e.g. OTRS_CUSTOMER_BODY and OTRS_CUSTOMER_BODY[n].
+    # See https://bugs.otrs.org/show_bug.cgi?id=14369 and https://bugs.otrs.org/show_bug.cgi?id=10825.
+    my $NotSupportedTag = $Start . "(?:" . join( "|", @{ $Param{ListOfUnSupportedTag} } ) . ")(\\[.*?\\])?" . $End;
     $Param{Text} =~ s/$NotSupportedTag/-/gi;
 
     return $Param{Text};
 
+}
+
+=head2 _MaskSensitiveValue()
+
+Mask sensitive value, i.e. a password, a security token, etc.
+
+    my $MaskedValue = $Self->_MaskSensitiveValue(
+        Key      => 'DatabasePassword', # (required) Name of the field/key.
+        Value    => 'secretvalue',      # (optional) Value to potentially mask.
+        IsConfig => 1,                  # (optional) Whether the value is a config option, default: 0.
+    );
+
+Returns masked value, in case the key is matched:
+
+   $MaskedValue = 'xxx';
+
+=cut
+
+sub _MaskSensitiveValue {
+    my ( $Self, %Param ) = @_;
+
+    return '' if !$Param{Key} || !defined $Param{Value};
+
+    # Skip masking sensitive values for Dynamic Fields.
+    return $Param{Value} if $Param{Key} =~ qr{ dynamicfield }xi;
+
+    # Match general key names, i.e. from the user preferences.
+    my $Match = qr{ config|secret|passw|userpw|auth|token }xi;
+
+    # Match forbidden config keys.
+    if ( $Param{IsConfig} ) {
+        $Match = qr{ (?:password|pw) \d* $ }smxi;
+    }
+
+    return $Param{Value} if $Param{Key} !~ $Match;
+
+    return 'xxx';
 }
 
 1;
@@ -1753,10 +1959,10 @@ sub _RemoveUnSupportedTag {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

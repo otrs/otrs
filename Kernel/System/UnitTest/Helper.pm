@@ -1,15 +1,12 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::UnitTest::Helper;
-## nofilter(TidyAll::Plugin::OTRS::Perl::Time)
-## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeObject)
-## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::DateTime)
 
 use strict;
 use warnings;
@@ -30,7 +27,7 @@ our @ObjectDependencies = (
     'Kernel::System::Group',
     'Kernel::System::Log',
     'Kernel::System::Main',
-    'Kernel::System::UnitTest',
+    'Kernel::System::UnitTest::Driver',
     'Kernel::System::User',
     'Kernel::System::XML',
 );
@@ -70,7 +67,10 @@ sub new {
 
     $Self->{Debug} = $Param{Debug} || 0;
 
-    $Self->{UnitTestObject} = $Kernel::OM->Get('Kernel::System::UnitTest');
+    $Self->{UnitTestDriverObject} = $Kernel::OM->Get('Kernel::System::UnitTest::Driver');
+
+    # Override Perl's built-in time handling mechanism to set a fixed time if needed.
+    $Self->_MockPerlTimeHandling();
 
     # Remove any leftover custom files from aborted previous runs.
     $Self->CustomFileCleanup();
@@ -85,7 +85,7 @@ sub new {
         $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;    ## no critic
 
         $Self->{RestoreSSLVerify} = 1;
-        $Self->{UnitTestObject}->True( 1, 'Skipping SSL certificates verification' );
+        $Self->{UnitTestDriverObject}->True( 1, 'Skipping SSL certificates verification' );
     }
 
     # switch article dir to a temporary one to avoid collisions
@@ -96,7 +96,7 @@ sub new {
     if ( $Param{RestoreDatabase} ) {
         $Self->{RestoreDatabase} = 1;
         my $StartedTransaction = $Self->BeginWork();
-        $Self->{UnitTestObject}->True( $StartedTransaction, 'Started database transaction.' );
+        $Self->{UnitTestDriverObject}->True( $StartedTransaction, 'Started database transaction.' );
 
     }
 
@@ -142,7 +142,7 @@ my %GetRandomNumberPrevious;
 sub GetRandomNumber {
 
     my $PIDReversed = reverse $$;
-    my $PID = reverse sprintf '%.6d', $PIDReversed;
+    my $PID         = reverse sprintf '%.6d', $PIDReversed;
 
     my $Prefix = $PID . substr time(), -5, 5;
 
@@ -152,7 +152,7 @@ sub GetRandomNumber {
 =head2 TestUserCreate()
 
 creates a test user that can be used in tests. It will
-be set to invalid automatically during the destructor. Returns
+be set to invalid automatically during L</DESTROY()>. Returns
 the login name of the new user, the password is the same.
 
     my $TestUserLogin = $Helper->TestUserCreate(
@@ -165,15 +165,15 @@ the login name of the new user, the password is the same.
 sub TestUserCreate {
     my ( $Self, %Param ) = @_;
 
-    # disable email checks to create new user
+    # Disable email checks to create new user.
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     local $ConfigObject->{CheckEmailAddresses} = 0;
 
-    # create test user
+    # Create test user.
     my $TestUserID;
     my $TestUserLogin;
     COUNT:
-    for my $Count ( 1 .. 10 ) {
+    for ( 1 .. 10 ) {
 
         $TestUserLogin = $Self->GetRandomID();
 
@@ -198,13 +198,12 @@ sub TestUserCreate {
     $Self->{TestUsers} ||= [];
     push( @{ $Self->{TestUsers} }, $TestUserID );
 
-    $Self->{UnitTestObject}->True( 1, "Created test user $TestUserID" );
+    $Self->{UnitTestDriverObject}->True( 1, "Created test user $TestUserID" );
 
-    # Add user to groups
+    # Add user to groups.
     GROUP_NAME:
     for my $GroupName ( @{ $Param{Groups} || [] } ) {
 
-        # get group object
         my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
 
         my $GroupID = $GroupObject->GroupLookup( Group => $GroupName );
@@ -224,25 +223,25 @@ sub TestUserCreate {
             UserID => 1,
         ) || die "Could not add test user $TestUserLogin to group $GroupName";
 
-        $Self->{UnitTestObject}->True( 1, "Added test user $TestUserLogin to group $GroupName" );
+        $Self->{UnitTestDriverObject}->True( 1, "Added test user $TestUserLogin to group $GroupName" );
     }
 
-    # set user language
+    # Set user language.
     my $UserLanguage = $Param{Language} || 'en';
     $Kernel::OM->Get('Kernel::System::User')->SetPreferences(
         UserID => $TestUserID,
         Key    => 'UserLanguage',
         Value  => $UserLanguage,
     );
-    $Self->{UnitTestObject}->True( 1, "Set user UserLanguage to $UserLanguage" );
+    $Self->{UnitTestDriverObject}->True( 1, "Set user UserLanguage to $UserLanguage" );
 
-    return $TestUserLogin;
+    return wantarray ? ( $TestUserLogin, $TestUserID ) : $TestUserLogin;
 }
 
 =head2 TestCustomerUserCreate()
 
 creates a test customer user that can be used in tests. It will
-be set to invalid automatically during the destructor. Returns
+be set to invalid automatically during L</DESTROY()>. Returns
 the login name of the new customer user, the password is the same.
 
     my $TestUserLogin = $Helper->TestCustomerUserCreate(
@@ -254,14 +253,14 @@ the login name of the new customer user, the password is the same.
 sub TestCustomerUserCreate {
     my ( $Self, %Param ) = @_;
 
-    # disable email checks to create new user
+    # Disable email checks to create new user.
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     local $ConfigObject->{CheckEmailAddresses} = 0;
 
-    # create test user
+    # Create test user.
     my $TestUser;
     COUNT:
-    for my $Count ( 1 .. 10 ) {
+    for ( 1 .. 10 ) {
 
         my $TestUserLogin = $Self->GetRandomID();
 
@@ -287,16 +286,16 @@ sub TestCustomerUserCreate {
     $Self->{TestCustomerUsers} ||= [];
     push( @{ $Self->{TestCustomerUsers} }, $TestUser );
 
-    $Self->{UnitTestObject}->True( 1, "Created test customer user $TestUser" );
+    $Self->{UnitTestDriverObject}->True( 1, "Created test customer user $TestUser" );
 
-    # set customer user language
+    # Set customer user language.
     my $UserLanguage = $Param{Language} || 'en';
     $Kernel::OM->Get('Kernel::System::CustomerUser')->SetPreferences(
         UserID => $TestUser,
         Key    => 'UserLanguage',
         Value  => $UserLanguage,
     );
-    $Self->{UnitTestObject}->True( 1, "Set customer user UserLanguage to $UserLanguage" );
+    $Self->{UnitTestDriverObject}->True( 1, "Set customer user UserLanguage to $UserLanguage" );
 
     return $TestUser;
 }
@@ -337,7 +336,7 @@ sub Rollback {
 
 =head2 GetTestHTTPHostname()
 
-returns a hostname for HTTP based tests, possibly including the port.
+returns a host name for HTTP based tests, possibly including the port.
 
 =cut
 
@@ -394,27 +393,7 @@ sub FixedTimeSet {
         $FixedTime = $TimeToSave->ToEpoch();
     }
     else {
-        $FixedTime = $TimeToSave // CORE::time()
-    }
-
-    # This is needed to reload objects that directly use the native time functions
-    #   to get a hold of the overrides.
-    my @Objects = (
-        'Kernel::System::Time',
-        'Kernel::System::DB',
-        'Kernel::System::Cache::FileStorable',
-        'Kernel::System::PID',
-    );
-
-    for my $Object (@Objects) {
-        my $FilePath = $Object;
-        $FilePath =~ s{::}{/}xmsg;
-        $FilePath .= '.pm';
-        if ( $INC{$FilePath} ) {
-            no warnings 'redefine';    ## no critic
-            delete $INC{$FilePath};
-            $Kernel::OM->Get('Kernel::System::Main')->Require($Object);
-        }
+        $FixedTime = $TimeToSave // CORE::time();
     }
 
     return $FixedTime;
@@ -422,7 +401,7 @@ sub FixedTimeSet {
 
 =head2 FixedTimeUnset()
 
-restores the regular system time behaviour.
+restores the regular system time behavior.
 
 =cut
 
@@ -449,7 +428,10 @@ sub FixedTimeAddSeconds {
 }
 
 # See http://perldoc.perl.org/5.10.0/perlsub.html#Overriding-Built-in-Functions
-BEGIN {
+## nofilter(TidyAll::Plugin::OTRS::Perl::Time)
+## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeObject)
+## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::DateTime)
+sub _MockPerlTimeHandling {
     no warnings 'redefine';    ## no critic
     *CORE::GLOBAL::time = sub {
         return defined $FixedTime ? $FixedTime : CORE::time();
@@ -482,7 +464,35 @@ BEGIN {
             @_
         );
     };
+
+    # This is needed to reload objects that directly use the native time functions
+    #   to get a hold of the overrides.
+    my @Objects = (
+        'Kernel::System::Time',
+        'Kernel::System::DB',
+        'Kernel::System::Cache::FileStorable',
+        'Kernel::System::PID',
+    );
+
+    for my $Object (@Objects) {
+        my $FilePath = $Object;
+        $FilePath =~ s{::}{/}xmsg;
+        $FilePath .= '.pm';
+        if ( $INC{$FilePath} ) {
+            no warnings 'redefine';    ## no critic
+            delete $INC{$FilePath};
+            require $FilePath;         ## nofilter(TidyAll::Plugin::OTRS::Perl::Require)
+        }
+    }
+
+    return 1;
 }
+
+=head2 DESTROY()
+
+performs various clean-ups.
+
+=cut
 
 sub DESTROY {
     my $Self = shift;
@@ -512,14 +522,15 @@ sub DESTROY {
 
         $Self->{RestoreSSLVerify} = 0;
 
-        $Self->{UnitTestObject}->True( 1, 'Restored SSL certificates verification' );
+        $Self->{UnitTestDriverObject}->True( 1, 'Restored SSL certificates verification' );
     }
 
     # restore database, clean caches
     if ( $Self->{RestoreDatabase} ) {
         my $RollbackSuccess = $Self->Rollback();
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp();
-        $Self->{UnitTestObject}->True( $RollbackSuccess, 'Rolled back all database changes and cleaned up the cache.' );
+        $Self->{UnitTestDriverObject}
+            ->True( $RollbackSuccess, 'Rolled back all database changes and cleaned up the cache.' );
     }
 
     # disable email checks to create new user
@@ -555,7 +566,7 @@ sub DESTROY {
                 ChangeUserID => 1,
             );
 
-            $Self->{UnitTestObject}->True( $Success, "Set test user $TestUser to invalid" );
+            $Self->{UnitTestDriverObject}->True( $Success, "Set test user $TestUser to invalid" );
         }
     }
 
@@ -583,7 +594,7 @@ sub DESTROY {
                 UserID  => 1,
             );
 
-            $Self->{UnitTestObject}->True(
+            $Self->{UnitTestDriverObject}->True(
                 $Success, "Set test customer user $TestCustomerUser to invalid"
             );
         }
@@ -637,7 +648,7 @@ sub ConfigSettingChange {
         $ValueDump =~ s/\$VAR1/$KeyDump/;
     }
     else {
-        $ValueDump = "delete $KeyDump;"
+        $ValueDump = "delete $KeyDump;";
     }
 
     my $PackageName = "ZZZZUnitTest$RandomNumber";
@@ -702,7 +713,7 @@ use warnings;
 sub CustomCodeActivate {
     my ( $Self, %Param ) = @_;
 
-    my $Code = $Param{Code};
+    my $Code       = $Param{Code};
     my $Identifier = $Param{Identifier} || $Self->GetRandomNumber();
 
     die "Need 'Code'" if !defined $Code;
@@ -977,7 +988,7 @@ sub TestDatabaseCleanup {
 
     if ( scalar @Tables ) {
         my $TableList = join ', ', sort @Tables;
-        my $DBType = $DBObject->{'DB::Type'};
+        my $DBType    = $DBObject->{'DB::Type'};
 
         if ( $DBType eq 'mysql' ) {
 
@@ -1001,6 +1012,30 @@ sub TestDatabaseCleanup {
             for my $Table (@Tables) {
                 $DBObject->Do( SQL => "DROP TABLE $Table CASCADE CONSTRAINTS" );
             }
+
+            # Get complete list of user sequences.
+            my @Sequences;
+            return if !$DBObject->Prepare(
+                SQL => 'SELECT sequence_name FROM user_sequences ORDER BY sequence_name',
+            );
+            while ( my @Row = $DBObject->FetchrowArray() ) {
+                push @Sequences, $Row[0];
+            }
+
+            # Drop all found sequences as well.
+            for my $Sequence (@Sequences) {
+                $DBObject->Do( SQL => "DROP SEQUENCE $Sequence" );
+            }
+
+            # Check if all sequences have been dropped.
+            @Sequences = ();
+            return if !$DBObject->Prepare(
+                SQL => 'SELECT sequence_name FROM user_sequences ORDER BY sequence_name',
+            );
+            while ( my @Row = $DBObject->FetchrowArray() ) {
+                push @Sequences, $Row[0];
+            }
+            return if scalar @Sequences;
         }
 
         # Check if all tables have been dropped.
@@ -1098,10 +1133,10 @@ sub DatabaseXMLExecute {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

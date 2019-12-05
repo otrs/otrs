@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminCommunicationLog;
@@ -28,7 +28,8 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     my %GetParam;
     for my $Param (
@@ -48,39 +49,39 @@ sub Run {
             CommunicationID => $GetParam{CommunicationID},
         );
 
-        if ( !$Communication ) {
-            my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+        if ( !IsHashRefWithData($Communication) ) {
             return $LayoutObject->FatalError(
-                Message => Translatable('Invalid CommunicationID '),
+                Message => Translatable('Invalid CommunicationID!'),
             );
         }
     }
 
     my %TimeRanges = (
-        0       => 'All communications',
-        3600    => 'Last 1 hour',
-        10800   => 'Last 3 hours',
-        21600   => 'Last 6 hours',
-        43200   => 'Last 12 hours',
-        86400   => 'Last 24 hours',
-        604800  => 'Last week',
-        2593000 => 'Last month',
+        0       => Translatable('All communications'),
+        3600    => Translatable('Last 1 hour'),
+        10800   => Translatable('Last 3 hours'),
+        21600   => Translatable('Last 6 hours'),
+        43200   => Translatable('Last 12 hours'),
+        86400   => Translatable('Last 24 hours'),
+        604800  => Translatable('Last week'),
+        2593000 => Translatable('Last month'),
     );
 
     $GetParam{TimeRanges} = \%TimeRanges;
 
-    $GetParam{StartHit} //= int( $Param{StartHit} || 1 );
-    $GetParam{SortBy}   //= 'StartTime';
-    $GetParam{OrderBy}  //= 'Down';
-    $GetParam{Filter}   //= 'All';
+    $GetParam{StartHit}  //= int( $Param{StartHit} || 1 );
+    $GetParam{SortBy}    //= 'StartTime';
+    $GetParam{OrderBy}   //= 'Down';
+    $GetParam{Filter}    //= 'All';
     $GetParam{StartTime} //= 86400;
 
     if ( $GetParam{StartTime} && $GetParam{StartTime} !~ m{^\d+$} ) {
-        my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-
         return $LayoutObject->FatalError(
-            Message => sprintf( Translatable('Invalid StartTime: %s!'), $GetParam{StartTime} ),
+            Message => $LayoutObject->{LanguageObject}->Translate( 'Invalid StartTime: %s!', $GetParam{StartTime} ),
         );
+    }
+    elsif ( $GetParam{StartTime} == 0 ) {
+        $GetParam{DateTime} = $GetParam{StartTime};
     }
     else {
         my $DateTimeObject = $Kernel::OM->Create('Kernel::System::DateTime');
@@ -89,9 +90,8 @@ sub Run {
         );
 
         if ( !$ValidDate ) {
-            my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
             return $LayoutObject->FatalError(
-                Message => sprintf( Translatable("Invalid StartTime: %s!"), $GetParam{StartTime} ),
+                Message => $LayoutObject->{LanguageObject}->Translate( 'Invalid StartTime: %s!', $GetParam{StartTime} ),
             );
         }
         $GetParam{DateTime} = $DateTimeObject->ToString();
@@ -145,7 +145,7 @@ sub _ShowOverview {
         },
     );
 
-    # get personal page shown count
+    # Get personal page shown count.
     my $PageShownPreferencesKey = 'AdminCommunicationLogPageShown';
     my $PageShown               = $Self->{$PageShownPreferencesKey} || 25;
     my $Group                   = 'CommunicationLogPageShown';
@@ -195,7 +195,7 @@ sub _ShowOverview {
 
     if ( !$Filters{ $Param{Filter} } ) {
         return $LayoutObject->FatalError(
-            Message => sprintf( Translatable('Invalid Filter: %s!'), $Param{Filter} ),
+            Message => $LayoutObject->{LanguageObject}->Translate( 'Invalid Filter: %s!', $Param{Filter} ),
         );
     }
 
@@ -225,7 +225,7 @@ sub _ShowOverview {
         },
     );
 
-    # generate human readable average processing time
+    # Generate human readable average processing time.
     my $AverageSeconds = $CommunicationLogDBObj->CommunicationList(
         StartDate => $Param{DateTime},
         Result    => 'AVERAGE',
@@ -233,7 +233,7 @@ sub _ShowOverview {
 
     my $AverageString = $AverageSeconds >= 1
         ? $Self->_HumanReadableAverage( Seconds => $AverageSeconds )
-        : Translatable('Less than a second');
+        : $LayoutObject->{LanguageObject}->Translate('Less than a second');
 
     my %Accounts = $Self->_AccountStatus(
         StartDate => $Param{DateTime},
@@ -288,7 +288,7 @@ sub _ShowOverview {
             Failed           => $Filters{Failed}->{Count},
             StatusFilter     => $StatusFilter,
             StartTime        => $Param{StartTime} || 0,
-            TimeRange        => $Param{TimeRanges}->{ $Param{StartTime} },
+            TimeRange        => $LayoutObject->{LanguageObject}->Translate( $Param{TimeRanges}->{ $Param{StartTime} } ),
             AverageString    => $AverageString,
             AccountsStatus   => $Status,
             AccountsOverview => \%AccountsOverview,
@@ -297,14 +297,14 @@ sub _ShowOverview {
 
     my $Total = scalar @CommunicationData;
 
-    # get data selection
+    # Get data selection.
     my %Data;
     my $Config = $Kernel::OM->Get('Kernel::Config')->Get('PreferencesGroups');
     if ( $Config && $Config->{$Group} && $Config->{$Group}->{Data} ) {
         %Data = %{ $Config->{$Group}->{Data} };
     }
 
-    # calculate max. shown per page
+    # Calculate max. shown per page.
     if ( $Param{StartHit} > $Total ) {
         my $Pages = int( ( $Total / $PageShown ) + 0.99999 );
         $Param{StartHit} = ( ( $Pages - 1 ) * $PageShown ) + 1;
@@ -316,8 +316,8 @@ sub _ShowOverview {
         $URLExtension .= "$URLPart=$Param{$URLPart};";
     }
 
-    # build nav bar
-    my $Limit = $Param{Limit} || 20_000;
+    # Build nav bar.
+    my $Limit   = $Param{Limit} || 20_000;
     my %PageNav = $LayoutObject->PageNavBar(
         Limit     => $Limit,
         StartHit  => $Param{StartHit},
@@ -328,7 +328,7 @@ sub _ShowOverview {
         IDPrefix  => $LayoutObject->{Action},
     );
 
-    # build shown dynamic fields per page
+    # Build shown dynamic fields per page.
     $Param{RequestedURL} = "Action=$Self->{Action};$URLExtension";
 
     for my $URLPart (qw(Filter SortBy OrderBy StartTime)) {
@@ -342,6 +342,8 @@ sub _ShowOverview {
         SelectedID  => $PageShown,
         Translation => 0,
         Data        => \%Data,
+        Sort        => 'NumericValue',
+        Class       => 'Modernize',
     );
 
     if (%PageNav) {
@@ -413,8 +415,8 @@ sub _ShowOverview {
 
     for my $TableHeader (@TableHeaders) {
 
-        my $CSS   = $TableHeader->{Class};
-        my $Title = $TableHeader->{HeaderName};
+        my $CSS             = $TableHeader->{Class};
+        my $TranslatedTitle = $LayoutObject->{LanguageObject}->Translate( $TableHeader->{HeaderName} );
         my $OrderBy;
 
         if ( $Param{SortBy} eq $TableHeader->{SortByName} ) {
@@ -427,9 +429,11 @@ sub _ShowOverview {
                 $CSS .= ' SortDescendingLarge';
             }
 
-            # set title description
-            my $TitleDesc = $OrderBy eq 'Up' ? Translatable('sorted descending') : Translatable('sorted ascending');
-            $Title .= ', ' . $TitleDesc;
+            # Set title description.
+            my $TitleDesc = $OrderBy eq 'Up'
+                ? $LayoutObject->{LanguageObject}->Translate('sorted descending')
+                : $LayoutObject->{LanguageObject}->Translate('sorted ascending');
+            $TranslatedTitle .= ', ' . $TitleDesc;
         }
 
         $LayoutObject->Block(
@@ -439,7 +443,7 @@ sub _ShowOverview {
                 SortByName => $TableHeader->{SortByName},
                 OrderBy    => $OrderBy,
                 CSS        => $CSS,
-                Title      => $Title,
+                Title      => $TranslatedTitle,
                 HeaderLink => $HeaderURL,
             },
         );
@@ -501,7 +505,7 @@ sub _ZoomView {
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
 
-    # call all needed template blocks
+    # Call all needed template blocks.
     $LayoutObject->Block(
         Name => 'Main',
         Data => \%Param,
@@ -572,13 +576,13 @@ sub _ZoomView {
         Class        => 'Modernize W75pc',
     );
 
-    # send CommunicationID to JS
+    # Send CommunicationID to JS.
     $LayoutObject->AddJSData(
         Key   => 'CommunicationID',
         Value => $Param{CommunicationID},
     );
 
-    # send ObjectLogID to JS
+    # Send ObjectLogID to JS.
     $LayoutObject->AddJSData(
         Key   => 'ObjectLogID',
         Value => $Param{ObjectLogID},
@@ -679,7 +683,7 @@ sub _AccountsView {
             # Generate human readable average processing time.
             my $AverageString = $AverageSeconds >= 1
                 ? $Self->_HumanReadableAverage( Seconds => $AverageSeconds )
-                : Translatable('Less than a second');
+                : $LayoutObject->{LanguageObject}->Translate('Less than a second');
 
             my $HealthStatus = $Self->_CheckHealth($Account);
 
@@ -723,7 +727,7 @@ sub _AccountsView {
         Data         => {
             %Param,
             CommunicationLogCount => $CommunicationLogCount,
-            TimeRange             => $Param{TimeRanges}->{ $Param{StartTime} },
+            TimeRange => $LayoutObject->{LanguageObject}->Translate( $Param{TimeRanges}->{ $Param{StartTime} } ),
         },
     );
 
@@ -785,7 +789,7 @@ sub _GetCommunicationLog {
         StartDate => $Param{DateTime},
     );
 
-    # get personal page shown count
+    # Get personal page shown count.
     my $PageShownPreferencesKey = 'AdminCommunicationLogPageShown';
     my $PageShown               = $Self->{$PageShownPreferencesKey} || 25;
     my $Group                   = 'CommunicationLogPageShown';
@@ -811,7 +815,7 @@ sub _GetCommunicationLog {
 
             next COMMUNICATIONLOGOBJECT if $CommunicationLog{AccountType} ne $AccountType;
 
-            next COMMUNICATIONLOGOBJECT if $AccountID && $CommunicationLog{AccountID} != $AccountID;
+            next COMMUNICATIONLOGOBJECT if $AccountID && $CommunicationLog{AccountID} ne $AccountID;
 
             $CommunicationIDs{ $LogObject->{CommunicationID} } = 1;
 
@@ -832,14 +836,14 @@ sub _GetCommunicationLog {
 
     my $Total = scalar keys %CommunicationIDs;
 
-    # get data selection
+    # Get data selection.
     my %Data;
     my $Config = $Kernel::OM->Get('Kernel::Config')->Get('PreferencesGroups');
     if ( $Config && $Config->{$Group} && $Config->{$Group}->{Data} ) {
         %Data = %{ $Config->{$Group}->{Data} };
     }
 
-    # calculate max. shown per page
+    # Calculate max. shown per page.
     if ( $Param{StartHit} > $Total ) {
         my $Pages = int( ( $Total / $PageShown ) + 0.99999 );
         $Param{StartHit} = ( ( $Pages - 1 ) * $PageShown ) + 1;
@@ -851,8 +855,8 @@ sub _GetCommunicationLog {
         $URLExtension .= "$URLPart=$Param{$URLPart};";
     }
 
-    # build nav bar
-    my $Limit = $Param{Limit} || 20_000;
+    # Build nav bar.
+    my $Limit   = $Param{Limit} || 20_000;
     my %PageNav = $LayoutObject->PageNavBar(
         Limit     => $Limit,
         StartHit  => $Param{StartHit},
@@ -862,7 +866,7 @@ sub _GetCommunicationLog {
         Link      => $URLExtension,
     );
 
-    # build shown dynamic fields per page
+    # Build shown dynamic fields per page.
     $Param{RequestedURL} = "Action=$Self->{Action};$URLExtension";
 
     for my $URLPart (qw(SortBy OrderBy StartTime)) {
@@ -904,6 +908,8 @@ sub _GetCommunicationLog {
 sub _HumanReadableAverage {
     my ( $Self, %Param ) = @_;
 
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
     my $DateTimeAverageStart = $Kernel::OM->Create('Kernel::System::DateTime');
     my $DateTimeAverageStop  = $Kernel::OM->Create('Kernel::System::DateTime');
 
@@ -918,8 +924,8 @@ sub _HumanReadableAverage {
             "$AverageDelta->{Days} " .
             (
             $AverageDelta->{Days} > 1
-            ? Translatable('days')
-            : Translatable('day')
+            ? $LayoutObject->{LanguageObject}->Translate('days')
+            : $LayoutObject->{LanguageObject}->Translate('day')
             );
     }
 
@@ -928,8 +934,8 @@ sub _HumanReadableAverage {
             "$AverageDelta->{Hours} " .
             (
             $AverageDelta->{Hours} > 1
-            ? Translatable('hours')
-            : Translatable('hour')
+            ? $LayoutObject->{LanguageObject}->Translate('hours')
+            : $LayoutObject->{LanguageObject}->Translate('hour')
             );
     }
 
@@ -938,8 +944,8 @@ sub _HumanReadableAverage {
             "$AverageDelta->{Minutes} " .
             (
             $AverageDelta->{Minutes} > 1
-            ? Translatable('minutes')
-            : Translatable('minute')
+            ? $LayoutObject->{LanguageObject}->Translate('minutes')
+            : $LayoutObject->{LanguageObject}->Translate('minute')
             );
     }
 
@@ -948,8 +954,8 @@ sub _HumanReadableAverage {
             "$AverageDelta->{Seconds} " .
             (
             $AverageDelta->{Seconds} > 1
-            ? Translatable('seconds')
-            : Translatable('second')
+            ? $LayoutObject->{LanguageObject}->Translate('seconds')
+            : $LayoutObject->{LanguageObject}->Translate('second')
             );
     }
 

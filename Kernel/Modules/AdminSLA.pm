@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminSLA;
@@ -280,7 +280,7 @@ sub Run {
                     Data => {
                         %SLAData,
                         Service => $ServiceList[0] || '-',
-                        Valid => $ValidList{ $SLAData{ValidID} },
+                        Valid   => $ValidList{ $SLAData{ValidID} },
                     },
                 );
 
@@ -405,6 +405,7 @@ sub _MaskNew {
         SelectedID   => $Param{FirstResponseNotify} || $SLAData{FirstResponseNotify},
         Translation  => 0,
         PossibleNone => 1,
+        Class        => 'Modernize',
     );
     $SLAData{UpdateNotifyOptionStrg} = $LayoutObject->BuildSelection(
         Data         => \%NotifyLevelList,
@@ -412,6 +413,7 @@ sub _MaskNew {
         SelectedID   => $Param{UpdateNotify} || $SLAData{UpdateNotify},
         Translation  => 0,
         PossibleNone => 1,
+        Class        => 'Modernize',
     );
     $SLAData{SolutionNotifyOptionStrg} = $LayoutObject->BuildSelection(
         Data         => \%NotifyLevelList,
@@ -419,6 +421,7 @@ sub _MaskNew {
         SelectedID   => $Param{SolutionNotify} || $SLAData{SolutionNotify},
         Translation  => 0,
         PossibleNone => 1,
+        Class        => 'Modernize',
     );
 
     # get valid list

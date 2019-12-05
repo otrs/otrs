@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -110,21 +110,32 @@ $Selenium->RunTest(
             # Create test phone ticket.
             my $TicketSubject = "Selenium Ticket";
             my $TicketBody    = "Selenium body test";
+
+            $Selenium->find_element( "#FromCustomer", 'css' )->clear();
             $Selenium->find_element( "#FromCustomer", 'css' )->send_keys($TestCustomer);
             $Selenium->WaitFor(
                 JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length'
             );
-            $Selenium->find_element("//*[text()='$TestCustomer']")->VerifiedClick();
-            $Selenium->execute_script("\$('#Dest').val('2||Raw').trigger('redraw.InputField').trigger('change');");
-            $Selenium->find_element( "#Subject",  'css' )->send_keys($TicketSubject);
-            $Selenium->find_element( "#RichText", 'css' )->send_keys($TicketBody);
+            $Selenium->execute_script("\$('li.ui-menu-item:contains($TestCustomer)').click()");
 
             # Wait for "Customer Information".
             $Selenium->WaitFor(
                 JavaScript => 'return typeof($) === "function" && $(".SidebarColumn fieldset .Value").length'
             );
+            $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length;' );
 
-            $Selenium->find_element( "#Subject", 'css' )->VerifiedSubmit();
+            $Selenium->InputFieldValueSet(
+                Element => '#Dest',
+                Value   => '2||Raw',
+            );
+
+            $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoader:visible").length;' );
+            $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#Dest").val() === "2||Raw";' );
+
+            $Selenium->find_element( "#Subject",  'css' )->send_keys($TicketSubject);
+            $Selenium->find_element( "#RichText", 'css' )->send_keys($TicketBody);
+
+            $Selenium->find_element( "#submitRichText", 'css' )->VerifiedClick();
 
             my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
@@ -174,6 +185,15 @@ $Selenium->RunTest(
                 TicketID => $TicketID,
                 UserID   => 1,
             );
+
+            # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+            if ( !$Success ) {
+                sleep 3;
+                $Success = $TicketObject->TicketDelete(
+                    TicketID => $TicketID,
+                    UserID   => 1,
+                );
+            }
             $Self->True(
                 $Success,
                 "Ticket with ticket ID $TicketID is deleted",

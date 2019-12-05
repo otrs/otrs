@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -20,19 +20,16 @@ $Kernel::OM->ObjectParamAdd(
         RestoreDatabase => 1,
     },
 );
-my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-$HelperObject->FixedTimeSet();
+my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+$Helper->FixedTimeSet();
 
 # Get SysConfig DB object.
 my $SysConfigDBObject = $Kernel::OM->Get('Kernel::System::SysConfig::DB');
 
 # Special tests for settings during a deployment.
-my $RandomID = $HelperObject->GetRandomID();
+my $RandomID = $Helper->GetRandomID();
 
-my $TestUserLogin = $HelperObject->TestUserCreate();
-my $UserID        = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-    UserLogin => $TestUserLogin,
-);
+my ( $TestUserLogin, $UserID ) = $Helper->TestUserCreate();
 
 # Create a new default setting.
 my $DefaultID0 = $SysConfigDBObject->DefaultSettingAdd(
@@ -118,7 +115,7 @@ my @Tests = (
             UserID => 1,
         },
         Success => 1,
-        Unlock  => 1
+        Unlock  => 1,
     },
     {
         Name  => 'Already Locked',
@@ -134,7 +131,7 @@ my @Tests = (
             ExclusiveLockGUID => '',
         },
         Success => 0,
-        Unlock  => 1
+        Unlock  => 1,
     },
     {
         Name  => 'Correct Invalid GUID (0)',
@@ -143,7 +140,7 @@ my @Tests = (
             ExclusiveLockGUID => 0,
         },
         Success => 0,
-        Unlock  => 1
+        Unlock  => 1,
     },
     {
         Name  => 'Correct Invalid GUID (a)',
@@ -152,7 +149,7 @@ my @Tests = (
             ExclusiveLockGUID => 'a',
         },
         Success => 0,
-        Unlock  => 1
+        Unlock  => 1,
     },
     {
         Name  => 'Correct Invalid GUID (a) x 31',
@@ -161,7 +158,7 @@ my @Tests = (
             ExclusiveLockGUID => 'a' x 31,
         },
         Success => 0,
-        Unlock  => 1
+        Unlock  => 1,
     },
     {
         Name  => 'Correct Valid GUID (a) x 32',
@@ -170,7 +167,7 @@ my @Tests = (
             ExclusiveLockGUID => 'a' x 32,
         },
         Success => 1,
-        Unlock  => 1
+        Unlock  => 1,
     },
     {
         Name  => 'Correct Valid GUID (a) x 33',
@@ -179,14 +176,14 @@ my @Tests = (
             ExclusiveLockGUID => 'a' x 33,
         },
         Success => 0,
-        Unlock  => 1
+        Unlock  => 1,
     },
     {
         Name  => 'Lock default setting (with force).',
         Param => {
             UserID            => 1,
             ExclusiveLockGUID => 'a' x 32,
-            Force             => 1
+            Force             => 1,
         },
         Success     => 1,
         Unlock      => 1,
@@ -222,6 +219,7 @@ TEST:
 for my $Test (@Tests) {
 
     if ( $Test->{Unlock} ) {
+
         my $Success = $SysConfigDBObject->DeploymentUnlock(
             All => 1,
         );
@@ -377,7 +375,7 @@ my $PrepareLockTests = sub {
     }
 
     if ( $Test->{AddSeconds} ) {
-        $HelperObject->FixedTimeAddSeconds( $Test->{AddSeconds} );
+        $Helper->FixedTimeAddSeconds( $Test->{AddSeconds} );
     }
 
     return $ExclusiveLockGUID;
@@ -510,7 +508,7 @@ for my $Test (@Tests) {
         && $ExclusiveLockGUID
         )
     {
-        $Test->{Params}->{ExclusiveLockGUID} = $ExclusiveLockGUID
+        $Test->{Params}->{ExclusiveLockGUID} = $ExclusiveLockGUID;
     }
 
     my $Success = $SysConfigDBObject->DeploymentUnlock( %{ $Test->{Params} } );
@@ -1091,7 +1089,7 @@ my %DeploymentsGet;
 
 for my $DeploymentSource (@DeploymentsAdd) {
 
-    $HelperObject->FixedTimeAddSeconds(5);
+    $Helper->FixedTimeAddSeconds(5);
 
     # Lock and add a deployment.
     my $ExclusiveLockGUID = $SysConfigDBObject->DeploymentLock(
@@ -1267,7 +1265,7 @@ for my $Count ( 1 .. 35 ) {
     );
 
     if ( $DeploymentsToAdd - $Count < 20 ) {
-        push @RemainingDeployents, $DeploymentID,
+        push @RemainingDeployents, $DeploymentID;
     }
 }
 
@@ -1306,23 +1304,23 @@ my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 my %UserDeployments;
 
 # Tests for user specific deployments
-my $TestUserLogin1 = $HelperObject->TestUserCreate();
+my $TestUserLogin1 = $Helper->TestUserCreate();
 my $UserID1        = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
     UserLogin => $TestUserLogin1,
 );
-my $TestUserLogin2 = $HelperObject->TestUserCreate();
+my $TestUserLogin2 = $Helper->TestUserCreate();
 my $UserID2        = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
     UserLogin => $TestUserLogin2,
 );
-my $TestUserLogin3 = $HelperObject->TestUserCreate();
+my $TestUserLogin3 = $Helper->TestUserCreate();
 my $UserID3        = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
     UserLogin => $TestUserLogin3,
 );
-my $TestUserLogin4 = $HelperObject->TestUserCreate();
+my $TestUserLogin4 = $Helper->TestUserCreate();
 my $UserID4        = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
     UserLogin => $TestUserLogin4,
 );
-my $TestUserLogin5 = $HelperObject->TestUserCreate();
+my $TestUserLogin5 = $Helper->TestUserCreate();
 my $UserID5        = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
     UserLogin => $TestUserLogin5,
 );

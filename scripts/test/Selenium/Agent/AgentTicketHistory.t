@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -12,20 +12,22 @@ use utf8;
 
 use vars (qw($Self));
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get needed objects
-        my $Helper       = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+        my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-        # disable check email addresses
+        # Disable check email addresses.
         $Helper->ConfigSettingChange(
             Key   => 'CheckEmailAddresses',
             Value => 0,
+        );
+
+        $Helper->ConfigSettingChange(
+            Key   => 'Ticket::Type',
+            Value => 1,
         );
 
         my $TicketObject              = $Kernel::OM->Get('Kernel::System::Ticket');
@@ -141,7 +143,16 @@ $Selenium->RunTest(
             push @DynamicFieldIDs, $DynamicFieldID;
         }
 
-        # create test ticket
+        # Add TicketType.
+        my $TypeName   = "Type$RandomID";
+        my $TypeObject = $Kernel::OM->Get('Kernel::System::Type');
+        my $TypeID     = $TypeObject->TypeAdd(
+            Name    => $TypeName,
+            ValidID => 1,
+            UserID  => 1,
+        );
+
+        # Create test ticket.
         my $TicketID = $TicketObject->TicketCreate(
             Title        => 'Selenium ticket',
             Queue        => 'Raw',
@@ -152,6 +163,7 @@ $Selenium->RunTest(
             CustomerUser => 'customer@example.com',
             OwnerID      => 1,
             UserID       => 1,
+            TypeID       => $TypeID,
         );
         $Self->True(
             $TicketID,
@@ -176,7 +188,7 @@ $Selenium->RunTest(
         for my $DynamicFieldType ( sort keys %DynamicFieldValues, sort keys %DynamicFieldDateValues ) {
 
             my $FieldName = $DynamicFields{$DynamicFieldType}->{Name};
-            my $Value = $DynamicFieldValues{$DynamicFieldType} || $DynamicFieldDateValues{$DynamicFieldType};
+            my $Value     = $DynamicFieldValues{$DynamicFieldType} || $DynamicFieldDateValues{$DynamicFieldType};
 
             # Set the value from the dynamic field.
             my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
@@ -208,7 +220,7 @@ $Selenium->RunTest(
         my $ArticleBackendObject
             = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel( ChannelName => 'Phone' );
 
-        # create two test email articles
+        # Create two test email articles.
         my @ArticleIDs;
         for my $ArticleCreate ( 1 .. 2 ) {
             my $ArticleID = $ArticleBackendObject->ArticleCreate(
@@ -230,7 +242,7 @@ $Selenium->RunTest(
             push @ArticleIDs, $ArticleID;
         }
 
-        # create test user and login
+        # Create test user and login.
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => [ 'admin', 'users' ],
         ) || die "Did not get test user";
@@ -241,31 +253,27 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        # get script alias
-        my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
+        my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # navigate to ticket zoom page of created test ticket
+        # Navigate to ticket zoom page of created test ticket.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID");
 
-        # get current initial URL
+        # Get current initial URL.
         my $InitialURL = $Selenium->get_current_url();
 
-        # force sub menus to be visible in order to be able to click one of the links
+        # Wait until page has loaded.
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function";' );
+
+        # Force sub menus to be visible in order to be able to click one of the links.
+        $Selenium->execute_script("\$('#nav-Miscellaneous ul').css('height', 'auto');");
+        $Selenium->execute_script("\$('#nav-Miscellaneous ul').css('opacity', '1');");
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#nav-Miscellaneous ul").css({ "height": "auto", "opacity": "100" });'
+                "return \$('#nav-Miscellaneous ul').css('height') !== '0px' && \$('#nav-Miscellaneous ul').css('opacity') == '1';"
         );
 
-        # click on 'History' and switch window
-        $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketHistory;TicketID=$TicketID' )]")
-            ->VerifiedClick();
-
-        $Selenium->WaitFor( WindowCount => 2 );
-        my $Handles = $Selenium->get_window_handles();
-        $Selenium->switch_to_window( $Handles->[1] );
-
-        # wait until page has loaded, if necessary
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".CancelClosePopup").length' );
+        # Click on 'History' and switch window.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketHistory;TicketID=$TicketID");
 
         # Check the history entry for the dynamic field.
         my $PageSource = $Selenium->get_page_source();
@@ -277,15 +285,18 @@ $Selenium->RunTest(
             );
         }
 
-        # click on 'Zoom view' for created second article
+        # Check if Type is shown correctly. See bug#14826.
+        my $TypeExpectedResults = "Changed type from \"\" () to \"$TypeName\" ($TypeID). (TypeUpdate)";
+        $Self->True(
+            index( $PageSource, $TypeExpectedResults ) > -1,
+            "Human readable history entry for Type is found on page.",
+        );
+
+        # Click on 'Zoom view' for created second article.
         $Selenium->find_element("//a[contains(\@href, 'AgentTicketZoom;TicketID=$TicketID;ArticleID=$ArticleIDs[1]')]")
-            ->click();
+            ->VerifiedClick();
 
-        # switch window back
-        $Selenium->WaitFor( WindowCount => 1 );
-        $Selenium->switch_to_window( $Handles->[0] );
-
-        # verify new URL
+        # Verify new URL.
         my $ChangedURL = $Selenium->get_current_url();
         $Self->IsNot(
             $ChangedURL,
@@ -293,19 +304,27 @@ $Selenium->RunTest(
             'AgentTicketHistory correctly changed parent window URL - JS is successful'
         );
 
-        # delete created test ticket
+        # Delete created test ticket.
         my $Success = $TicketObject->TicketDelete(
             TicketID => $TicketID,
             UserID   => 1,
         );
+
+        # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+        if ( !$Success ) {
+            sleep 3;
+            $Success = $TicketObject->TicketDelete(
+                TicketID => $TicketID,
+                UserID   => 1,
+            );
+        }
         $Self->True(
             $Success,
-            "TicketDelete - ID $TicketID"
+            "Deleted test ticket - $TicketID",
         );
 
+        # Delete created test dynamic fields.
         for my $DynamicFieldID (@DynamicFieldIDs) {
-
-            # delete created test dynamic field
             $Success = $DynamicFieldObject->DynamicFieldDelete(
                 ID     => $DynamicFieldID,
                 UserID => 1,
@@ -316,9 +335,19 @@ $Selenium->RunTest(
             );
         }
 
-        # make sure the cache is correct
-        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'Ticket' );
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
+        # Delete Type.
+        $Success = $DBObject->Do(
+            SQL => "DELETE FROM ticket_type WHERE id = $TypeID",
+        );
+        $Self->True(
+            $Success,
+            "Type with ID $TypeID is deleted!"
+        );
+
+        # Make sure the cache is correct.
+        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'Ticket' );
     }
 );
 

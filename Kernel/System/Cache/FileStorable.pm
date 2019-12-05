@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Cache::FileStorable;
@@ -95,8 +95,9 @@ sub Set {
         }
     }
     my $FileLocation = $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
-        Directory  => $CacheDirectory,
-        Filename   => $Filename,
+
+      # Use Location rather than Filename and Directory to skip the (unneeded) filename clean-up for better performance.
+        Location   => $CacheDirectory . '/' . $Filename,
         Content    => \$Dump,
         Type       => 'Local',
         Mode       => 'binmode',
@@ -124,8 +125,9 @@ sub Get {
     my ( $Filename, $CacheDirectory ) = $Self->_GetFilenameAndCacheDirectory(%Param);
 
     my $Content = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
-        Directory       => $CacheDirectory,
-        Filename        => $Filename,
+
+      # Use Location rather than Filename and Directory to skip the (unneeded) filename clean-up for better performance.
+        Location        => $CacheDirectory . '/' . $Filename,
         Type            => 'Local',
         Mode            => 'binmode',
         DisableWarnings => 1,
@@ -168,8 +170,9 @@ sub Delete {
     my ( $Filename, $CacheDirectory ) = $Self->_GetFilenameAndCacheDirectory(%Param);
 
     return $Kernel::OM->Get('Kernel::System::Main')->FileDelete(
-        Directory       => $CacheDirectory,
-        Filename        => $Filename,
+
+      # Use Location rather than Filename and Directory to skip the (unneeded) filename clean-up for better performance.
+        Location        => $CacheDirectory . '/' . $Filename,
         Type            => 'Local',
         DisableWarnings => 1,
     );
@@ -206,6 +209,8 @@ sub CleanUp {
         # For expired filed, check the content and TTL
         if ( $Param{Expired} ) {
             my $Content = $MainObject->FileRead(
+
+      # Use Location rather than Filename and Directory to skip the (unneeded) filename clean-up for better performance.
                 Location        => $CacheFile,
                 Mode            => 'binmode',
                 DisableWarnings => 1,
@@ -263,7 +268,7 @@ sub _GetFilenameAndCacheDirectory {
     my $CacheDirectory = $Self->{CacheDirectory} . '/' . $Param{Type};
 
     for my $Level ( 1 .. $Self->{'Cache::SubdirLevels'} ) {
-        $CacheDirectory .= '/' . substr( $Filename, $Level - 1, 1 )
+        $CacheDirectory .= '/' . substr( $Filename, $Level - 1, 1 );
     }
 
     return $Filename, $CacheDirectory;

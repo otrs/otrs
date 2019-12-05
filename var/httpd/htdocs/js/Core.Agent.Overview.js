@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 "use strict";
@@ -38,14 +38,23 @@ Core.Agent.Overview = (function (TargetNS) {
         });
 
         // create open popup event for dropdown actions
-        $('ul.Actions form > select').on("change", function() {
+        $('ul.Actions form > select').off("change").on("change", function() {
             var URL;
-            if ($(this).val() > 0) {
-                URL = Core.Config.Get('Baselink') + $(this).parents().serialize();
-                Core.UI.Popup.OpenPopup(URL, 'TicketAction');
+            if ($(this).val() !== '0') {
+                if (Core.Config.Get('Action') === 'AgentTicketQueue' ||
+                    Core.Config.Get('Action') === 'AgentTicketService' ||
+                    Core.Config.Get('Action') === 'AgentTicketStatusView' ||
+                    Core.Config.Get('Action') === 'AgentTicketEscalationView'
+                ) {
+                    $(this).closest('form').submit();
+                }
+                else {
+                    URL = Core.Config.Get('Baselink') + $(this).parents().serialize();
+                    Core.UI.Popup.OpenPopup(URL, 'TicketAction');
 
-                // reset the select box so that it can be used again from the same window
-                $(this).val('0');
+                    // reset the select box so that it can be used again from the same window
+                    $(this).val('0');
+                }
             }
         });
 
@@ -72,7 +81,7 @@ Core.Agent.Overview = (function (TargetNS) {
 
                                     // only add this field if its not already there. This could happen
                                     // if e.g. the save button is clicked multiple times
-                                    if (!$('#' + FieldID).length) {
+                                    if (!$('#' + Core.App.EscapeSelector(FieldID)).length) {
                                         $('<input name="UserFilterColumnsEnabled" type="hidden" />').attr('id', FieldID).val($(this).attr('data-fieldname')).appendTo($ListContainer.closest('div'));
                                     }
                                 });
@@ -232,10 +241,12 @@ Core.Agent.Overview = (function (TargetNS) {
                                         $TriggerObj
                                             .next('.ColumnSettingsContainer')
                                             .find('select')
-                                            .after('<span class="SelectedValue Hidden"><a href="#">x</a>' + AutoCompleteText + ' (' + AutoCompleteValue + ')</span>')
+                                            .after('<span class="SelectedValue Hidden">' + AutoCompleteText + ' (' + AutoCompleteValue + ')</span>')
                                             .parent()
-                                            .find('.SelectedValue')
-                                            .find('a')
+                                            .find('input[type=text]')
+                                            .after('<a href="#" class="DeleteFilter"><i class="fa fa-trash-o"></i></a>')
+                                            .parent()
+                                            .find('a.DeleteFilter')
                                             .off()
                                             .on('click', function() {
                                                 $(this)
@@ -289,22 +300,28 @@ Core.Agent.Overview = (function (TargetNS) {
      *      This function initializes the inline actions mini overlay in medium/preview views.
      */
     TargetNS.InitInlineActions = function () {
-        $('.OverviewMedium li, .OverviewLarge li').on('mouseenter', function() {
+        $('.OverviewMedium > li, .OverviewLarge > li').on('mouseenter', function() {
             $(this).find('ul.InlineActions').css('top', '0px');
-        });
-        $('.OverviewMedium li, .OverviewLarge li').on('mouseleave', function(Event) {
 
-            // Workaround for bug#12403: The inlineActions would hide if hovering
-            // over the queue selection due to a bug in IE. As this is working fine
-            // in MS Edge with the former pure css solution, this whole function
-            // TargetNS.InitInlineActions could be dropped as soon as IE11 support is
-            // ceased for OTRS. Remember to re-add the needed css in this case:
-            //      .OverviewLarge > li:hover ul.InlineActions { top: 0px; }    (Core.OverviewLarge.css)
-            //      .OverviewPreview > li:hover ul.InlineActions { top: 0px; }  (Core.OverviewMedium.css)
-            if (Event.target.tagName.toLowerCase() === 'select') {
+            Core.App.Publish('Event.Agent.TicketOverview.InlineActions.Shown');
+        });
+        $('.OverviewMedium > li, .OverviewLarge > li').on('mouseleave', function(Event) {
+
+            // The inline actions would hide if hovering over the queue selection due to a bug in IE.
+            //   See bug#12403 for more information.
+            // The exception has to be added also for modernized dropdowns.
+            //   See bug#13100 for more information.
+            if (
+                Event.target.tagName.toLowerCase() === 'select'
+                || $(Event.target).hasClass('InputField_Search')
+                )
+            {
                 return false;
             }
-            $(this).find('ul.InlineActions').css('top', '-30px');
+
+            $(this).find('ul.InlineActions').css('top', '-35px');
+
+            Core.App.Publish('Event.Agent.TicketOverview.InlineActions.Hidden', [$(this).find('ul.InlineActions')]);
         });
     };
 

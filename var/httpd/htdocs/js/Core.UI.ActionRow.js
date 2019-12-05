@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 "use strict";
@@ -197,6 +197,7 @@ Core.UI.ActionRow = (function (TargetNS) {
             var $Element = $(this),
                 $SelectedTickets,
                 TicketIDParameter = "TicketID=",
+                TicketIDsURL = "",
                 TicketIDs = "",
                 URL;
             if ($Element.parent('li').hasClass('Inactive')) {
@@ -205,11 +206,39 @@ Core.UI.ActionRow = (function (TargetNS) {
             else {
                 $SelectedTickets = $(TicketElementSelectors[TicketView] + ':checked');
                 $SelectedTickets.each(function () {
-                    TicketIDs += TicketIDParameter + $(this).val() + ";";
+                    TicketIDsURL += TicketIDParameter + $(this).val() + ";";
+                    TicketIDs += $(this).val() + ";";
                 });
-                URL = Core.Config.Get('Baselink') + "Action=AgentTicketBulk;" + TicketIDs;
+                URL = Core.Config.Get('Baselink') + "Action=AgentTicketBulk;" + TicketIDsURL;
                 URL += SerializeData(Core.App.GetSessionInformation());
-                Core.UI.Popup.OpenPopup(URL, 'TicketAction');
+
+                Core.AJAX.FunctionCall(
+                    Core.Config.Get('CGIHandle'),
+                    {
+                        'Action'    : 'AgentTicketBulk',
+                        'Subaction' : 'AJAXIgnoreLockedTicketIDs',
+                        'TicketIDs' :  Core.JSON.Stringify(TicketIDs)
+                    },
+                    function(Response) {
+                        var IgnoreLockedTicketIDs = Core.JSON.Parse(Response);
+                        if (IgnoreLockedTicketIDs.Message.length) {
+
+                            Core.UI.Dialog.ShowContentDialog('<p style="width:400px;">' + IgnoreLockedTicketIDs.Message + '</p>', Core.Language.Translate('Cannot proceed') , '150px', 'Center', true, [
+
+                                {
+                                    Label: Core.Language.Translate('Close this dialog'),
+                                    Function: function () {
+                                        Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+                                    }
+                                }
+                            ]);
+                        }
+                        else {
+                          Core.UI.Popup.OpenPopup(URL, 'TicketAction');
+                        }
+                    }
+                );
+
             }
             return false;
         });

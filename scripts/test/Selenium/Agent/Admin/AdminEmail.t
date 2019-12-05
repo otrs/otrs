@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -14,25 +14,23 @@ use vars (qw($Self));
 
 use Kernel::Language;
 
-# get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 my $Selenium     = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get helper object
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         my $Language = 'de';
 
-        # do not validate email addresses
+        # Do not validate email addresses.
         $Helper->ConfigSettingChange(
             Key   => 'CheckEmailAddresses',
             Value => 0,
         );
 
-        # do not check RichText
+        # Do not check RichText.
         $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => 'Frontend::RichText',
@@ -54,7 +52,7 @@ $Selenium->RunTest(
 
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminEmail");
 
-        # check page
+        # Check page.
         for my $ID (
             qw(From UserIDs GroupIDs GroupPermissionRO GroupPermissionRW Subject RichText)
             )
@@ -64,7 +62,7 @@ $Selenium->RunTest(
             $Element->is_displayed();
         }
 
-        # if there are roles, there will be select box for roles in AdminEmail
+        # If there are roles, there will be select box for roles in AdminEmail.
         my %RoleList = $Kernel::OM->Get('Kernel::System::Group')->RoleList( Valid => 1 );
         if (%RoleList) {
             my $Element = $Selenium->find_element( "#RoleIDs", 'css' );
@@ -78,10 +76,11 @@ $Selenium->RunTest(
             "#From stored value",
         );
 
-        # check client side validation
+        # Check client side validation.
         my $Element = $Selenium->find_element( "#Subject", 'css' );
         $Element->send_keys("");
-        $Element->VerifiedSubmit();
+        $Selenium->find_element( "#submitRichText", 'css' )->click();
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#Subject.Error").length' );
 
         $Self->Is(
             $Selenium->execute_script(
@@ -91,19 +90,22 @@ $Selenium->RunTest(
             'Client side validation correctly detected missing input value',
         );
 
-        # create test admin notification
+        # Create test admin notification.
         my $RandomID = $Helper->GetRandomID();
         my $Text     = "Selenium Admin Notification test";
         my $UserID   = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
             UserLogin => $TestUserLogin,
         );
 
-        $Selenium->execute_script("\$('#UserIDs').val('$UserID').trigger('redraw.InputField').trigger('change');");
-        $Selenium->find_element( "#Subject",  'css' )->send_keys($RandomID);
-        $Selenium->find_element( "#RichText", 'css' )->send_keys($Text);
-        $Selenium->find_element( "#Subject",  'css' )->VerifiedSubmit();
+        $Selenium->InputFieldValueSet(
+            Element => '#UserIDs',
+            Value   => $UserID,
+        );
+        $Selenium->find_element( "#Subject",        'css' )->send_keys($RandomID);
+        $Selenium->find_element( "#RichText",       'css' )->send_keys($Text);
+        $Selenium->find_element( "#submitRichText", 'css' )->VerifiedClick();
 
-        # check if test admin notification is success
+        # Check if test admin notification is success.
         my $LanguageObject = Kernel::Language->new(
             UserLanguage => $Language,
         );

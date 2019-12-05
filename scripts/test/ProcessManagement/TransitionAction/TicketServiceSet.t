@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -37,10 +37,7 @@ my $RandomID   = $Helper->GetRandomID();
 my $TestCustomerUserLogin = $Helper->TestCustomerUserCreate();
 
 # set user details
-my $TestUserLogin = $Helper->TestUserCreate();
-my $TestUserID    = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-    UserLogin => $TestUserLogin,
-);
+my ( $TestUserLogin, $TestUserID ) = $Helper->TestUserCreate();
 
 #
 # Create new services
@@ -114,7 +111,7 @@ $Self->True(
 my @TicketData;
 for my $Item ( 0 .. 1 ) {
     my $TicketID = $TicketObject->TicketCreate(
-        Title => ( $Item == 0 ) ? $Services[0]->{ServiceID} : 'test',
+        Title         => ( $Item == 0 ) ? $Services[0]->{ServiceID} : 'test',
         QueueID       => 1,
         Lock          => 'unlock',
         Priority      => '3 normal',

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -86,7 +86,7 @@ $Selenium->RunTest(
         # test search filter for CustomerUser
         $Selenium->find_element( "#Search", 'css' )->clear();
         $Selenium->find_element( "#Search", 'css' )->send_keys($CustomerUserName);
-        $Selenium->find_element( "#Search", 'css' )->VerifiedSubmit();
+        $Selenium->find_element("//button[\@value='Search'][\@type='submit']")->VerifiedClick();
         $Self->True(
             index( $Selenium->get_page_source(), $CustomerUserName ) > -1,
             "CustomerUser $CustomerUserName found on page",
@@ -95,14 +95,14 @@ $Selenium->RunTest(
         # test search filter for Customer
         $Selenium->find_element( "#Search", 'css' )->clear();
         $Selenium->find_element( "#Search", 'css' )->send_keys($CustomerName);
-        $Selenium->find_element( "#Search", 'css' )->VerifiedSubmit();
+        $Selenium->find_element("//button[\@value='Search'][\@type='submit']")->VerifiedClick();
         $Self->True(
             index( $Selenium->get_page_source(), $CustomerName ) > -1,
             "Customer $CustomerName found on page",
         );
 
         $Selenium->find_element( "#Search", 'css' )->clear();
-        $Selenium->find_element( "#Search", 'css' )->VerifiedSubmit();
+        $Selenium->find_element("//button[\@value='Search'][\@type='submit']")->VerifiedClick();
 
         # assign test customer to test customer user
         $Selenium->find_element("//a[contains(\@href, \'ID=$CustomerUserID' )]")->VerifiedClick();
@@ -147,6 +147,43 @@ $Selenium->RunTest(
             $Selenium->find_element("//input[\@value='$CustomerID']")->is_selected(),
             0,
             "Customer $CustomerName is not active for CustomerUser $CustomerUserName",
+        );
+
+        # Check if Customer user has customer relation information in search result screen. See bug#14760.
+        # navigate AdminCustomerUserCustomer screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminCustomerUserCustomer");
+
+        # Search for customer user.
+        $Selenium->find_element( "#Search", 'css' )->clear();
+        $Selenium->find_element( "#Search", 'css' )->send_keys($CustomerUserName);
+        $Selenium->find_element("//button[\@value='Search'][\@type='submit']")->VerifiedClick();
+
+        $Selenium->find_element(
+            "//ul[contains(\@id, \'CustomerUsers')]//li//a[contains(\@href, \'ID=$CustomerUserName' )]"
+        )->VerifiedClick();
+
+        # Check if customer is displayed after customer user search.
+        $Self->Is(
+            $Selenium->execute_script("return \$('a[href*=\"$CustomerName\"]').length"),
+            "1",
+            "Customer is displayed correctly"
+        );
+
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminCustomerUserCustomer");
+
+        # Search for customer.
+        $Selenium->find_element( "#Search", 'css' )->clear();
+        $Selenium->find_element( "#Search", 'css' )->send_keys($CustomerName);
+        $Selenium->find_element("//button[\@value='Search'][\@type='submit']")->VerifiedClick();
+
+        $Selenium->find_element("//ul[contains(\@id, \'Customers')]//li//a[contains(\@href, \'ID=$CustomerName' )]")
+            ->VerifiedClick();
+
+        # Check if customer user is displayed after customer search.
+        $Self->Is(
+            $Selenium->execute_script("return \$('a[href*=\"$CustomerUserName\"]').length"),
+            "1",
+            "Customer user is displayed correctly"
         );
 
         # get DB object

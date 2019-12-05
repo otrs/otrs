@@ -1050,6 +1050,9 @@
     <Index Name="article_data_mime_message_id_md5">
         <IndexColumn Name="a_message_id_md5"/>
     </Index>
+    <Index Name="article_data_mime_article_id">
+        <IndexColumn Name="article_id"/>
+    </Index>
     <ForeignKey ForeignTable="article">
         <Reference Local="article_id" Foreign="id"/>
     </ForeignKey>
@@ -2044,7 +2047,7 @@
     <!-- field type selects the DF backend to use for this field -->
     <Column Name="field_type" Required="true" Type="VARCHAR" Size="200"/>
     <!-- this controls which object the dynamic field links to; currently we will have "ticket" and "article"; allow only lowercase letters -->
-    <Column Name="object_type" Required="true" Type="VARCHAR" Size="200"/>
+    <Column Name="object_type" Required="true" Type="VARCHAR" Size="100"/>
     <!-- config stored as YAML like in the web service configuration -->
     <Column Name="config" Required="false" Type="LONGBLOB"/>
     <Column Name="valid_id" Required="true" Type="SMALLINT"/>
@@ -2068,7 +2071,7 @@
 <Table Name="dynamic_field_obj_id_name">
     <Column Name="object_id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="INTEGER"/>
     <Column Name="object_name" Required="true" Size="200" Type="VARCHAR"/>
-    <Column Name="object_type" Required="true" Size="200" Type="VARCHAR"/>
+    <Column Name="object_type" Required="true" Size="100" Type="VARCHAR"/>
     <Unique Name="dynamic_field_object_name">
         <UniqueColumn Name="object_name"/>
         <UniqueColumn Name="object_type"/>
@@ -2637,6 +2640,9 @@
     <Index Name="communication_status">
         <IndexColumn Name="status"/>
     </Index>
+    <Index Name="communication_start_time">
+        <IndexColumn Name="start_time"/>
+    </Index>
 </Table>
 
 <Table Name="communication_log_object">
@@ -2688,9 +2694,9 @@
 </Table>
 
 <!-- form_draft -->
-<TableCreate Name="form_draft">
+<Table Name="form_draft">
     <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="INTEGER" />
-    <Column Name="object_type" Required="true" Size="200" Type="VARCHAR" />
+    <Column Name="object_type" Required="true" Size="100" Type="VARCHAR" />
     <Column Name="object_id" Required="true" Type="INTEGER" />
     <Column Name="action" Required="true" Size="200" Type="VARCHAR" />
     <Column Name="title" Required="false" Size="255" Type="VARCHAR" />
@@ -2708,6 +2714,6 @@
         <Reference Local="create_by" Foreign="id" />
         <Reference Local="change_by" Foreign="id" />
     </ForeignKey>
-</TableCreate>
+</Table>
 
 </database>

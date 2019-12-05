@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Log;
@@ -61,7 +61,7 @@ sub new {
     bless( $Self, $Type );
 
     if ( !$Kernel::OM ) {
-        Carp::confess('$Kernel::OM is not defined, please initialize your object manager')
+        Carp::confess('$Kernel::OM is not defined, please initialize your object manager');
     }
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
@@ -107,14 +107,17 @@ sub new {
                 Priority => 'error',
                 Message  => "Can't remove shm for log: $!",
             );
-            return;
+
+            # Continue without IPC.
+            return $Self;
         }
 
         # Re-initialize SHM segment.
         $Self->{IPCSHMKey} = shmget( $Self->{IPCKey}, $Self->{IPCSize}, oct(1777) );
     }
 
-    return if !$Self->{IPCSHMKey};
+    # Continue without IPC.
+    return $Self if !$Self->{IPCSHMKey};
 
     # Only flag IPC as active if everything worked well.
     $Self->{IPC} = 1;
@@ -165,8 +168,8 @@ sub Log {
 
     return 1 if $PriorityNum < $Self->{MinimumLevelNum};
 
-    my $Message = $Param{MSG} || $Param{Message} || '???';
-    my $Caller = $Param{Caller} || 0;
+    my $Message = $Param{MSG}    || $Param{Message} || '???';
+    my $Caller  = $Param{Caller} || 0;
 
     # returns the context of the current subroutine and sub-subroutine!
     my ( $Package1, $Filename1, $Line1, $Subroutine1 ) = caller( $Caller + 0 );
@@ -183,12 +186,17 @@ sub Log {
         Line      => $Line1,
     );
 
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime'
+    );
+    my $LogTime = $DateTimeObject->ToCTimeString();
+
     # if error, write it to STDERR
     if ( $Priority =~ /^error/i ) {
 
         ## no critic
         my $Error = sprintf "ERROR: $Self->{LogPrefix} Perl: %vd OS: $^O Time: "
-            . localtime() . "\n\n", $^V;
+            . $LogTime . "\n\n", $^V;
         ## use critic
 
         $Error .= " Message: $Message\n\n";
@@ -249,7 +257,7 @@ sub Log {
 
         $Priority = lc $Priority;
 
-        my $Data   = localtime() . ";;$Priority;;$Self->{LogPrefix};;$Message\n";    ## no critic
+        my $Data   = $LogTime . ";;$Priority;;$Self->{LogPrefix};;$Message\n";    ## no critic
         my $String = $Self->GetLog();
 
         shmwrite( $Self->{IPCSHMKey}, $Data . $String, 0, $Self->{IPCSize} ) || die $!;
@@ -357,10 +365,10 @@ sub Dumper {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

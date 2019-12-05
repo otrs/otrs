@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::PostMaster::Filter::MatchDBSource;
@@ -70,7 +70,7 @@ sub Run {
             @Set = @{ $Config{Set} };
         }
         my $StopAfterMatch = $Config{StopAfterMatch} || 0;
-        my $Prefix = '';
+        my $Prefix         = '';
         if ( $Config{Name} ) {
             $Prefix = "Filter: '$Config{Name}' ";
         }
@@ -89,7 +89,7 @@ sub Run {
                 my @EmailAddresses = $Self->{ParserObject}->SplitAddressLine(
                     Line => $Param{GetParam}->{$Key},
                 );
-                my $LocalMatched;
+                my $LocalMatched = 0;
                 RECIPIENT:
                 for my $Recipients (@EmailAddresses) {
 
@@ -116,17 +116,17 @@ sub Run {
                         last RECIPIENT;
                     }
                 }
+
+                # Switch LocalMatched if Config has a negation.
+                if ( $Config{Not}->[$Index]->{Value} ) {
+                    $LocalMatched = !$LocalMatched;
+                }
+
                 if ( !$LocalMatched ) {
                     $MatchedNot = 1;
                 }
                 else {
                     $Matched = 1;
-                }
-
-                # switch MatchedNot and $Matched
-                if ( $Config{Not}->[$Index]->{Value} ) {
-                    $MatchedNot ^= 1;
-                    $Matched    ^= 1;
                 }
             }
 

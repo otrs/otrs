@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::ToolBar::TicketLocked;
@@ -16,9 +16,10 @@ use warnings;
 use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::Output::HTML::Layout',
     'Kernel::System::Log',
     'Kernel::System::Ticket',
-    'Kernel::Output::HTML::Layout',
 );
 
 sub Run {
@@ -35,6 +36,8 @@ sub Run {
         }
     }
 
+    return if !$Kernel::OM->Get('Kernel::Config')->Get('Frontend::Module')->{AgentTicketLockedView};
+
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
@@ -43,7 +46,7 @@ sub Run {
         Result     => 'COUNT',
         Locks      => [ 'lock', 'tmp_lock' ],
         OwnerIDs   => [ $Self->{UserID} ],
-        UserID     => 1,
+        UserID     => $Self->{UserID},
         Permission => 'ro',
     ) || 0;
     my $CountNew = $TicketObject->TicketSearch(
@@ -54,7 +57,7 @@ sub Run {
             Seen => 1,
         },
         TicketFlagUserID => $Self->{UserID},
-        UserID           => 1,
+        UserID           => $Self->{UserID},
         Permission       => 'ro',
     ) || 0;
     $CountNew = $Count - $CountNew;
@@ -64,7 +67,7 @@ sub Run {
         StateType                     => ['pending reminder'],
         TicketPendingTimeOlderMinutes => 1,
         OwnerIDs                      => [ $Self->{UserID} ],
-        UserID                        => 1,
+        UserID                        => $Self->{UserID},
         Permission                    => 'ro',
     ) || 0;
 

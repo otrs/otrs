@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -310,7 +310,7 @@ my @Tests = (
         Success                => 1,
     },
     {
-        Name   => 'Search XXMLContent AdminEmail in Framework.xml ',
+        Name   => 'Search XMLContent AdminEmail in Framework.xml ',
         Config => {
             Search        => "AdminEmail",
             SearchType    => 'XMLContent',
@@ -320,7 +320,7 @@ my @Tests = (
         Success                => 1,
     },
     {
-        Name   => 'Search XXMLContent Ticket::Hook in Ticket.xml ',
+        Name   => 'Search XMLContent Ticket::Hook in Ticket.xml ',
         Config => {
             Search        => "Ticket::Hook",
             SearchType    => 'XMLContent',
@@ -330,7 +330,7 @@ my @Tests = (
         Success                => 1,
     },
     {
-        Name   => 'Search XXMLContent Ticket::Hook in Framework.xml ',
+        Name   => 'Search XMLContent Ticket::Hook in Framework.xml ',
         Config => {
             Search        => "Ticket::Hook",
             SearchType    => 'XMLContent',

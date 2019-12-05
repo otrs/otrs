@@ -1257,6 +1257,17 @@ BEGIN
 IF NOT EXISTS (
     SELECT 1
     FROM pg_indexes
+    WHERE LOWER(indexname) = LOWER('article_data_mime_article_id')
+    ) THEN
+    CREATE INDEX article_data_mime_article_id ON article_data_mime (article_id);
+END IF;
+END$$;
+;
+DO $$
+BEGIN
+IF NOT EXISTS (
+    SELECT 1
+    FROM pg_indexes
     WHERE LOWER(indexname) = LOWER('article_data_mime_message_id_md5')
     ) THEN
     CREATE INDEX article_data_mime_message_id_md5 ON article_data_mime (a_message_id_md5);
@@ -2382,7 +2393,7 @@ CREATE TABLE dynamic_field (
     label VARCHAR (200) NOT NULL,
     field_order INTEGER NOT NULL,
     field_type VARCHAR (200) NOT NULL,
-    object_type VARCHAR (200) NOT NULL,
+    object_type VARCHAR (100) NOT NULL,
     config TEXT NULL,
     valid_id SMALLINT NOT NULL,
     create_time timestamp(0) NOT NULL,
@@ -2398,7 +2409,7 @@ CREATE TABLE dynamic_field (
 CREATE TABLE dynamic_field_obj_id_name (
     object_id serial NOT NULL,
     object_name VARCHAR (200) NOT NULL,
-    object_type VARCHAR (200) NOT NULL,
+    object_type VARCHAR (100) NOT NULL,
     PRIMARY KEY(object_id),
     CONSTRAINT dynamic_field_object_name UNIQUE (object_name, object_type)
 );
@@ -2945,6 +2956,17 @@ BEGIN
 IF NOT EXISTS (
     SELECT 1
     FROM pg_indexes
+    WHERE LOWER(indexname) = LOWER('communication_start_time')
+    ) THEN
+    CREATE INDEX communication_start_time ON communication_log (start_time);
+END IF;
+END$$;
+;
+DO $$
+BEGIN
+IF NOT EXISTS (
+    SELECT 1
+    FROM pg_indexes
     WHERE LOWER(indexname) = LOWER('communication_status')
     ) THEN
     CREATE INDEX communication_status ON communication_log (status);
@@ -3046,7 +3068,7 @@ END$$;
 -- ----------------------------------------------------------
 CREATE TABLE form_draft (
     id serial NOT NULL,
-    object_type VARCHAR (200) NOT NULL,
+    object_type VARCHAR (100) NOT NULL,
     object_id INTEGER NOT NULL,
     action VARCHAR (200) NOT NULL,
     title VARCHAR (255) NULL,

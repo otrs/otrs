@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentOTRSBusiness;
@@ -42,6 +42,26 @@ sub Run {
 sub BlockScreen {
     my ( $Self, %Param ) = @_;
 
+    # Verify that current user has right permission for downgrade action.
+    # See bug#14842 (https://bugs.otrs.org/show_bug.cgi?id=14842).
+    my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+    my $Groups      = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::Module')->{AdminOTRSBusiness}->{Group};
+    if ( !IsArrayRefWithData($Groups) ) {
+        push @{$Groups}, 'admin';
+    }
+
+    my $HasPermission;
+    GROUPS:
+    for my $Group ( @{$Groups} ) {
+
+        $HasPermission = $GroupObject->PermissionCheck(
+            UserID    => $Self->{UserID},
+            GroupName => $Group,
+            Type      => 'rw',
+        );
+        last GROUPS if $HasPermission;
+    }
+
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     my $Output = $LayoutObject->Header();
@@ -49,6 +69,11 @@ sub BlockScreen {
 
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AgentOTRSBusinessBlockScreen',
+        Data         => {
+            OTRSSTORMIsInstalled   => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSSTORMIsInstalled(),
+            OTRSCONTROLIsInstalled => $Kernel::OM->Get('Kernel::System::OTRSBusiness')->OTRSCONTROLIsInstalled(),
+            HasPermission          => $HasPermission,
+        },
     );
     $Output .= $LayoutObject->Footer();
 

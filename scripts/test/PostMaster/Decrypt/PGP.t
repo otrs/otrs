@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -18,7 +18,8 @@ use Kernel::System::PostMaster;
 # Get helper object.
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-        RestoreDatabase => 1,
+        RestoreDatabase  => 1,
+        UseTmpArticleDir => 1,
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
@@ -229,8 +230,8 @@ $ConfigObject->Set(
         },
         '000-MatchDBSource' => {
             'Module' => 'Kernel::System::PostMaster::Filter::MatchDBSource',
-            }
         }
+    }
 );
 
 my @Return = $PostMasterObject->Run( Queue => '' );
@@ -255,7 +256,7 @@ my %Ticket = $TicketObject->TicketGet(
     TicketID => $Return[1],
 );
 
-my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+my $ArticleObject        = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Email' );
 
 my @ArticleIndex = $ArticleObject->ArticleList(
@@ -307,8 +308,8 @@ $ConfigObject->Set(
         },
         '000-MatchDBSource' => {
             'Module' => 'Kernel::System::PostMaster::Filter::MatchDBSource',
-            }
         }
+    }
 );
 
 my @ReturnEncrypted = $PostMasterObject->Run( Queue => '' );

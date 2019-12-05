@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 /*global Clipboard */
@@ -136,6 +136,7 @@ Core.Agent.Admin = Core.Agent.Admin || {};
 
             Core.UI.Dialog.ShowContentDialog($DialogObj, Core.Language.Translate('Deploy'), '100px', 'Center', true);
             Core.UI.InitWidgetActionToggle();
+            Core.Form.Validate.Init();
 
             $('.CloseDialog').off('click.CloseDeploymentDialog').on('click.CloseDeploymentDialog', function() {
                 Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
@@ -151,6 +152,10 @@ Core.Agent.Admin = Core.Agent.Admin || {};
                     },
                     $DialogContentObj = $(this).closest('.Dialog').find('.InnerContent'),
                     $DialogFooterObj = $(this).closest('.Dialog').find('.ContentFooter');
+
+                if (Data.Comments.length > 250) {
+                    return false;
+                }
 
                 if ($DialogContentObj.hasClass('Deploying')) {
                     alert(Core.Language.Translate('The deployment is already running.'));
@@ -170,11 +175,13 @@ Core.Agent.Admin = Core.Agent.Admin || {};
                         $DialogFooterObj.find('.ButtonsRegular').hide();
 
                         // success
-                        if (Response && parseInt(Response.Result, 10) === 1) {
+                        if (Response && Response.Result && Response.Result.Success == 1) {
 
                             $DialogContentObj.find('.Overlay i.Active').hide();
                             $DialogContentObj.find('.Overlay i.Success').fadeIn();
-                            $DialogContentObj.find('em').text(Core.Language.Translate("Deployment successful. You're being redirected..."));
+                            $DialogContentObj.find('em').text(
+                                Core.Language.Translate("Deployment successful. You're being redirected...")
+                            );
 
                             window.setTimeout(function() {
 
@@ -194,7 +201,15 @@ Core.Agent.Admin = Core.Agent.Admin || {};
                             $DialogFooterObj.find('.ButtonsFinish').show();
                             $DialogContentObj.find('.Overlay i.Active').hide();
                             $DialogContentObj.find('.Overlay i.Error').fadeIn();
-                            $DialogContentObj.find('em').text(Core.Language.Translate('There was an error. Please save all settings you are editing and check the logs for more information.'));
+                            $DialogContentObj.find('em').text(
+                                Core.Language.Translate('There was an error. Please save all settings you are editing and check the logs for more information.')
+                            );
+                        }
+
+                        if (Response && Response.Result && Response.Result.Error !== undefined) {
+                            $DialogContentObj.find('em').after(
+                                Response.Result.Error
+                            );
                         }
                     }
                 );
@@ -462,7 +477,7 @@ Core.Agent.Admin = Core.Agent.Admin || {};
                 if ($DefaultObj.length) {
                     $WidgetObj.data('original-padding', OriginalPadding);
                     $WidgetObj.find('.Content').animate({
-                        'padding-bottom' : OriginalPadding + 25
+                        'padding-bottom' : OriginalPadding + $DefaultObj.height()
                     }, 'fast');
                     $DefaultObj.slideDown('fast');
                 }
@@ -511,7 +526,7 @@ Core.Agent.Admin = Core.Agent.Admin || {};
         });
 
         $('#EditAll').on('click', function() {
-            $('.Setting:not(.IsLockedByAnotherUser):not(.IsLockedByMe):visible').find('a.SettingEdit').trigger('click');
+            $('.Setting:not(.IsDisabled):not(.IsLockedByAnotherUser):not(.IsLockedByMe):visible').find('a.SettingEdit').trigger('click');
             return false;
         });
 
@@ -528,17 +543,11 @@ Core.Agent.Admin = Core.Agent.Admin || {};
         }
 
         // Init setting toggle
-        $(".SettingDisabled, .SettingEnabled").on('click', function () {
+        $(".SettingDisabled, .SettingEnabled, .SettingEnable").on('click', function () {
             EnableModification($(this));
             Core.SystemConfiguration.Update($(this), 1, 0);
             return false;
         });
-
-
-
-
-
-
 
         if (parseInt(Core.Config.Get('OTRSBusinessIsInstalled'), 10) == "1") {
             $(".UserModificationActive, .UserModificationNotActive").on('click', function () {
@@ -585,96 +594,101 @@ Core.Agent.Admin = Core.Agent.Admin || {};
     */
     TargetNS.InitFavourites = function() {
 
-        TargetNS.FavouritesField = $('#SysConfigFavourites').val();
-        TargetNS.Favourites = [];
-
-        if (TargetNS.FavouritesField) {
-            TargetNS.Favourites = JSON.parse(TargetNS.FavouritesField);
-        }
-
         if ($('.WidgetSimple .Setting').length) {
             $('#UserWidgetState_SystemConfiguration_Help, #UserWidgetState_SystemConfiguration_Sticky').removeClass('Hidden');
         }
 
-        // remove a setting from favourites
+        // Remove a setting from favourites.
         $('.Setting').off('click.RemoveFromFavourites').on('click.RemoveFromFavourites', '.Button.RemoveFromFavourites', function() {
 
-            // get current favourites
             var $TriggerObj = $(this),
                 SettingName = $TriggerObj.data('setting-name'),
+                Data = {
+                    Action: 'AgentPreferences',
+                    Subaction: 'UserSystemConfigurationFavourites'
+                },
                 Index;
 
-            if (!SettingName) {
-                return false;
-            }
+            Core.AJAX.FunctionCall(Core.Config.Get('Baselink'), Data, function (Response) {
 
-            Index = TargetNS.Favourites.indexOf(SettingName);
-            if (Index > -1) {
-                TargetNS.Favourites.splice(Index, 1);
-            }
-
-            // Update preferences
-            Core.Agent.PreferencesUpdate('UserSystemConfigurationFavourites', JSON.stringify(TargetNS.Favourites), function() {
-
-                if (Core.Config.Get('Subaction') === 'Favourites') {
-                    $TriggerObj.closest('.Setting').fadeOut(function() {
-                        $(this).remove();
-                    });
+                if (Response.length === 0 || !SettingName) {
+                    return false;
                 }
-                else {
-                    $TriggerObj.removeClass('RemoveFromFavourites').addClass('AddToFavourites').find('span').animate({ 'opacity': '0' }, function() {
-                        $(this).text(Core.Language.Translate('Add to favourites'));
+
+                // Remove SettingName from an array of favourites.
+                Index = Response.indexOf(SettingName);
+                if (Response.length > 0 && Index > -1) {
+                    Response.splice(Index, 1);
+                }
+
+                // Update preferences.
+                Core.Agent.PreferencesUpdate('UserSystemConfigurationFavourites', JSON.stringify(Response), function() {
+
+                    if (Core.Config.Get('Subaction') === 'Favourites') {
+                        $TriggerObj.closest('.Setting').fadeOut(function() {
+                            $(this).remove();
+                        });
+                    }
+                    else {
+                        $TriggerObj.removeClass('RemoveFromFavourites').addClass('AddToFavourites').find('span').animate({ 'opacity': '0' }, function() {
+                            $(this).text(Core.Language.Translate('Add to favourites'));
+                            $TriggerObj.find('span').animate({ 'opacity': '1' });
+                        });
+                        $TriggerObj.find('i.fa-star').fadeOut(function() {
+                            $(this).after('<i class="fa fa-check" style="display: none;"></i>').next('i').fadeIn(function() {
+                                $(this).delay(1000).fadeOut(function() {
+                                    $(this).prev('i').removeClass('fa-star').addClass('fa-star-o').fadeIn();
+                                    $(this).remove();
+                                })
+                            });
+                        });
+                    }
+                });
+
+                return false;
+
+            }, 'json');
+        });
+
+        // Add a setting to favourites.
+        $('.Setting').off('click.AddToFavourites').on('click.AddToFavourites', '.Button.AddToFavourites', function() {
+
+            var $TriggerObj = $(this),
+                SettingName = $TriggerObj.data('setting-name'),
+                Data = {
+                    Action: 'AgentPreferences',
+                    Subaction: 'UserSystemConfigurationFavourites'
+                };
+
+            Core.AJAX.FunctionCall(Core.Config.Get('Baselink'), Data, function (Response) {
+
+                if (!Response || !SettingName || Response.indexOf(SettingName) > -1) {
+                    return false;
+                }
+
+                // Add SettingName to an array of favourites.
+                Response.push(SettingName);
+
+                // Update preferences
+                Core.Agent.PreferencesUpdate('UserSystemConfigurationFavourites', JSON.stringify(Response), function() {
+
+                    $TriggerObj.removeClass('AddToFavourites').addClass('RemoveFromFavourites').find('span').animate({ 'opacity': '0' }, function() {
+                        $(this).text(Core.Language.Translate('Remove from favourites'));
                         $TriggerObj.find('span').animate({ 'opacity': '1' });
                     });
-                    $TriggerObj.find('i.fa-star').fadeOut(function() {
+                    $TriggerObj.find('i.fa-star-o').fadeOut(function() {
                         $(this).after('<i class="fa fa-check" style="display: none;"></i>').next('i').fadeIn(function() {
                             $(this).delay(1000).fadeOut(function() {
-                                $(this).prev('i').removeClass('fa-star').addClass('fa-star-o').fadeIn();
+                                $(this).prev('i').removeClass('fa-star-o').addClass('fa-star').fadeIn();
                                 $(this).remove();
                             })
                         });
                     });
-                }
-            });
-
-            return false;
-        });
-
-        // add a setting to favourites
-        $('.Setting').off('click.AddToFavourites').on('click.AddToFavourites', '.Button.AddToFavourites', function() {
-
-            // get current favourites
-            var $TriggerObj = $(this),
-                SettingName = $TriggerObj.data('setting-name');
-
-            if (!SettingName) {
-                return false;
-            }
-
-            if (TargetNS.Favourites.indexOf(SettingName) > -1) {
-                return false;
-            }
-
-            TargetNS.Favourites.push(SettingName);
-
-            // Update preferences
-            Core.Agent.PreferencesUpdate('UserSystemConfigurationFavourites', JSON.stringify(TargetNS.Favourites), function() {
-
-                $TriggerObj.removeClass('AddToFavourites').addClass('RemoveFromFavourites').find('span').animate({ 'opacity': '0' }, function() {
-                    $(this).text(Core.Language.Translate('Remove from favourites'));
-                    $TriggerObj.find('span').animate({ 'opacity': '1' });
                 });
-                $TriggerObj.find('i.fa-star-o').fadeOut(function() {
-                    $(this).after('<i class="fa fa-check" style="display: none;"></i>').next('i').fadeIn(function() {
-                        $(this).delay(1000).fadeOut(function() {
-                            $(this).prev('i').removeClass('fa-star-o').addClass('fa-star').fadeIn();
-                            $(this).remove();
-                        })
-                    });
-                });
-            });
 
-            return false;
+                return false;
+
+            }, 'json');
         });
     };
 
@@ -828,6 +842,37 @@ Core.Agent.Admin = Core.Agent.Admin || {};
             return false;
         });
 
+        // show a custom title tooltip for disabled keys to let users understand why some keys cant be edited
+        $('.SettingsList').on('mouseenter', 'input.Key[readonly]', function() {
+            $(this).data('original-title', $(this).attr('title'));
+            $(this).attr('title', Core.Language.Translate('Keys with values can\'t be renamed. Please remove this key/value pair instead and re-add it afterwards.'));
+        });
+        $('.SettingsList').on('mouseleave', 'input.Key[readonly]', function() {
+            var OriginalTitle = $(this).data('original-title');
+            if (OriginalTitle) {
+                $(this).attr('title', $(this).data('original-title'));
+                $(this).removeData('original-title');
+            }
+        });
+
+        // toggle hidden checkboxes on click of WorkingHoursItems
+        $('.ContentColumn').on('click', '.WorkingHoursItem', function() {
+
+            var $CheckboxObj = $(this).find('input[type=checkbox]');
+            if (!$(this).closest('.WidgetSimple.Setting').hasClass('IsLockedByMe')) {
+                return false;
+            }
+
+            if ($CheckboxObj.prop('checked')) {
+                $(this).removeClass('Checked');
+                $CheckboxObj.prop('checked', false);
+            }
+            else {
+                $(this).addClass('Checked');
+                $CheckboxObj.prop('checked', true);
+            }
+        });
+
         Core.UI.Table.InitTableFilter($('#FilterDeployments'), $('#Deployments'));
     };
 
@@ -924,6 +969,7 @@ Core.Agent.Admin = Core.Agent.Admin || {};
                 if ($Widget.hasClass('MenuExpanded')) {
                     $Widget.find('.WidgetMessage.Bottom').show();
                 }
+
                 Core.App.Publish('SystemConfiguration.SettingListUpdate');
             }
         );
@@ -955,7 +1001,6 @@ Core.Agent.Admin = Core.Agent.Admin || {};
             function(Response) {
 
                 if (Response.Error != null) {
-                    // TODO: Display user name
                     alert(Response.Error);
                     // hide loader
                     Core.UI.WidgetOverlayHide($Widget);
@@ -1039,7 +1084,7 @@ Core.Agent.Admin = Core.Agent.Admin || {};
                 $Widget.addClass('IsLockedByMe');
 
                 // focus the first visible input field
-                $Widget.find('input[type=text]:visible').first().focus();
+                $Widget.find('input[type=text]:not(.InputField_Search):visible').first().focus();
 
                 Core.App.Publish('SystemConfiguration.SettingListUpdate');
             }

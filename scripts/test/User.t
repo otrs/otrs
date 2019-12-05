@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -56,6 +56,7 @@ my $UserID = $UserObject->UserAdd(
     UserLastname  => 'Lastname Test1',
     UserLogin     => $UserRand,
     UserEmail     => $UserRand . '@example.com',
+    UserComment   => $UserRand,
     ValidID       => 1,
     ChangeUserID  => 1,
 );
@@ -144,6 +145,11 @@ $Self->Is(
     $UserRand . '@example.com',
     'GetUserData() - UserEmail',
 );
+$Self->Is(
+    $UserData{UserComment} || '',
+    $UserRand,
+    'GetUserData() - UserComment',
+);
 
 my %UserList = $UserObject->UserList(
     Type  => 'Short',
@@ -195,6 +201,7 @@ my $Update = $UserObject->UserUpdate(
     UserLastname  => 'Lastname Tëst2',
     UserLogin     => $UserRand . '房治郎',
     UserEmail     => $UserRand . '@example2.com',
+    UserComment   => $UserRand . '房治郎',
     ValidID       => 2,
     ChangeUserID  => 1,
 );
@@ -225,6 +232,11 @@ $Self->Is(
     $UserData{UserEmail} || '',
     $UserRand . '@example2.com',
     'GetUserData() - UserEmail',
+);
+$Self->Is(
+    $UserData{UserComment} || '',
+    $UserRand . '房治郎',
+    'GetUserData() - UserComment',
 );
 
 %UserList = $UserObject->UserList(
@@ -499,6 +511,32 @@ $Self->True(
 $Self->True(
     $UserData{OutOfOfficeMessage},
     'GetUserData() - OutOfOfficeMessage',
+);
+
+# Test bug#13986, search by UserLogin with upper case letters.
+$UserRand = 'UniT' . $Helper->GetRandomID();
+$Update   = $UserObject->UserUpdate(
+    UserID        => $UserID,
+    UserFirstname => $UserRand,
+    UserLastname  => $UserRand,
+    UserLogin     => $UserRand,
+    UserEmail     => $UserRand . '@example2.com',
+    ValidID       => 1,
+    ChangeUserID  => 1,
+);
+$Self->True(
+    $Update,
+    'UserUpdate()',
+);
+
+%UserSearch = $UserObject->UserSearch(
+    UserLogin => $UserRand,
+    Valid     => 1,
+);
+$Self->Is(
+    $UserSearch{$UserID},
+    $UserRand,
+    "UserSearch after update",
 );
 
 # cleanup is done by RestoreDatabase

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -60,7 +60,7 @@ my $XML = '
 </Table>
 ';
 my @XMLARRAY = $XMLObject->XMLParse( String => $XML );
-my @SQL = $DBObject->SQLProcessor( Database => \@XMLARRAY );
+my @SQL      = $DBObject->SQLProcessor( Database => \@XMLARRAY );
 $Self->True(
     $SQL[0],
     'SQLProcessor() CREATE TABLE',
@@ -413,7 +413,7 @@ for my $Key ( 1 .. 3, 'ä', 'カス' ) {
 }
 
 my %CustomerCompanyList = $CustomerCompanyObject->CustomerCompanyList( Valid => 0 );
-my $CompanyList = %CustomerCompanyList ? 1 : 0;
+my $CompanyList         = %CustomerCompanyList ? 1 : 0;
 
 # check CustomerCompanyList with Valid=>0
 $Self->True(
@@ -474,6 +474,35 @@ $Self->False(
 $Self->True(
     scalar keys %CustomerCompanyList,
     "CustomerCompanyList() with Search - Valid 0 param",
+);
+
+# Test bug#14861 (https://bugs.otrs.org/show_bug.cgi?id=14861).
+# Remove CustomerCompanyValid from config map.
+delete $Data->{CustomerCompanyValid};
+
+$ConfigObject->Set(
+    Key   => 'CustomerCompany',
+    Value => \%{$Data},
+);
+
+# Destroy and recreate customer company object.
+$Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::CustomerCompany'] );
+$CustomerCompanyObject = $Kernel::OM->Get('Kernel::System::CustomerCompany');
+
+# Clean cache.
+$Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+    Type => 'CustomerCompany_CustomerCompanyList',
+);
+
+# Search for valid customer company, with CustomerCompanyValid disabled mapping.
+# Expecting to find results even if they are invalid.
+%CustomerCompanyList = $CustomerCompanyObject->CustomerCompanyList(
+    Search => $CompanyInvalid,
+    Valid  => 1,
+);
+$Self->True(
+    scalar keys %CustomerCompanyList,
+    "CustomerCompanyList() with Search - Valid 1 param and disabled CustomerCompanyValid in config",
 );
 
 # cleanup is done by RestoreDatabase

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Ticket::Article::Backend::MIMEBase;
@@ -55,7 +55,7 @@ L<Kernel::System::Ticket::Article::Backend::Email>.
 
 Don't instantiate this class directly, get instances of the real backends instead:
 
-    my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Article)->BackendForChannel(ChannelName => 'Email');
+    my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(ChannelName => 'Email');
 
 =cut
 
@@ -127,7 +127,7 @@ Create a MIME article.
 
 Example with "Charset & MimeType" and no "ContentType".
 
-    my $ArticleID = $ArticleObject->ArticleCreate(
+    my $ArticleID = $ArticleBackendObject->ArticleCreate(
         TicketID             => 123,                                 # (required)
         SenderType           => 'agent',                             # (required) agent|system|customer
         IsVisibleForCustomer => 1,                                   # (required) Is article visible for customer?
@@ -272,9 +272,17 @@ sub ArticleCreate {
     # if body isn't text, attach body as attachment (mostly done by OE) :-/
     elsif ( $Param{MimeType} && $Param{MimeType} !~ /\btext\b/i ) {
 
-        # add non text as attachment
+        # Add non-text as an attachment. Try to deduce the filename from ContentType or ContentDisposition headers.
+        #   Please see bug#13644 for more information.
         my $FileName = 'unknown';
-        if ( $Param{ContentType} =~ /name="(.+?)"/i ) {
+        if (
+            $Param{ContentType} =~ /name="(.+?)"/i
+            || (
+                defined $Param{ContentDisposition}
+                && $Param{ContentDisposition} =~ /name="(.+?)"/i
+            )
+            )
+        {
             $FileName = $1;
         }
         my $Attach = {
@@ -285,9 +293,10 @@ sub ArticleCreate {
         push @{ $Param{Attachment} }, $Attach;
 
         # set ASCII body
-        $Param{MimeType}    = 'text/plain';
-        $Param{ContentType} = 'text/plain';
-        $Param{Body}        = '- no text message => see attachment -';
+        $Param{MimeType}           = 'text/plain';
+        $Param{ContentType}        = 'text/plain';
+        $Param{Body}               = '- no text message => see attachment -';
+        $Param{OrigHeader}->{Body} = $Param{Body};
     }
 
     # fix some bad stuff from some browsers (Opera)!
@@ -311,7 +320,7 @@ sub ArticleCreate {
     }
 
     # Check if this is the first article (for notifications).
-    my @Articles = $ArticleObject->ArticleList( TicketID => $Param{TicketID} );
+    my @Articles     = $ArticleObject->ArticleList( TicketID => $Param{TicketID} );
     my $FirstArticle = scalar @Articles ? 0 : 1;
 
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
@@ -345,6 +354,33 @@ sub ArticleCreate {
             Message  => "Can't create meta article (TicketID=$Param{TicketID})!",
         );
         return;
+    }
+
+    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+
+    # Check if there are additional To's from InvolvedAgent and InformAgent.
+    #   See bug#13422 (https://bugs.otrs.org/show_bug.cgi?id=13422).
+    if ( $Param{ForceNotificationToUserID} && ref $Param{ForceNotificationToUserID} eq 'ARRAY' ) {
+        my $NewTo = '';
+        USER:
+        for my $UserID ( @{ $Param{ForceNotificationToUserID} } ) {
+
+            next USER if $UserID == 1;
+            next USER if grep { $UserID eq $_ } @{ $Param{ExcludeNotificationToUserID} };
+
+            my %UserData = $UserObject->GetUserData(
+                UserID => $UserID,
+                Valid  => 1,
+            );
+
+            next USER if !%UserData;
+
+            if ( $Param{To} || $NewTo ) {
+                $NewTo .= ', ';
+            }
+            $NewTo .= "\"$UserData{UserFirstname} $UserData{UserLastname}\" <$UserData{UserEmail}>";
+        }
+        $Param{To} .= $NewTo;
     }
 
     return if !$DBObject->Do(
@@ -449,7 +485,6 @@ sub ArticleCreate {
     );
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $UserObject   = $Kernel::OM->Get('Kernel::System::User');
 
     # unlock ticket if the owner is away (and the feature is enabled)
     if (
@@ -475,6 +510,12 @@ sub ArticleCreate {
             );
         }
     }
+
+    $ArticleObject->ArticleSearchIndexBuild(
+        TicketID  => $Param{TicketID},
+        ArticleID => $ArticleID,
+        UserID    => 1,
+    );
 
     # event
     $Self->EventHandler(
@@ -941,6 +982,12 @@ sub ArticleUpdate {
         TicketID => $Param{TicketID},
     );
 
+    $ArticleObject->ArticleSearchIndexBuild(
+        TicketID  => $Param{TicketID},
+        ArticleID => $Param{ArticleID},
+        UserID    => $Param{UserID},
+    );
+
     $Self->EventHandler(
         Event => 'ArticleUpdate',
         Data  => {
@@ -1135,7 +1182,7 @@ sub ArticleDeleteAttachment {    ## no critic;
 
 Get article attachment index as hash.
 
-    my %Index = $BackendObject->ArticleAttachmentIndex(
+    my %Index = $ArticleBackendObject->ArticleAttachmentIndex(
         ArticleID        => 123,
         ExcludePlainText => 1,       # (optional) Exclude plain text attachment
         ExcludeHTMLBody  => 1,       # (optional) Exclude HTML body attachment
@@ -1175,7 +1222,7 @@ sub ArticleAttachmentIndex {    ## no critic
 
 Get the definition of the searchable fields as a hash.
 
-    my %SearchableFields = $BackendObject->BackendSearchableFieldsGet();
+    my %SearchableFields = $ArticleBackendObject->BackendSearchableFieldsGet();
 
 Returns:
 
@@ -1285,7 +1332,7 @@ sub BackendSearchableFieldsGet {
 
 Get article attachment index as hash.
 
-    my %Index = $BackendObject->ArticleSearchableContentGet(
+    my %Index = $ArticleBackendObject->ArticleSearchableContentGet(
         TicketID       => 123,   # (required)
         ArticleID      => 123,   # (required)
         DynamicFields  => 1,     # (optional) To include the dynamic field values for this article on the return structure.
@@ -1456,10 +1503,10 @@ sub ArticleHasHTMLContent {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

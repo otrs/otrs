@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminGenericInterfaceInvokerEvent;
@@ -61,7 +61,7 @@ sub Run {
     # Check for valid Invoker registration.
     if ( !IsHashRefWithData($InvokerModules) ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Could not get registered modules for Invoker",
+            Message => Translatable('Could not get registered modules for Invoker'),
         );
     }
 
@@ -71,13 +71,15 @@ sub Run {
     # Check for valid web service configuration.
     if ( !IsHashRefWithData($WebserviceData) ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Could not get data for WebserviceID $WebserviceID",
+            Message =>
+                $LayoutObject->{LanguageObject}->Translate( 'Could not get data for WebserviceID %s', $WebserviceID ),
         );
     }
 
     if ( !IsHashRefWithData( $WebserviceData->{Config}->{Requester}->{Invoker}->{$Invoker} ) ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Could not determine config for invoker $Invoker",
+            Message =>
+                $LayoutObject->{LanguageObject}->Translate( 'Could not determine config for invoker %s', $Invoker ),
         );
     }
 
@@ -87,7 +89,7 @@ sub Run {
     # Check for valid InvokerType backend.
     if ( !$InvokerType ) {
         return $LayoutObject->ErrorScreen(
-            Message => "Could not get backend for Invoker $Invoker",
+            Message => $LayoutObject->{LanguageObject}->Translate( 'Could not get backend for Invoker %s', $Invoker ),
         );
     }
 
@@ -134,7 +136,7 @@ sub Run {
     # Check if we found a valid event
     if ( !$EventType ) {
         return $LayoutObject->ErrorScreen(
-            Message => "The event $Event is not valid.",
+            Message => $LayoutObject->{LanguageObject}->Translate( 'The event %s is not valid.', $Event ),
         );
     }
 
@@ -165,7 +167,7 @@ sub Run {
             EventType                  => $EventType,
             Condition                  => $Condition,
             Asynchronous               => $Asynchronous,
-            Subaction                  => 'Change',
+            Action                     => 'Change',
         );
     }
 
@@ -194,7 +196,7 @@ sub Run {
                 EventType                  => $EventType,
                 Condition                  => $Condition,
                 Asynchronous               => $Asynchronous,
-                Subaction                  => 'Change',
+                Action                     => 'Change',
             );
         }
 
@@ -237,12 +239,17 @@ sub Run {
         # Check for successful web service update.
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => "Could not update configuration data for WebserviceID $WebserviceID",
+                Message => $LayoutObject->{LanguageObject}
+                    ->Translate( 'Could not update configuration data for WebserviceID %s', $WebserviceID ),
             );
         }
 
-        # Save and finish button: go to web service.
-        if ( $ParamObject->GetParam( Param => 'ReturnToAction' ) ) {
+        # If the user would like to finish editing the filter config, just redirect to the invoker edit screen.
+        if (
+            !IsInteger( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) )
+            || $ParamObject->GetParam( Param => 'ContinueAfterSave' ) != 1
+            )
+        {
             my $RedirectURL = "Action=$InvokerTypeFrontendModule;Subaction=Change;Invoker=$Invoker;"
                 . "WebserviceID=$WebserviceID;";
 
@@ -269,7 +276,7 @@ sub Run {
             EventType                  => $EventType,
             Condition                  => $Condition,
             Asynchronous               => $Asynchronous,
-            Subaction                  => 'Change',
+            Action                     => 'Change',
         );
     }
 
@@ -316,7 +323,7 @@ sub Run {
     # ------------------------------------------------------------ #
     else {
         return $LayoutObject->ErrorScreen(
-            Message => "This sub-action is not valid",
+            Message => Translatable('This sub-action is not valid'),
         );
     }
 }
@@ -341,7 +348,11 @@ sub _ShowEdit {
     $Param{DeletedString} = $Self->{DeletedString};
 
     $Param{FreshConditionLinking} = $LayoutObject->BuildSelection(
-        Data        => [ 'and', 'or', 'xor' ],
+        Data => {
+            'and' => Translatable('and'),
+            'or'  => Translatable('or'),
+            'xor' => Translatable('xor'),
+        },
         Name        => "ConditionLinking[_INDEX_]",
         Sort        => 'AlphanumericKey',
         Translation => 1,
@@ -350,9 +361,9 @@ sub _ShowEdit {
 
     $Param{FreshConditionFieldType} = $LayoutObject->BuildSelection(
         Data => {
-            'String' => 'String',
-            'Regexp' => 'Regexp',
-            'Module' => 'Validation Module'
+            'String' => Translatable('String'),
+            'Regexp' => Translatable('Regexp'),
+            'Module' => Translatable('Validation Module'),
         },
         SelectedID  => 'String',
         Name        => "ConditionFieldType[_INDEX_][_FIELDINDEX_]",
@@ -362,8 +373,8 @@ sub _ShowEdit {
     );
 
     if (
-        defined $Param{Subaction}
-        && $Param{Subaction} eq 'Change'
+        defined $Param{Action}
+        && $Param{Action} eq 'Change'
         && IsHashRefWithData( $Param{Condition} )
         && IsHashRefWithData( $Param{Condition}->{Condition} )
         && IsStringWithData( $Param{Condition}->{ConditionLinking} )
@@ -371,7 +382,11 @@ sub _ShowEdit {
     {
 
         $Param{OverallConditionLinking} = $LayoutObject->BuildSelection(
-            Data        => [ 'and', 'or', 'xor' ],
+            Data => {
+                'and' => Translatable('and'),
+                'or'  => Translatable('or'),
+                'xor' => Translatable('xor'),
+            },
             Name        => 'OverallConditionLinking',
             ID          => 'OverallConditionLinking',
             Sort        => 'AlphanumericKey',
@@ -380,14 +395,18 @@ sub _ShowEdit {
             SelectedID  => $ConditionData->{ConditionLinking},
         );
 
-        my @Conditions = sort keys %{ $ConditionData->{Condition} };
+        my @Conditions = sort { int $a <=> int $b } keys %{ $ConditionData->{Condition} };
 
         for my $Condition (@Conditions) {
 
             my %ConditionData = %{ $ConditionData->{Condition}->{$Condition} };
 
             my $ConditionLinking = $LayoutObject->BuildSelection(
-                Data        => [ 'and', 'or', 'xor' ],
+                Data => {
+                    'and' => Translatable('and'),
+                    'or'  => Translatable('or'),
+                    'xor' => Translatable('xor'),
+                },
                 Name        => "ConditionLinking[$Condition]",
                 Sort        => 'AlphanumericKey',
                 Translation => 1,
@@ -409,9 +428,9 @@ sub _ShowEdit {
                 my %FieldData          = %{ $ConditionData{Fields}->{$Field} };
                 my $ConditionFieldType = $LayoutObject->BuildSelection(
                     Data => {
-                        'String' => 'String',
-                        'Regexp' => 'Regexp',
-                        'Module' => 'Validation Module'
+                        'String' => Translatable('String'),
+                        'Regexp' => Translatable('Regexp'),
+                        'Module' => Translatable('Validation Module'),
                     },
                     Name        => "ConditionFieldType[$Condition][$Field]",
                     Sort        => 'AlphanumericKey',
@@ -436,7 +455,11 @@ sub _ShowEdit {
     else {
 
         $Param{OverallConditionLinking} = $LayoutObject->BuildSelection(
-            Data        => [ 'and', 'or', 'xor' ],
+            Data => {
+                'and' => Translatable('and'),
+                'or'  => Translatable('or'),
+                'xor' => Translatable('xor'),
+            },
             Name        => 'OverallConditionLinking',
             ID          => 'OverallConditionLinking',
             Sort        => 'AlphanumericKey',
@@ -445,7 +468,11 @@ sub _ShowEdit {
         );
 
         $Param{ConditionLinking} = $LayoutObject->BuildSelection(
-            Data        => [ 'and', 'or', 'xor' ],
+            Data => {
+                'and' => Translatable('and'),
+                'or'  => Translatable('or'),
+                'xor' => Translatable('xor'),
+            },
             Name        => 'ConditionLinking[_INDEX_]',
             Sort        => 'AlphanumericKey',
             Translation => 1,
@@ -454,9 +481,9 @@ sub _ShowEdit {
 
         $Param{ConditionFieldType} = $LayoutObject->BuildSelection(
             Data => {
-                'String' => 'String',
-                'Regexp' => 'Regexp',
-                'Module' => 'Validation Module'
+                'String' => Translatable('String'),
+                'Regexp' => Translatable('Regexp'),
+                'Module' => Translatable('Validation Module'),
             },
             Name        => 'ConditionFieldType[_INDEX_][_FIELDINDEX_]',
             Sort        => 'AlphanumericKey',
@@ -494,15 +521,15 @@ sub _GetParams {
     my $GetParam;
 
     # Get parameters from web browser.
-    $GetParam->{Name} = $ParamObject->GetParam( Param => 'Name' ) || '';
+    $GetParam->{Name}            = $ParamObject->GetParam( Param => 'Name' ) || '';
     $GetParam->{ConditionConfig} = $ParamObject->GetParam( Param => 'ConditionConfig' )
         || '';
 
     my $Config = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
         Data => $GetParam->{ConditionConfig}
     );
-    $GetParam->{Config} = {};
-    $GetParam->{Config}->{Condition} = $Config;
+    $GetParam->{Config}                     = {};
+    $GetParam->{Config}->{Condition}        = $Config;
     $GetParam->{Config}->{ConditionLinking} = $ParamObject->GetParam( Param => 'OverallConditionLinking' ) || '';
 
     $GetParam->{Asynchronous} = $ParamObject->GetParam( Param => 'Asynchronous' ) || '';

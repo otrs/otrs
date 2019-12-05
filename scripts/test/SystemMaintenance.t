@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -201,8 +201,62 @@ my @Tests = (
             UserID           => $UserID,
         },
     },
+    {
+        Name          => 'Test ' . $Index++ . '- LoginMessage equal 250 characters',
+        SuccessAdd    => 1,
+        SuccessUpdate => 0,
+        Add           => {
+            StartDate        => '2014-05-02 14:55:00',
+            StopDate         => '2014-05-02 16:01:00',
+            Comment          => 'Comment' . $RandomID,
+            LoginMessage     => 'a' x 250,
+            ShowLoginMessage => 1,
+            ValidID          => 1,
+            UserID           => $UserID,
+        },
+    },
+    {
+        Name          => 'Test ' . $Index++ . '- NotifyMessage equal 250 characters',
+        SuccessAdd    => 1,
+        SuccessUpdate => 0,
+        Add           => {
+            StartDate     => '2014-05-02 14:55:00',
+            StopDate      => '2014-05-02 16:01:00',
+            Comment       => 'Comment' . $RandomID,
+            NotifyMessage => 'a' x 250,
+            ValidID       => 1,
+            UserID        => $UserID,
+        },
+    },
+    {
+        Name          => 'Test ' . $Index++ . '- LoginMessage longer then 250 characters',
+        SuccessAdd    => 0,
+        SuccessUpdate => 0,
+        Add           => {
+            StartDate        => '2014-05-02 14:55:00',
+            StopDate         => '2014-05-02 16:01:00',
+            Comment          => 'Comment' . $RandomID,
+            LoginMessage     => 'a' x 251,
+            ShowLoginMessage => 1,
+            ValidID          => 1,
+            UserID           => $UserID,
+        },
+    },
+    {
+        Name          => 'Test ' . $Index++ . '- NotifyMessage longer then 250 characters',
+        SuccessAdd    => 0,
+        SuccessUpdate => 0,
+        Add           => {
+            StartDate     => '2014-05-02 14:55:00',
+            StopDate      => '2014-05-02 16:01:00',
+            Comment       => 'Comment' . $RandomID,
+            NotifyMessage => 'a' x 251,
+            ValidID       => 1,
+            UserID        => $UserID,
+        },
+    },
 );
-use Data::Dumper;
+
 my @SystemMaintenanceIDs;
 TEST:
 for my $Test (@Tests) {
@@ -213,7 +267,7 @@ for my $Test (@Tests) {
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $Test->{Add}->{$Date},
-                }
+            }
         );
         if ($DateTimeObject) {
             $ConvertionResult = $DateTimeObject->ToEpoch();
@@ -462,10 +516,9 @@ $ConfigObject->Set(
     Value => 30,
 );
 
-TEST:
 @Tests = (
     {
-        Name         => 'Test ' . $Index++ . ' - ',
+        Name         => 'Test ' . $Index++ . ' -',
         StartDate    => '2014-01-10 12:00:00',
         StopDate     => '2014-01-10 14:59:59',
         FixedTimeSet => '2014-01-10 13:00:00',
@@ -474,7 +527,7 @@ TEST:
         IsComming    => 0,
     },
     {
-        Name         => 'Test ' . $Index++ . ' - ',
+        Name         => 'Test ' . $Index++ . ' -',
         StartDate    => '2014-01-10 12:00:00',
         StopDate     => '2014-01-10 14:59:59',
         FixedTimeSet => '2014-01-10 11:59:59',
@@ -483,7 +536,7 @@ TEST:
         IsComming    => 1,
     },
     {
-        Name         => 'Test ' . $Index++ . ' - ',
+        Name         => 'Test ' . $Index++ . ' -',
         StartDate    => '2014-01-10 12:00:00',
         StopDate     => '2014-01-10 14:59:59',
         FixedTimeSet => '2014-01-10 15:00:00',
@@ -500,7 +553,7 @@ for my $Test (@Tests) {
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $Test->{$Date},
-                }
+            }
         )->ToEpoch();
         $Test->{$Date} = $ConvertionResult || $Test->{$Date};
     }
@@ -518,24 +571,24 @@ for my $Test (@Tests) {
             'Kernel::System::DateTime',
             ObjectParams => {
                 String => $Test->{FixedTimeSet}
-                }
-            )->ToEpoch(),
+            }
+        )->ToEpoch(),
     );
 
-    my $IsComming = $Kernel::OM->Get('Kernel::System::SystemMaintenance')->SystemMaintenanceIsComing();
+    my %IsComming = $Kernel::OM->Get('Kernel::System::SystemMaintenance')->SystemMaintenanceIsComing();
 
     if ( $Test->{IsComming} ) {
 
         $Self->True(
-            $IsComming,
-            "$Test->{Name} - A system maintenance period is comming!",
+            $IsComming{StartDate},
+            "$Test->{Name} A system maintenance period is comming!",
         );
     }
     else {
 
         $Self->False(
-            $IsComming,
-            "$Test->{Name} - A system maintenance period is not comming!",
+            $IsComming{StartDate},
+            "$Test->{Name} A system maintenance period is not comming!",
         );
     }
 
@@ -545,14 +598,14 @@ for my $Test (@Tests) {
 
         $Self->True(
             $IsActive,
-            "$Test->{Name} - A system maintenance period is active!",
+            "$Test->{Name} A system maintenance period is active!",
         );
     }
     else {
 
         $Self->False(
             $IsActive,
-            "$Test->{Name} - A system maintenance period is not active!",
+            "$Test->{Name} A system maintenance period is not active!",
         );
     }
 

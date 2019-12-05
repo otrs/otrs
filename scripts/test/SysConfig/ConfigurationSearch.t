@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -17,7 +17,6 @@ use vars (qw($Self));
 
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
-
         RestoreDatabase => 1,
     },
 );
@@ -42,12 +41,14 @@ return if !$DBObject->Prepare(
             sd.xml_filename IN (
                 'Calendar.xml' ,'CloudServices.xml', 'Daemon.xml', 'Framework.xml', 'GenericInterface.xml',
                 'ProcessManagement.xml', 'Ticket.xml'
-            )",
+            )
+            AND is_invisible != '1'
+        ",
 );
 
-my $OTRSFreeSettings;
+my $OTRSSettings;
 while ( my @Data = $DBObject->FetchrowArray() ) {
-    $OTRSFreeSettings = $Data[0];
+    $OTRSSettings = $Data[0];
 }
 
 my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
@@ -95,9 +96,9 @@ my @Tests = (
     {
         Name   => 'Size Result',
         Params => {
-            Category => 'OTRSFree',
+            Category => 'OTRS',
         },
-        ExpectedResult => $OTRSFreeSettings,
+        ExpectedResult => $OTRSSettings,
         Success        => 1,
     },
     {
@@ -135,12 +136,16 @@ for my $Test (@Tests) {
         );
         next TEST;
     }
-    $Self->IsDeeply(
-        \@Result,
-        $Test->{ExpectedResult},
-        "$Test->{Name} correct",
-    );
 
+    my %LookupResult = map { $_ => 1 } @Result;
+
+    for my $ExpectedItem ( @{ $Test->{ExpectedResult} } ) {
+
+        $Self->True(
+            $LookupResult{$ExpectedItem},
+            "$Test->{Name} correct - Found '$ExpectedItem'",
+        );
+    }
 }
 
 1;

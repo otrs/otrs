@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::User;
@@ -252,7 +252,7 @@ sub GetUserData {
             'Kernel::System::DateTime',
             ObjectParams => {
                 Epoch => $Preferences{UserLastLogin}
-                }
+            }
         );
 
         $Preferences{UserLastLoginTimestamp} = $UserLastLoginTimeObj->ToString();
@@ -394,6 +394,7 @@ sub UserAdd {
     if (
         $Param{UserEmail}
         && !$Kernel::OM->Get('Kernel::System::CheckItem')->CheckEmail( Address => $Param{UserEmail} )
+        && grep { $_ eq $Param{ValidID} } $Kernel::OM->Get('Kernel::System::Valid')->ValidIDsGet()
         )
     {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -468,19 +469,22 @@ sub UserAdd {
         PW        => $Param{UserPw}
     );
 
-    # set email address
-    $Self->SetPreferences(
-        UserID => $UserID,
-        Key    => 'UserEmail',
-        Value  => $Param{UserEmail}
-    );
+    my @UserPreferences = grep { $_ =~ m{^User}xsi } sort keys %Param;
 
-    # set mobile phone
-    $Self->SetPreferences(
-        UserID => $UserID,
-        Key    => 'UserMobile',
-        Value  => $Param{UserMobile} || '',
-    );
+    USERPREFERENCE:
+    for my $UserPreference (@UserPreferences) {
+
+        # UserEmail is required.
+        next USERPREFERENCE if $UserPreference eq 'UserEmail' && !$Param{UserEmail};
+
+        # Set user preferences.
+        # Native user data will not be overwriten (handeled by SetPreferences()).
+        $Self->SetPreferences(
+            UserID => $UserID,
+            Key    => $UserPreference,
+            Value  => $Param{$UserPreference} || '',
+        );
+    }
 
     # delete cache
     $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
@@ -546,6 +550,7 @@ sub UserUpdate {
     if (
         $Param{UserEmail}
         && !$Kernel::OM->Get('Kernel::System::CheckItem')->CheckEmail( Address => $Param{UserEmail} )
+        && grep { $_ eq $Param{ValidID} } $Kernel::OM->Get('Kernel::System::Valid')->ValidIDsGet()
         )
     {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -576,19 +581,22 @@ sub UserUpdate {
         );
     }
 
-    # set email address
-    $Self->SetPreferences(
-        UserID => $Param{UserID},
-        Key    => 'UserEmail',
-        Value  => $Param{UserEmail}
-    );
+    my @UserPreferences = grep { $_ =~ m{^User}xsi } sort keys %Param;
 
-    # set email address
-    $Self->SetPreferences(
-        UserID => $Param{UserID},
-        Key    => 'UserMobile',
-        Value  => $Param{UserMobile} || '',
-    );
+    USERPREFERENCE:
+    for my $UserPreference (@UserPreferences) {
+
+        # UserEmail is required.
+        next USERPREFERENCE if $UserPreference eq 'UserEmail' && !$Param{UserEmail};
+
+        # Set user preferences.
+        # Native user data will not be overwriten (handeled by SetPreferences()).
+        $Self->SetPreferences(
+            UserID => $Param{UserID},
+            Key    => $UserPreference,
+            Value  => $Param{$UserPreference} || '',
+        );
+    }
 
     # update search profiles if the UserLogin changed
     if ( lc $OldUserLogin ne lc $Param{UserLogin} ) {
@@ -603,7 +611,7 @@ sub UserUpdate {
 
     # TODO Not needed to delete the cache if ValidID or Name was not changed
 
-    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+    my $CacheObject            = $Kernel::OM->Get('Kernel::System::Cache');
     my $SystemPermissionConfig = $Kernel::OM->Get('Kernel::Config')->Get('System::Permission') || [];
 
     for my $Type ( @{$SystemPermissionConfig}, 'rw' ) {
@@ -715,10 +723,11 @@ sub UserSearch {
     }
     elsif ( $Param{UserLogin} ) {
 
+        my $UserLogin = lc $Param{UserLogin};
         $SQL .= " $Self->{Lower}($Self->{UserTableUser}) LIKE ? $LikeEscapeString";
-        $Param{UserLogin} =~ s/\*/%/g;
-        $Param{UserLogin} = $DBObject->Quote( $Param{UserLogin}, 'Like' );
-        push @Bind, \$Param{UserLogin};
+        $UserLogin =~ s/\*/%/g;
+        $UserLogin = $DBObject->Quote( $UserLogin, 'Like' );
+        push @Bind, \$UserLogin;
     }
 
     # add valid option
@@ -775,7 +784,7 @@ sub SetPassword {
         return;
     }
 
-    my $Pw = $Param{PW} || '';
+    my $Pw        = $Param{PW} || '';
     my $CryptedPw = '';
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
@@ -1082,7 +1091,7 @@ sub UserList {
 
     # check cache
     my $CacheKey = join '::', 'UserList', $Type, $Valid, $FirstnameLastNameOrder, $NoOutOfOffice;
-    my $Cache = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+    my $Cache    = $Kernel::OM->Get('Kernel::System::Cache')->Get(
         Type => $Self->{CacheType},
         Key  => $CacheKey,
     );
@@ -1217,6 +1226,22 @@ sub SetPreferences {
             return;
         }
     }
+
+    # Don't allow overwriting of native user data.
+    my %Blacklisted = (
+        UserID        => 1,
+        UserLogin     => 1,
+        UserPw        => 1,
+        UserFirstname => 1,
+        UserLastname  => 1,
+        UserFullname  => 1,
+        UserTitle     => 1,
+        ChangeTime    => 1,
+        CreateTime    => 1,
+        ValidID       => 1,
+    );
+
+    return 0 if $Blacklisted{ $Param{Key} };
 
     # get current setting
     my %User = $Self->GetUserData(
@@ -1541,10 +1566,10 @@ sub UserLoginExistsCheck {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

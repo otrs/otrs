@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentTicketEmailOutbound;
@@ -81,7 +81,7 @@ sub Run {
     {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('Loading draft failed!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -136,7 +136,7 @@ sub Run {
         my $NextStates = $Self->_GetNextStates(
             %GetParam,
             CustomerUserID => $CustomerUser || '',
-            QueueID => $QueueID,
+            QueueID        => $QueueID,
         );
 
         # update Dynamic Fields Possible Values via AJAX
@@ -431,25 +431,34 @@ sub Form {
     if ( $Config->{RequiredLock} ) {
         if ( !$TicketObject->TicketLockGet( TicketID => $Self->{TicketID} ) ) {
 
-            # set owner
-            $TicketObject->TicketOwnerSet(
-                TicketID  => $Self->{TicketID},
-                UserID    => $Self->{UserID},
-                NewUserID => $Self->{UserID},
-            );
-
-            # set lock
             my $Lock = $TicketObject->TicketLockSet(
                 TicketID => $Self->{TicketID},
                 Lock     => 'lock',
                 UserID   => $Self->{UserID}
             );
 
-            # show lock state
             if ($Lock) {
+
+                # Set new owner if ticket owner is different then logged user.
+                if ( $Ticket{OwnerID} != $Self->{UserID} ) {
+
+                    # Remember previous owner, which will be used to restore ticket owner on undo action.
+                    $Param{PreviousOwner} = $Ticket{OwnerID};
+
+                    $TicketObject->TicketOwnerSet(
+                        TicketID  => $Self->{TicketID},
+                        UserID    => $Self->{UserID},
+                        NewUserID => $Self->{UserID},
+                    );
+                }
+
+                # Show lock state.
                 $LayoutObject->Block(
                     Name => 'PropertiesLock',
-                    Data => { %Param, TicketID => $Self->{TicketID} },
+                    Data => {
+                        %Param,
+                        TicketID => $Self->{TicketID},
+                    },
                 );
             }
         }
@@ -633,6 +642,10 @@ sub Form {
 
     # run compose modules
     if ( ref( $ConfigObject->Get('Ticket::Frontend::ArticleComposeModule') ) eq 'HASH' ) {
+
+        # use ticket QueueID in compose modules
+        $GetParam{QueueID} = $Ticket{QueueID};
+
         my %Jobs = %{ $ConfigObject->Get('Ticket::Frontend::ArticleComposeModule') };
         for my $Job ( sort keys %Jobs ) {
 
@@ -659,7 +672,13 @@ sub Form {
             }
 
             # run module
-            $Object->Run( %Data, %GetParam, Config => $Jobs{$Job} );
+            my $NewParams = $Object->Run( %Data, %GetParam, Config => $Jobs{$Job} );
+
+            if ($NewParams) {
+                for my $Parameter ( $Object->Option( %GetParam, Config => $Jobs{$Job} ) ) {
+                    $GetParam{$Parameter} = $NewParams;
+                }
+            }
 
             # get errors
             %Error = ( %Error, $Object->Error( %GetParam, Config => $Jobs{$Job} ) );
@@ -760,6 +779,11 @@ sub Form {
         BodyClass => 'Popup',
     );
 
+    # Inform a user that article subject will be empty if contains only the ticket hook (if nothing is modified).
+    $Output .= $LayoutObject->Notify(
+        Data => Translatable('Article subject will be empty if the subject contains only the ticket hook!'),
+    );
+
     $Output .= $Self->_Mask(
         TicketNumber => $Ticket{TicketNumber},
         TicketID     => $Self->{TicketID},
@@ -833,7 +857,7 @@ sub SendEmail {
     if ( $FormDraftAction && !$Config->{FormDraft} ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('FormDraft functionality disabled!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -1249,10 +1273,21 @@ sub SendEmail {
     if (%Error) {
 
         my $QueueID = $TicketObject->TicketQueueID( TicketID => $Self->{TicketID} );
-        my $Output = $LayoutObject->Header(
+        my $Output  = $LayoutObject->Header(
             Type      => 'Small',
             BodyClass => 'Popup',
         );
+
+        # When a draft is loaded, inform a user that article subject will be empty
+        # if contains only the ticket hook (if nothing is modified).
+        if ( $Error{LoadedFormDraft} ) {
+            $Output .= $LayoutObject->Notify(
+                Data => $LayoutObject->{LanguageObject}->Translate(
+                    'Article subject will be empty if the subject contains only the ticket hook!'
+                ),
+            );
+        }
+
         $Output .= $Self->_Mask(
             TicketNumber => $Ticket{TicketNumber},
             Title        => $Ticket{Title},
@@ -1337,17 +1372,22 @@ sub SendEmail {
         if ($To) {
             $To .= ', ';
         }
-        $To .= $GetParam{$Key}
+        $To .= $GetParam{$Key};
     }
 
+    my $From = $Kernel::OM->Get('Kernel::System::TemplateGenerator')->Sender(
+        QueueID => $Ticket{QueueID},
+        UserID  => $Self->{UserID},
+    );
+
     my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
-    my $ArticleID = $ArticleObject->BackendForChannel( ChannelName => 'Email' )->ArticleSend(
+    my $ArticleID     = $ArticleObject->BackendForChannel( ChannelName => 'Email' )->ArticleSend(
         SenderType           => 'agent',
         IsVisibleForCustomer => $GetParam{IsVisibleForCustomer} // 0,
         TicketID             => $Self->{TicketID},
         HistoryType          => 'EmailAgent',
         HistoryComment       => "\%\%$To",
-        From                 => $GetParam{From},
+        From                 => $From,
         To                   => $GetParam{To},
         Cc                   => $GetParam{Cc},
         Bcc                  => $GetParam{Bcc},
@@ -1444,7 +1484,7 @@ sub SendEmail {
     {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('Could not delete draft!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -1523,7 +1563,7 @@ sub AjaxUpdate {
 
             # get AJAX param values
             if ( $Object->can('GetParamAJAX') ) {
-                %GetParam = ( %GetParam, $Object->GetParamAJAX(%GetParam) )
+                %GetParam = ( %GetParam, $Object->GetParamAJAX(%GetParam) );
             }
 
             # get options that have to be removed from the selection visible
@@ -1984,10 +2024,10 @@ sub _Mask {
         )
     {
         $Param{StandardTemplateStrg} = $LayoutObject->BuildSelection(
-            Data       => $QueueStandardTemplates    || {},
-            Name       => 'StandardTemplateID',
-            SelectedID => $Param{StandardTemplateID} || '',
-            Class      => 'Modernize',
+            Data         => $QueueStandardTemplates || {},
+            Name         => 'StandardTemplateID',
+            SelectedID   => $Param{StandardTemplateID} || '',
+            Class        => 'Modernize',
             PossibleNone => 1,
             Sort         => 'AlphanumericValue',
             Translation  => 1,
@@ -2075,16 +2115,6 @@ sub _Mask {
 
     if ( IsHashRefWithData($LoadedFormDraft) ) {
 
-        my $DateTimeObject = $Kernel::OM->Create(
-            'Kernel::System::DateTime',
-            ObjectParams => {
-                String => $LoadedFormDraft->{ChangeTime},
-            },
-        );
-        my %RelativeTime = $LayoutObject->FormatRelativeTime( DateTimeObject => $DateTimeObject );
-        $LoadedFormDraft->{ChangeTimeRelative}
-            = $LayoutObject->{LanguageObject}->Translate( $RelativeTime{Message}, $RelativeTime{Value} );
-
         $LoadedFormDraft->{ChangeByName} = $Kernel::OM->Get('Kernel::System::User')->UserName(
             UserID => $LoadedFormDraft->{ChangeBy},
         );
@@ -2149,7 +2179,7 @@ sub _GetExtendedParams {
     # get params
     my %GetParam;
     for my $Key (
-        qw(From To Cc Bcc Subject Body ComposeStateID IsVisibleForCustomer IsVisibleForCustomerPresent
+        qw(To Cc Bcc Subject Body ComposeStateID IsVisibleForCustomer IsVisibleForCustomerPresent
         ArticleID TimeUnits Year Month Day Hour Minute FormID FormDraftID Title)
         )
     {
@@ -2178,9 +2208,9 @@ sub _GetExtendedParams {
     if ($CustomersNumber) {
         my $CustomerCounter = 1;
         for my $Count ( 1 ... $CustomersNumber ) {
-            my $CustomerElement = $ParamObject->GetParam( Param => 'CustomerTicketText_' . $Count );
+            my $CustomerElement  = $ParamObject->GetParam( Param => 'CustomerTicketText_' . $Count );
             my $CustomerSelected = ( $Selected eq $Count ? 'checked="checked"' : '' );
-            my $CustomerKey = $ParamObject->GetParam( Param => 'CustomerKey_' . $Count )
+            my $CustomerKey      = $ParamObject->GetParam( Param => 'CustomerKey_' . $Count )
                 || '';
             my $CustomerQueue = $ParamObject->GetParam( Param => 'CustomerQueue_' . $Count )
                 || '';

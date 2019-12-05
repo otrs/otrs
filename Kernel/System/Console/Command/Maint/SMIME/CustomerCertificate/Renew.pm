@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Console::Command::Maint::SMIME::CustomerCertificate::Renew;
@@ -23,7 +23,7 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Renew existing SMIME certificates from customer back-ends.');
+    $Self->Description('Renew existing S/MIME certificates from customer backends.');
 
     return;
 }
@@ -31,13 +31,13 @@ sub Configure {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    $Self->Print("<yellow>Renewing existing customer SMIME certificates...</yellow>\n");
+    $Self->Print("<yellow>Renewing existing customer S/MIME certificates...</yellow>\n");
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     my $StopExecution;
     if ( !$ConfigObject->Get('SMIME') ) {
-        $Self->Print("'SMIME' is not activated in SysConfig, can't continue!\n");
+        $Self->Print("'S/MIME' is not activated in SysConfig, can't continue!\n");
         $StopExecution = 1;
     }
     elsif ( !$ConfigObject->Get('SMIME::FetchFromCustomer') ) {
@@ -52,7 +52,7 @@ sub Run {
 
     my $CryptObject = $Kernel::OM->Get('Kernel::System::Crypt::SMIME');
     if ( !$CryptObject ) {
-        $Self->PrintError("SMIME environment its not working!\n");
+        $Self->PrintError("S/MIME environment is not working!\n");
         $Self->Print("<red>Fail.</red>\n");
         return $Self->ExitCodeError();
     }
@@ -95,8 +95,8 @@ sub Run {
                 Filename    => $Filename,
             );
 
-            $Self->Print("  Found new SMIME certificates for <yellow>$UserLogins[0]</yellow> ...\n");
-            $Self->Print("    Added certificate $CertificateAttributes{Fingerprint} (<yellow>$Filename</yellow>)\n")
+            $Self->Print("  Found new S/MIME certificates for <yellow>$UserLogins[0]</yellow> ...\n");
+            $Self->Print("    Added certificate $CertificateAttributes{Fingerprint} (<yellow>$Filename</yellow>)\n");
         }
     }
 

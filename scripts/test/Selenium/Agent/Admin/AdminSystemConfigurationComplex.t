@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -18,22 +18,18 @@ my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 my @Tests = (
     {
         Name     => 'ExampleAoA',
-        Index    => 1,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
                 Select => '.Setting > .Array > .ArrayItem:nth-of-type(4) .ArrayItem:nth-of-type(1) input',
@@ -42,13 +38,13 @@ my @Tests = (
                 Write => 'One',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
             },
             {
                 Select => '.Setting > .Array > .ArrayItem:nth-of-type(3) .ArrayItem:nth-of-type(3) input',
@@ -57,13 +53,13 @@ my @Tests = (
                 Write => 'Two',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -82,22 +78,18 @@ my @Tests = (
     },
     {
         Name     => 'ExampleAoADate',
-        Index    => 2,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
                 # wait to init Datepicker
@@ -105,30 +97,30 @@ my @Tests = (
             },
             {
                 # select day (05) for first item
-                JS => "\$('.SettingsList li:nth-of-type(2) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleAoADate\"] "
                     . ".Setting > .Array > .ArrayItem:nth-of-type(4) .ArrayItem:nth-of-type(1) "
                     . "select:nth-of-type(2)').val(\"5\")",
             },
             {
                 # select month (05) for first item
-                JS => "\$('.SettingsList li:nth-of-type(2) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleAoADate\"] "
                     . ".Setting > .Array > .ArrayItem:nth-of-type(4) .ArrayItem:nth-of-type(1) "
                     . "select:nth-of-type(1)').val(\"5\")",
             },
             {
                 # select year (2016) for first item
-                JS => "\$('.SettingsList li:nth-of-type(2) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleAoADate\"] "
                     . ".Setting > .Array > .ArrayItem:nth-of-type(4) .ArrayItem:nth-of-type(1) "
                     . "select:nth-of-type(3)').val(\"2016\")",
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
             },
             {
                 # wait to init Datepicker
@@ -136,30 +128,30 @@ my @Tests = (
             },
             {
                 # select day (15)
-                JS => "\$('.SettingsList li:nth-of-type(2) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleAoADate\"] "
                     . ".Setting > .Array > .ArrayItem:nth-of-type(3) .ArrayItem:nth-of-type(3) "
                     . "select:nth-of-type(2)').val(\"15\")",
             },
             {
                 # select month (12)
-                JS => "\$('.SettingsList li:nth-of-type(2) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleAoADate\"] "
                     . ".Setting > .Array > .ArrayItem:nth-of-type(3) .ArrayItem:nth-of-type(3) "
                     . "select:nth-of-type(1)').val(\"12\")",
             },
             {
                 # select year (2017)
-                JS => "\$('.SettingsList li:nth-of-type(2) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleAoADate\"] "
                     . ".Setting > .Array > .ArrayItem:nth-of-type(3) .ArrayItem:nth-of-type(3) "
                     . "select:nth-of-type(3)').val(\"2017\")",
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -178,22 +170,18 @@ my @Tests = (
     },
     {
         Name     => 'ExampleAoADirectory',
-        Index    => 3,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
                 Select => '.Setting > .Array > .ArrayItem:nth-of-type(4) .ArrayItem:nth-of-type(1) input',
@@ -205,13 +193,13 @@ my @Tests = (
                 Write => '/etc',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
             },
             {
                 Select => '.Setting > .Array > .ArrayItem:nth-of-type(3) .ArrayItem:nth-of-type(3) input',
@@ -223,13 +211,13 @@ my @Tests = (
                 Write => '/var',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -250,22 +238,18 @@ my @Tests = (
     # TODO: Temporary disabled, check what's wrong
     {
         Name     => 'ExampleAoASelect',
-        Index    => 4,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
                 # wait until select is initialized
@@ -273,32 +257,33 @@ my @Tests = (
             },
             {
                 # Select Kernel::System::Log::File
-                JS => "\$('.SettingsList li:nth-of-type(4) .WidgetSimple "
-                    . ".Setting > .Array > .ArrayItem:nth-of-type(4) .ArrayItem:nth-of-type(1) "
-                    . " select').val('option-1')"
-                    . ".trigger('redraw.InputField').trigger('change');",
+                InputFieldValueSet => {
+                    Element => '.WidgetSimple[data-name="ExampleAoASelect"] .Setting > '
+                        . '.Array > .ArrayItem:nth-of-type(4) .ArrayItem:nth-of-type(1) select',
+                    Value => 'option-1',
+                },
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddArrayItem',
             },
             {
                 # wait until select is initialized, it already has default value
                 Select => '.Setting > .Array > .ArrayItem:nth-of-type(3) .ArrayItem:nth-of-type(3) select',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -317,22 +302,21 @@ my @Tests = (
     },
     {
         Name     => 'ExampleAoH',
-        Index    => 5,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
+            },
+            {
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
                 Select => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) input',
@@ -342,7 +326,7 @@ my @Tests = (
                 Write => '3th',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) .AddKey',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) .AddKey',
             },
             {
                 Select =>
@@ -353,34 +337,31 @@ my @Tests = (
                 Write => '3',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(4) .AddHashKey',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddHashKey',
-            },
-            {
-                Select => '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) input',
+                Select => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(2) input',
             },
             {
                 # Key
                 Write => '4th',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) .AddKey',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(2) .AddKey',
             },
             {
                 Select =>
-                    '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) .SettingContent input',
+                    '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(2) .SettingContent input',
             },
             {
                 # Value
                 Write => '4',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) > .RemoveButton',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -392,30 +373,29 @@ my @Tests = (
                 'Two' => '2',
             },
             {
+                'Three' => '3',
+                'Four'  => '4',
+            },
+            {
                 '3th' => '3',
                 '4th' => '4',
             },
         ],
     },
-
     {
         Name     => 'ExampleAoHDate',
-        Index    => 6,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
                 Select => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) input',
@@ -425,7 +405,7 @@ my @Tests = (
                 Write => '3th',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) .AddKey',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) .AddKey',
             },
             {
                 # wait to init Datepicker
@@ -433,27 +413,27 @@ my @Tests = (
             },
             {
                 # select day (05) for first item
-                JS => "\$('.SettingsList li:nth-of-type(6) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleAoHDate\"] "
                     . ".Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) "
                     . "select:nth-of-type(2)').val(\"5\")",
             },
             {
                 # select month (05) for first item
-                JS => "\$('.SettingsList li:nth-of-type(6) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleAoHDate\"] "
                     . ".Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) "
                     . "select:nth-of-type(1)').val(\"5\")",
             },
             {
                 # select year (2016) for first item
-                JS => "\$('.SettingsList li:nth-of-type(6) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleAoHDate\"] "
                     . ".Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) "
                     . "select:nth-of-type(3)').val(\"2016\")",
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddHashKey',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddHashKey',
             },
             {
                 Select => '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) input',
@@ -463,7 +443,7 @@ my @Tests = (
                 Write => '4th',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) .AddKey',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) .AddKey',
             },
             {
                 # wait to init Datepicker
@@ -471,27 +451,27 @@ my @Tests = (
             },
             {
                 # select day (15)
-                JS => "\$('.SettingsList li:nth-of-type(6) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleAoHDate\"] "
                     . ".Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) "
                     . "select:nth-of-type(2)').val(\"15\")",
             },
             {
                 # select month (12)
-                JS => "\$('.SettingsList li:nth-of-type(6) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleAoHDate\"] "
                     . ".Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) "
                     . "select:nth-of-type(1)').val(\"12\")",
             },
             {
                 # select year (2017)
-                JS => "\$('.SettingsList li:nth-of-type(6) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleAoHDate\"] "
                     . ".Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) "
                     . "select:nth-of-type(3)').val(\"2017\")",
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -510,22 +490,18 @@ my @Tests = (
     },
     {
         Name     => 'ExampleAoHDirectory',
-        Index    => 7,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
                 Select => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) input',
@@ -535,7 +511,7 @@ my @Tests = (
                 Write => '3th',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) .AddKey',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) .AddKey',
             },
             {
                 Select =>
@@ -550,10 +526,10 @@ my @Tests = (
                 Write => '/var',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddHashKey',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddHashKey',
             },
             {
                 Select => '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) input',
@@ -563,17 +539,17 @@ my @Tests = (
                 Write => '4th',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) .AddKey',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) .AddKey',
             },
             {
                 Select =>
                     '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) .SettingContent input',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -592,22 +568,18 @@ my @Tests = (
     },
     {
         Name     => 'ExampleAoHSelect',
-        Index    => 8,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
-                Click => '.Setting > .Array > .AddArrayItem',
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
             },
             {
                 Select => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) input',
@@ -617,24 +589,25 @@ my @Tests = (
                 Write => '3th',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) .AddKey',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) .AddKey',
             },
             {
                 # wait until select is initialized
                 Select => '.Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) select',
             },
             {
-                # Select Kernel::System::Log::File
-                JS => "\$('.SettingsList li:nth-of-type(8) .WidgetSimple "
-                    . ".Setting > .Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) "
-                    . " select').val('option-1')"
-                    . ".trigger('redraw.InputField').trigger('change');",
+                # Select option-1.
+                InputFieldValueSet => {
+                    Element => '.WidgetSimple[data-name="ExampleAoHSelect"] .Setting > '
+                        . '.Array > .ArrayItem:nth-of-type(4) .HashItem:nth-of-type(1) select',
+                    Value => 'option-1',
+                },
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddHashKey',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .AddHashKey',
             },
             {
                 Select => '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) input',
@@ -644,17 +617,17 @@ my @Tests = (
                 Write => '4th',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) .AddKey',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) .AddKey',
             },
             {
                 Select =>
                     '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(2) .SettingContent input',
             },
             {
-                Click => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -673,19 +646,15 @@ my @Tests = (
     },
     {
         Name     => 'ExampleHoA',
-        Index    => 9,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Hash > .AddHashKey',
+                JqueryClick => '.Setting > .Hash > .AddHashKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .Key',
@@ -695,7 +664,7 @@ my @Tests = (
                 Write => 'One',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .ArrayItem:nth-of-type(1) input',
@@ -704,13 +673,13 @@ my @Tests = (
                 Write => '1st',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(2) .ArrayItem:nth-of-type(3) input',
@@ -719,10 +688,10 @@ my @Tests = (
                 Write => '2nd',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -740,20 +709,60 @@ my @Tests = (
         },
     },
     {
-        Name     => 'ExampleHoADate',
-        Index    => 10,
+        Name     => 'ExampleHoA2',
         Commands => [
             {
-                Scroll => 1,
+                Hover => '.Content',
+            },
+            {
+                JqueryClick => '.SettingEnable',
             },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Hash > .AddHashKey',
+                # Delete second item.
+                JqueryClick => '.Array .ArrayItem:nth-of-type(2) .RemoveButton',
+            },
+            {
+                # Add new item to the array.
+                JqueryClick => '.Array .AddArrayItem',
+            },
+            {
+                Select => '.Array .ArrayItem:nth-of-type(2) input',
+            },
+            {
+                Write => 'Value 3',
+            },
+            {
+                JqueryClick => '.Update',
+            },
+            {
+                Select => 'input',
+            },
+        ],
+        ExpectedResult => {
+            'ArrayItems' => [
+                'Value 1',
+                'Value 3',
+            ],
+            'String' => 'String value',
+        },
+    },
+    {
+        Name     => 'ExampleHoADate',
+        Commands => [
+            {
+                Hover => '.Content',
+            },
+            {
+                JqueryClick => '.SettingEdit',
+            },
+            {
+                JqueryClick => '.Setting > .Hash > .AddHashKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .Key',
@@ -763,7 +772,7 @@ my @Tests = (
                 Write => 'One',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
             },
             {
                 # wait to init Datepicker
@@ -771,30 +780,30 @@ my @Tests = (
             },
             {
                 # select day (05)
-                JS => "\$('.SettingsList li:nth-of-type(10) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleHoADate\"] "
                     . ".Setting > .Hash > .HashItem:nth-of-type(3) .ArrayItem:nth-of-type(1) "
                     . "select:nth-of-type(2)').val(\"5\")",
             },
             {
                 # select month (05)
-                JS => "\$('.SettingsList li:nth-of-type(10) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleHoADate\"] "
                     . ".Setting > .Hash > .HashItem:nth-of-type(3) .ArrayItem:nth-of-type(1) "
                     . "select:nth-of-type(1)').val(\"5\")",
             },
             {
                 # select year (2016)
-                JS => "\$('.SettingsList li:nth-of-type(10) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleHoADate\"] "
                     . ".Setting > .Hash > .HashItem:nth-of-type(3) .ArrayItem:nth-of-type(1) "
                     . "select:nth-of-type(3)').val(\"2016\")",
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
             },
             {
                 # wait to init Datepicker
@@ -802,27 +811,27 @@ my @Tests = (
             },
             {
                 # select day (15)
-                JS => "\$('.SettingsList li:nth-of-type(10) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleHoADate\"] "
                     . ".Setting > .Hash > .HashItem:nth-of-type(2) .ArrayItem:nth-of-type(3) "
                     . "select:nth-of-type(2)').val(\"15\")",
             },
             {
                 # select month (12)
-                JS => "\$('.SettingsList li:nth-of-type(10) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleHoADate\"] "
                     . ".Setting > .Hash > .HashItem:nth-of-type(2) .ArrayItem:nth-of-type(3) "
                     . "select:nth-of-type(1)').val(\"12\")",
             },
             {
                 # select year (2017)
-                JS => "\$('.SettingsList li:nth-of-type(10) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleHoADate\"] "
                     . ".Setting > .Hash > .HashItem:nth-of-type(2) .ArrayItem:nth-of-type(3) "
                     . "select:nth-of-type(3)').val(\"2017\")",
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -841,19 +850,15 @@ my @Tests = (
     },
     {
         Name     => 'ExampleHoADirectory',
-        Index    => 11,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Hash > .AddHashKey',
+                JqueryClick => '.Setting > .Hash > .AddHashKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .Key',
@@ -863,7 +868,7 @@ my @Tests = (
                 Write => 'One',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .ArrayItem:nth-of-type(1) input',
@@ -875,22 +880,22 @@ my @Tests = (
                 Write => '/var',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(2) .ArrayItem:nth-of-type(3) input',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -909,19 +914,15 @@ my @Tests = (
     },
     {
         Name     => 'ExampleHoASelect',
-        Index    => 12,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Hash > .AddHashKey',
+                JqueryClick => '.Setting > .Hash > .AddHashKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .Key',
@@ -931,7 +932,7 @@ my @Tests = (
                 Write => 'One',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
             },
             {
                 # wait until select is initialized
@@ -939,28 +940,29 @@ my @Tests = (
             },
             {
                 # Select Kernel::System::Log::File
-                JS => "\$('.SettingsList li:nth-of-type(12) .WidgetSimple "
-                    . ".Setting > .Hash > .HashItem:nth-of-type(3) .ArrayItem:nth-of-type(1) "
-                    . " select').val('option-1')"
-                    . ".trigger('redraw.InputField').trigger('change');",
+                InputFieldValueSet => {
+                    Element => '.WidgetSimple[data-name="ExampleHoASelect"] .Setting > '
+                        . '.Hash > .HashItem:nth-of-type(3) .ArrayItem:nth-of-type(1) select',
+                    Value => 'option-1',
+                },
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddArrayItem',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(2) .ArrayItem:nth-of-type(3) input',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .ArrayItem:nth-of-type(2) .RemoveButton',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -979,19 +981,15 @@ my @Tests = (
     },
     {
         Name     => 'ExampleHoH',
-        Index    => 13,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Hash > .AddHashKey',
+                JqueryClick => '.Setting > .Hash > .AddHashKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .Key',
@@ -1001,7 +999,7 @@ my @Tests = (
                 Write => 'One',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) input',
@@ -1011,7 +1009,7 @@ my @Tests = (
                 Write => '1st',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .AddKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .SettingContent input',
@@ -1021,10 +1019,10 @@ my @Tests = (
                 Write => '1',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddHashKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddHashKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) input',
@@ -1034,7 +1032,7 @@ my @Tests = (
                 Write => '2nd',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) .AddKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) .SettingContent input',
@@ -1044,7 +1042,7 @@ my @Tests = (
                 Write => '2',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -1063,19 +1061,15 @@ my @Tests = (
     },
     {
         Name     => 'ExampleHoHDate',
-        Index    => 14,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Hash > .AddHashKey',
+                JqueryClick => '.Setting > .Hash > .AddHashKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .Key',
@@ -1085,7 +1079,7 @@ my @Tests = (
                 Write => 'One',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) input',
@@ -1095,7 +1089,7 @@ my @Tests = (
                 Write => '1st',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .AddKey',
             },
             {
                 # wait to init Datepicker
@@ -1103,27 +1097,27 @@ my @Tests = (
             },
             {
                 # select day (05)
-                JS => "\$('.SettingsList li:nth-of-type(14) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleHoHDate\"] "
                     . ".Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .SettingContent "
                     . "select:nth-of-type(2)').val(\"5\")",
             },
             {
                 # select month (05)
-                JS => "\$('.SettingsList li:nth-of-type(14) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleHoHDate\"] "
                     . ".Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .SettingContent "
                     . "select:nth-of-type(1)').val(\"5\")",
             },
             {
                 # select year (2016)
-                JS => "\$('.SettingsList li:nth-of-type(14) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleHoHDate\"] "
                     . ".Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .SettingContent "
                     . "select:nth-of-type(3)').val(\"2016\")",
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddHashKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddHashKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) input',
@@ -1133,7 +1127,7 @@ my @Tests = (
                 Write => '2nd',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) .AddKey',
             },
             {
                 # wait to init Datepicker
@@ -1141,24 +1135,24 @@ my @Tests = (
             },
             {
                 # select day (15)
-                JS => "\$('.SettingsList li:nth-of-type(14) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleHoHDate\"] "
                     . ".Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) .SettingContent "
                     . "select:nth-of-type(2)').val(\"15\")",
             },
             {
                 # select month (12)
-                JS => "\$('.SettingsList li:nth-of-type(14) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleHoHDate\"] "
                     . ".Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) .SettingContent "
                     . "select:nth-of-type(1)').val(\"12\")",
             },
             {
                 # select year (2017)
-                JS => "\$('.SettingsList li:nth-of-type(14) .WidgetSimple "
+                JS => "\$('.WidgetSimple[data-name=\"ExampleHoHDate\"] "
                     . ".Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) .SettingContent "
                     . "select:nth-of-type(3)').val(\"2017\")",
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -1177,19 +1171,15 @@ my @Tests = (
     },
     {
         Name     => 'ExampleHoHDirectory',
-        Index    => 15,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Hash > .AddHashKey',
+                JqueryClick => '.Setting > .Hash > .AddHashKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .Key',
@@ -1199,7 +1189,7 @@ my @Tests = (
                 Write => 'One',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) input',
@@ -1209,7 +1199,7 @@ my @Tests = (
                 Write => '1st',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .AddKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .SettingContent input',
@@ -1222,10 +1212,10 @@ my @Tests = (
                 Write => '/var',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddHashKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddHashKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) input',
@@ -1235,13 +1225,13 @@ my @Tests = (
                 Write => '2nd',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) .AddKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) .SettingContent input',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -1260,19 +1250,15 @@ my @Tests = (
     },
     {
         Name     => 'ExampleHoHSelect',
-        Index    => 16,
         Commands => [
-            {
-                Scroll => 1,
-            },
             {
                 Hover => '.Content',
             },
             {
-                Click => '.SettingEdit',
+                JqueryClick => '.SettingEdit',
             },
             {
-                Click => '.Setting > .Hash > .AddHashKey',
+                JqueryClick => '.Setting > .Hash > .AddHashKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .Key',
@@ -1282,7 +1268,7 @@ my @Tests = (
                 Write => 'One',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(3) .AddKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) input',
@@ -1292,7 +1278,7 @@ my @Tests = (
                 Write => '1st',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .AddKey',
             },
             {
                 # wait until select is initialized
@@ -1300,16 +1286,17 @@ my @Tests = (
             },
             {
                 # Select Kernel::System::Log::File
-                JS => "\$('.SettingsList li:nth-of-type(16) .WidgetSimple "
-                    . ".Setting > .Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .SettingContent "
-                    . " select').val('option-1')"
-                    . ".trigger('redraw.InputField').trigger('change');",
+                InputFieldValueSet => {
+                    Element => '.WidgetSimple[data-name="ExampleHoHSelect"] .Setting > '
+                        . '.Hash > .HashItem:nth-of-type(3) .HashItem:nth-of-type(1) .SettingContent select',
+                    Value => 'option-1',
+                },
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) > .RemoveButton',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddHashKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .AddHashKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) input',
@@ -1319,13 +1306,13 @@ my @Tests = (
                 Write => '2nd',
             },
             {
-                Click => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) .AddKey',
+                JqueryClick => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) .AddKey',
             },
             {
                 Select => '.Setting > .Hash > .HashItem:nth-of-type(2) .HashItem:nth-of-type(2) .SettingContent input',
             },
             {
-                Click => '.Update',
+                JqueryClick => '.Update',
             },
             {
                 Select => 'input',
@@ -1372,15 +1359,15 @@ $Selenium->RunTest(
             "ExampleComplex XML loaded.",
         );
 
-        my $DeploymentSuccess = $SysConfigObject->ConfigurationDeploy(
-            Comments    => "test deployment",
+        my %DeploymentResult = $SysConfigObject->ConfigurationDeploy(
+            Comments    => "AdminSystemConfigurationComplex.t deployment",
             UserID      => 1,
             Force       => 1,
             AllSettings => 1,
         );
 
         $Self->True(
-            $DeploymentSuccess,
+            $DeploymentResult{Success},
             "Deployment successful.",
         );
 
@@ -1390,7 +1377,6 @@ $Selenium->RunTest(
             Password => $TestUserLogin,
         );
 
-        # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
         # navigate to AdminSystemConfiguration screen
@@ -1399,32 +1385,100 @@ $Selenium->RunTest(
         );
 
         my $SelectedItem;
+        my $AlertText;
 
         for my $Test (@Tests) {
+
+            my $Prefix = ".WidgetSimple[data-name='$Test->{Name}']";
+
+            $Selenium->execute_script(
+                "\$(\"$Prefix\")[0].scrollIntoView(true);",
+            );
 
             for my $Command ( @{ $Test->{Commands} } ) {
                 my $CommandType = ( keys %{$Command} )[0];
                 my $Value       = $Command->{$CommandType};
 
-                my $Prefix = ".SettingsList li:nth-of-type($Test->{Index}) .WidgetSimple";
-
                 if ( $CommandType eq 'Click' ) {
                     $Selenium->WaitFor(
-                        JavaScript => 'return $("' . "$Prefix $Value" . ':visible").length',
+                        JavaScript => 'return $("' . "$Prefix $Value" . '").length',
                     );
-
                     $Selenium->WaitFor(
-                        JavaScript => 'return $("' . $Prefix . '").hasClass("HasOverlay")==0',
+                        JavaScript => 'return $("' . $Prefix . '").hasClass("HasOverlay") == 0',
                     );
 
-                    $Selenium->find_element( "$Prefix $Value", "css" )->VerifiedClick();
+                    # Give JS some time to do the stuff.
+                    Time::HiRes::sleep(0.2);
 
-                    # TODO: Review - VerifiedClick doesn't work with overlay loader
-                }
-                elsif ( $CommandType eq 'Scroll' ) {
                     $Selenium->execute_script(
-                        "\$('$Prefix')[0].scrollIntoView(true);",
+                        '$("' . "$Prefix $Value" . '").click();'
                     );
+
+                    if ($AlertText) {
+                        $Selenium->WaitFor(
+                            AlertPresent => 1,
+                        );
+
+                        # Verify alert message.
+                        $Self->Is(
+                            $AlertText,
+                            $Selenium->get_alert_text(),
+                            "$Test->{Name} - Check alert text - $AlertText",
+                        );
+
+                        # Accept alert.
+                        $Selenium->accept_alert();
+
+                        # Reset alert text.
+                        $AlertText = '';
+                    }
+                    else {
+                        $Selenium->WaitFor(
+                            Time       => 120,
+                            JavaScript => 'return $("' . $Prefix . '").hasClass("HasOverlay") == 0',
+                        );
+                    }
+                }
+                elsif ( $CommandType eq 'JqueryClick' ) {
+                    $Selenium->WaitFor(
+                        JavaScript => 'return $("' . "$Prefix $Value" . '").length',
+                    );
+                    $Selenium->WaitFor(
+                        JavaScript => 'return $("' . $Prefix . '").hasClass("HasOverlay") == 0',
+                    );
+
+                    $Selenium->WaitForjQueryEventBound(
+                        CSSSelector => "$Prefix $Value",
+                    );
+
+                    $Selenium->execute_script(
+                        '$("' . "$Prefix $Value" . '").click();'
+                    );
+
+                    if ($AlertText) {
+                        $Selenium->WaitFor(
+                            AlertPresent => 1,
+                        );
+
+                        # Verify alert message.
+                        $Self->Is(
+                            $AlertText,
+                            $Selenium->get_alert_text(),
+                            "$Test->{Name} - Check alert text - $AlertText",
+                        );
+
+                        # Accept alert.
+                        $Selenium->accept_alert();
+
+                        # Reset alert text.
+                        $AlertText = '';
+                    }
+                    else {
+                        $Selenium->WaitFor(
+                            Time       => 120,
+                            JavaScript => 'return $("' . $Prefix . '").hasClass("HasOverlay") == 0',
+                        );
+                    }
                 }
                 elsif ( $CommandType eq 'Clear' ) {
                     $SelectedItem->clear();
@@ -1434,26 +1488,14 @@ $Selenium->RunTest(
                     $Selenium->mouse_move_to_location( element => $SelectedItem );
 
                     $Selenium->WaitFor(
-                        JavaScript => 'return $("' . "$Prefix $Value" . ':visible").length',
+                        JavaScript => 'return typeof($) === "function" && $("' . "$Prefix $Value" . ':visible").length',
                     );
                     $Selenium->WaitFor(
-                        JavaScript => 'return $("' . $Prefix . '").hasClass("HasOverlay")==0',
+                        JavaScript => 'return $("' . $Prefix . '").hasClass("HasOverlay") == 0',
                     );
                 }
-                elsif ( $CommandType eq 'Alert' ) {
-                    $Selenium->WaitFor(
-                        AlertPresent => 1,
-                    );
-
-                    # verify alert message
-                    $Self->Is(
-                        $Value,
-                        $Selenium->get_alert_text(),
-                        "Check alert text - $Value",
-                    );
-
-                    # accept alert
-                    $Selenium->accept_alert();
+                elsif ( $CommandType eq 'ExpectAlert' ) {
+                    $AlertText = $Value;
                 }
                 elsif ( $CommandType eq 'Write' ) {
 
@@ -1464,45 +1506,67 @@ $Selenium->RunTest(
                     $Self->Is(
                         $SelectedItem->get_value(),
                         $Value,
-                        "Check if element value is OK.",
+                        "$Test->{Name} - Check if element value is OK.",
                     );
                 }
                 elsif ( $CommandType eq 'ElementMissing' ) {
 
                     $Selenium->WaitFor(
-                        JavaScript => 'return $("' . "$Prefix $Value" . '").length == 0',
+                        JavaScript => 'return typeof($) === "function" && $("' . "$Prefix $Value" . '").length == 0',
                     );
                 }
                 elsif ( $CommandType eq 'Select' ) {
 
                     $Selenium->WaitFor(
-                        JavaScript => 'return $("' . $Prefix . '").hasClass("HasOverlay")==0',
+                        JavaScript => 'return typeof($) === "function" && $("' . $Prefix
+                            . '").hasClass("HasOverlay") == 0',
                     );
 
+                    # JS needs more escapes.
+                    my $JSValue = $Value;
+                    $JSValue =~ s{\\}{\\\\}g;
+
                     $Selenium->WaitFor(
-                        JavaScript => 'return $("' . "$Prefix $Value" . '").length',
+                        JavaScript => 'return typeof($) === "function" && $("' . "$Prefix $JSValue" . '").length',
                     );
 
                     $SelectedItem = $Selenium->find_element( "$Prefix $Value", "css" );
                 }
                 elsif ( $CommandType eq 'JS' ) {
 
-                    # wait for any tasks to complete
-
+                    # Wait for any tasks to complete.
                     $Selenium->WaitFor(
-                        JavaScript => 'return $("' . $Prefix . '").hasClass("HasOverlay")==0',
+                        JavaScript => 'return typeof($) === "function" && $("' . $Prefix
+                            . '").hasClass("HasOverlay") == 0',
                     );
 
                     $Selenium->execute_script(
                         $Command->{JS},
                     );
                 }
+                elsif ( $CommandType eq 'InputFieldValueSet' ) {
+
+                    # Wait for any tasks to complete.
+                    $Selenium->WaitFor(
+                        JavaScript => 'return typeof($) === "function" && $("' . $Prefix
+                            . '").hasClass("HasOverlay") == 0',
+                    );
+
+                    $Selenium->InputFieldValueSet(
+                        Element => $Value->{Element},
+                        Value   => $Value->{Value},
+                    );
+                }
+                elsif ( $CommandType eq 'WaitForJS' ) {
+                    $Selenium->WaitFor(
+                        JavaScript => $Value,
+                    );
+                }
             }
 
-            # Compare result
+            # Compare results.
             my %Setting = $SysConfigObject->SettingGet(
-                Name      => $Test->{Name},
-                Translate => 0,
+                Name => $Test->{Name},
             );
 
             if ( $Test->{ExpectedResult} ) {
@@ -1517,7 +1581,7 @@ $Selenium->RunTest(
         # Enable this block if you want to test it multiple times.
         my @TestNames;
 
-        # Reset settings to Default
+        # Reset settings to Default.
         for my $Test (@Tests) {
             if ( !grep { $_ eq $Test->{Name} } @TestNames ) {
                 my %Setting = $SysConfigObject->SettingGet(

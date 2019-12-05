@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -94,11 +94,11 @@ my %DynamicFieldDropdownConfig = (
     Label      => 'Description',
     ValidID    => 1,
     Config     => {
-        PossibleValues => [
+        PossibleValues => {
             1 => 'One',
             2 => 'Two',
             3 => 'Three',
-        ],
+        },
     },
 );
 my $FieldDropdownID = $DynamicFieldObject->DynamicFieldAdd(
@@ -123,11 +123,11 @@ my %DynamicFieldMultiselectConfig = (
     Label      => 'Multiselect label',
     ValidID    => 1,
     Config     => {
-        PossibleValues => [
+        PossibleValues => {
             1 => 'Value9ßüß',
             2 => 'DifferentValue',
             3 => '1234567',
-        ],
+        },
     },
 );
 my $FieldMultiselectID = $DynamicFieldObject->DynamicFieldAdd(
@@ -251,7 +251,7 @@ $Self->True(
     "Dropdown ValueSet() for Ticket $TicketID1",
 );
 
-# set webservice name
+# set web service name
 my $WebserviceName = $Helper->GetRandomID();
 
 # create web-service object
@@ -260,7 +260,7 @@ my $WebserviceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::Webse
 $Self->Is(
     ref $WebserviceObject,
     'Kernel::System::GenericInterface::Webservice',
-    "Create webservice object",
+    "Create web service object",
 );
 
 my $WebserviceID = $WebserviceObject->WebserviceAdd(
@@ -280,7 +280,7 @@ my $WebserviceID = $WebserviceObject->WebserviceAdd(
 );
 $Self->True(
     $WebserviceID,
-    "Added Webservice",
+    "Added web service",
 );
 
 # get config object
@@ -334,6 +334,7 @@ my $WebserviceConfig = {
                 NameSpace => 'http://otrs.org/SoapTestInterface/',
                 Encoding  => 'UTF-8',
                 Endpoint  => $RemoteSystem,
+                Timeout   => 120,
             },
         },
         Invoker => {
@@ -359,7 +360,7 @@ my $WebserviceUpdate = $WebserviceObject->WebserviceUpdate(
 );
 $Self->True(
     $WebserviceUpdate,
-    "Updated Webservice $WebserviceID - $WebserviceName",
+    "Updated web service $WebserviceID - $WebserviceName",
 );
 
 # disable SessionCheckRemoteIP setting
@@ -408,7 +409,7 @@ my @Tests = (
                 TicketNumber => $Ticket{TicketNumber},
                 Ticket       => {
                     Title => $Ticket{Title},
-                    }
+                }
             },
         },
         ExpectedReturnLocalData => {
@@ -418,7 +419,7 @@ my @Tests = (
                 TicketNumber => $Ticket{TicketNumber},
                 Ticket       => {
                     Title => $Ticket{Title},
-                    }
+                }
             },
         },
         Operation => 'TicketUpdate',
@@ -866,7 +867,7 @@ my $WebserviceDelete = $WebserviceObject->WebserviceDelete(
 );
 $Self->True(
     $WebserviceDelete,
-    "Deleted Webservice $WebserviceID",
+    "Deleted web service $WebserviceID",
 );
 
 # delete tickets

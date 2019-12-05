@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentTicketActionCommon;
@@ -161,7 +161,7 @@ sub Run {
     {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('Loading draft failed!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -213,16 +213,6 @@ sub Run {
 
     if ( IsHashRefWithData($LoadedFormDraft) ) {
 
-        my $DateTimeObject = $Kernel::OM->Create(
-            'Kernel::System::DateTime',
-            ObjectParams => {
-                String => $LoadedFormDraft->{ChangeTime},
-            },
-        );
-        my %RelativeTime = $LayoutObject->FormatRelativeTime( DateTimeObject => $DateTimeObject );
-        $LoadedFormDraft->{ChangeTimeRelative}
-            = $LayoutObject->{LanguageObject}->Translate( $RelativeTime{Message}, $RelativeTime{Value} );
-
         $LoadedFormDraft->{ChangeByName} = $Kernel::OM->Get('Kernel::System::User')->UserName(
             UserID => $LoadedFormDraft->{ChangeBy},
         );
@@ -253,19 +243,29 @@ sub Run {
     # get lock state
     if ( $Config->{RequiredLock} ) {
         if ( !$TicketObject->TicketLockGet( TicketID => $Self->{TicketID} ) ) {
-            $TicketObject->TicketLockSet(
+
+            my $Lock = $TicketObject->TicketLockSet(
                 TicketID => $Self->{TicketID},
                 Lock     => 'lock',
                 UserID   => $Self->{UserID}
             );
-            my $Success = $TicketObject->TicketOwnerSet(
-                TicketID  => $Self->{TicketID},
-                UserID    => $Self->{UserID},
-                NewUserID => $Self->{UserID},
-            );
 
-            # show lock state
-            if ($Success) {
+            if ($Lock) {
+
+                # Set new owner if ticket owner is different then logged user.
+                if ( $Ticket{OwnerID} != $Self->{UserID} ) {
+
+                    # Remember previous owner, which will be used to restore ticket owner on undo action.
+                    $Param{PreviousOwner} = $Ticket{OwnerID};
+
+                    $TicketObject->TicketOwnerSet(
+                        TicketID  => $Self->{TicketID},
+                        UserID    => $Self->{UserID},
+                        NewUserID => $Self->{UserID},
+                    );
+                }
+
+                # Show lock state.
                 $LayoutObject->Block(
                     Name => 'PropertiesLock',
                     Data => {
@@ -331,7 +331,7 @@ sub Run {
 
     # ACL compatibility translation
     my %ACLCompatGetParam = (
-        StateID       => $GetParam{StateID},
+        StateID       => $GetParam{NewStateID},
         PriorityID    => $GetParam{NewPriorityID},
         QueueID       => $GetParam{NewQueueID},
         OwnerID       => $GetParam{NewOwnerID},
@@ -434,7 +434,7 @@ sub Run {
         if ( $FormDraftAction && !$Config->{FormDraft} ) {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('FormDraft functionality disabled!'),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -916,6 +916,36 @@ sub Run {
 
         my $UnlockOnAway = 1;
 
+        # move ticket to a new queue, but only if the queue was changed
+        if (
+            $Config->{Queue}
+            && $GetParam{NewQueueID}
+            && $GetParam{NewQueueID} ne $Ticket{QueueID}
+            )
+        {
+
+            # move ticket (send notification if no new owner is selected)
+            my $BodyAsText = '';
+            if ( $LayoutObject->{BrowserRichText} ) {
+                $BodyAsText = $LayoutObject->RichText2Ascii(
+                    String => $GetParam{Body} || 0,
+                );
+            }
+            else {
+                $BodyAsText = $GetParam{Body} || 0;
+            }
+            my $Move = $TicketObject->TicketQueueSet(
+                QueueID            => $GetParam{NewQueueID},
+                UserID             => $Self->{UserID},
+                TicketID           => $Self->{TicketID},
+                SendNoNotification => $GetParam{NewUserID},
+                Comment            => $BodyAsText,
+            );
+            if ( !$Move ) {
+                return $LayoutObject->ErrorScreen();
+            }
+        }
+
         # set new owner
         my @NotifyDone;
         if ( $Config->{Owner} ) {
@@ -960,36 +990,6 @@ sub Run {
                 if ( $Success && $Success eq 1 ) {
                     push @NotifyDone, $GetParam{NewResponsibleID};
                 }
-            }
-        }
-
-        # move ticket to a new queue, but only if the queue was changed
-        if (
-            $Config->{Queue}
-            && $GetParam{NewQueueID}
-            && $GetParam{NewQueueID} ne $Ticket{QueueID}
-            )
-        {
-
-            # move ticket (send notification if no new owner is selected)
-            my $BodyAsText = '';
-            if ( $LayoutObject->{BrowserRichText} ) {
-                $BodyAsText = $LayoutObject->RichText2Ascii(
-                    String => $GetParam{Body} || 0,
-                );
-            }
-            else {
-                $BodyAsText = $GetParam{Body} || 0;
-            }
-            my $Move = $TicketObject->TicketQueueSet(
-                QueueID            => $GetParam{NewQueueID},
-                UserID             => $Self->{UserID},
-                TicketID           => $Self->{TicketID},
-                SendNoNotification => $GetParam{NewUserID},
-                Comment            => $BodyAsText,
-            );
-            if ( !$Move ) {
-                return $LayoutObject->ErrorScreen();
             }
         }
 
@@ -1228,7 +1228,7 @@ sub Run {
         {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('Could not delete draft!'),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -1559,6 +1559,7 @@ sub Run {
                     SelectedID   => $GetParam{NewQueueID},
                     PossibleNone => 1,
                     Translation  => 0,
+                    TreeView     => $TreeView,
                     Max          => 100,
                 },
                 @DynamicFieldAJAX,
@@ -1624,6 +1625,21 @@ sub Run {
 
         # set Body var to calculated content
         $GetParam{Body} = $Body;
+
+        my %SafetyCheckResult = $Kernel::OM->Get('Kernel::System::HTMLUtils')->Safety(
+            String => $GetParam{Body},
+
+            # Strip out external content if BlockLoadingRemoteContent is enabled.
+            NoExtSrcLoad => $ConfigObject->Get('Ticket::Frontend::BlockLoadingRemoteContent'),
+
+            # Disallow potentially unsafe content.
+            NoApplet     => 1,
+            NoObject     => 1,
+            NoEmbed      => 1,
+            NoSVG        => 1,
+            NoJavaScript => 1,
+        );
+        $GetParam{Body} = $SafetyCheckResult{String};
 
         if ( $Self->{ReplyToArticle} ) {
             my $TicketSubjectRe = $ConfigObject->Get('Ticket::SubjectRe') || 'Re';
@@ -1859,9 +1875,9 @@ sub _Mask {
             UserID => $Self->{UserID},
         );
         $Param{TypeStrg} = $LayoutObject->BuildSelection(
-            Class => 'Validate_Required Modernize ' . ( $Param{Errors}->{TypeIDInvalid} || '' ),
-            Data  => \%Type,
-            Name  => 'TypeID',
+            Class        => 'Validate_Required Modernize ' . ( $Param{Errors}->{TypeIDInvalid} || '' ),
+            Data         => \%Type,
+            Name         => 'TypeID',
             SelectedID   => $Param{TypeID},
             PossibleNone => 1,
             Sort         => 'AlphanumericValue',
@@ -1988,7 +2004,7 @@ sub _Mask {
             %ShownUsers = %AllGroupsMembers;
         }
         else {
-            my $GID = $QueueObject->GetQueueGroupID( QueueID => $Ticket{QueueID} );
+            my $GID        = $QueueObject->GetQueueGroupID( QueueID => $Ticket{QueueID} );
             my %MemberList = $GroupObject->PermissionGroupGet(
                 GroupID => $GID,
                 Type    => 'owner',
@@ -2095,7 +2111,7 @@ sub _Mask {
             %ShownUsers = %AllGroupsMembers;
         }
         else {
-            my $GID = $QueueObject->GetQueueGroupID( QueueID => $Ticket{QueueID} );
+            my $GID        = $QueueObject->GetQueueGroupID( QueueID => $Ticket{QueueID} );
             my %MemberList = $GroupObject->PermissionGroupGet(
                 GroupID => $GID,
                 Type    => 'responsible',
@@ -2194,7 +2210,7 @@ sub _Mask {
                     YearPeriodFuture => 5,
                     DiffTime         => $ConfigObject->Get('Ticket::Frontend::PendingDiffTime')
                         || 0,
-                    Class => $Param{DateInvalid} || ' ',
+                    Class                => $Param{DateInvalid} || ' ',
                     Validate             => 1,
                     ValidateDateInFuture => 1,
                     Calendar             => $Calendar,
@@ -2246,6 +2262,12 @@ sub _Mask {
     for my $TicketTypeDynamicField ( @{ $Param{TicketTypeDynamicFields} } ) {
         $LayoutObject->Block(
             Name => 'TicketTypeDynamicField',
+            Data => $TicketTypeDynamicField,
+        );
+
+        # Output customization block too, if it exists.
+        $LayoutObject->Block(
+            Name => 'TicketTypeDynamicField_' . $TicketTypeDynamicField->{Name},
             Data => $TicketTypeDynamicField,
         );
     }
@@ -2316,7 +2338,7 @@ sub _Mask {
             Type  => 'Long',
             Valid => 1,
         );
-        my $GID = $QueueObject->GetQueueGroupID( QueueID => $Ticket{QueueID} );
+        my $GID        = $QueueObject->GetQueueGroupID( QueueID => $Ticket{QueueID} );
         my %MemberList = $GroupObject->PermissionGroupGet(
             GroupID => $GID,
             Type    => 'note',
@@ -2437,12 +2459,20 @@ sub _Mask {
         if ( $Config->{InformAgent} ) {
 
             # get inform user list
-            my @InformUserID = $ParamObject->GetArray( Param => 'InformUserID' );
+            my %InformAgents;
+            my @InformUserID    = $ParamObject->GetArray( Param => 'InformUserID' );
+            my %InformAgentList = $GroupObject->PermissionGroupGet(
+                GroupID => $GID,
+                Type    => 'ro',
+            );
+            for my $UserID ( sort keys %InformAgentList ) {
+                $InformAgents{$UserID} = $AllGroupsMembers{$UserID};
+            }
 
             if ( $Self->{ReplyToArticle} ) {
 
                 # get email address of all users and compare to replyto-addresses
-                for my $UserID ( sort keys %ShownUsers ) {
+                for my $UserID ( sort keys %InformAgents ) {
                     if ( $ReplyToUserIDs{$UserID} ) {
                         push @InformUserID, $UserID;
                         delete $ReplyToUserIDs{$UserID};
@@ -2453,7 +2483,7 @@ sub _Mask {
             my $InformAgentSize = $ConfigObject->Get('Ticket::Frontend::InformAgentMaxSize')
                 || 3;
             $Param{OptionStrg} = $LayoutObject->BuildSelection(
-                Data       => \%ShownUsers,
+                Data       => \%InformAgents,
                 SelectedID => \@InformUserID,
                 Name       => 'InformUserID',
                 Class      => 'Modernize',
@@ -2567,10 +2597,10 @@ sub _Mask {
             )
         {
             $Param{StandardTemplateStrg} = $LayoutObject->BuildSelection(
-                Data       => $QueueStandardTemplates    || {},
-                Name       => 'StandardTemplateID',
-                SelectedID => $Param{StandardTemplateID} || '',
-                Class      => 'Modernize',
+                Data         => $QueueStandardTemplates || {},
+                Name         => 'StandardTemplateID',
+                SelectedID   => $Param{StandardTemplateID} || '',
+                Class        => 'Modernize',
                 PossibleNone => 1,
                 Sort         => 'AlphanumericValue',
                 Translation  => 1,
@@ -2615,6 +2645,12 @@ sub _Mask {
                     Data => $ArticleTypeDynamicField,
                 );
             }
+
+            # Output customization block too, if it exists.
+            $LayoutObject->Block(
+                Name => 'ArticleTypeDynamicField_' . $ArticleTypeDynamicField->{Name},
+                Data => $ArticleTypeDynamicField,
+            );
         }
     }
 
@@ -2786,8 +2822,9 @@ sub _GetServices {
     if ( $Param{CustomerUserID} ) {
         %Service = $Kernel::OM->Get('Kernel::System::Ticket')->TicketServiceList(
             %Param,
-            Action => $Self->{Action},
-            UserID => $Self->{UserID},
+            TicketID => $Self->{TicketID},
+            Action   => $Self->{Action},
+            UserID   => $Self->{UserID},
         );
     }
     return \%Service;
@@ -2816,8 +2853,9 @@ sub _GetSLAs {
     if ( $Param{ServiceID} ) {
         %SLA = $Kernel::OM->Get('Kernel::System::Ticket')->TicketSLAList(
             %Param,
-            Action => $Self->{Action},
-            UserID => $Self->{UserID},
+            TicketID => $Self->{TicketID},
+            Action   => $Self->{Action},
+            UserID   => $Self->{UserID},
         );
     }
     return \%SLA;
@@ -2903,7 +2941,7 @@ sub _GetQuotedReplyBody {
         if ( $Param{Body} ) {
             $Param{Body} =~ s/\t/ /g;
             my $Quote = $LayoutObject->Ascii2Html(
-                Text => $ConfigObject->Get('Ticket::Frontend::Quote') || '',
+                Text           => $ConfigObject->Get('Ticket::Frontend::Quote') || '',
                 HTMLResultMode => 1,
             );
             if ($Quote) {

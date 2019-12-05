@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -19,14 +19,17 @@ $Selenium->RunTest(
 
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-        my $TestUserLogin = $Helper->TestUserCreate(
-            Groups => [ 'admin', 'users' ],
-        ) || die "Did not get test user";
+        # Disable warn on stop word usage.
+        $Helper->ConfigSettingChange(
+            Valid => 1,
+            Key   => 'Ticket::SearchIndex::WarnOnStopWordUsage',
+            Value => 0,
+        );
 
-        $Selenium->Login(
-            Type     => 'Agent',
-            User     => $TestUserLogin,
-            Password => $TestUserLogin,
+        # Enable ModernizeFormFields.
+        $Helper->ConfigSettingChange(
+            Key   => 'ModernizeFormFields',
+            Value => 1,
         );
 
         my $RandomID = $Helper->GetRandomID();
@@ -170,14 +173,25 @@ $Selenium->RunTest(
             UserID    => 1,
         );
 
+        my $TestUserLogin = $Helper->TestUserCreate(
+            Groups => [ 'admin', 'users' ],
+        ) || die "Did not get test user";
+
+        $Selenium->Login(
+            Type     => 'Agent',
+            User     => $TestUserLogin,
+            Password => $TestUserLogin,
+        );
+
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
         # Go to agent preferences screen.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentPreferences;Subaction=Group;Group=UserProfile");
 
         # Change test user time zone preference to Europe/Berlin.
-        $Selenium->execute_script(
-            "\$('#UserTimeZone').val('Europe/Berlin').trigger('redraw.InputField').trigger('change');"
+        $Selenium->InputFieldValueSet(
+            Element => '#UserTimeZone',
+            Value   => 'Europe/Berlin',
         );
         $Selenium->execute_script(
             "\$('#UserTimeZone').closest('.WidgetSimple').find('.SettingUpdateBox').find('button').trigger('click');"
@@ -212,8 +226,9 @@ $Selenium->RunTest(
         }
 
         # Add search filter by ticket number and run it.
-        $Selenium->execute_script(
-            "\$('#Attribute').val('TicketNumber').trigger('redraw.InputField').trigger('change');",
+        $Selenium->InputFieldValueSet(
+            Element => '#Attribute',
+            Value   => 'TicketNumber',
         );
         $Selenium->find_element( 'TicketNumber',      'name' )->send_keys($TicketNumber);
         $Selenium->find_element( '#SearchFormSubmit', 'css' )->VerifiedClick();
@@ -231,10 +246,15 @@ $Selenium->RunTest(
 
         # Input wrong search parameters, result should be 'No ticket data found'.
         $Selenium->find_element( "Fulltext",          'name' )->send_keys('abcdfgh_nonexisting_ticket_text');
-        $Selenium->find_element( '#SearchFormSubmit', 'css' )->VerifiedClick();
+        $Selenium->find_element( '#SearchFormSubmit', 'css' )->click();
 
-        $Self->True(
-            index( $Selenium->get_page_source(), "No ticket data found." ) > -1,
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return typeof(\$) === 'function' && \$('#EmptyMessageSmall').text().trim() === 'No ticket data found.'"
+        );
+        $Self->Is(
+            $Selenium->execute_script("return \$('#EmptyMessageSmall').text().trim();"),
+            "No ticket data found.",
             "Ticket is not found on page",
         );
 
@@ -244,8 +264,8 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#SearchProfile').length" );
 
         # Search for $MaxCharString - ticket will not be found.
-        $Selenium->find_element( "Fulltext", 'name' )->send_keys($MaxCharString);
-        $Selenium->find_element( "Fulltext", 'name' )->VerifiedSubmit();
+        $Selenium->find_element( "Fulltext",          'name' )->send_keys($MaxCharString);
+        $Selenium->find_element( '#SearchFormSubmit', 'css' )->VerifiedClick();
 
         $Self->True(
             index( $Selenium->get_page_source(), $TitleRandom ) == -1,
@@ -280,6 +300,7 @@ $Selenium->RunTest(
         $Selenium->find_element( '#SearchFormSubmit', 'css' )->click();
 
         $Selenium->WaitFor( AlertPresent => 1 ) || die 'Alert for MinCharString not found';
+        sleep 1;
 
         # Verify the alert message.
         my $ExpectedAlertText = "Fulltext: $MinCharString";
@@ -299,6 +320,7 @@ $Selenium->RunTest(
         $Selenium->find_element( '#SearchFormSubmit', 'css' )->click();
 
         $Selenium->WaitFor( AlertPresent => 1 ) || die 'Alert for MaxCharString not found';
+        sleep 1;
 
         # Verify the alert message.
         $ExpectedAlertText = "Fulltext: $MaxCharString";
@@ -320,7 +342,7 @@ $Selenium->RunTest(
         $Selenium->WaitFor( AlertPresent => 1 ) || die 'Alert for stop word not found';
 
         # Verify the alert message.
-        $ExpectedAlertText = "Fulltext: because";
+        $ExpectedAlertText = "\nFulltext: because";
         $Self->True(
             ( $Selenium->get_alert_text() =~ /$ExpectedAlertText/ ),
             'Stop word search string warning is found',
@@ -329,8 +351,37 @@ $Selenium->RunTest(
         # Accept the alert to continue with the tests.
         $Selenium->accept_alert();
 
+        # Add Subject field and try searching subject with 'stop word' search.
+        $Selenium->InputFieldValueSet(
+            Element => '#Attribute',
+            Value   => 'MIMEBase_Subject',
+        );
+        $Selenium->WaitFor(
+            JavaScript => "return \$('#SearchInsert input[name=MIMEBase_Subject]').length"
+        );
+
+        $Selenium->find_element( "Fulltext",          'name' )->clear();
+        $Selenium->find_element( "MIMEBase_Subject",  'name' )->clear();
+        $Selenium->find_element( "MIMEBase_Subject",  'name' )->send_keys('because');
+        $Selenium->find_element( '#SearchFormSubmit', 'css' )->click();
+
+        $Selenium->WaitFor( AlertPresent => 1 ) || die 'Alert for stop word not found';
+
+        # Verify the alert message.
+        $ExpectedAlertText = "\nSubject: because";
+
+        $Self->True(
+            ( $Selenium->get_alert_text() =~ /$ExpectedAlertText/ ),
+            'Stop word search string warning is found',
+        );
+
+        # Accept the alert to continue with the tests.
+        $Selenium->accept_alert();
+
+        # Clear Subject field.
+        $Selenium->find_element( "MIMEBase_Subject", 'name' )->clear();
+
         # Search fulltext with correct input.
-        $Selenium->find_element( "Fulltext", 'name' )->clear();
         $Selenium->execute_script(
             "\$('input[name=\"Fulltext\"]').val('$Subject');",
         );
@@ -352,19 +403,25 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#SearchProfile').length" );
 
         # Add search filter by ticket create time and run it (May 4th).
-        $Selenium->execute_script(
-            "\$('#Attribute').val('TicketCreateTimeSlot').trigger('redraw.InputField').trigger('change');",
+        $Selenium->InputFieldValueSet(
+            Element => '#Attribute',
+            Value   => 'TicketCreateTimeSlot',
         );
         for my $Field (qw(Start Stop)) {
-            $Selenium->find_element( "#TicketCreateTime${Field}Day",   'css' )->send_keys('04');
-            $Selenium->find_element( "#TicketCreateTime${Field}Month", 'css' )->send_keys('05');
-            $Selenium->find_element( "#TicketCreateTime${Field}Year",  'css' )->send_keys('2017');
+            $Selenium->execute_script("\$('#TicketCreateTime${Field}Day:eq(0)').val('4');");
+            $Selenium->execute_script("\$('#TicketCreateTime${Field}Month:eq(0)').val('5');");
+            $Selenium->execute_script("\$('#TicketCreateTime${Field}Year:eq(0)').val('2017');");
         }
-        $Selenium->find_element( '#SearchFormSubmit', 'css' )->VerifiedClick();
+        $Selenium->find_element( '#SearchFormSubmit', 'css' )->click();
 
-        $Self->True(
-            index( $Selenium->get_page_source(), 'No ticket data found.' ) > -1,
-            'Ticket is not found on page'
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return typeof(\$) === 'function' && \$('#EmptyMessageSmall').text().trim() === 'No ticket data found.'"
+        );
+        $Self->Is(
+            $Selenium->execute_script("return \$('#EmptyMessageSmall').text().trim();"),
+            "No ticket data found.",
+            "Ticket is not found on page",
         );
 
         # Navigate to AgentTicketSearch screen again.
@@ -374,13 +431,14 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#SearchProfile').length" );
 
         # Add search filter by ticket create time and run it (May 5th).
-        $Selenium->execute_script(
-            "\$('#Attribute').val('TicketCreateTimeSlot').trigger('redraw.InputField').trigger('change');",
+        $Selenium->InputFieldValueSet(
+            Element => '#Attribute',
+            Value   => 'TicketCreateTimeSlot',
         );
         for my $Field (qw(Start Stop)) {
-            $Selenium->find_element( "#TicketCreateTime${Field}Day",   'css' )->send_keys('05');
-            $Selenium->find_element( "#TicketCreateTime${Field}Month", 'css' )->send_keys('05');
-            $Selenium->find_element( "#TicketCreateTime${Field}Year",  'css' )->send_keys('2017');
+            $Selenium->execute_script("\$('#TicketCreateTime${Field}Day:eq(0)').val('5');");
+            $Selenium->execute_script("\$('#TicketCreateTime${Field}Month:eq(0)').val('5');");
+            $Selenium->execute_script("\$('#TicketCreateTime${Field}Year:eq(0)').val('2017');");
         }
         $Selenium->find_element( '#SearchFormSubmit', 'css' )->VerifiedClick();
 
@@ -397,15 +455,17 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#SearchProfile').length" );
 
         # Add search filter by ticket create time and set it to invalid date (April 31st).
-        $Selenium->execute_script(
-            "\$('#Attribute').val('TicketCreateTimeSlot').trigger('redraw.InputField').trigger('change');",
+        $Selenium->InputFieldValueSet(
+            Element => '#Attribute',
+            Value   => 'TicketCreateTimeSlot',
         );
-        $Selenium->find_element( '#TicketCreateTimeStartDay',   'css' )->send_keys('31');
-        $Selenium->find_element( '#TicketCreateTimeStartMonth', 'css' )->send_keys('04');
-        $Selenium->find_element( '#TicketCreateTimeStartYear',  'css' )->send_keys('2017');
-        $Selenium->find_element( '#SearchFormSubmit',           'css' )->click();
-
-        sleep 1;
+        $Selenium->execute_script("\$('#TicketCreateTimeStartDay:eq(0)').val('31');");
+        $Selenium->execute_script("\$('#TicketCreateTimeStartMonth:eq(0)').val('4');");
+        $Selenium->execute_script("\$('#TicketCreateTimeStartYear:eq(0)').val('2017');");
+        $Selenium->find_element( '#SearchFormSubmit', 'css' )->click();
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('#TicketCreateTimeStartDay.Error').length;"
+        );
 
         $Self->True(
             $Selenium->execute_script(
@@ -415,14 +475,17 @@ $Selenium->RunTest(
         );
 
         # Fix the start date and set the end date to one before the start date.
-        $Selenium->find_element( '#TicketCreateTimeStartDay',   'css' )->send_keys('05');
-        $Selenium->find_element( '#TicketCreateTimeStartMonth', 'css' )->send_keys('05');
-        $Selenium->find_element( '#TicketCreateTimeStopDay',    'css' )->send_keys('04');
-        $Selenium->find_element( '#TicketCreateTimeStopMonth',  'css' )->send_keys('05');
-        $Selenium->find_element( '#TicketCreateTimeStopYear',   'css' )->send_keys('2017');
-        $Selenium->find_element( '#SearchFormSubmit',           'css' )->VerifiedClick();
+        $Selenium->execute_script("\$('#TicketCreateTimeStartDay:eq(0)').val('5');");
+        $Selenium->execute_script("\$('#TicketCreateTimeStartMonth:eq(0)').val('5');");
+        $Selenium->execute_script("\$('#TicketCreateTimeStartYear:eq(0)').val('2017');");
 
-        sleep 1;
+        $Selenium->execute_script("\$('#TicketCreateTimeStopDay:eq(0)').val('4');");
+        $Selenium->execute_script("\$('#TicketCreateTimeStopMonth:eq(0)').val('5');");
+        $Selenium->execute_script("\$('#TicketCreateTimeStopYear:eq(0)').val('2017');");
+        $Selenium->find_element( '#SearchFormSubmit', 'css' )->click();
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('#TicketCreateTimeStopDay.Error').length;"
+        );
 
         $Self->True(
             $Selenium->execute_script(
@@ -432,8 +495,8 @@ $Selenium->RunTest(
         );
 
         # Fix the end date, and submit the search again.
-        $Selenium->find_element( '#TicketCreateTimeStopDay', 'css' )->send_keys('05');
-        $Selenium->find_element( '#SearchFormSubmit',        'css' )->VerifiedClick();
+        $Selenium->execute_script("\$('#TicketCreateTimeStopDay:eq(0)').val('5');");
+        $Selenium->find_element( '#SearchFormSubmit', 'css' )->VerifiedClick();
 
         # Check for expected result.
         $Self->True(
@@ -448,8 +511,9 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#SearchProfile').length" );
 
         # Add search filter by priority and run it.
-        $Selenium->execute_script(
-            "\$('#Attribute').val('PriorityIDs').trigger('redraw.InputField').trigger('change');",
+        $Selenium->InputFieldValueSet(
+            Element => '#Attribute',
+            Value   => 'PriorityIDs',
         );
         $Selenium->find_element( '#PriorityIDs_Search', 'css' )->click();
 
@@ -475,8 +539,9 @@ $Selenium->RunTest(
         for my $DynamicFieldType (qw(Date DateTime)) {
 
             # Add the date dynamic field, to check if the correct years are selectable (bug#12678).
-            $Selenium->execute_script(
-                "\$('#Attribute').val('Search_DynamicField_$DynamicFields{$DynamicFieldType}->{Name}TimeSlot').trigger('redraw.InputField').trigger('change');",
+            $Selenium->InputFieldValueSet(
+                Element => '#Attribute',
+                Value   => "Search_DynamicField_$DynamicFields{$DynamicFieldType}->{Name}TimeSlot",
             );
 
             for my $DatePart (qw(StartYear StartMonth StartDay StopYear StopMonth StopDay)) {
@@ -512,9 +577,9 @@ $Selenium->RunTest(
             my $TicketID = $TicketObject->TicketCreate(
                 TN         => $Number,
                 Title      => $Title,
-                Queue      => 'Raw',
+                Queue      => 'Junk',
                 Lock       => 'unlock',
-                Priority   => '3 normal',
+                Priority   => ( $DFValue eq 'GASZ' ) ? '1 very low' : '2 low',
                 State      => 'open',
                 CustomerID => 'SeleniumCustomer',
                 OwnerID    => 1,
@@ -547,8 +612,9 @@ $Selenium->RunTest(
         my $TextFieldID = 'Search_DynamicField_' . $DynamicFields{Text}->{Name};
 
         # Add search filter by text dynamic field and run it.
-        $Selenium->execute_script(
-            "\$('#Attribute').val('$TextFieldID').trigger('redraw.InputField').trigger('change');",
+        $Selenium->InputFieldValueSet(
+            Element => '#Attribute',
+            Value   => $TextFieldID,
         );
         $Selenium->WaitFor(
             JavaScript => "return typeof(\$) === 'function' && \$('#SearchInsert #$TextFieldID').length"
@@ -567,12 +633,200 @@ $Selenium->RunTest(
             "TicketID $TicketIDs[2] is found in the table"
         );
 
+        # Test searching by URL (see bug#7988).
+        # Search for tickets in Junk queue and with DF values 'GASZ' or 'JLEB' -
+        # the last two created tickets should be in the table.
+        $Selenium->VerifiedGet(
+            "${ScriptAlias}index.pl?Action=AgentTicketSearch;Subaction=Search;$TextFieldID=GASZ||JLEB;ShownAttributes=Label$TextFieldID"
+        );
+        $Self->True(
+            $Selenium->execute_script("return \$('#OverviewBody tbody tr[id=TicketID_$TicketIDs[0]').length == 0"),
+            "TicketID $TicketIDs[0] is not found in the table"
+        );
+        $Self->True(
+            $Selenium->execute_script("return \$('#OverviewBody tbody tr[id=TicketID_$TicketIDs[1]').length"),
+            "TicketID $TicketIDs[1] is found in the table"
+        );
+        $Self->True(
+            $Selenium->execute_script("return \$('#OverviewBody tbody tr[id=TicketID_$TicketIDs[2]').length"),
+            "TicketID $TicketIDs[2] is found in the table"
+        );
+
+        # Search for tickets with priorities '1 very low' and '2 low' -
+        # the last two created tickets should be in the table.
+        $Selenium->VerifiedGet(
+            "${ScriptAlias}index.pl?Action=AgentTicketSearch;Subaction=Search;Priorities=1 very low;Priorities=2 low"
+        );
+        $Self->True(
+            $Selenium->execute_script("return \$('#OverviewBody tbody tr[id=TicketID_$TicketIDs[0]').length == 0"),
+            "TicketID $TicketIDs[0] is not found in the table"
+        );
+        $Self->True(
+            $Selenium->execute_script("return \$('#OverviewBody tbody tr[id=TicketID_$TicketIDs[1]').length"),
+            "TicketID $TicketIDs[1] is found in the table"
+        );
+        $Self->True(
+            $Selenium->execute_script("return \$('#OverviewBody tbody tr[id=TicketID_$TicketIDs[2]').length"),
+            "TicketID $TicketIDs[2] is found in the table"
+        );
+
+        # Verify tree selection view in AgentTicketSearch for multiple fields. See bug#14494.
+        $Helper->ConfigSettingChange(
+            Key   => 'ModernizeFormFields',
+            Value => 0,
+        );
+
+        # Refresh screen.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketSearch");
+        $Selenium->WaitForjQueryEventBound(
+            CSSSelector => '#Attribute',
+            Event       => 'change',
+        );
+
+        $Selenium->InputFieldValueSet(
+            Element => '#Attribute',
+            Value   => 'QueueIDs',
+        );
+        $Selenium->InputFieldValueSet(
+            Element => '#Attribute',
+            Value   => 'CreatedQueueIDs',
+        );
+
+        # Click to show tree selection for both fields.
+        $Selenium->WaitForjQueryEventBound(
+            CSSSelector => '.ShowTreeSelection',
+        );
+        $Selenium->execute_script("\$('.ShowTreeSelection').click();");
+        sleep 1;
+
+        my @SearchElements = $Selenium->find_elements("//input[contains(\@placeholder,'Search...')]");
+
+        # Filter by Created in Queue.
+        $SearchElements[1]->send_keys('Junk');
+
+        # Verify only one visible entry is found in tree view selection for Created in Queue.
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return \$('#CreatedQueueIDs').siblings('.JSTreeField').find('ul li a').hasClass('jstree-search');"
+        );
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('#CreatedQueueIDs').siblings('.JSTreeField').find('ul li a').hasClass('jstree-search');"
+            ),
+            "Tree view filter for Created in Queue correctly found expected value."
+        );
+
+        # Filter by Queue.
+        $SearchElements[0]->send_keys('Misc');
+
+        # Verify only one visible entry is found in tree view selection for Created in Queue.
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return \$('#QueueIDs').siblings('.JSTreeField').find('ul li a').hasClass('jstree-search');"
+        );
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('#QueueIDs').siblings('.JSTreeField').find('ul li a').hasClass('jstree-search');"
+            ),
+            "Tree view filter for Queue correctly found expected value."
+        );
+
+        # Click to remove filter for Queue and verify that Created in Queue remained filtered.
+        $Selenium->execute_script("\$('#QueueIDs').siblings('.DialogTreeSearch').find('span').click();");
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return !\$('#QueueIDs').siblings('.JSTreeField').find('ul li a').hasClass('jstree-search');"
+        );
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('#CreatedQueueIDs').siblings('.JSTreeField').find('ul li a').hasClass('jstree-search');"
+            ),
+            "Tree view filter for CreatedQueueIDs correctly found expected value after removing Queue tree view filter."
+        );
+
+        # Change test user language and verify searchable Article Fields are translated.
+        # See bug#13913 (https://bugs.otrs.org/show_bug.cgi?id=13913).
+
+        # Go to agent preferences screen.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentPreferences;Subaction=Group;Group=UserProfile");
+
+        # Change test user language preference to Deutsch (de).
+        my $Language = 'de';
+        $Selenium->InputFieldValueSet(
+            Element => '#UserLanguage',
+            Value   => 'de',
+        );
+        $Selenium->execute_script(
+            "\$('#UserLanguage').closest('.WidgetSimple').find('.SettingUpdateBox').find('button').trigger('click');"
+        );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return \$('#UserLanguage').closest('.WidgetSimple').hasClass('HasOverlay')"
+        );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return \$('#UserLanguage').closest('.WidgetSimple').find('.fa-check').length"
+        );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return !\$('#UserLanguage').closest('.WidgetSimple').hasClass('HasOverlay')"
+        );
+
+        # Navigate to AgentTicketSearch screen.
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketSearch");
+
+        # Wait until form and overlay has loaded, if necessary.
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#SearchProfile').length" );
+
+        # Select 'Body' field in search.
+        $Selenium->InputFieldValueSet(
+            Element => '#Attribute',
+            Value   => 'MIMEBase_Body',
+        );
+        $Selenium->WaitFor(
+            JavaScript => "return \$('#SearchInsert input[name=MIMEBase_Body]').length"
+        );
+
+        # Verify translated 'Body' field label.
+        my $LanguageObject = Kernel::Language->new(
+            UserLanguage => $Language,
+        );
+
+        $Self->Is(
+            $Selenium->execute_script(" return \$('#LabelMIMEBase_Body').text()"),
+            $LanguageObject->Translate('Body') . ':',
+            "Article search field 'Body' translated correctly"
+        );
+
+        # Input some text and search.
+        $Selenium->find_element( "Fulltext",          'name' )->send_keys('text123456');
+        $Selenium->find_element( '#SearchFormSubmit', 'css' )->VerifiedClick();
+
+        # Check for search profile name.
+        my $SearchText = $LanguageObject->Translate('Change search options') . ' ('
+            . $LanguageObject->Translate('last-search') . ')';
+
+        $Self->Is(
+            $Selenium->execute_script("return \$('.ControlRow a:eq(0)').text().trim();"),
+            $SearchText,
+            "Search profile name 'last-search' found on page",
+        );
+
         # Clean up test data from the DB.
         for my $TicketID (@TicketIDs) {
             $Success = $TicketObject->TicketDelete(
                 TicketID => $TicketID,
                 UserID   => 1,
             );
+
+            # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+            if ( !$Success ) {
+                sleep 3;
+                $Success = $TicketObject->TicketDelete(
+                    TicketID => $TicketID,
+                    UserID   => 1,
+                );
+            }
             $Self->True(
                 $Success,
                 "Ticket - ID $TicketID - deleted",

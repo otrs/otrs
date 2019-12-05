@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -22,6 +22,48 @@ $Kernel::OM->ObjectParamAdd(
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
+# create test ticket and article
+my $TicketID = $Kernel::OM->Get('Kernel::System::Ticket')->TicketCreate(
+    Title        => 'Some Ticket_Title',
+    Queue        => 'Raw',
+    Lock         => 'unlock',
+    Priority     => '3 normal',
+    State        => 'closed successful',
+    CustomerNo   => '123465',
+    CustomerUser => 'customer@example.com',
+    OwnerID      => 1,
+    UserID       => 1,
+);
+$Self->True(
+    $TicketID,
+    'TicketCreate()',
+);
+
+my $ArticleID = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
+    ChannelName => 'Internal',
+)->ArticleCreate(
+    TicketID             => $TicketID,
+    IsVisibleForCustomer => 0,
+    SenderType           => 'agent',
+    From                 => 'Some Agent <email@example.com>',
+    To                   => 'Some Customer <customer-a@example.com>',
+    Subject              => 'some short description',
+    Body                 => 'the message text',
+    ContentType          => 'text/plain; charset=ISO-8859-15',
+    HistoryType          => 'OwnerUpdate',
+    HistoryComment       => 'Some free text!',
+    UserID               => 1,
+    NoAgentNotify        => 1,
+);
+$Self->True(
+    $ArticleID,
+    'ArticleCreate()',
+);
+
+# create test user
+my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+my ( $UserLogin, $UserID ) = $Helper->TestUserCreate();
 
 =cut
 This test is supposed to verify the solution for bug#9092, which showed
@@ -65,9 +107,9 @@ my @Tests = (
 
     # insert test data
     '<Insert Table="bug9092">
-        <Data Key="article_id">1</Data>
+        <Data Key="article_id">' . $ArticleID . '</Data>
         <Data Key="article_key" Type="Quote">Seen</Data>
-        <Data Key="article_value" Type="Quote">1</Data>
+        <Data Key="article_value" Type="Quote">' . $UserID . '</Data>
         <Data Key="create_time" Type="">current_timestamp</Data>
         <Data Key="create_by">1</Data>
     </Insert>',
@@ -104,8 +146,8 @@ my @Tests = (
 
 for my $Test (@Tests) {
     my @XMLARRAY = $Kernel::OM->Get('Kernel::System::XML')->XMLParse( String => $Test );
-    my @SQL = $DBObject->SQLProcessor( Database => \@XMLARRAY );
-    my @SQLPost = $DBObject->SQLProcessorPost( Database => \@XMLARRAY );
+    my @SQL      = $DBObject->SQLProcessor( Database => \@XMLARRAY );
+    my @SQLPost  = $DBObject->SQLProcessorPost( Database => \@XMLARRAY );
 
     for my $SQL ( @SQL, @SQLPost ) {
         $Self->True(

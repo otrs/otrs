@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -709,7 +709,7 @@ for my $Test (@Tests) {
 
     # get the old ActivityDialog (if any)
     my $OldActivityDialog = $ActivityDialogObject->ActivityDialogGet(
-        ID => $Test->{Config}->{ID} || 0,
+        ID     => $Test->{Config}->{ID} || 0,
         UserID => $Test->{Config}->{UserID},
     );
 
@@ -872,7 +872,7 @@ $Self->Is(
 );
 
 my $Counter = 0;
-for my $ActivityDialogID ( sort { $a <=> $b } keys %TestActivityDialogListCopy ) {
+for my $ActivityDialogID ( sort { int $a <=> int $b } keys %TestActivityDialogListCopy ) {
     $Self->Is(
         $ActivityDialogID,
         $AddedActivityDialogsList[$Counter],
@@ -960,7 +960,7 @@ my $List = $ActivityDialogObject->ActivityDialogList(
 
 # create the list of activity dialogs with details manually
 my $ExpectedActivityDialogList;
-for my $ActivityDialogID ( sort { $a <=> $b } keys %{$List} ) {
+for my $ActivityDialogID ( sort { int $a <=> int $b } keys %{$List} ) {
 
     my $ActivityDialogData = $ActivityDialogObject->ActivityDialogGet(
         ID     => $ActivityDialogID,

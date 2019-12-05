@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Main;
@@ -19,6 +19,9 @@ use File::stat;
 use Unicode::Normalize;
 use List::Util qw();
 use Fcntl qw(:flock);
+use Encode;
+
+use Kernel::System::VariableCheck qw(IsStringWithData);
 
 our @ObjectDependencies = (
     'Kernel::System::Encode',
@@ -173,12 +176,17 @@ to clean up filenames which can be used in any case (also quoting is done)
 sub FilenameCleanUp {
     my ( $Self, %Param ) = @_;
 
-    if ( !$Param{Filename} ) {
+    if ( !IsStringWithData( $Param{Filename} ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need Filename!',
         );
         return;
+    }
+
+    # escape if cleanup is not needed
+    if ( $Param{NoFilenameClean} ) {
+        return $Param{Filename};
     }
 
     my $Type = lc( $Param{Type} || 'local' );
@@ -191,8 +199,17 @@ sub FilenameCleanUp {
     # replace invalid token for attachment file names
     elsif ( $Type eq 'attachment' ) {
 
-        # replace invalid token like < > ? " : ; | \ / or *
-        $Param{Filename} =~ s/[ <>\?":\\\*\|\/;\[\]]/_/g;
+        # trim whitespace
+        $Param{Filename} =~ s/^\s+|\r|\n|\s+$//g;
+
+        # strip leading dots
+        $Param{Filename} =~ s/^\.+//;
+
+        # only whitelisted characters allowed in filename for security
+        $Param{Filename} =~ s/[^\w\-+.#_]/_/g;
+
+        # Enclosed alphanumerics are kept on older Perl versions, make sure to replace them too.
+        $Param{Filename} =~ s/[\x{2460}-\x{24FF}]/_/g;
 
         # replace utf8 and iso
         $Param{Filename} =~ s/(\x{00C3}\x{00A4}|\x{00A4})/ae/g;
@@ -204,19 +221,80 @@ sub FilenameCleanUp {
         $Param{Filename} =~ s/(\x{00C3}\x{009F}|\x{00DF})/ss/g;
         $Param{Filename} =~ s/-+/-/g;
 
-        # cut the string if too long
-        if ( length( $Param{Filename} ) > 100 ) {
-            my $Ext = '';
-            if ( $Param{Filename} =~ /^.*(\.(...|....))$/ ) {
-                $Ext = $1;
+        # separate filename and extension
+        my $FileName = $Param{Filename};
+        my $FileExt  = '';
+        if ( $Param{Filename} =~ /(.*)\.+([^.]+)$/ ) {
+            $FileName = $1;
+            $FileExt  = '.' . $2;
+        }
+
+        if ( length $FileName ) {
+            my $ModifiedName = $FileName . $FileExt;
+
+            while ( length encode( 'UTF-8', $ModifiedName ) > 220 ) {
+
+                # Remove character by character starting from the end of the filename string
+                #   until we get acceptable 220 byte long filename size including extension.
+                if ( length $FileName > 1 ) {
+                    chop $FileName;
+                }
+
+                # If we reached minimum filename length, remove characters from the end of the extension string.
+                else {
+                    chop $FileExt;
+                }
+
+                $ModifiedName = $FileName . $FileExt;
             }
-            $Param{Filename} = substr( $Param{Filename}, 0, 95 ) . $Ext;
+            $Param{Filename} = $ModifiedName;
         }
     }
     else {
 
-        # replace invalid token like [ ] * : ? " < > ; | \ /
-        $Param{Filename} =~ s/[<>\?":\\\*\|\/;\[\]]/_/g;
+        # trim whitespace
+        $Param{Filename} =~ s/^\s+|\r|\n|\s+$//g;
+
+        # strip leading dots
+        $Param{Filename} =~ s/^\.+//;
+
+        # only whitelisted characters allowed in filename for security
+        if ( !$Param{NoReplace} ) {
+            $Param{Filename} =~ s/[^\w\-+.#_]/_/g;
+
+            # Enclosed alphanumerics are kept on older Perl versions, make sure to replace them too.
+            $Param{Filename} =~ s/[\x{2460}-\x{24FF}]/_/g;
+        }
+
+        # separate filename and extension
+        my $FileName = $Param{Filename};
+        my $FileExt  = '';
+        if ( $Param{Filename} =~ /(.*)\.+([^.]+)$/ ) {
+            $FileName = $1;
+            $FileExt  = '.' . $2;
+        }
+
+        if ( length $FileName ) {
+            my $ModifiedName = $FileName . $FileExt;
+
+            while ( length encode( 'UTF-8', $ModifiedName ) > 220 ) {
+
+                # Remove character by character starting from the end of the filename string
+                #   until we get acceptable 220 byte long filename size including extension.
+                if ( length $FileName > 1 ) {
+                    chop $FileName;
+                }
+
+                # If we reached minimum filename length, remove characters from the end of the extension string.
+                else {
+                    chop $FileExt;
+                }
+
+                $ModifiedName = $FileName . $FileExt;
+            }
+
+            $Param{Filename} = $ModifiedName;
+        }
     }
 
     return $Param{Filename};
@@ -282,17 +360,6 @@ sub FileRead {
 
     }
 
-    # check if file exists
-    if ( !-e $Param{Location} ) {
-        if ( !$Param{DisableWarnings} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "File '$Param{Location}' doesn't exist!"
-            );
-        }
-        return;
-    }
-
     # set open mode
     my $Mode = '<';
     if ( $Param{Mode} && $Param{Mode} =~ m{ \A utf-?8 \z }xmsi ) {
@@ -301,11 +368,23 @@ sub FileRead {
 
     # return if file can not open
     if ( !open $FH, $Mode, $Param{Location} ) {    ## no critic
+        my $Error = $!;
+
         if ( !$Param{DisableWarnings} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Can't open '$Param{Location}': $!",
-            );
+
+            # Check if file exists only if system was not able to open it (to get better error message).
+            if ( !-e $Param{Location} ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "File '$Param{Location}' doesn't exist!",
+                );
+            }
+            else {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Can't open '$Param{Location}': $Error",
+                );
+            }
         }
         return;
     }
@@ -379,8 +458,10 @@ sub FileWrite {
 
         # filename clean up
         $Param{Filename} = $Self->FilenameCleanUp(
-            Filename => $Param{Filename},
-            Type     => $Param{Type} || 'Local',    # Local|Attachment|MD5
+            Filename        => $Param{Filename},
+            Type            => $Param{Type} || 'Local',    # Local|Attachment|MD5
+            NoFilenameClean => $Param{NoFilenameClean},
+            NoReplace       => $Param{NoReplace},
         );
         $Param{Location} = "$Param{Directory}/$Param{Filename}";
     }
@@ -491,8 +572,9 @@ sub FileDelete {
 
         # filename clean up
         $Param{Filename} = $Self->FilenameCleanUp(
-            Filename => $Param{Filename},
-            Type     => $Param{Type} || 'Local',    # Local|Attachment|MD5
+            Filename  => $Param{Filename},
+            Type      => $Param{Type} || 'Local',    # Local|Attachment|MD5
+            NoReplace => $Param{NoReplace},
         );
         $Param{Location} = "$Param{Directory}/$Param{Filename}";
     }
@@ -508,25 +590,27 @@ sub FileDelete {
         );
     }
 
-    # check if file exists
-    if ( !-e $Param{Location} ) {
-        if ( !$Param{DisableWarnings} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "File '$Param{Location}' doesn't exist!"
-            );
-        }
-        return;
-    }
-
-    # delete file
+    # try to delete file
     if ( !unlink( $Param{Location} ) ) {
+        my $Error = $!;
+
         if ( !$Param{DisableWarnings} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Can't delete '$Param{Location}': $!",
-            );
+
+            # Check if file exists only in case that delete failed.
+            if ( !-e $Param{Location} ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "File '$Param{Location}' doesn't exist!",
+                );
+            }
+            else {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Can't delete '$Param{Location}': $Error",
+                );
+            }
         }
+
         return;
     }
 
@@ -572,25 +656,28 @@ sub FileGetMTime {
 
     }
 
-    # check if file exists
-    if ( !-e $Param{Location} ) {
-        if ( !$Param{DisableWarnings} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "File '$Param{Location}' doesn't exist!"
-            );
-        }
-        return;
-    }
-
     # get file metadata
     my $Stat = stat( $Param{Location} );
 
     if ( !$Stat ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Cannot stat file '$Param{Location}': $!"
-        );
+        my $Error = $!;
+
+        if ( !$Param{DisableWarnings} ) {
+
+            # Check if file exists only if system was not able to open it (to get better error message).
+            if ( !-e $Param{Location} ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "File '$Param{Location}' doesn't exist!"
+                );
+            }
+            else {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Cannot stat file '$Param{Location}': $Error",
+                );
+            }
+        }
         return;
     }
 
@@ -627,25 +714,27 @@ sub MD5sum {
         return;
     }
 
-    # check if file exists
-    if ( $Param{Filename} && !-e $Param{Filename} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "File '$Param{Filename}' doesn't exist!",
-        );
-        return;
-    }
-
     # md5sum file
     if ( $Param{Filename} ) {
 
         # open file
         my $FH;
         if ( !open $FH, '<', $Param{Filename} ) {    ## no critic
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Can't read '$Param{Filename}': $!",
-            );
+            my $Error = $!;
+
+            # Check if file exists only if system was not able to open it (to get better error message).
+            if ( !-e $Param{Filename} ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "File '$Param{Filename}' doesn't exist!",
+                );
+            }
+            else {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Can't read '$Param{Filename}': $Error",
+                );
+            }
             return;
         }
 
@@ -903,10 +992,12 @@ sub DirectoryRead {
     my @Results;
     for my $Filename (@GlobResults) {
 
-        # first convert filename to utf-8 if utf-8 is used internally
+        # First convert filename to utf-8, with additional Check parameter
+        # to replace possible malformed characters and prevent further errors.
         $Filename = $EncodeObject->Convert2CharsetInternal(
-            Text => $Filename,
-            From => 'utf-8',
+            Text  => $Filename,
+            From  => 'utf-8',
+            Check => 1,
         );
 
         push @Results, $Filename;
@@ -1072,10 +1163,10 @@ sub _Dump {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

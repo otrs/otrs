@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 [% RenderBlockStart("DocumentActionRow") %]
 <ul class="Actions">
@@ -231,7 +231,7 @@
                                     <span class="Subject">[% Data.ArticleFields.Subject.Value | truncate(70) | html %]</span>
                                 [% END %]
                                 </span>
-                                <span class="DateTime">[% Data.Created | Localize("TimeShort") %]</span>
+                                <span class="DateTime">[% Data.ChangeTime | Localize("TimeShort") %]</span>
                                 <span class="Clear"></span>
                             </a>
                         </h3>
@@ -271,7 +271,7 @@
 
 [% RenderBlockStart("DocumentMenuItemMoveForm") %]
 <li class="[% Data.Class | html %]">
-    <form title="[% Translate("Move ticket to a different queue") | html %]" action="[% Env("CGIHandle") %]" method="get">
+    <form title="[% Translate("Move ticket to a different queue") | html %]" action="[% Env("CGIHandle") | html %]" method="get">
         <input type="hidden" name="Action" value="AgentTicketMove"/>
         <input type="hidden" name="QueueID" value="[% Data.QueueID | html %]"/>
         <input type="hidden" name="TicketID" value="[% Data.TicketID | html %]"/>

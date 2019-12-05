@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Console::Command::Maint::Ticket::FulltextIndex;
@@ -21,10 +21,12 @@ our @ObjectDependencies = (
 sub Configure {
     my ( $Self, %Param ) = @_;
 
-    $Self->Description('Flag articles to automatically rebuild the article search index or displays the index status.');
+    $Self->Description(
+        'Flag articles to automatically rebuild the article search index or displays the index status. Please use --status or --rebuild option, not both!'
+    );
     $Self->AddOption(
         Name        => 'status',
-        Description => "Displays the current status of the index.",
+        Description => "Display the current status of the index.",
         Required    => 0,
         HasValue    => 0,
     );
@@ -48,7 +50,7 @@ sub PreRun {
 
     if ( $Self->GetOption('status') && $Self->GetOption('rebuild') ) {
         $Self->Print( $Self->GetUsageHelp() );
-        die "Either --status or --rebuild must be given!\n";
+        die "Either --status or --rebuild must be given, not both!\n";
     }
 
     return;

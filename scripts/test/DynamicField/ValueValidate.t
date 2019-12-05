@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -11,6 +11,20 @@ use warnings;
 use utf8;
 
 use vars (qw($Self));
+
+# Broken on certain Perl 5.28 versions due to a Perl crash that we can't work around.
+my @BlacklistPerlVersions = (
+    v5.26.3,
+    v5.28.1,
+    v5.28.2,
+    v5.30.0,
+    v5.30.1,
+);
+
+if ( grep { $^V eq $_ } @BlacklistPerlVersions ) {
+    $Self->True( 1, "Current Perl version $^V is known to be buggy for this test, skipping." );
+    return 1;
+}
 
 # get needed objects
 my $DFBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
@@ -631,8 +645,8 @@ my @Tests = (
                     /\s/,
                     $CurrentSystemTime2Timestamp->(
                         Yield => sub { shift->Add( Seconds => 259200 ); },
-                        )
                     )
+                )
                 )[0]
                 . " 00:00:00",
             UserID => $UserID,
@@ -649,8 +663,8 @@ my @Tests = (
                     /\s/,
                     $CurrentSystemTime2Timestamp->(
                         Yield => sub { shift->Subtract( Seconds => 259200 ); },
-                        )
                     )
+                )
                 )[0]
                 . " 00:00:00",
             UserID => $UserID,
@@ -666,7 +680,7 @@ my @Tests = (
                 split(
                     /\s/,
                     $CurrentSystemTime2Timestamp->()
-                    )
+                )
                 )[0]
                 . " 00:00:00",
             UserID => $UserID,
@@ -683,8 +697,8 @@ my @Tests = (
                     /\s/,
                     $CurrentSystemTime2Timestamp->(
                         Yield => sub { shift->Add( Seconds => 259200 ); },
-                        )
                     )
+                )
                 )[0]
                 . " 00:00:00",
             UserID => $UserID,
@@ -700,7 +714,7 @@ my @Tests = (
                 split(
                     /\s/,
                     $CurrentSystemTime2Timestamp->()
-                    )
+                )
                 )[0]
                 . " 00:00:00",
             UserID => $UserID,
@@ -717,8 +731,8 @@ my @Tests = (
                     /\s/,
                     $CurrentSystemTime2Timestamp->(
                         Yield => sub { shift->Subtract( Seconds => 259200 ); },
-                        )
                     )
+                )
                 )[0]
                 . " 00:00:00",
             UserID => $UserID,

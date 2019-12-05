@@ -1,21 +1,19 @@
 #!/usr/bin/perl
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU AFFERO General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# any later version.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU Affero General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-# or see http://www.gnu.org/licenses/agpl.txt.
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -35,13 +33,39 @@ use Kernel::System::ObjectManager;
 my %Opts;
 my $Compress    = '';
 my $CompressCMD = '';
+my $CompressEXT = '';
 my $DB          = '';
 my $DBDump      = '';
 getopt( 'hcrtd', \%Opts );
+
 if ( exists $Opts{h} ) {
-    print "backup.pl - backup script\n";
-    print "Copyright (C) 2001-2017 OTRS AG, http://otrs.com/\n";
-    print "usage: backup.pl -d /data_backup_dir/ [-c gzip|bzip2] [-r 30] [-t fullbackup|nofullbackup|dbonly]\n";
+    print <<EOF;
+
+Backup an OTRS system.
+
+Usage:
+ backup.pl -d /data_backup_dir [-c gzip|bzip2] [-r DAYS] [-t fullbackup|nofullbackup|dbonly]
+
+Options:
+ -d                     - Directory where the backup files should place to.
+ [-c]                   - Select the compression method (gzip|bzip2). Default: gzip.
+ [-r DAYS]              - Remove backups which are more than DAYS days old.
+ [-t]                   - Specify which data will be saved (fullbackup|nofullbackup|dbonly). Default: fullbackup.
+ [-h]                   - Display help for this command.
+
+Help:
+Using -t fullbackup saves the database and the whole OTRS home directory (except /var/tmp and cache directories).
+Using -t nofullbackup saves only the database, /Kernel/Config* and /var directories.
+With -t dbonly only the database will be saved.
+
+Output:
+ Config.tar.gz          - Backup of /Kernel/Config* configuration files.
+ Application.tar.gz     - Backup of application file system (in case of full backup).
+ VarDir.tar.gz          - Backup of /var directory (in case of no full backup).
+ DataDir.tar.gz         - Backup of article files.
+ DatabaseBackup.sql.gz  - Database dump.
+
+EOF
     exit 1;
 }
 
@@ -59,10 +83,12 @@ elsif ( !-d $Opts{d} ) {
 if ( $Opts{c} && $Opts{c} =~ m/bzip2/i ) {
     $Compress    = 'j';
     $CompressCMD = 'bzip2';
+    $CompressEXT = 'bz2';
 }
 else {
     $Compress    = 'z';
     $CompressCMD = 'gzip';
+    $CompressEXT = 'gz';
 }
 
 # check backup type
@@ -140,7 +166,8 @@ if ( $Home !~ m{\/\z} ) {
 chdir($Home);
 
 # create directory name - this looks like 2013-09-09_22-19'
-my $Directory = $Kernel::OM->Create('Kernel::System::DateTime')->Format(
+my $SystemDTObject = $Kernel::OM->Create('Kernel::System::DateTime');
+my $Directory      = $SystemDTObject->Format(
     Format => $Opts{d} . '/%Y-%m-%d_%H-%M',
 );
 
@@ -154,8 +181,8 @@ if ($DBOnlyBackup) {
 }
 else {
     # backup Kernel/Config.pm
-    print "Backup $Directory/Config.tar.gz ... ";
-    if ( !system("tar -czf $Directory/Config.tar.gz Kernel/Config*") ) {
+    print "Backup $Directory/Config.tar.$CompressEXT ... ";
+    if ( !system("tar -c -$Compress -f $Directory/Config.tar.$CompressEXT Kernel/Config*") ) {
         print "done\n";
     }
     else {
@@ -165,9 +192,9 @@ else {
     }
 
     if ($FullBackup) {
-        print "Backup $Directory/Application.tar.gz ... ";
+        print "Backup $Directory/Application.tar.$CompressEXT ... ";
         my $Excludes = "--exclude=var/tmp --exclude=js-cache --exclude=css-cache --exclude=.git";
-        if ( !system("tar $Excludes -czf $Directory/Application.tar.gz .") ) {
+        if ( !system("tar $Excludes -c -$Compress -f $Directory/Application.tar.$CompressEXT .") ) {
             print "done\n";
         }
         else {
@@ -179,8 +206,8 @@ else {
 
     # backup vardir
     else {
-        print "Backup $Directory/VarDir.tar.gz ... ";
-        if ( !system("tar -czf $Directory/VarDir.tar.gz var/") ) {
+        print "Backup $Directory/VarDir.tar.$CompressEXT ... ";
+        if ( !system("tar -c -$Compress -f $Directory/VarDir.tar.$CompressEXT var/") ) {
             print "done\n";
         }
         else {
@@ -192,8 +219,8 @@ else {
 
     # backup datadir
     if ( $ArticleDir !~ m/\A\Q$Home\E/ ) {
-        print "Backup $Directory/DataDir.tar.gz ... ";
-        if ( !system("tar -czf $Directory/DataDir.tar.gz $ArticleDir") ) {
+        print "Backup $Directory/DataDir.tar.$CompressEXT ... ";
+        if ( !system("tar -c -$Compress -f $Directory/DataDir.tar.$CompressEXT $ArticleDir") ) {
             print "done\n";
         }
         else {
@@ -205,16 +232,29 @@ else {
 }
 
 # backup database
+my $ErrorIndicationFileName =
+    $Kernel::OM->Get('Kernel::Config')->Get('Home')
+    . '/var/tmp/'
+    . $Kernel::OM->Get('Kernel::System::Main')->GenerateRandomString();
 if ( $DB =~ m/mysql/i ) {
-    print "Dump $DB data to $Directory/DatabaseBackup.sql ... ";
+    print "Dump $DB data to $Directory/DatabaseBackup.sql.$CompressEXT ... ";
     if ($DatabasePw) {
         $DatabasePw = "-p'$DatabasePw'";
     }
-    if ( !system("$DBDump -u $DatabaseUser $DatabasePw -h $DatabaseHost $Database > $Directory/DatabaseBackup.sql") ) {
+    if (
+        !system(
+            "( $DBDump -u $DatabaseUser $DatabasePw -h $DatabaseHost $Database || touch $ErrorIndicationFileName ) | $CompressCMD > $Directory/DatabaseBackup.sql.$CompressEXT"
+        )
+        && !-f $ErrorIndicationFileName
+        )
+    {
         print "done\n";
     }
     else {
         print "failed\n";
+        if ( -f $ErrorIndicationFileName ) {
+            unlink $ErrorIndicationFileName;
+        }
         RemoveIncompleteBackup($Directory);
         die "Backup failed\n";
     }
@@ -228,34 +268,31 @@ else {
     }
 
     if ($DatabaseHost) {
-        $DatabaseHost = "-h $DatabaseHost"
+        $DatabaseHost = "-h $DatabaseHost";
     }
 
-    if ( !system("$DBDump -f $Directory/DatabaseBackup.sql $DatabaseHost -U $DatabaseUser $Database") ) {
+    if (
+        !system(
+            "( $DBDump $DatabaseHost -U $DatabaseUser $Database || touch $ErrorIndicationFileName ) | $CompressCMD > $Directory/DatabaseBackup.sql.$CompressEXT"
+        )
+        && !-f $ErrorIndicationFileName
+        )
+    {
         print "done\n";
     }
     else {
         print "failed\n";
+        if ( -f $ErrorIndicationFileName ) {
+            unlink $ErrorIndicationFileName;
+        }
         RemoveIncompleteBackup($Directory);
         die "Backup failed\n";
     }
 }
 
-# compressing database
-print "Compress SQL-file... ";
-if ( !system("$CompressCMD $Directory/DatabaseBackup.sql") ) {
-    print "done\n";
-}
-else {
-    print "failed\n";
-    RemoveIncompleteBackup($Directory);
-    die "Backup failed\n";
-}
-
 # remove old backups only after everything worked well
 if ( defined $Opts{r} ) {
     my %LeaveBackups;
-    my $SystemDTObject = $Kernel::OM->Create('Kernel::System::DateTime');
 
     # we'll be substracting days to the current time
     # we don't want DST changes to affect our dates

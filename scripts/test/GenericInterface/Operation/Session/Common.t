@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -27,16 +27,20 @@ my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 my $RandomID = $Helper->GetRandomID();
 
-# create webservice object
+# set user details
+my ( $UserLogin, $UserID ) = $Helper->TestUserCreate();
+my $UserPassword = $UserLogin;
+
+# create web service object
 my $WebserviceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice');
 
 $Self->Is(
     'Kernel::System::GenericInterface::Webservice',
     ref $WebserviceObject,
-    "Create webservice object",
+    "Create web service object",
 );
 
-# set webservice name
+# set web service name
 my $WebserviceName = '-Test-' . $RandomID;
 
 my $WebserviceID = $WebserviceObject->WebserviceAdd(
@@ -52,11 +56,11 @@ my $WebserviceID = $WebserviceObject->WebserviceAdd(
         },
     },
     ValidID => 1,
-    UserID  => 1,
+    UserID  => $UserID,
 );
 $Self->True(
     $WebserviceID,
-    "Added Webservice",
+    "Added web service",
 );
 
 # debugger object
@@ -72,13 +76,6 @@ $Self->Is(
     ref $DebuggerObject,
     'Kernel::GenericInterface::Debugger',
     'DebuggerObject instantiate correctly',
-);
-
-# set user details
-my $UserLogin    = $Helper->TestUserCreate();
-my $UserPassword = $UserLogin;
-my $UserID       = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-    UserLogin => $UserLogin,
 );
 
 # set customer user details

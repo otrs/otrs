@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 [% RenderBlockStart("Overview") %]
@@ -37,10 +37,9 @@
                 <ul class="ActionList">
                     <form action="[% Env("CGIHandle") %]" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="Action" value="AdminSystemConfiguration"/>
-                        <input type="hidden" name="Subaction" value="Edit"/>
-                        <input type="hidden" name="SysConfigGroup" value="Framework"/>
-                        <input type="hidden" name="SysConfigSubGroup" value="Frontend::Customer"/>
-                        <h3>[% Translate("This feature is disabled!") | html %]</h3>
+                        <input type="hidden" name="Subaction" value="View"/>
+                        <input type="hidden" name="Setting" value="CustomerGroupSupport"/>
+                        <h3><span class="Warning">[% Translate("This feature is disabled!") | html %]<span></h3>
                         <fieldset>
                             <p class="FieldExplanation">
                                 [% Translate("Just use this feature if you want to define group permissions for customers.") | html %]
@@ -91,7 +90,7 @@
 [% RenderBlockEnd("Search") %]
 [% RenderBlockStart("AlwaysGroupsConfig") %]
                     <li>
-                        <a href="[% Env("Baselink") %]Action=AdminSystemConfiguration;Subaction=Edit;SysConfigGroup=Framework;SysConfigSubGroup=Frontend::Customer" class="CallForAction Fullsize Center"><span><i class="fa fa-edit"></i>[% Translate("Edit Customer Default Groups") | html %]</span></a>
+                        <a href="[% Env("Baselink") %]Action=AdminSystemConfiguration;Subaction=View;Setting=CustomerGroupCompanyAlwaysGroups" class="CallForAction Fullsize Center"><span><i class="fa fa-edit"></i>[% Translate("Edit Customer Default Groups") | html %]</span></a>
                         <p class="FieldExplanation">
                             [% Translate("These groups are automatically assigned to all customers.") | html %]
                             [% Translate("You can manage these groups via the configuration setting \"CustomerGroupCompanyAlwaysGroups\".") | html %]
@@ -217,8 +216,8 @@
                             <tr>
 [% RenderBlockStart("ChangeHeader") %]
                                 <th class="[% Data.Mark | html %]">
-                                    <input type="checkbox" name="[% Data.Context | html %]_[% Data.Type | html %]" id="SelectAll[% Data.Context | html %]_[% Data.Type | html %]" title="[% Translate("Toggle %s Permission for all", Data.Type) | html %]" value="" />
-                                    [% Data.Type | html %]
+                                    <input type="checkbox" name="[% Data.Context | html %]_[% Data.Type | html %]" id="SelectAll[% Data.Context | html %]_[% Data.Type | html %]" title="[% Translate("Toggle %s Permission for all", Translate(Data.Type)) | html %]" value="" />
+                                    [% Translate(Data.Type) | html %]
                                 </th>
 [% RenderBlockEnd("ChangeHeader") %]
                             </tr>
@@ -236,7 +235,7 @@
                                 <td><a href="[% Env("Baselink") %]Action=[% Data.ActionHome | uri %];Subaction=Change;ID=[% Data.ID | uri %]">[% Data.Name | html %]</a></td>
 [% RenderBlockStart("ChangeRowItem") %]
                                 <td class="[% Data.Mark | html %]">
-                                    <input type="checkbox" name="[% Data.Context | html %]_[% Data.Type | html %]" title="[% Translate("Toggle %s permission for %s", Data.Type, Data.Name) | html %]" value="[% Data.ID | html %]" [% Data.Selected %]/>
+                                    <input type="checkbox" name="[% Data.Context | html %]_[% Data.Type | html %]" title="[% Translate("Toggle %s permission for %s", Translate(Data.Type), Data.Name) | html %]" value="[% Data.ID | html %]" [% Data.Selected %]/>
                                 </td>
 [% RenderBlockEnd("ChangeRowItem") %]
                             </tr>

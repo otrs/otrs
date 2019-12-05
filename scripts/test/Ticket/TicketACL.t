@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -12,18 +12,18 @@ use utf8;
 
 use vars (qw($Self));
 
-# get needed objects
-my $ConfigObject       = $Kernel::OM->Get('Kernel::Config');
-my $UserObject         = $Kernel::OM->Get('Kernel::System::User');
-my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
-my $ServiceObject      = $Kernel::OM->Get('Kernel::System::Service');
-my $QueueObject        = $Kernel::OM->Get('Kernel::System::Queue');
-my $TypeObject         = $Kernel::OM->Get('Kernel::System::Type');
-my $PriorityObject     = $Kernel::OM->Get('Kernel::System::Priority');
-my $SLAObject          = $Kernel::OM->Get('Kernel::System::SLA');
-my $StateObject        = $Kernel::OM->Get('Kernel::System::State');
-my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
-my $StorableObject     = $Kernel::OM->Get('Kernel::System::Storable');
+my $ConfigObject              = $Kernel::OM->Get('Kernel::Config');
+my $UserObject                = $Kernel::OM->Get('Kernel::System::User');
+my $CustomerUserObject        = $Kernel::OM->Get('Kernel::System::CustomerUser');
+my $ServiceObject             = $Kernel::OM->Get('Kernel::System::Service');
+my $QueueObject               = $Kernel::OM->Get('Kernel::System::Queue');
+my $TypeObject                = $Kernel::OM->Get('Kernel::System::Type');
+my $PriorityObject            = $Kernel::OM->Get('Kernel::System::Priority');
+my $SLAObject                 = $Kernel::OM->Get('Kernel::System::SLA');
+my $StateObject               = $Kernel::OM->Get('Kernel::System::State');
+my $DynamicFieldObject        = $Kernel::OM->Get('Kernel::System::DynamicField');
+my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+my $StorableObject            = $Kernel::OM->Get('Kernel::System::Storable');
 
 # get helper object
 $Kernel::OM->ObjectParamAdd(
@@ -39,22 +39,14 @@ my %ValidList = $Kernel::OM->Get('Kernel::System::Valid')->ValidList();
 %ValidList = reverse %ValidList;
 
 # set user options
-my $UserLogin = $Helper->TestUserCreate(
+my ( $UserLogin, $UserID ) = $Helper->TestUserCreate(
     Groups => ['admin'],
-) || die "Did not get test user";
-
-my $UserID = $UserObject->UserLookup(
-    UserLogin => $UserLogin,
 );
 my %UserData = $UserObject->GetUserData(
     UserID => $UserID,
 );
-my $NewUserLogin = $Helper->TestUserCreate(
+my ( $NewUserLogin, $NewUserID ) = $Helper->TestUserCreate(
     Groups => ['admin'],
-) || die "Did not get test user";
-
-my $NewUserID = $UserObject->UserLookup(
-    UserLogin => $NewUserLogin,
 );
 my %NewUserData = $UserObject->GetUserData(
     UserID => $NewUserID,
@@ -252,7 +244,6 @@ $Self->True(
 );
 
 # Create test ticket dynamic fields.
-my @DynamicFieldIDs;
 my @DynamicFieldNames;
 for my $Count ( 1 .. 2 ) {
     my $DynamicFieldName = 'DynamicField' . $Count . $RandomID;
@@ -274,7 +265,6 @@ for my $Count ( 1 .. 2 ) {
         "DynamicFieldAdd() ID ($DynamicFieldID) added successfully"
     );
 
-    push @DynamicFieldIDs,   $DynamicFieldID;
     push @DynamicFieldNames, $DynamicFieldName;
 }
 
@@ -487,21 +477,20 @@ for my $Count ( 0 .. 1 ) {
     elsif ( $Count == 1 ) {
         $Value = '0';
     }
-    my $DynamicFieldValueSetSuccess = $Kernel::OM->Get('Kernel::System::DynamicFieldValue')->ValueSet(
-        FieldID  => $DynamicFieldIDs[$Count],
-        ObjectID => $TicketID,
-        Value    => [
-            {
-                ValueText => $Value,
-            },
-        ],
-        UserID => $UserID,
+
+    my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
+        Name => $DynamicFieldNames[$Count],
+    );
+    my $DynamicFieldValueSetSuccess = $DynamicFieldBackendObject->ValueSet(
+        DynamicFieldConfig => $DynamicFieldConfig,
+        ObjectID           => $TicketID,
+        Value              => $Value,
+        UserID             => $UserID,
     );
 
     $Self->True(
         $DynamicFieldValueSetSuccess,
-        "DynamicField ValueSet() for DynamicField ID ($DynamicFieldIDs[$Count]),"
-            . "Ticket ID ($TicketID) set successfully",
+        "DynamicField ValueSet() for DynamicField ID ($DynamicFieldNames[$Count]), Ticket ID ($TicketID) set successfully",
     );
 }
 
@@ -2691,7 +2680,7 @@ $Self->True(
         SuccessMatch     => 1,
         ReturnActionData => {
             1 => 'AgentTicketPrint',
-            }
+        }
     },
 
     # user based tests
@@ -3938,7 +3927,7 @@ my %TestModifiers = (
             Name => 'ACL User Role -  2 role check [regexp]unittest2',
             Role => ["[regexp]unittest2"]
         },
-        ]
+    ]
 );
 
 my $NumberOfTests = $#TestsNormal;
@@ -4169,7 +4158,7 @@ my @TestsNot = (
             Name => 'ACL User Role -  2 role check [Notregexp]unittest2',
             Role => ["[Notregexp]unittest2"]
         },
-        ]
+    ]
 );
 
 $NumberOfTests = $#TestsNot;

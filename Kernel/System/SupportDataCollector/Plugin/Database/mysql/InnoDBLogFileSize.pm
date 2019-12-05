@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::SupportDataCollector::Plugin::Database::mysql::InnoDBLogFileSize;
@@ -30,6 +30,26 @@ sub Run {
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     if ( $DBObject->GetDatabaseFunction('Type') ne 'mysql' ) {
+        return $Self->GetResults();
+    }
+
+    # Default storage engine variable has changed its name in MySQL 5.5.3, we need to support both of them for now.
+    #   <= 5.5.2 storage_engine
+    #   >= 5.5.3 default_storage_engine
+    my $DefaultStorageEngine = '';
+    $DBObject->Prepare( SQL => "show variables like 'storage_engine'" );
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $DefaultStorageEngine = $Row[1];
+    }
+
+    if ( !$DefaultStorageEngine ) {
+        $DBObject->Prepare( SQL => "show variables like 'default_storage_engine'" );
+        while ( my @Row = $DBObject->FetchrowArray() ) {
+            $DefaultStorageEngine = $Row[1];
+        }
+    }
+
+    if ( lc $DefaultStorageEngine ne 'innodb' ) {
         return $Self->GetResults();
     }
 

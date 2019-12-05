@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 <div class="ItemActions">
@@ -19,8 +19,8 @@
                     <input type="hidden" name="TicketID" value="[% Data.TicketID | html %]"/>
                     <input type="hidden" name="ArticleID" value="[% Data.ArticleID | html %]"/>
                     <input type="hidden" name="ForwardAll" value="[% Item.ForwardAll | html %]"/>
-                    <label for="[% Item.ForwardElementID | html %]">[% Translate(Item.Name) | html %]:</label>
-                            [% Item.StandardForwardsStrg %]
+                    <label for="[% Item.ForwardElementID | html %]">[% Translate(Item.Name) | html %]</label>
+                    [% Item.StandardForwardsStrg %]
                 </form>
             </li>
         [% ELSIF Item.DropdownType == 'Reply' %]
@@ -30,8 +30,8 @@
                     <input type="hidden" name="TicketID" value="[% Data.TicketID | html %]"/>
                     <input type="hidden" name="ArticleID" value="[% Data.ArticleID | html %]"/>
                     <input type="hidden" name="ReplyAll" value="[% Item.ReplyAll | html %]"/>
-                    <label for="[% Item.ResponseElementID | html %]">[% Translate(Item.Name) | html %]:</label>
-                            [% Item.StandardResponsesStrg %]
+                    <label for="[% Item.ResponseElementID | html %]">[% Translate(Item.Name) | html %]</label>
+                    [% Item.StandardResponsesStrg %]
                 </form>
             </li>
         [% END %]

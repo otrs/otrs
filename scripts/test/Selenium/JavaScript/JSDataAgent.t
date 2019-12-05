@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -30,12 +30,12 @@ $Selenium->RunTest(
             },
             {
                 Key           => 'Action',
-                ExpectedValue => 'AgentHTMLReference',
+                ExpectedValue => 'AgentTicketPhone',
                 Environment   => 1,
             },
             {
                 Key           => 'Subaction',
-                ExpectedValue => 'Overview',
+                ExpectedValue => undef,
                 Environment   => 1,
             },
             {
@@ -113,7 +113,7 @@ $Selenium->RunTest(
         my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
 
         # go to some dummy page
-        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentHTMLReference;Subaction=Overview");
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketPhone");
 
         for my $Test (@Tests) {
 

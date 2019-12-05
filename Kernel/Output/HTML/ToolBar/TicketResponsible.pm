@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::ToolBar::TicketResponsible;
@@ -17,16 +17,18 @@ use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::Output::HTML::Layout',
     'Kernel::System::Log',
     'Kernel::System::Ticket',
-    'Kernel::Output::HTML::Layout',
 );
 
 sub Run {
     my ( $Self, %Param ) = @_;
 
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
     # check responsible feature
-    return if !$Kernel::OM->Get('Kernel::Config')->Get('Ticket::Responsible');
+    return if !$ConfigObject->Get('Ticket::Responsible');
 
     # check needed stuff
     for (qw(Config)) {
@@ -39,6 +41,8 @@ sub Run {
         }
     }
 
+    return if !$ConfigObject->Get('Frontend::Module')->{AgentTicketResponsibleView};
+
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
@@ -46,7 +50,7 @@ sub Run {
         Result         => 'COUNT',
         StateType      => 'Open',
         ResponsibleIDs => [ $Self->{UserID} ],
-        UserID         => 1,
+        UserID         => $Self->{UserID},
         Permission     => 'ro',
     ) || 0;
     my $CountNew = $TicketObject->TicketSearch(
@@ -57,7 +61,7 @@ sub Run {
             Seen => 1,
         },
         TicketFlagUserID => $Self->{UserID},
-        UserID           => 1,
+        UserID           => $Self->{UserID},
         Permission       => 'ro',
     ) || 0;
     $CountNew = $Count - $CountNew;
@@ -67,7 +71,7 @@ sub Run {
         StateType                     => ['pending reminder'],
         ResponsibleIDs                => [ $Self->{UserID} ],
         TicketPendingTimeOlderMinutes => 1,
-        UserID                        => 1,
+        UserID                        => $Self->{UserID},
         Permission                    => 'ro',
     ) || 0;
 

@@ -1,11 +1,12 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
+## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
 package Kernel::System::SupportDataCollector::Plugin::OTRS::LegacyConfigBackups;
 
 use strict;
@@ -91,7 +92,7 @@ sub Run {
             Label   => Translatable('Legacy Configuration Backups'),
             Value   => scalar @BackupFiles,
             Message => Translatable(
-                "Legacy configuration backup files found in $BackupsFolder, but they might still be required by some packages."
+                'Legacy configuration backup files found in Kernel/Config/Backups folder, but they might still be required by some packages.'
             ),
         );
         return $Self->GetResults();
@@ -101,7 +102,7 @@ sub Run {
         Label   => Translatable('Legacy Configuration Backups'),
         Value   => scalar @BackupFiles,
         Message => Translatable(
-            "Legacy configuration backup files are no longer needed for the installed packages, please remove them from $BackupsFolder."
+            'Legacy configuration backup files are no longer needed for the installed packages, please remove them from Kernel/Config/Backups folder.'
         ),
     );
     return $Self->GetResults();

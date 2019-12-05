@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Auth::TwoFactor::GoogleAuthenticator;
@@ -47,7 +47,7 @@ sub Auth {
         }
     }
 
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $ConfigObject         = $Kernel::OM->Get('Kernel::Config');
     my $SecretPreferencesKey = $ConfigObject->Get("AuthTwoFactorModule$Self->{Count}::SecretPreferencesKey") || '';
     if ( !$SecretPreferencesKey ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -79,8 +79,8 @@ sub Auth {
     # if we get to here (user has preference), we need a passed token
     if ( !$Param{TwoFactorToken} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Need TwoFactorToken!"
+            Priority => 'notice',
+            Message  => "User: $Param{User} two factor authentication failed (TwoFactorToken missing).",
         );
         return;
     }
@@ -145,13 +145,13 @@ sub _GenerateOTP {
 
     # encrypt timestamp with secret
     my $PackedTimeStamp = pack 'H*', $PaddedTimeStamp;
-    my $Base32Secret = $Self->_DecodeBase32( Secret => $Param{Secret} );
-    my $HMAC = hmac_hex( $PackedTimeStamp, $Base32Secret, \&sha1 );
+    my $Base32Secret    = $Self->_DecodeBase32( Secret => $Param{Secret} );
+    my $HMAC            = hmac_hex( $PackedTimeStamp, $Base32Secret, \&sha1 );
 
     # now treat hmac to get 6 numerical digits
 
     # Use 4 last bits as offset, then truncate to 4 bytes starting at the offset and remove most significant bit
-    my $Offset = hex( substr( $HMAC, -1 ) );
+    my $Offset        = hex( substr( $HMAC, -1 ) );
     my $TruncatedHMAC = hex( substr( $HMAC, $Offset * 2, 8 ) ) & 0x7fffffff;
 
     # use last 6 digits (modulo 1.000.000) as token

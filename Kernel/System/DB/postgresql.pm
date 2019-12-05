@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::DB::postgresql;
@@ -81,7 +81,7 @@ EOF
     $Self->{'DB::ShellConnect'} = 'SET standard_conforming_strings TO ON';
 
     # init sql setting on db connect
-    $Self->{'DB::Connect'} = "SET standard_conforming_strings TO ON;\n SET NAMES 'utf8';";
+    $Self->{'DB::Connect'} = "SET standard_conforming_strings TO ON;\n SET datestyle TO 'iso';\n SET NAMES 'utf8';";
     return 1;
 }
 
@@ -165,6 +165,7 @@ sub TableCreate {
     my %Uniq         = ();
     my $PrimaryKey   = '';
     my @Return       = ();
+
     for my $Tag (@Param) {
 
         if (
@@ -354,6 +355,10 @@ sub TableAlter {
     my @Reference     = ();
     my $Table         = '';
 
+    # put two literal dollar characters in a string
+    # this is needed for the postgres 'do' statement
+    my $DollarDollar = '$$';
+
     TAG:
     for my $Tag (@Param) {
 
@@ -369,7 +374,36 @@ sub TableAlter {
 
             # rename table
             if ( $Tag->{NameOld} && $Tag->{NameNew} ) {
+
+                # PostgreSQL uses sequences for primary key value generation. These are global
+                #   entities and not renamed when tables are renamed. Rename them also to keep
+                #   them consistent with new systems.
                 push @SQL, $SQLStart . "ALTER TABLE $Tag->{NameOld} RENAME TO $Tag->{NameNew}";
+
+                my $OldSequence = $Self->_SequenceName(
+                    TableName => $Tag->{NameOld},
+                );
+
+                my $NewSequence = $Self->_SequenceName(
+                    TableName => $Tag->{NameNew},
+                );
+
+                # Build SQL to rename sequence (only if a sequence exists).
+                my $RenameSequenceSQL = <<"EOF";
+DO $DollarDollar
+BEGIN
+IF EXISTS (
+    SELECT 1
+    FROM pg_class
+    WHERE relkind = 'S' and relname = '$OldSequence'
+    ) THEN
+    ALTER SEQUENCE $OldSequence RENAME TO $NewSequence;
+    END IF;
+END$DollarDollar;
+EOF
+
+                push @SQL, $SQLStart . $RenameSequenceSQL;
+
             }
             $SQLStart .= "ALTER TABLE $Table";
         }
@@ -894,6 +928,23 @@ sub _TypeTranslation {
         $Tag->{Type} = 'DECIMAL (' . $Tag->{Size} . ')';
     }
     return $Tag;
+}
+
+sub _SequenceName {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    if ( !$Param{TableName} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need TableName!",
+        );
+        return;
+    }
+
+    my $Sequence = $Param{TableName} . '_id_seq';
+
+    return $Sequence;
 }
 
 1;

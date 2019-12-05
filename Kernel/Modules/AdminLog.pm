@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminLog;
@@ -16,7 +16,7 @@ our $ObjectManagerDisabled = 1;
 sub new {
     my ( $Type, %Param ) = @_;
 
-    # allocate new hash for object
+    # Allocate new hash for object.
     my $Self = {%Param};
     bless( $Self, $Type );
 
@@ -28,17 +28,25 @@ sub Run {
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
-    # print form
+    # Print form.
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
 
-    # get log data
+    # Get log data.
     my $Log = $Kernel::OM->Get('Kernel::System::Log')->GetLog( Limit => 400 ) || '';
 
-    # split data to lines
+    # Split data to lines.
     my @Message = split /\n/, $Log;
 
-    # create table
+    # Create months map.
+    my %MonthMap;
+    my @Months = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
+    @MonthMap{@Months} = ( 1 .. 12 );
+
+    # Get current user time zone.
+    my $TimeZone = $Self->{UserTimeZone} || $Kernel::OM->Create('Kernel::System::DateTime')->UserDefaultTimeZoneGet();
+
+    # Create table.
     ROW:
     for my $Row (@Message) {
 
@@ -47,6 +55,23 @@ sub Run {
         next ROW if !$Parts[3];
 
         my $ErrorClass = ( $Parts[1] =~ /error/ ) ? 'Error' : '';
+
+        # Create date and time object from ctime log stamp.
+        my @Time           = split ' ', $Parts[0];
+        my $DateTimeObject = $Kernel::OM->Create(
+            'Kernel::System::DateTime',
+            ObjectParams => {
+                String => "$Time[4]-$MonthMap{$Time[1]}-$Time[2] $Time[3]",
+            },
+        );
+
+        # Converts the date and time of this object to the user time zone.
+        $DateTimeObject->ToTimeZone(
+            TimeZone => $TimeZone,
+        );
+
+        # Output time back as ctime string with time zone.
+        $Parts[0] = $DateTimeObject->ToCTimeString() . " ($TimeZone)";
 
         $LayoutObject->Block(
             Name => 'Row',
@@ -60,7 +85,15 @@ sub Run {
         );
     }
 
-    # create & return output
+    # Print no data found message.
+    if ( !@Message ) {
+        $LayoutObject->Block(
+            Name => 'AdminLogNoDataRow',
+            Data => {},
+        );
+    }
+
+    # Create & return output.
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AdminLog',
         Data         => \%Param,

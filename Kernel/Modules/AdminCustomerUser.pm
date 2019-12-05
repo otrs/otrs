@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminCustomerUser;
@@ -60,6 +60,9 @@ sub Run {
         );
     }
 
+    # Get list of valid IDs.
+    my @ValidIDList = $Kernel::OM->Get('Kernel::System::Valid')->ValidIDsGet();
+
     # check the permission for the SwitchToCustomer feature
     if ( $ConfigObject->Get('SwitchToCustomer') ) {
 
@@ -99,7 +102,7 @@ sub Run {
         $LayoutObject->ChallengeTokenCheck();
 
         # get user data
-        my $UserID = $ParamObject->GetParam( Param => 'ID' ) || '';
+        my $UserID   = $ParamObject->GetParam( Param => 'ID' ) || '';
         my %UserData = $CustomerUserObject->CustomerUserDataGet(
             User  => $UserID,
             Valid => 1,
@@ -324,10 +327,33 @@ sub Run {
             !$UpdateOnlyPreferences
             && $GetParam{UserEmail}
             && !$CheckItemObject->CheckEmail( Address => $GetParam{UserEmail} )
+            && grep { $_ eq $GetParam{ValidID} } @ValidIDList
             )
         {
             $Errors{UserEmailInvalid} = 'ServerError';
             $Errors{ErrorType}        = $CheckItemObject->CheckErrorType() . 'ServerErrorMsg';
+        }
+
+        # Get the current user data for some checks.
+        my %CurrentUserData = $CustomerUserObject->CustomerUserDataGet(
+            User => $GetParam{ID},
+        );
+
+        # Check CustomerID, if CustomerCompanySupport is enabled and the UserCustomerID was changed.
+        if (
+            $ConfigObject->Get($Source)->{CustomerCompanySupport}
+            && $GetParam{UserCustomerID}
+            && $CurrentUserData{UserCustomerID} ne $GetParam{UserCustomerID}
+            )
+        {
+
+            my %Company = $Kernel::OM->Get('Kernel::System::CustomerCompany')->CustomerCompanyGet(
+                CustomerID => $GetParam{UserCustomerID},
+            );
+
+            if ( !%Company ) {
+                $Errors{UserCustomerIDInvalid} = 'ServerError';
+            }
         }
 
         # if no errors occurred
@@ -353,7 +379,12 @@ sub Run {
                     my $DynamicFieldConfig = $Self->{DynamicFieldLookup}->{ $Entry->[2] };
 
                     if ( !IsHashRefWithData($DynamicFieldConfig) ) {
-                        $Note .= $LayoutObject->Notify( Info => "DynamicField $Entry->[2] not found!" );
+                        $Note .= $LayoutObject->Notify(
+                            Info => $LayoutObject->{LanguageObject}->Translate(
+                                'Dynamic field %s not found!',
+                                $Entry->[2],
+                            ),
+                        );
                         next ENTRY;
                     }
 
@@ -366,7 +397,10 @@ sub Run {
 
                     if ( !$ValueSet ) {
                         $Note .= $LayoutObject->Notify(
-                            Info => "Unable to set value for dynamic field $Entry->[2]!"
+                            Info => $LayoutObject->{LanguageObject}->Translate(
+                                'Unable to set value for dynamic field %s!',
+                                $Entry->[2],
+                            ),
                         );
                         next ENTRY;
                     }
@@ -559,10 +593,23 @@ sub Run {
         if (
             $GetParam{UserEmail}
             && !$CheckItemObject->CheckEmail( Address => $GetParam{UserEmail} )
+            && grep { $_ eq $GetParam{ValidID} } @ValidIDList
             )
         {
             $Errors{UserEmailInvalid} = 'ServerError';
             $Errors{ErrorType}        = $CheckItemObject->CheckErrorType() . 'ServerErrorMsg';
+        }
+
+        # Check CustomerID, if CustomerCompanySupport is enabled.
+        if ( $ConfigObject->Get($Source)->{CustomerCompanySupport} && $GetParam{UserCustomerID} ) {
+
+            my %Company = $Kernel::OM->Get('Kernel::System::CustomerCompany')->CustomerCompanyGet(
+                CustomerID => $GetParam{UserCustomerID},
+            );
+
+            if ( !%Company ) {
+                $Errors{UserCustomerIDInvalid} = 'ServerError';
+            }
         }
 
         # if no errors occurred
@@ -586,19 +633,29 @@ sub Run {
                     my $DynamicFieldConfig = $Self->{DynamicFieldLookup}->{ $Entry->[2] };
 
                     if ( !IsHashRefWithData($DynamicFieldConfig) ) {
-                        $Note .= $LayoutObject->Notify( Info => "DynamicField $Entry->[2] not found!" );
+                        $Note .= $LayoutObject->Notify(
+                            Info => $LayoutObject->{LanguageObject}->Translate(
+                                'Dynamic field %s not found!',
+                                $Entry->[2],
+                            ),
+                        );
                         next ENTRY;
                     }
 
                     my $ValueSet = $DynamicFieldBackendObject->ValueSet(
                         DynamicFieldConfig => $DynamicFieldConfig,
-                        ObjectName         => $GetParam{UserLogin},
+                        ObjectName         => $User,
                         Value              => $GetParam{ $Entry->[0] },
                         UserID             => $Self->{UserID},
                     );
 
                     if ( !$ValueSet ) {
-                        $Note .= $LayoutObject->Notify( Info => "Unable to set value for dynamic field $Entry->[2]!" );
+                        $Note .= $LayoutObject->Notify(
+                            Info => $LayoutObject->{LanguageObject}->Translate(
+                                'Unable to set value for dynamic field %s!',
+                                $Entry->[2],
+                            ),
+                        );
                         next ENTRY;
                     }
                 }
@@ -611,7 +668,7 @@ sub Run {
 
                     # get user data
                     my %UserData = $CustomerUserObject->CustomerUserDataGet(
-                        User => $GetParam{UserLogin}
+                        User => $User,
                     );
                     my $Module = $Preferences{$Group}->{Module};
                     if ( !$MainObject->Require($Module) ) {
@@ -763,7 +820,7 @@ sub Run {
         );
 
         my $Notification = $ParamObject->GetParam( Param => 'Notification' ) || '';
-        my $Output = $NavBar;
+        my $Output       = $NavBar;
         $Output .= $LayoutObject->Notify( Info => Translatable('Customer user updated!') )
             if ( $Notification && $Notification eq 'Update' );
 
@@ -906,7 +963,7 @@ sub _Overview {
                 $LayoutObject->Block(
                     Name => 'OverviewResultRow',
                     Data => {
-                        Valid => $ValidList{ $UserData{ValidID} || '' } || '-',
+                        Valid       => $ValidList{ $UserData{ValidID} || '' } || '-',
                         Search      => $Param{Search},
                         CustomerKey => $ListKey,
                         %UserData,
@@ -1190,7 +1247,10 @@ sub _Edit {
 
                 my $Value = $Param{ $Entry->[0] } || $Param{CustomerID};
                 $Param{Option} = '<input type="text" id="UserCustomerID" name="UserCustomerID" value="' . $Value . '"
-                    class="W50pc CustomerAutoCompleteSimple" data-customer-search-type="CustomerID" />';
+                    class="W50pc CustomerAutoCompleteSimple '
+                    . $Param{RequiredClass} . ' '
+                    . $Param{Errors}->{ $Entry->[0] . 'Invalid' }
+                    . '" data-customer-search-type="CustomerID" />';
             }
             else {
                 $Param{Option} = $LayoutObject->BuildSelection(

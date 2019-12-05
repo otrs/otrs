@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -28,6 +28,12 @@ $Kernel::OM->ObjectParamAdd(
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
+$Helper->ConfigSettingChange(
+    Valid => 1,
+    Key   => 'CheckMXRecord',
+    Value => 0,
+);
 
 # get a random number
 my $RandomID = $Helper->GetRandomNumber();
@@ -94,11 +100,11 @@ my %DynamicFieldDropdownConfig = (
     Label      => 'Description',
     ValidID    => 1,
     Config     => {
-        PossibleValues => [
+        PossibleValues => {
             1 => 'One',
             2 => 'Two',
             3 => 'Three',
-        ],
+        },
     },
 );
 my $FieldDropdownID = $DynamicFieldObject->DynamicFieldAdd(
@@ -123,11 +129,11 @@ my %DynamicFieldMultiselectConfig = (
     Label      => 'Multiselect label',
     ValidID    => 1,
     Config     => {
-        PossibleValues => [
+        PossibleValues => {
             1 => 'Value9ßüß',
             2 => 'DifferentValue',
             3 => '1234567',
-        ],
+        },
     },
 );
 my $FieldMultiselectID = $DynamicFieldObject->DynamicFieldAdd(
@@ -226,7 +232,7 @@ $Self->True(
     "Dropdown ValueSet() for Ticket $TicketID1",
 );
 
-# set webservice name
+# set web service name
 my $WebserviceName = $Helper->GetRandomID();
 
 # create web-service object
@@ -235,7 +241,7 @@ my $WebserviceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::Webse
 $Self->Is(
     'Kernel::System::GenericInterface::Webservice',
     ref $WebserviceObject,
-    "Create webservice object",
+    "Create web service object",
 );
 
 my $WebserviceID = $WebserviceObject->WebserviceAdd(
@@ -255,7 +261,7 @@ my $WebserviceID = $WebserviceObject->WebserviceAdd(
 );
 $Self->True(
     $WebserviceID,
-    "Added Webservice",
+    "Added web service",
 );
 
 # get config object
@@ -308,6 +314,7 @@ my $WebserviceConfig = {
                 NameSpace => 'http://otrs.org/SoapTestInterface/',
                 Encoding  => 'UTF-8',
                 Endpoint  => $RemoteSystem,
+                Timeout   => 120,
             },
         },
         Invoker => {
@@ -333,7 +340,7 @@ my $WebserviceUpdate = $WebserviceObject->WebserviceUpdate(
 );
 $Self->True(
     $WebserviceUpdate,
-    "Updated Webservice $WebserviceID - $WebserviceName",
+    "Updated web service $WebserviceID - $WebserviceName",
 );
 
 # disable SessionCheckRemoteIP setting
@@ -599,7 +606,7 @@ my @Tests = (
     },
 
     {
-        Name           => 'Update Text DynamicField (with wrong value)',
+        Name           => 'Update Text and Dropdown DynamicFields (with wrong value type)',
         SuccessRequest => '1',
         RequestData    => {
             TicketID     => $TicketID1,
@@ -637,6 +644,215 @@ my @Tests = (
         },
         Operation => 'TicketUpdate',
     },
+
+    {
+        Name           => 'Update Dropdown DynamicField (with invalid value)',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID     => $TicketID1,
+            DynamicField => [
+                {
+                    Name  => "Unittest2$RandomID",
+                    Value => '4',                    # invalid value
+                },
+            ],
+        },
+        Auth => {
+            SessionID => $NewSessionID,
+        },
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                Error => {
+                    ErrorCode    => 'TicketUpdate.InvalidParameter',
+                    ErrorMessage => 'TicketUpdate: DynamicField->Value parameter is invalid!',
+                },
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                Error => {
+                    ErrorCode    => 'TicketUpdate.InvalidParameter',
+                    ErrorMessage => 'TicketUpdate: DynamicField->Value parameter is invalid!',
+                },
+            },
+        },
+        Operation => 'TicketUpdate',
+    },
+    {
+        Name           => 'Add article (with attachment)',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID => $TicketID1,
+            Ticket   => {
+                Title => 'Updated',
+            },
+            Article => {
+                Subject              => 'Article subject äöüßÄÖÜ€ис',
+                Body                 => 'Article body',
+                AutoResponseType     => 'auto reply',
+                IsVisibleForCustomer => 1,
+                CommunicationChannel => 'Email',
+                SenderType           => 'agent',
+                From                 => 'enjoy@otrs.com',
+                Charset              => 'utf8',
+                MimeType             => 'text/plain',
+                HistoryType          => 'AddNote',
+                HistoryComment       => '%%',
+            },
+            Attachment => [
+                {
+                    Content     => 'Ymx1YiBibHViIGJsdWIg',
+                    ContentType => 'text/html',
+                    Filename    => 'test.txt',
+                },
+            ],
+        },
+        IncludeTicketData        => 1,
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        Operation => 'TicketUpdate',
+    },
+    {
+        Name           => 'Add email article (with attachment named "0")',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID => $TicketID1,
+            Ticket   => {
+                Title => 'Updated',
+            },
+            Article => {
+                Subject              => 'Article subject',
+                Body                 => 'Article body',
+                AutoResponseType     => 'auto reply',
+                IsVisibleForCustomer => 1,
+                CommunicationChannel => 'Email',
+                SenderType           => 'agent',
+                Charset              => 'utf8',
+                MimeType             => 'text/plain',
+                HistoryType          => 'AddNote',
+                HistoryComment       => '%%',
+            },
+            Attachment => [
+                {
+                    Content     => 'Ymx1YiBibHViIGJsdWIg',
+                    ContentType => 'text/html',
+                    Filename    => '0',
+                },
+            ],
+        },
+        IncludeTicketData        => 1,
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        Operation => 'TicketUpdate',
+    },
+    {
+        Name           => 'Add article (with To, Cc and Bcc parameters)',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID => $TicketID1,
+            Ticket   => {
+                Title => 'Updated',
+            },
+            Article => {
+                Subject              => 'Article subject äöüßÄÖÜ€ис',
+                Body                 => 'Article body',
+                AutoResponseType     => 'auto reply',
+                IsVisibleForCustomer => 1,
+                CommunicationChannel => 'Email',
+                SenderType           => 'agent',
+                From                 => 'enjoy@otrs.com',
+                To                   => 'someTo@otrs.com',
+                Cc                   => 'someCc@otrs.com',
+                Bcc                  => 'someBcc@otrs.com',
+                Charset              => 'utf8',
+                MimeType             => 'text/plain',
+                HistoryType          => 'AddNote',
+                HistoryComment       => '%%',
+            },
+        },
+        IncludeTicketData        => 1,
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        Operation => 'TicketUpdate',
+    },
+    {
+        Name           => 'Add article (with CustomerUser parameter)',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID => $TicketID1,
+            Ticket   => {
+                Title        => 'Updated',
+                CustomerUser => $CustomerUserLogin,
+            },
+            Article => {
+                Subject              => 'Article subject äöüßÄÖÜ€ис',
+                Body                 => 'Article body',
+                AutoResponseType     => 'auto reply',
+                IsVisibleForCustomer => 1,
+                CommunicationChannel => 'Email',
+                SenderType           => 'agent',
+                From                 => 'enjoy@otrs.com',
+                Charset              => 'utf8',
+                MimeType             => 'text/plain',
+                HistoryType          => 'AddNote',
+                HistoryComment       => '%%',
+            },
+        },
+        IncludeTicketData        => 1,
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        Operation => 'TicketUpdate',
+    },
 );
 
 # debugger object
@@ -655,7 +871,28 @@ $Self->Is(
     'DebuggerObject instantiate correctly',
 );
 
+$Helper->FixedTimeSet();
+
+my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+
+TEST:
 for my $Test (@Tests) {
+
+    # Update web service config to include ticket data in responses.
+    if ( $Test->{IncludeTicketData} ) {
+        $WebserviceConfig->{Provider}->{Operation}->{TicketUpdate}->{IncludeTicketData} = 1;
+        my $WebserviceUpdate = $WebserviceObject->WebserviceUpdate(
+            ID      => $WebserviceID,
+            Name    => $WebserviceName,
+            Config  => $WebserviceConfig,
+            ValidID => 1,
+            UserID  => $Self->{UserID},
+        );
+        $Self->True(
+            $WebserviceUpdate,
+            'WebserviceUpdate - Turned on IncludeTicketData'
+        );
+    }
 
     # create local object
     my $LocalObject = "Kernel::GenericInterface::Operation::Ticket::$Test->{Operation}"->new(
@@ -696,6 +933,30 @@ for my $Test (@Tests) {
         "$Test->{Name} - Local result structure is valid",
     );
 
+    if ( $Test->{RequestData}->{Article} ) {
+
+        # Get latest article data.
+        my @ArticleList = $ArticleObject->ArticleList(
+            TicketID => $TicketID1,
+            OnlyLast => 1,
+        );
+
+        my $ArticleID;
+
+        ARTICLE:
+        for my $Article (@ArticleList) {
+            $ArticleID = $Article->{ArticleID};
+            last ARTICLE;
+        }
+
+        if ( $Test->{ExpectedReturnLocalData} ) {
+            $Test->{ExpectedReturnLocalData}->{Data} = {
+                %{ $Test->{ExpectedReturnLocalData}->{Data} },
+                ArticleID => $ArticleID,
+            };
+        }
+    }
+
     # create requester object
     my $RequesterObject = Kernel::GenericInterface::Requester->new(
         %{$Self},
@@ -717,6 +978,15 @@ for my $Test (@Tests) {
         },
     );
 
+    # TODO prevent failing test if enviroment on SaaS unit test system doesn't work.
+    if (
+        $RequesterResult->{ErrorMessage} eq
+        'faultcode: Server, faultstring: Attachment could not be created, please contact the  system administrator'
+        )
+    {
+        next TEST;
+    }
+
     # check result
     $Self->Is(
         'HASH',
@@ -734,6 +1004,193 @@ for my $Test (@Tests) {
     # result to be consistent with SOAP call result
     if ( $LocalResult->{ErrorMessage} ) {
         delete $LocalResult->{ErrorMessage};
+    }
+
+    if ( $Test->{IncludeTicketData} ) {
+        my %TicketGet = $TicketObject->TicketGet(
+            TicketID      => $TicketID1,
+            DynamicFields => 1,
+            Extended      => 1,
+            UserID        => 1,
+        );
+
+        my %TicketData;
+        my @DynamicFields;
+
+        # Transform some ticket properties so they match expected data structure.
+        KEY:
+        for my $Key ( sort keys %TicketGet ) {
+
+            # Quote some properties as strings.
+            if ( $Key eq 'UntilTime' ) {
+                $TicketData{$Key} = "$TicketGet{$Key}";
+                next KEY;
+            }
+
+            # Push all dynamic field data in a separate array structure.
+            elsif ( $Key =~ m{^DynamicField_(?<DFName>\w+)$}xms ) {
+                push @DynamicFields, {
+                    Name  => $+{DFName},
+                    Value => $TicketGet{$Key} // '',
+                };
+                next KEY;
+            }
+
+            # Skip some fields since they might differ.
+            elsif (
+                $Key eq 'Age'
+                || $Key eq 'FirstResponse'
+                || $Key eq 'Changed'
+                || $Key eq 'UnlockTimeout'
+                )
+            {
+                next KEY;
+            }
+
+            # Include any other ticket property as-is. Undefined values should be represented as empty string.
+            $TicketData{$Key} = $TicketGet{$Key} // '';
+        }
+
+        if (@DynamicFields) {
+            $TicketData{DynamicField} = \@DynamicFields;
+        }
+
+        $Test->{ExpectedReturnRemoteData}->{Data} = {
+            %{ $Test->{ExpectedReturnRemoteData}->{Data} },
+            Ticket => \%TicketData,
+        };
+    }
+
+    if ( defined $Test->{RequestData}->{Ticket}->{CustomerUser} ) {
+        $Self->Is(
+            "\"$CustomerUserLogin $CustomerUserLogin\" <$CustomerUserLogin\@localunittest.com>",
+            $RequesterResult->{Data}->{Ticket}->{Article}->{To},
+            "Article parameter To is set well after TicketUpdate()",
+        );
+    }
+
+    if ( $Test->{RequestData}->{Article} ) {
+        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp();
+
+        # Check if parameters To, cc and Bcc set well
+        # See bug#14393 for more information.
+        if (
+            defined $Test->{RequestData}->{Article}->{To}
+            && defined $Test->{RequestData}->{Article}->{Cc}
+            && defined $Test->{RequestData}->{Article}->{Bcc}
+            )
+        {
+
+            for my $Item (qw(To Cc Bcc)) {
+                $Self->Is(
+                    $Test->{RequestData}->{Article}->{$Item},
+                    $RequesterResult->{Data}->{Ticket}->{Article}->{$Item},
+                    "Article parameter $Item is set well after TicketUpdate() - $Test->{RequestData}->{Article}->{$Item}",
+                );
+            }
+        }
+
+        # Get latest article data.
+        my @ArticleList = $ArticleObject->ArticleList(
+            TicketID => $TicketID1,
+            OnlyLast => 1,
+        );
+
+        my %Article;
+
+        ARTICLE:
+        for my $Article (@ArticleList) {
+            my $ArticleBackendObject = $ArticleObject->BackendForArticle( %{$Article} );
+
+            %Article = $ArticleBackendObject->ArticleGet(
+                %{$Article},
+                DynamicFields => 1,
+            );
+
+            for my $Key ( sort keys %Article ) {
+                $Article{$Key} //= '';
+            }
+
+            # Push all dynamic field data in a separate array structure.
+            my $DynamicFields;
+            KEY:
+            for my $Key ( sort keys %Article ) {
+                if ( $Key =~ m{^DynamicField_(?<DFName>\w+)$}xms ) {
+                    push @{$DynamicFields}, {
+                        Name  => $+{DFName},
+                        Value => $Article{$Key} // '',
+                    };
+                    next KEY;
+                }
+            }
+            for my $DynamicField ( @{$DynamicFields} ) {
+                delete $Article{"DynamicField_$DynamicField->{Name}"};
+            }
+            if ( scalar @{$DynamicFields} == 1 ) {
+                $DynamicFields = $DynamicFields->[0];
+            }
+            if ( IsArrayRefWithData($DynamicFields) || IsHashRefWithData($DynamicFields) ) {
+                $Article{DynamicField} = $DynamicFields;
+            }
+
+            my %AttachmentIndex = $ArticleBackendObject->ArticleAttachmentIndex(
+                ArticleID => $Article{ArticleID},
+            );
+
+            my @Attachments;
+            $Kernel::OM->Get('Kernel::System::Main')->Require('MIME::Base64');
+            ATTACHMENT:
+            for my $FileID ( sort keys %AttachmentIndex ) {
+                next ATTACHMENT if !$FileID;
+                my %Attachment = $ArticleBackendObject->ArticleAttachment(
+                    ArticleID => $Article{ArticleID},
+                    FileID    => $FileID,
+                );
+
+                next ATTACHMENT if !IsHashRefWithData( \%Attachment );
+
+                # Convert content to base64.
+                $Attachment{Content} = MIME::Base64::encode_base64( $Attachment{Content}, '' );
+                push @Attachments, {%Attachment};
+            }
+
+            # Set attachment data.
+            if (@Attachments) {
+
+                # Flatten array if only one attachment was found.
+                if ( scalar @Attachments == 1 ) {
+                    for my $Attachment (@Attachments) {
+                        $Article{Attachment} = $Attachment;
+                    }
+                }
+                else {
+                    $Article{Attachment} = \@Attachments;
+                }
+            }
+
+            last ARTICLE;
+        }
+
+        # Transform some article properties so they match expected data structure.
+        for my $Key (qw(ArticleNumber)) {
+            $Article{$Key} = "$Article{$Key}";
+        }
+
+        $Test->{ExpectedReturnRemoteData}->{Data}->{Ticket} = {
+            %{ $Test->{ExpectedReturnRemoteData}->{Data}->{Ticket} },
+            Article => \%Article,
+        };
+        $Test->{ExpectedReturnRemoteData}->{Data} = {
+            %{ $Test->{ExpectedReturnRemoteData}->{Data} },
+            ArticleID => $Article{ArticleID},
+        };
+    }
+
+    # Remove some fields before comparison since they might differ.
+    if ( $Test->{IncludeTicketData} ) {
+        for my $Key (qw(Age Changed UnlockTimeout)) {
+            delete $RequesterResult->{Data}->{Ticket}->{$Key};
+        }
     }
 
     $Self->IsDeeply(
@@ -756,6 +1213,22 @@ for my $Test (@Tests) {
             "$Test->{Name} - Local result matched with remote result.",
         );
     }
+
+    # Update web service config to exclude ticket data in responses.
+    if ( $Test->{IncludeTicketData} ) {
+        $WebserviceConfig->{Provider}->{Operation}->{TicketUpdate}->{IncludeTicketData} = 0;
+        my $WebserviceUpdate = $WebserviceObject->WebserviceUpdate(
+            ID      => $WebserviceID,
+            Name    => $WebserviceName,
+            Config  => $WebserviceConfig,
+            ValidID => 1,
+            UserID  => $Self->{UserID},
+        );
+        $Self->True(
+            $WebserviceUpdate,
+            'WebserviceUpdate - Turned off IncludeTicketData'
+        );
+    }
 }
 
 # UnlockOnAway tests
@@ -764,11 +1237,8 @@ $ConfigObject->Set(
     Value => 1,
 );
 
-my $UserLoginOutOfOffice = $Helper->TestUserCreate(
+my ( $UserLoginOutOfOffice, $UserIDOutOfOffice ) = $Helper->TestUserCreate(
     Groups => ['users'],
-);
-my $UserIDOutOfOffice = $UserObject->UserLookup(
-    UserLogin => $UserLoginOutOfOffice,
 );
 my $UserIDNoOutOfOffice = $UserObject->UserLookup(
     UserLogin => $UserLogin,
@@ -940,7 +1410,7 @@ my $WebserviceDelete = $WebserviceObject->WebserviceDelete(
 );
 $Self->True(
     $WebserviceDelete,
-    "Deleted Webservice $WebserviceID",
+    "Deleted web service $WebserviceID",
 );
 
 # delete tickets

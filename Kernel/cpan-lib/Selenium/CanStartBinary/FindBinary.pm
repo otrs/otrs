@@ -1,5 +1,8 @@
 package Selenium::CanStartBinary::FindBinary;
-$Selenium::CanStartBinary::FindBinary::VERSION = '1.11';
+$Selenium::CanStartBinary::FindBinary::VERSION = '1.36';
+use strict;
+use warnings;
+
 # ABSTRACT: Coercions for finding webdriver binaries on your system
 use Cwd qw/abs_path/;
 use File::Which qw/which/;
@@ -7,10 +10,11 @@ use IO::Socket::INET;
 use Selenium::Firefox::Binary qw/firefox_path/;
 
 require Exporter;
-our @ISA = qw/Exporter/;
+our @ISA       = qw/Exporter/;
 our @EXPORT_OK = qw/coerce_simple_binary coerce_firefox_binary/;
 
 use constant IS_WIN => $^O eq 'MSWin32';
+
 
 sub coerce_simple_binary {
     my ($executable) = @_;
@@ -42,15 +46,17 @@ sub _validate_manual_binary {
     my $abs_executable = eval {
         my $path = abs_path($executable);
         die unless -e $path;
-        $path
+        $path;
     };
 
-    if ( $abs_executable ) {
+    if ($abs_executable) {
         if ( -x $abs_executable || IS_WIN ) {
             return $abs_executable;
         }
         else {
-            die 'The binary at ' . $executable . ' is not executable. Choose the correct file or chmod +x it as needed.';
+            die 'The binary at '
+              . $executable
+              . ' is not executable. Choose the correct file or chmod +x it as needed.';
         }
     }
 }
@@ -59,7 +65,7 @@ sub _naive_find_binary {
     my ($executable) = @_;
 
     my $naive_binary = which($executable);
-    if (defined $naive_binary) {
+    if ( defined $naive_binary ) {
         return $naive_binary;
     }
     else {
@@ -80,7 +86,9 @@ Selenium::CanStartBinary::FindBinary - Coercions for finding webdriver binaries 
 
 =head1 VERSION
 
-version 1.11
+version 1.36
+
+=for Pod::Coverage *EVERYTHING*
 
 =head1 SEE ALSO
 
@@ -97,7 +105,7 @@ L<Selenium::Remote::Driver|Selenium::Remote::Driver>
 =head1 BUGS
 
 Please report any bugs or feature requests on the bugtracker website
-https://github.com/gempesaw/Selenium-Remote-Driver/issues
+L<https://github.com/teodesian/Selenium-Remote-Driver/issues>
 
 When submitting a bug or request, please include a test-file or a
 patch to an existing test-file that illustrates the bug or desired
@@ -147,7 +155,7 @@ Aditya Ivaturi <ivaturi@gmail.com>
 
 Copyright (c) 2010-2011 Aditya Ivaturi, Gordon Child
 
-Copyright (c) 2014-2016 Daniel Gempesaw
+Copyright (c) 2014-2017 Daniel Gempesaw
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

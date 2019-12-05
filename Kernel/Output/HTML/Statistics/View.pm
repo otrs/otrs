@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::Statistics::View;
@@ -24,6 +24,7 @@ our @ObjectDependencies = (
     'Kernel::Output::HTML::Layout',
     'Kernel::Output::PDF::Statistics',
     'Kernel::System::CSV',
+    'Kernel::System::CustomerCompany',
     'Kernel::System::DateTime',
     'Kernel::System::Group',
     'Kernel::System::Log',
@@ -31,6 +32,7 @@ our @ObjectDependencies = (
     'Kernel::System::PDF',
     'Kernel::System::Stats',
     'Kernel::System::Ticket::Article',
+    'Kernel::System::Ticket',
     'Kernel::System::User',
     'Kernel::System::Web::Request',
 );
@@ -113,7 +115,7 @@ sub StatsParamsWidget {
     my $HasUserGetParam = ref $Param{UserGetParam} eq 'HASH';
 
     my %UserGetParam = %{ $Param{UserGetParam} // {} };
-    my $Format = $Param{Formats} || $ConfigObject->Get('Stats::Format');
+    my $Format       = $Param{Formats} || $ConfigObject->Get('Stats::Format');
 
     my $LocalGetParam = sub {
         my (%Param) = @_;
@@ -182,7 +184,7 @@ sub StatsParamsWidget {
 
     # provide the time zone field only for dynamic statistics
     if ( $Stat->{StatType} eq 'dynamic' ) {
-        my $SelectedTimeZone = $LocalGetParam->( Param => 'TimeZone' )
+        my $SelectedTimeZone = $Self->_GetValidTimeZone( TimeZone => $LocalGetParam->( Param => 'TimeZone' ) )
             // $Stat->{TimeZone}
             // Kernel::System::DateTime->OTRSTimeZoneGet();
 
@@ -224,9 +226,13 @@ sub StatsParamsWidget {
 
         # load static module
         my $Params = $Kernel::OM->Get('Kernel::System::Stats')->GetParams( StatID => $StatID );
+
+        return if !$Params;
+
         $LayoutObject->Block(
             Name => 'Static',
         );
+
         PARAMITEM:
         for my $ParamItem ( @{$Params} ) {
             $LayoutObject->Block(
@@ -238,9 +244,9 @@ sub StatsParamsWidget {
                         Data       => $ParamItem->{Data},
                         Name       => $ParamItem->{Name},
                         SelectedID => $LocalGetParam->( Param => $ParamItem->{Name} ) // $ParamItem->{SelectedID} || '',
-                        Multiple => $ParamItem->{Multiple} || 0,
-                        Size     => $ParamItem->{Size}     || '',
-                        Class    => 'Modernize',
+                        Multiple   => $ParamItem->{Multiple} || 0,
+                        Size       => $ParamItem->{Size} || '',
+                        Class      => 'Modernize',
                     ),
                 },
             );
@@ -385,14 +391,14 @@ sub StatsParamsWidget {
 
                     if ( $ObjectAttribute->{Block} eq 'MultiSelectField' ) {
                         $BlockData{SelectField} = $LayoutObject->BuildSelection(
-                            Data        => \%ValueHash,
-                            Name        => $ElementName,
-                            Multiple    => 1,
-                            Size        => 5,
-                            SelectedID  => @SelectedIDs ? [@SelectedIDs] : $ObjectAttribute->{SelectedValues},
-                            Translation => $ObjectAttribute->{Translation},
-                            TreeView => $ObjectAttribute->{TreeView} || 0,
-                            Sort => scalar $ObjectAttribute->{Sort},
+                            Data           => \%ValueHash,
+                            Name           => $ElementName,
+                            Multiple       => 1,
+                            Size           => 5,
+                            SelectedID     => @SelectedIDs ? [@SelectedIDs] : $ObjectAttribute->{SelectedValues},
+                            Translation    => $ObjectAttribute->{Translation},
+                            TreeView       => $ObjectAttribute->{TreeView} || 0,
+                            Sort           => scalar $ObjectAttribute->{Sort},
                             SortIndividual => scalar $ObjectAttribute->{SortIndividual},
                             Class          => 'Modernize',
                         );
@@ -753,7 +759,7 @@ sub GeneralSpecificationsWidget {
                 Name        => 'ObjectModule',
                 Translation => 1,
                 Class       => 'Modernize ' . ( $Errors{ObjectModuleServerError} ? ' ServerError' : '' ),
-                SelectedID => $GetParam{ObjectModule} // $ConfigObject->Get('Stats::DefaultSelectedDynamicObject'),
+                SelectedID  => $GetParam{ObjectModule} // $ConfigObject->Get('Stats::DefaultSelectedDynamicObject'),
             );
         }
 
@@ -765,7 +771,7 @@ sub GeneralSpecificationsWidget {
                 Name        => 'ObjectModule',
                 Translation => 1,
                 Class       => 'Modernize ' . ( $Errors{ObjectModuleServerError} ? ' ServerError' : '' ),
-                SelectedID => $GetParam{ObjectModule} // $ConfigObject->Get('Stats::DefaultSelectedDynamicObject'),
+                SelectedID  => $GetParam{ObjectModule} // $ConfigObject->Get('Stats::DefaultSelectedDynamicObject'),
             );
 
         }
@@ -776,19 +782,19 @@ sub GeneralSpecificationsWidget {
 
     # create multiselectboxes 'format'
     $Stat->{SelectFormat} = $LayoutObject->BuildSelection(
-        Data     => $AvailableFormats,
-        Name     => 'Format',
-        Class    => 'Modernize Validate_Required' . ( $Errors{FormatServerError} ? ' ServerError' : '' ),
-        Multiple => 1,
-        Size     => 5,
+        Data       => $AvailableFormats,
+        Name       => 'Format',
+        Class      => 'Modernize Validate_Required' . ( $Errors{FormatServerError} ? ' ServerError' : '' ),
+        Multiple   => 1,
+        Size       => 5,
         SelectedID => $GetParam{Format} // $Stat->{Format} || $DefaultSelectedFormat,
     );
 
     # create multiselectboxes 'permission'
     my %Permission = (
-        Data => { $Kernel::OM->Get('Kernel::System::Group')->GroupList( Valid => 1 ) },
-        Name => 'Permission',
-        Class => 'Modernize Validate_Required' . ( $Errors{PermissionServerError} ? ' ServerError' : '' ),
+        Data        => { $Kernel::OM->Get('Kernel::System::Group')->GroupList( Valid => 1 ) },
+        Name        => 'Permission',
+        Class       => 'Modernize Validate_Required' . ( $Errors{PermissionServerError} ? ' ServerError' : '' ),
         Multiple    => 1,
         Size        => 5,
         Translation => 0,
@@ -808,12 +814,12 @@ sub GeneralSpecificationsWidget {
         )
     {
 
-        my $SelectedTimeZone = $GetParam{TimeZone} // $Stat->{TimeZone};
+        my $SelectedTimeZone = $Self->_GetValidTimeZone( TimeZone => $GetParam{TimeZone} ) // $Stat->{TimeZone};
         if ( !defined $SelectedTimeZone ) {
             my %UserPreferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
                 UserID => $Param{UserID}
             );
-            $SelectedTimeZone = $UserPreferences{UserTimeZone}
+            $SelectedTimeZone = $Self->_GetValidTimeZone( TimeZone => $UserPreferences{UserTimeZone} )
                 // Kernel::System::DateTime->OTRSTimeZoneGet();
         }
 
@@ -1095,6 +1101,21 @@ sub RestrictionsWidget {
             my $DFTreeClass = ( $ObjectAttribute->{ShowAsTree} && $ObjectAttribute->{IsDynamicField} )
                 ? 'DynamicFieldWithTreeView' : '';
 
+            # Take into account config 'IncludeUnknownTicketCustomers' for CustomerID restriction field.
+            # See bug#14869 (https://bugs.otrs.org/show_bug.cgi?id=14869).
+            if (
+                $ObjectAttribute->{Element} eq 'CustomerID'
+                && !$ConfigObject->Get('Ticket::IncludeUnknownTicketCustomers')
+                )
+            {
+                my %CustomerCompanyList
+                    = $Kernel::OM->Get('Kernel::System::CustomerCompany')->CustomerCompanyList( Valid => 1 );
+                %CustomerCompanyList
+                    = map { $_ => $_ } grep { defined $ObjectAttribute->{Values}->{$_} } sort keys %CustomerCompanyList;
+
+                $ObjectAttribute->{Values} = \%CustomerCompanyList;
+            }
+
             $BlockData{SelectField} = $LayoutObject->BuildSelection(
                 Data           => $ObjectAttribute->{Values},
                 Name           => 'Restrictions' . $ObjectAttribute->{Element},
@@ -1238,7 +1259,8 @@ sub StatsParamsGet {
 
     # get the time zone param
     if ( length $LocalGetParam->( Param => 'TimeZone' ) ) {
-        $GetParam{TimeZone} = $LocalGetParam->( Param => 'TimeZone' ) // $Stat->{TimeZone};
+        $GetParam{TimeZone} = $Self->_GetValidTimeZone( TimeZone => $LocalGetParam->( Param => 'TimeZone' ) )
+            // $Stat->{TimeZone};
     }
 
     # get ExchangeAxis param
@@ -1394,14 +1416,14 @@ sub StatsParamsGet {
 
                                 if ( $Use eq 'UseAsXvalue' ) {
                                     my $TimeStartEpoch = $Kernel::OM->Create(
-                                        'Kernel::System::Create',
+                                        'Kernel::System::DateTime',
                                         ObjectParams => {
                                             String => $Element->{TimeStart},
                                         },
                                     )->ToEpoch();
 
                                     my $TimeStopEpoch = $Kernel::OM->Create(
-                                        'Kernel::System::Create',
+                                        'Kernel::System::DateTime',
                                         ObjectParams => {
                                             String => $Element->{TimeStop},
                                         },
@@ -1527,7 +1549,7 @@ sub StatsResultRender {
     my ( $Self, %Param ) = @_;
 
     my @StatArray = @{ $Param{StatArray} // [] };
-    my $Stat = $Param{Stat};
+    my $Stat      = $Param{Stat};
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
@@ -1568,7 +1590,7 @@ sub StatsResultRender {
                     @StatArray,
                 ],
                 Format => $Param{Format},
-                }
+            }
         );
 
         $Output .= $LayoutObject->Output(
@@ -1902,6 +1924,7 @@ sub StatsConfigurationValidate {
             XVALUE:
             for my $Xvalue ( @{ $Stat{UseAsXvalue} } ) {
 
+                last XVALUE if defined $XAxisFieldErrors{ $Xvalue->{Element} };
                 next XVALUE if !( $Xvalue->{Selected} && $Xvalue->{Block} eq 'Time' );
 
                 my $Flag = 1;
@@ -2055,6 +2078,7 @@ sub _TimeOutput {
             $TimeConfig{ $Element . 'StopHour' }    = 23;
             $TimeConfig{ $Element . 'StopMinute' }  = 59;
             $TimeConfig{ $Element . 'StopSecond' }  = 59;
+
             for (qw(Start Stop)) {
                 $TimeConfig{Prefix} = $Element . $_;
 
@@ -2320,6 +2344,18 @@ sub _TimeScaleYAxis {
     return \%TimeScaleYAxis;
 }
 
+sub _GetValidTimeZone {
+    my ( $Self, %Param ) = @_;
+
+    return if !$Param{TimeZone};
+
+    # Return passed time zone only if it is valid. It can happen time zone is still an old-style offset.
+    #   Please see bug#13373 for more information.
+    return $Param{TimeZone} if Kernel::System::DateTime->IsTimeZoneValid( TimeZone => $Param{TimeZone} );
+
+    return;
+}
+
 sub _TimeZoneBuildSelection {
     my ( $Self, %Param ) = @_;
 
@@ -2448,10 +2484,10 @@ sub _StopWordFieldsGet {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 "use strict";
@@ -104,10 +104,16 @@ Core.UI.Autocomplete = (function (TargetNS) {
     $.ui.autocomplete.prototype._renderItem = function(ul, item) {
 
         var Regex = new RegExp("(" + this.term.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&") + ")", "i"),
-            Label = Core.App.EscapeHTML(item.label);
+            Label = item.label;
 
-        // Mark matches with strong tag.
-        Label = Label.replace(Regex, "<strong>$1</strong>");
+        // Use not HTML for now, due next action will escape special HTML characters.
+        Label = Label.replace(Regex, "OPENSTRONGTAG$1CLOSESTRONGTAG");
+
+        Label = Core.App.EscapeHTML(Label);
+
+        // Replace dummy tags with corresponding HTML.
+        Label = Label.replace("OPENSTRONGTAG", '<strong>');
+        Label = Label.replace("CLOSESTRONGTAG", '</strong>');
 
         return $('<li></li>')
             .data('item.autocomplete', item)
@@ -174,7 +180,11 @@ Core.UI.Autocomplete = (function (TargetNS) {
         AutocompleteConfig = InitConfig(Type, Options);
 
         $Element.each(function () {
+
             var $SingleElement = $(this);
+
+            $(this).data('request-counter', 0);
+
             $SingleElement.autocomplete({
                 minLength: AutocompleteConfig.MinQueryLength,
                 delay: AutocompleteConfig.QueryDelay,
@@ -188,13 +198,17 @@ Core.UI.Autocomplete = (function (TargetNS) {
                         $SingleElement.after(LoaderHTML);
                         $Loader = $('#' + AJAXLoaderPrefix + Core.App.EscapeSelector(FieldID));
                     }
-                    else {
-                        $Loader.show();
-                    }
+
+                    $SingleElement.data('request-counter', parseInt($SingleElement.data('request-counter'), 10) + 1);
+
+                    $Loader.show();
                 },
                 response: function() {
-                    // remove loader again
-                    $Loader.hide();
+                    // remove loader again if there are no results
+                    $SingleElement.data('request-counter', parseInt($SingleElement.data('request-counter'), 10) - 1);
+                    if (parseInt($SingleElement.data('request-counter'), 10) <= 0) {
+                        $Loader.hide();
+                    }
                 },
                 open: function() {
                     // force a higher z-index than the overlay/dialog

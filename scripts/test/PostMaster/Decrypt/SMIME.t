@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -52,7 +52,7 @@ my $OpenSSLVersionString = qx{$OpenSSLBin version};
 my $OpenSSLMajorVersion;
 
 # Get the OpenSSL major version, e.g. 1 for version 1.0.0
-if ( $OpenSSLVersionString =~ m{ \A (?: OpenSSL )? \s* ( \d )  }xmsi ) {
+if ( $OpenSSLVersionString =~ m{ \A (?: (?: Open|Libre)SSL )? \s* ( \d )  }xmsi ) {
     $OpenSSLMajorVersion = $1;
 }
 
@@ -275,8 +275,8 @@ $ConfigObject->Set(
         },
         '000-MatchDBSource' => {
             'Module' => 'Kernel::System::PostMaster::Filter::MatchDBSource',
-            }
         }
+    }
 );
 
 my $CommunicationLogObject = $Kernel::OM->Create(

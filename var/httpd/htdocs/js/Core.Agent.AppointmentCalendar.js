@@ -1,9 +1,9 @@
 // --
-// Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
-// the enclosed file COPYING for license information (AGPL). If you
-// did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+// the enclosed file COPYING for license information (GPL). If you
+// did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 // --
 
 /*global Clipboard */
@@ -98,6 +98,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             weekNumberTitle: '#',
             weekNumberCalculation: 'ISO',
             eventLimit: true,
+            eventLimitText: Core.Language.Translate('more'),
             height: 600,
             editable: true,
             selectable: true,
@@ -238,7 +239,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                             Action: 'AgentAppointmentEdit',
                             Subaction: 'UpdatePreferences',
                             OverviewScreen: Core.Config.Get('OverviewScreen') ? Core.Config.Get('OverviewScreen') : 'CalendarOverview',
-                            DefaultView: Core.Config.Get('DefaultView')
+                            DefaultView: View.name
                         },
                         function (Response) {
                             if (!Response.Success) {
@@ -403,6 +404,15 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             },
             eventMouseout: function() {
                 $('.AppointmentTooltip').fadeOut("fast").remove();
+            },
+            eventAfterAllRender: function () {
+
+                // If the first day in timelineMonth view is not Saturday or Sunday, the first div.fc-bgevent should be removed.
+                // There is a bug from fullcalendar and it can be solved here. See bug#14764.
+                if (!$('.fc-timelineMonth-view .fc-slats td.fc-widget-content:eq(0)').hasClass('fc-sat')
+                    && !$('.fc-timelineMonth-view .fc-slats td.fc-widget-content:eq(0)').hasClass('fc-sun')) {
+                    $('.fc-timelineMonth-view .fc-bgevent-container .fc-bgevent:eq(0)').remove();
+                }
             },
             events: Core.Config.Get('WorkingHoursConfig'),
             resources: ResourceConfig,
@@ -794,7 +804,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     },
                     {
                         Type: 'Close',
-                        Label: Core.Language.Translate('Close')
+                        Label: Core.Language.Translate('Close this dialog')
                     }
                 ]
             });
@@ -928,7 +938,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     },
                     {
                         Type: 'Close',
-                        Label: Core.Language.Translate('Close'),
+                        Label: Core.Language.Translate('Close this dialog'),
                         Function: function() {
                             Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
                             AppointmentData.RevertFunc();
@@ -1375,7 +1385,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
                             // Overwrite option text, because of wrong html quoting of text content.
                             // (This is needed for IE.)
-                            NewOption.innerHTML = Value;
+                            NewOption.innerHTML = Core.App.EscapeHTML(Value);
 
                             // Restore selection
                             if (SelectedID && SelectedID.indexOf(Index) > -1) {
@@ -1396,7 +1406,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         function CollapseValues($ValueObj, Values) {
             $ValueObj.html('');
             $.each(Values, function (Index, Value) {
-                var Count = Values.length;
+                var Count = Values.length,
+                    TooltipIndex = $('.Dialog').css('z-index');
 
                 if (Index < 2) {
                     $ValueObj.html($ValueObj.html() + Value + '<br>');
@@ -1431,6 +1442,13 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                             PosX += 10;
                             PosY += 5;
 
+                            if (typeof TooltipIndex !== 'undefined') {
+                                TooltipIndex = parseInt(TooltipIndex, 10) + 500;
+                            }
+                            else{
+                                TooltipIndex = 4000;
+                            }
+
                             // Create tooltip object
                             $TooltipObj = $('<div/>').addClass('AppointmentTooltip DialogTooltip Hidden')
                                 .offset({
@@ -1438,7 +1456,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                                     left: PosX
                                 })
                                 .html(TooltipHTML)
-                                .css('z-index', 4000)
+                                .css('z-index', TooltipIndex)
                                 .css('width', 'auto')
                                 .off('click.AppointmentCalendar')
                                 .on('click.AppointmentCalendar', function (Event) {
@@ -1466,6 +1484,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                             // Close tooltip on any outside click
                             $(document).off('click.AppointmentCalendar')
                                 .on('click.AppointmentCalendar', function (Event) {
+                                    $('.Close').on('click', function(){
+                                        $('.DialogTooltip').remove();
+                                    });
                                     if (!$(Event.target).closest('.DialogTooltipLink').length) {
                                         $('.DialogTooltip').remove();
                                         $(document).off('click.AppointmentCalendar');
@@ -1783,10 +1804,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 return true;
             }
 
-            $Element.autocomplete({
-                minLength: 2,
-                delay: 500,
-                source: function (Request, Response) {
+            Core.UI.Autocomplete.Init($Element, function (Request, Response) {
                     var URL = Core.Config.Get('CGIHandle'),
                         CurrentAJAXNumber = ++AJAXCounter,
                         Data = {
@@ -1797,7 +1815,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                             MaxResults: 20
                         };
 
-                    Core.AJAX.FunctionCall(URL, Data, function (Result) {
+                    $Element.data('AutoCompleteXHR', Core.AJAX.FunctionCall(URL, Data, function (Result) {
                         var Data = [];
 
                         // Check if the result is from the latest ajax request
@@ -1813,16 +1831,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                             });
                         });
                         Response(Data);
-                    });
-                },
-                select: function (Event, UI) {
-                    Event.stopPropagation();
-                    $Element.val('');
-                    AddLink(PluginKey, PluginURL, UI.item.key, UI.item.label);
+                    }));
+            }, function (Event, UI) {
+                Event.stopPropagation();
+                $Element.val('').trigger('select.Autocomplete');
+                AddLink(PluginKey, PluginURL, UI.item.key, UI.item.label);
 
-                    return false;
-                }
-            });
+                return false;
+            }, PluginKey);
         });
 
         InitRemoveButtons();

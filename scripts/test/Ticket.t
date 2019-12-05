@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -11,6 +11,8 @@ use warnings;
 use utf8;
 
 use vars (qw($Self));
+
+use Kernel::System::VariableCheck qw(IsHashRefWithData);
 
 my $QueueObject          = $Kernel::OM->Get('Kernel::System::Queue');
 my $ServiceObject        = $Kernel::OM->Get('Kernel::System::Service');
@@ -127,12 +129,8 @@ $Self->Is(
     'Ticket created as closed as Close Time = Creation Time',
 );
 
-my $TestUserLogin = $Helper->TestUserCreate(
+my ( $TestUserLogin, $TestUserID ) = $Helper->TestUserCreate(
     Groups => [ 'users', ],
-);
-
-my $TestUserID = $UserObject->UserLookup(
-    UserLogin => $TestUserLogin,
 );
 
 my $TicketIDCreatedBy = $TicketObject->TicketCreate(
@@ -293,7 +291,7 @@ $ArticleObject->ArticleSearchIndexBuild(
 );
 
 my $TicketSearchTicketNumber = substr $Ticket{TicketNumber}, 0, 10;
-my %TicketIDs = $TicketObject->TicketSearch(
+my %TicketIDs                = $TicketObject->TicketSearch(
     Result       => 'HASH',
     Limit        => 100,
     TicketNumber => [ $TicketSearchTicketNumber . '%', '%not exisiting%' ],
@@ -354,6 +352,25 @@ $Self->True(
 $Self->True(
     $TicketIDs{$TicketID},
     'TicketSearch() (HASH:TicketID as ARRAYREF)',
+);
+
+my $ErrorOutput = '';
+
+{
+    local *STDERR;
+    open STDERR, ">>", \$ErrorOutput;
+
+    %TicketIDs = $TicketObject->TicketSearch(
+        TicketID => [],
+        UserID   => 1,
+    );
+}
+
+# Verify that search does not fail SQL syntax check when an empty array reference is passed for the TicketID param.
+#   Please see bug#14227 for more information.
+$Self->False(
+    ( $ErrorOutput =~ m{you have an error in your sql syntax}i ) // 1,
+    'TicketSearch() (HASH:TicketID as an empty ARRAYREF)'
 );
 
 my $Count = $TicketObject->TicketSearch(
@@ -1965,7 +1982,7 @@ my $PendingUntilTime = $Kernel::OM->Create(
         Hour   => '22',
         Minute => '05',
         Second => '00',
-        }
+    }
 )->ToEpoch();
 
 $PendingUntilTime = $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch() - $PendingUntilTime;
@@ -2022,7 +2039,7 @@ $PendingUntilTime = $Kernel::OM->Create(
     'Kernel::System::DateTime',
     ObjectParams => {
         String => '2003-09-14 22:05:00',
-        }
+    }
 )->ToEpoch();
 
 $PendingUntilTime = $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch() - $PendingUntilTime;
@@ -2222,10 +2239,160 @@ for my $SearchParam (qw(ArticleCreateTime TicketCreateTime TicketPendingTime)) {
     }
 }
 
+# Create enviroment for testing Escalation ORDER BY modification from the bug#13458.
+# Create Queues with different Escalation times.
+my @QueueConfig = (
+    {
+        # First created Queue does not have Update time set, value is 0 for created ticket.
+        Name              => 'Queue' . $Helper->GetRandomID(),
+        FirstResponseTime => 50,
+        SolutionTime      => 60,
+    },
+    {
+        # Second created Queue does not have First response time set, value is 0 for created ticket.
+        Name         => 'Queue' . $Helper->GetRandomID(),
+        UpdateTime   => 70,
+        SolutionTime => 80,
+    },
+    {
+        # Third created Queue does not have Solution time set, value is 0 for created ticket.
+        Name              => 'Queue' . $Helper->GetRandomID(),
+        FirstResponseTime => 60,
+        UpdateTime        => 30,
+    },
+);
+
+my @QueueIDs;
+for my $QueueCreate (@QueueConfig) {
+    my $QueueID = $QueueObject->QueueAdd(
+        ValidID         => 1,
+        GroupID         => 1,
+        FollowUpID      => 1,
+        SystemAddressID => 1,
+        SalutationID    => 1,
+        SignatureID     => 1,
+        Comment         => 'Some comment',
+        UserID          => 1,
+        %{$QueueCreate},
+    );
+    push @QueueIDs, $QueueID;
+}
+
+# Create Tickets.
+my @TestTicketIDs;
+for my $QueueID (@QueueIDs) {
+    my $TicketID = $TicketObject->TicketCreate(
+        Title        => 'Some Ticket Title',
+        QueueID      => $QueueID,
+        Lock         => 'unlock',
+        Priority     => '3 normal',
+        State        => 'new',
+        CustomerID   => '123465',
+        CustomerUser => 'bugtest@otrs.com',
+        OwnerID      => 1,
+        UserID       => 1,
+    );
+    push @TestTicketIDs, $TicketID;
+
+    my $ArticleID = $ArticleBackendObject->ArticleCreate(
+        TicketID             => $TicketID,
+        IsVisibleForCustomer => 0,
+        SenderType           => 'agent',
+        From                 => 'Agent Some Agent Some Agent <email@example.com>',
+        To                   => 'Customer A <customer-a@example.com>',
+        Cc                   => 'Customer B <customer-b@example.com>',
+        ReplyTo              => 'Customer B <customer-b@example.com>',
+        Subject              => 'some short description',
+        Body                 => 'the message text Perl modules provide a range of',
+        ContentType          => 'text/plain; charset=ISO-8859-15',
+        HistoryType          => 'AddNote',
+        HistoryComment       => 'Some free text!',
+        UserID               => 1,
+        NoAgentNotify        => 1,
+    );
+
+    my $TicketEscalationIndexBuild = $TicketObject->TicketEscalationIndexBuild(
+        TicketID => $TicketID,
+        UserID   => 1,
+    );
+
+    # Wait 1 second to have escalations.
+    $Helper->FixedTimeAddSeconds(1);
+
+    # Renew objects because of transaction.
+    $Kernel::OM->ObjectsDiscard(
+        Objects => [
+            'Kernel::System::Ticket',
+            'Kernel::System::Ticket::Article',
+            'Kernel::System::Ticket::Article::Backend::Internal',
+        ],
+    );
+    $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+}
+
+# Create TicketSearch by Escalations scenarios.
+my @Tests = (
+    {
+        Config => {
+            OrderBy => 'Up',
+            SortBy  => 'EscalationResponseTime',
+        },
+        ExpectedResult => [ $TestTicketIDs[1], $TestTicketIDs[0], $TestTicketIDs[2] ],
+    },
+    {
+        Config => {
+            OrderBy => 'Down',
+            SortBy  => 'EscalationResponseTime',
+        },
+        ExpectedResult => [ $TestTicketIDs[2], $TestTicketIDs[0], $TestTicketIDs[1] ],
+    },
+    {
+        Config => {
+            OrderBy => 'Up',
+            SortBy  => 'EscalationUpdateTime',
+        },
+        ExpectedResult => [ $TestTicketIDs[0], $TestTicketIDs[2], $TestTicketIDs[1] ],
+    },
+    {
+        Config => {
+            OrderBy => 'Down',
+            SortBy  => 'EscalationUpdateTime',
+        },
+        ExpectedResult => [ $TestTicketIDs[1], $TestTicketIDs[2], $TestTicketIDs[0] ],
+    },
+    {
+        Config => {
+            OrderBy => 'Up',
+            SortBy  => 'EscalationSolutionTime',
+        },
+        ExpectedResult => [ $TestTicketIDs[2], $TestTicketIDs[0], $TestTicketIDs[1] ],
+    },
+    {
+        Config => {
+            OrderBy => 'Down',
+            SortBy  => 'EscalationSolutionTime',
+        },
+        ExpectedResult => [ $TestTicketIDs[1], $TestTicketIDs[0], $TestTicketIDs[2] ],
+    },
+);
+for my $Test (@Tests) {
+    my @Tickets = $TicketObject->TicketSearch(
+        Result            => 'ARRAY',
+        CustomerUserLogin => 'bugtest@otrs.com',
+        UserID            => 1,
+        %{ $Test->{Config} },
+    );
+    $Self->IsDeeply(
+        $Test->{ExpectedResult},
+        \@Tickets,
+        "TicketSearch() - SortBy $Test->{Config}{SortBy} - OrderBy $Test->{Config}{OrderBy}"
+    );
+}
+
 # cleanup is done by RestoreDatabase but we need to delete the tickets to cleanup the filesystem too
 my @DeleteTicketList = $TicketObject->TicketSearch(
     Result            => 'ARRAY',
-    CustomerUserLogin => 'unittest@otrs.com',
+    CustomerUserLogin => [ 'unittest@otrs.com', 'bugtest@otrs.com' ],
     UserID            => 1,
 );
 for my $TicketID (@DeleteTicketList) {
@@ -2234,5 +2401,427 @@ for my $TicketID (@DeleteTicketList) {
         UserID   => 1,
     );
 }
+
+# Test ticket search by fulltext (see bug#13284).
+#   Create a test ticket and add an article for this ticket.
+#   Note that article subject and ticket title differ.
+my $TestTicketTitle  = 'title' . $Helper->GetRandomID();
+my $FulltextTicketID = $TicketObject->TicketCreate(
+    Title        => $TestTicketTitle,
+    Queue        => 'Raw',
+    Lock         => 'unlock',
+    Priority     => '3 normal',
+    State        => 'open',
+    CustomerID   => '123465',
+    CustomerUser => 'bugtest@otrs.com',
+    OwnerID      => 1,
+    UserID       => 1,
+);
+
+my $TestArticleSubject = 'subject' . $Helper->GetRandomID();
+my $FulltextArticleID  = $ArticleBackendObject->ArticleCreate(
+    TicketID             => $FulltextTicketID,
+    IsVisibleForCustomer => 0,
+    SenderType           => 'agent',
+    From                 => 'Agent Some Agent Some Agent <email@example.com>',
+    To                   => 'Customer A <customer-a@example.com>',
+    Cc                   => 'Customer B <customer-b@example.com>',
+    ReplyTo              => 'Customer B <customer-b@example.com>',
+    Subject              => $TestArticleSubject,
+    Body                 => 'Some text',
+    ContentType          => 'text/plain; charset=ISO-8859-15',
+    HistoryType          => 'AddNote',
+    HistoryComment       => 'Some free text!',
+    UserID               => 1,
+    NoAgentNotify        => 1,
+);
+
+$ArticleObject->ArticleSearchIndexBuild(
+    TicketID  => $FulltextTicketID,
+    ArticleID => $FulltextArticleID,
+    UserID    => 1,
+);
+
+# Search for ticket title as fulltext parameter.
+@TicketIDs = $TicketObject->TicketSearch(
+    Result     => 'ARRAY',
+    Fulltext   => $TestTicketTitle,
+    UserID     => 1,
+    Permission => 'rw',
+);
+
+# Verify result has one item and it's indeed the test ticket.
+$Self->IsDeeply(
+    \@TicketIDs,
+    [$FulltextTicketID],
+    "TicketSearch() - search ticket title '$TestTicketTitle' as fulltext - found only TicketID $FulltextTicketID"
+);
+
+# Search for article subject as fulltext parameter.
+@TicketIDs = $TicketObject->TicketSearch(
+    Result     => 'ARRAY',
+    Fulltext   => $TestArticleSubject,
+    UserID     => 1,
+    Permission => 'rw',
+);
+
+# Verify result has one item and it's indeed the test ticket.
+$Self->IsDeeply(
+    \@TicketIDs,
+    [$FulltextTicketID],
+    "TicketSearch() - search article subject '$TestArticleSubject' as fulltext - found only TicketID $FulltextTicketID"
+);
+
+$Success = $TicketObject->TicketDelete(
+    TicketID => $FulltextTicketID,
+    UserID   => 1,
+);
+$Self->True(
+    $Success,
+    "TicketID $FulltextTicketID - deleted",
+);
+
+# Test TicketCountByAttribute() function.
+# Enable Ticket Type.
+$Kernel::OM->Get('Kernel::Config')->Set(
+    Key   => 'Ticket::Type',
+    Value => 1,
+);
+
+# Create test environment.
+my $PriorityObject = $Kernel::OM->Get('Kernel::System::Priority');
+my $RandomID       = $Helper->GetRandomID();
+my @Priorities;
+my @Services;
+my @SLAs;
+my @States;
+my @Types;
+my @Queues;
+
+for my $Index ( 1 .. 3 ) {
+
+    # Create test queues.
+    my $QueueName = $Index . 'Queue' . $RandomID;
+    my $QueueID   = $QueueObject->QueueAdd(
+        Name            => $QueueName,
+        ValidID         => 1,
+        GroupID         => 1,
+        FollowUpID      => 1,
+        SystemAddressID => 1,
+        SalutationID    => 1,
+        SignatureID     => 1,
+        Comment         => 'Unit Test Comment',
+        UserID          => 1,
+    ) || die "QueueAdd() error.";
+
+    push @Queues, {
+        ID   => $QueueID,
+        Name => $QueueName,
+    };
+
+    # Create test priorities.
+    my $PriorityName = $Index . 'Prio' . $RandomID;
+    my $PriorityID   = $PriorityObject->PriorityAdd(
+        Name    => $PriorityName,
+        ValidID => 1,
+        UserID  => 1,
+    ) || die "PriorityAdd() error.";
+
+    push @Priorities, {
+        ID   => $PriorityID,
+        Name => $PriorityName,
+    };
+
+    # Create test services.
+    my $ServiceName = $Index . 'Service' . $RandomID;
+    my $ServiceID   = $ServiceObject->ServiceAdd(
+        Name    => $ServiceName,
+        ValidID => 1,
+        Comment => 'Unit Test Comment',
+        UserID  => 1,
+    ) || die "ServiceAdd() error.";
+
+    push @Services, {
+        ID   => $ServiceID,
+        Name => $ServiceName,
+    };
+
+    # Create test SLAs.
+    my $SLAName = $Index . 'SLA' . $RandomID;
+    my $SLAID   = $SLAObject->SLAAdd(
+        Name    => $SLAName,
+        ValidID => 1,
+        Comment => 'Unit Test Comment',
+        UserID  => 1,
+    ) || die "SLAAdd() error.";
+
+    push @SLAs, {
+        ID   => $SLAID,
+        Name => $SLAName,
+    };
+
+    # Create test states.
+    my $StateName = $Index . 'State' . $RandomID;
+    my $StateID   = $StateObject->StateAdd(
+        Name    => $StateName,
+        Comment => 'Unit Test Comment',
+        ValidID => 1,
+        TypeID  => 1,
+        UserID  => 1,
+    ) || die "StateAdd() error.";
+
+    push @States, {
+        ID   => $StateID,
+        Name => $StateName,
+    };
+
+    # Create test types.
+    my $TypeName = $Index . 'Type' . $RandomID;
+    my $TypeID   = $TypeObject->TypeAdd(
+        Name    => $TypeName,
+        ValidID => 1,
+        UserID  => 1,
+    ) || die "TypeAdd() error.";
+
+    push @Types, {
+        ID   => $TypeID,
+        Name => $TypeName,
+    };
+}
+
+# Create test cases for different function outcome.
+@Tests = (
+    {
+        QueueID    => $Queues[0]->{ID},
+        PriorityID => $Priorities[0]->{ID},
+        StateID    => $States[0]->{ID},
+        ServiceID  => $Services[0]->{ID},
+        SLAID      => $SLAs[2]->{ID},
+        TypeID     => $Types[0]->{ID},
+    },
+    {
+        QueueID    => $Queues[1]->{ID},
+        PriorityID => $Priorities[2]->{ID},
+        StateID    => $States[1]->{ID},
+        ServiceID  => $Services[1]->{ID},
+        SLAID      => $SLAs[2]->{ID},
+        TypeID     => $Types[1]->{ID},
+    },
+    {
+        QueueID    => $Queues[2]->{ID},
+        PriorityID => $Priorities[2]->{ID},
+        StateID    => $States[0]->{ID},
+        ServiceID  => $Services[1]->{ID},
+        SLAID      => $SLAs[2]->{ID},
+        TypeID     => $Types[0]->{ID},
+    },
+    {
+        QueueID    => $Queues[2]->{ID},
+        PriorityID => $Priorities[0]->{ID},
+        StateID    => $States[0]->{ID},
+        ServiceID  => $Services[1]->{ID},
+        SLAID      => $SLAs[2]->{ID},
+        TypeID     => $Types[2]->{ID},
+    },
+    {
+        QueueID    => $Queues[2]->{ID},
+        PriorityID => $Priorities[2]->{ID},
+        StateID    => $States[0]->{ID},
+        ServiceID  => $Services[2]->{ID},
+        SLAID      => $SLAs[2]->{ID},
+        TypeID     => $Types[1]->{ID},
+    },
+    {
+        QueueID    => $Queues[1]->{ID},
+        PriorityID => $Priorities[0]->{ID},
+        StateID    => $States[1]->{ID},
+        ServiceID  => $Services[0]->{ID},
+        SLAID      => $SLAs[2]->{ID},
+        TypeID     => $Types[2]->{ID},
+    },
+    {
+        QueueID    => $Queues[1]->{ID},
+        PriorityID => $Priorities[0]->{ID},
+        StateID    => $States[1]->{ID},
+        ServiceID  => $Services[0]->{ID},
+        SLAID      => $SLAs[2]->{ID},
+        TypeID     => $Types[0]->{ID},
+    },
+    {
+        QueueID    => $Queues[1]->{ID},
+        PriorityID => $Priorities[2]->{ID},
+        StateID    => $States[2]->{ID},
+        ServiceID  => $Services[0]->{ID},
+        SLAID      => $SLAs[2]->{ID},
+        TypeID     => $Types[1]->{ID},
+    },
+    {
+        QueueID    => $Queues[2]->{ID},
+        PriorityID => $Priorities[2]->{ID},
+        StateID    => $States[1]->{ID},
+        ServiceID  => $Services[0]->{ID},
+        SLAID      => $SLAs[2]->{ID},
+        TypeID     => $Types[0]->{ID},
+    },
+    {
+        QueueID    => $Queues[0]->{ID},
+        PriorityID => $Priorities[2]->{ID},
+        StateID    => $States[0]->{ID},
+        ServiceID  => $Services[0]->{ID},
+        SLAID      => $SLAs[2]->{ID},
+        TypeID     => $Types[2]->{ID},
+    },
+);
+
+my %ExpectedResult;
+undef @TicketIDs;
+for my $Test (@Tests) {
+    my $TicketID = $TicketObject->TicketCreate(
+        %{$Test},
+        Title        => 'Unit Test ticket',
+        CustomerNo   => 'Unit Test customer',
+        CustomerUser => 'unittest@otrs.com',
+        Lock         => 'unlock',
+        OwnerID      => 1,
+        UserID       => 1,
+    );
+    push @TicketIDs, $TicketID;
+
+}
+
+# Create test expected outcome.
+@Tests = (
+    {
+        Attribute     => 'Service',
+        ExpectedCount => {
+            $Services[0]->{Name} => 6,
+            $Services[1]->{Name} => 3,
+            $Services[2]->{Name} => 1,
+        },
+    },
+    {
+        Attribute     => 'ServiceID',
+        ExpectedCount => {
+            $Services[0]->{ID} => 6,
+            $Services[1]->{ID} => 3,
+            $Services[2]->{ID} => 1,
+        },
+    },
+    {
+        Attribute     => 'SLA',
+        ExpectedCount => {
+            $SLAs[2]->{Name} => 10,
+        },
+    },
+    {
+        Attribute     => 'SLAID',
+        ExpectedCount => {
+            $SLAs[2]->{ID} => 10,
+        },
+    },
+    {
+        Attribute     => 'Queue',
+        ExpectedCount => {
+            $Queues[0]->{Name} => 2,
+            $Queues[1]->{Name} => 4,
+            $Queues[2]->{Name} => 4,
+        },
+    },
+    {
+        Attribute     => 'QueueID',
+        ExpectedCount => {
+            $Queues[0]->{ID} => 2,
+            $Queues[1]->{ID} => 4,
+            $Queues[2]->{ID} => 4,
+        },
+    },
+    {
+        Attribute     => 'Priority',
+        ExpectedCount => {
+            $Priorities[0]->{Name} => 4,
+            $Priorities[2]->{Name} => 6,
+        },
+    },
+    {
+        Attribute     => 'PriorityID',
+        ExpectedCount => {
+            $Priorities[0]->{ID} => 4,
+            $Priorities[2]->{ID} => 6,
+        },
+    },
+    {
+        Attribute     => 'State',
+        ExpectedCount => {
+            $States[0]->{Name} => 5,
+            $States[1]->{Name} => 4,
+            $States[2]->{Name} => 1,
+        },
+    },
+    {
+        Attribute     => 'StateID',
+        ExpectedCount => {
+            $States[0]->{ID} => 5,
+            $States[1]->{ID} => 4,
+            $States[2]->{ID} => 1,
+        },
+    },
+    {
+        Attribute     => 'Type',
+        ExpectedCount => {
+            $Types[0]->{Name} => 4,
+            $Types[1]->{Name} => 3,
+            $Types[2]->{Name} => 3,
+        },
+    },
+    {
+        Attribute     => 'TypeID',
+        ExpectedCount => {
+            $Types[0]->{ID} => 4,
+            $Types[1]->{ID} => 3,
+            $Types[2]->{ID} => 3,
+        },
+    },
+);
+
+# Check required params.
+my $TicketCount = $TicketObject->TicketCountByAttribute(
+    TicketIDs => \@TicketIDs,
+);
+$Self->False(
+    $TicketCount,
+    "TicketCountByAttribute() need Attribute param."
+);
+$TicketCount = $TicketObject->TicketCountByAttribute(
+    Attribute => 'Service',
+    TicketIDs => [],
+);
+$Self->True(
+    !IsHashRefWithData($TicketCount),
+    "TicketCountByAttribute() need TicketIDs array."
+);
+
+# Run valid tests.
+for my $Test (@Tests) {
+    my $TicketCount = $TicketObject->TicketCountByAttribute(
+        Attribute => $Test->{Attribute},
+        TicketIDs => \@TicketIDs,
+    );
+    $Self->IsDeeply(
+        $TicketCount,
+        $Test->{ExpectedCount},
+        "TicketCountByAttribute() for Attribute $Test->{Attribute} correct,"
+    );
+}
+
+# Test TicketCountByAttribute() function with more then 1000 entries.
+@TicketIDs   = ( @TicketIDs, 100 .. 1100 );
+$TicketCount = $TicketObject->TicketCountByAttribute(
+    Attribute => 'Service',
+    TicketIDs => \@TicketIDs,
+);
+$Self->True(
+    IsHashRefWithData($TicketCount),
+    "TicketCountByAttribute() for more then 1000 entries correct"
+);
 
 1;

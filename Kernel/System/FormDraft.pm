@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::FormDraft;
@@ -154,8 +154,11 @@ sub FormDraftGet {
     my $SQL =
         'SELECT id, object_type, object_id, action, title,'
         . ' create_time, create_by, change_time, change_by';
+
+    my @EncodeColumns = ( 1, 1, 1, 1, 1, 1, 1, 1, 1 );
     if ( $Param{GetContent} ) {
         $SQL .= ', content';
+        push @EncodeColumns, 0;
     }
     $SQL .= ' FROM form_draft WHERE id = ?';
 
@@ -164,7 +167,7 @@ sub FormDraftGet {
         SQL    => $SQL,
         Bind   => [ \$Param{FormDraftID} ],
         Limit  => 1,
-        Encode => 0,
+        Encode => \@EncodeColumns,
     );
 
     # fetch the result
@@ -184,7 +187,7 @@ sub FormDraftGet {
 
         if ( $Param{GetContent} ) {
 
-            my $RawContent = $Row[9] // {};
+            my $RawContent      = $Row[9] // {};
             my $StorableContent = $RawContent;
 
             if ( !$DBObject->GetDatabaseFunction('DirectBlob') ) {
@@ -656,10 +659,10 @@ sub _DeleteAffectedCaches {
 
 =head1 TERMS AND CONDITIONS
 
-This software is part of the OTRS project (L<http://otrs.org/>).
+This software is part of the OTRS project (L<https://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
-the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+the enclosed file COPYING for license information (GPL). If you
+did not receive this file, see L<https://www.gnu.org/licenses/gpl-3.0.txt>.
 
 =cut

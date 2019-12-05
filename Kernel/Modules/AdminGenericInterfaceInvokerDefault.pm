@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminGenericInterfaceInvokerDefault;
@@ -28,18 +28,15 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
-    my $WebserviceID
-        = int( $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'WebserviceID' ) || 0 );
-    if ( !$WebserviceID ) {
+    my $WebserviceID = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'WebserviceID' );
+    if ( !IsStringWithData($WebserviceID) ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('Need WebserviceID!'),
         );
     }
 
-    # send data to JS
     $LayoutObject->AddJSData(
         Key   => 'WebserviceID',
         Value => $WebserviceID
@@ -65,7 +62,7 @@ sub Run {
     }
     elsif ( $Self->{Subaction} eq 'AddAction' ) {
 
-        # challenge token check for write action
+        # Challenge token check for write action.
         $LayoutObject->ChallengeTokenCheck();
 
         return $Self->_AddAction(
@@ -83,7 +80,7 @@ sub Run {
     }
     elsif ( $Self->{Subaction} eq 'ChangeAction' ) {
 
-        # challenge token check for write action
+        # Challenge token check for write action.
         $LayoutObject->ChallengeTokenCheck();
 
         return $Self->_ChangeAction(
@@ -94,7 +91,7 @@ sub Run {
     }
     elsif ( $Self->{Subaction} eq 'DeleteAction' ) {
 
-        # challenge token check for write action
+        # Challenge token check for write action.
         $LayoutObject->ChallengeTokenCheck();
 
         return $Self->_DeleteAction(
@@ -105,7 +102,7 @@ sub Run {
     }
     elsif ( $Self->{Subaction} eq 'AddEvent' ) {
 
-        # challenge token check for write action
+        # Challenge token check for write action.
         $LayoutObject->ChallengeTokenCheck();
 
         return $Self->_AddEvent(
@@ -116,7 +113,7 @@ sub Run {
     }
     elsif ( $Self->{Subaction} eq 'DeleteEvent' ) {
 
-        # challenge token check for write action
+        # Challenge token check for write action.
         $LayoutObject->ChallengeTokenCheck();
 
         return $Self->_DeleteEvent(
@@ -126,136 +123,137 @@ sub Run {
         );
     }
 
+    return $LayoutObject->ErrorScreen(
+        Message => Translatable('Invalid Subaction!'),
+    );
 }
 
 sub _Add {
     my ( $Self, %Param ) = @_;
 
-    my $WebserviceID   = $Param{WebserviceID};
-    my $WebserviceData = $Param{WebserviceData};
-
-    my $InvokerType = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'InvokerType' );
-
-    # get layout object
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-
-    if ( !$InvokerType ) {
-        return $LayoutObject->ErrorScreen(
-            Message => Translatable('Need InvokerType'),
-        );
-    }
-    if ( !$Self->_InvokerTypeCheck( InvokerType => $InvokerType ) ) {
-        return $LayoutObject->ErrorScreen(
-            Message => $LayoutObject->{LanguageObject}->Translate( 'Invoker %s is not registered', $InvokerType ),
+    my $GetParam = $Self->_ParamsGet(
+        Definition => [
+            {
+                Name      => 'InvokerType',
+                Type      => 'String',
+                Mandatory => 1,
+                Check     => 'InvokerType',
+            },
+        ],
+    );
+    if ( $GetParam->{Error} ) {
+        return $Kernel::OM->Get('Kernel::Output::HTML::Layout')->ErrorScreen(
+            Message => $GetParam->{Error},
         );
     }
 
     return $Self->_ShowScreen(
         %Param,
-        Mode           => 'Add',
-        WebserviceID   => $WebserviceID,
-        WebserviceData => $WebserviceData,
-        WebserviceName => $WebserviceData->{Name},
-        InvokerType    => $InvokerType,
+        Mode          => 'Add',
+        InvokerConfig => {
+            Type => $GetParam->{InvokerType},
+        },
     );
 }
 
 sub _AddAction {
     my ( $Self, %Param ) = @_;
 
-    my $WebserviceID   = $Param{WebserviceID};
-    my $WebserviceData = $Param{WebserviceData};
+    my $GetParam = $Self->_ParamsGet(
+        Definition => [
+            {
+                Name      => 'InvokerType',
+                Type      => 'String',
+                Mandatory => 1,
+                Check     => 'InvokerType',
+            },
+            {
+                Name    => 'Invoker',
+                Type    => 'String',
+                Default => '',
+            },
+            {
+                Name    => 'Description',
+                Type    => 'String',
+                Default => '',
+            },
+            {
+                Name  => 'MappingInbound',
+                Type  => 'String',
+                Check => 'MappingType',
+            },
+            {
+                Name  => 'MappingOutbound',
+                Type  => 'String',
+                Check => 'MappingType',
+            },
+        ],
+    );
 
-    my %Errors;
-    my %GetParam;
-
-    # get param object
-    my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
-
-    for my $Needed (qw(Invoker InvokerType)) {
-        $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
-        if ( !$GetParam{$Needed} ) {
-            $Errors{ $Needed . 'ServerError' } = 'ServerError';
-        }
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    if ( $GetParam->{Error} ) {
+        return $LayoutObject->ErrorScreen(
+            Message => $GetParam->{Error},
+        );
     }
 
-    # name already exists, bail out
-    if ( exists $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam{Invoker} } ) {
+    my $WebserviceData = $Param{WebserviceData};
+    my %Errors;
+    if ( !IsStringWithData( $GetParam->{Invoker} ) ) {
         $Errors{InvokerServerError} = 'ServerError';
     }
 
-    # get layout object
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-
-    # uncorrectable errors
-    if ( !$GetParam{InvokerType} ) {
-        return $LayoutObject->ErrorScreen(
-            Message => Translatable('Need InvokerType'),
-        );
-    }
-    if ( !$Self->_InvokerTypeCheck( InvokerType => $GetParam{InvokerType} ) ) {
-        return $LayoutObject->ErrorScreen(
-            Message => $LayoutObject->{LanguageObject}
-                ->Translate( 'InvokerType %s is not registered', $GetParam{InvokerType} ),
-        );
+    # Invoker with same name already exists.
+    elsif ( IsHashRefWithData( $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam->{Invoker} } ) ) {
+        $Errors{InvokerServerError} = 'ServerError';
     }
 
-    # validation errors
-    if (%Errors) {
-
-        # get the description from the web request to send it back again to the screen
-        my $InvokerConfig;
-        $InvokerConfig->{Description} = $ParamObject->GetParam( Param => 'Description' )
-            || '';
-
-        return $Self->_ShowScreen(
-            %Param,
-            %GetParam,
-            %Errors,
-            Mode           => 'Add',
-            WebserviceID   => $WebserviceID,
-            WebserviceData => $WebserviceData,
-            WebserviceName => $WebserviceData->{Name},
-            InvokerType    => $GetParam{InvokerType},
-            InvokerConfig  => $InvokerConfig,
-        );
-    }
-
-    my $Config = {
-        Type        => $GetParam{InvokerType},
-        Description => $ParamObject->GetParam( Param => 'Description' ) || '',
+    my $InvokerConfig = {
+        Description => $GetParam->{Description},
+        Type        => $GetParam->{InvokerType},
     };
 
-    my $MappingInbound = $ParamObject->GetParam( Param => 'MappingInbound' );
-    $MappingInbound = $Self->_MappingTypeCheck( MappingType => $MappingInbound ) ? $MappingInbound : '';
-
-    if ($MappingInbound) {
-        $Config->{MappingInbound} = {
-            Type => $MappingInbound,
-        };
-    }
-
-    my $MappingOutbound = $ParamObject->GetParam( Param => 'MappingOutbound' );
-    $MappingOutbound = $Self->_MappingTypeCheck( MappingType => $MappingOutbound ) ? $MappingOutbound : '';
-
-    if ($MappingOutbound) {
-        $Config->{MappingOutbound} = {
-            Type => $MappingOutbound,
-        };
-    }
-
-    # check if Invoker already exists
-    if ( !$WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam{Invoker} } ) {
-        $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam{Invoker} } = $Config;
-
-        $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceUpdate(
-            %{$WebserviceData},
-            UserID => $Self->{UserID},
+    # Validation errors.
+    if (%Errors) {
+        return $Self->_ShowScreen(
+            %Param,
+            %{$GetParam},
+            %Errors,
+            Mode          => 'Add',
+            InvokerConfig => $InvokerConfig,
         );
     }
 
-    my $RedirectURL = "Action=AdminGenericInterfaceInvokerDefault;Subaction=Change;WebserviceID=$WebserviceID;";
-    $RedirectURL .= 'Invoker=' . $LayoutObject->LinkEncode( $GetParam{Invoker} ) . ';';
+    DIRECTION:
+    for my $Direction (qw(MappingInbound MappingOutbound)) {
+        next DIRECTION if !$GetParam->{$Direction};
+
+        # Mapping added, initialize with empty config.
+        $InvokerConfig->{$Direction} = {
+            Type => $GetParam->{$Direction},
+        };
+    }
+
+    $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam->{Invoker} } = $InvokerConfig;
+
+    my $UpdateSuccess = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceUpdate(
+        %{$WebserviceData},
+        UserID => $Self->{UserID},
+    );
+    if ( !$UpdateSuccess ) {
+        return $LayoutObject->ErrorScreen(
+            Message => Translatable('Could not update web service'),
+        );
+    }
+
+    my $RedirectURL =
+        'Action='
+        . $Self->{Action}
+        . ';Subaction=Change;WebserviceID='
+        . $Param{WebserviceID}
+        . ';Invoker='
+        . $LayoutObject->LinkEncode( $GetParam->{Invoker} )
+        . ';';
 
     return $LayoutObject->Redirect(
         OP => $RedirectURL,
@@ -265,42 +263,43 @@ sub _AddAction {
 sub _Change {
     my ( $Self, %Param ) = @_;
 
-    my $WebserviceID   = $Param{WebserviceID};
-    my $WebserviceData = $Param{WebserviceData};
+    my $GetParam = $Self->_ParamsGet(
+        Definition => [
+            {
+                Name      => 'Invoker',
+                Type      => 'String',
+                Mandatory => 1,
+            },
+            {
+                Name    => 'EventType',
+                Type    => 'String',
+                Default => 'Ticket',
+            },
+        ],
+    );
 
-    my $Invoker = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'Invoker' );
-
-    # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-
-    if ( !$Invoker ) {
+    if ( $GetParam->{Error} ) {
         return $LayoutObject->ErrorScreen(
-            Message => Translatable('Need Invoker'),
+            Message => $GetParam->{Error},
         );
     }
 
-    if (
-        ref $WebserviceData->{Config} ne 'HASH'
-        || ref $WebserviceData->{Config}->{Requester} ne 'HASH'
-        || ref $WebserviceData->{Config}->{Requester}->{Invoker} ne 'HASH'
-        || ref $WebserviceData->{Config}->{Requester}->{Invoker}->{$Invoker} ne 'HASH'
-        )
-    {
+    my $WebserviceData = $Param{WebserviceData};
+    my $InvokerConfig  = $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam->{Invoker} };
+    if ( !IsHashRefWithData($InvokerConfig) ) {
         return $LayoutObject->ErrorScreen(
             Message =>
-                $LayoutObject->{LanguageObject}->Translate( 'Could not determine config for invoker %s', $Invoker ),
+                $LayoutObject->{LanguageObject}
+                ->Translate( 'Could not determine config for invoker %s', $GetParam->{Invoker} ),
         );
     }
-
-    my $InvokerConfig = $WebserviceData->{Config}->{Requester}->{Invoker}->{$Invoker};
 
     return $Self->_ShowScreen(
         %Param,
+        %{$GetParam},
         Mode            => 'Change',
-        WebserviceID    => $WebserviceID,
-        WebserviceData  => $WebserviceData,
-        WebserviceName  => $WebserviceData->{Name},
-        Invoker         => $Invoker,
+        Invoker         => $GetParam->{Invoker},
         InvokerConfig   => $InvokerConfig,
         MappingInbound  => $InvokerConfig->{MappingInbound}->{Type},
         MappingOutbound => $InvokerConfig->{MappingOutbound}->{Type},
@@ -310,131 +309,168 @@ sub _Change {
 sub _ChangeAction {
     my ( $Self, %Param ) = @_;
 
-    my %GetParam;
-    my %Errors;
+    my $GetParam = $Self->_ParamsGet(
+        Definition => [
+            {
+                Name      => 'OldInvoker',
+                Type      => 'String',
+                Mandatory => 1,
+            },
+            {
+                Name    => 'Invoker',
+                Type    => 'String',
+                Default => '',
+            },
+            {
+                Name    => 'Description',
+                Type    => 'String',
+                Default => '',
+            },
+            {
+                Name  => 'MappingInbound',
+                Type  => 'String',
+                Check => 'MappingType',
+            },
+            {
+                Name  => 'MappingOutbound',
+                Type  => 'String',
+                Check => 'MappingType',
+            },
+            {
+                Name    => 'ContinueAfterSave',
+                Type    => 'String',
+                Default => '',
+            },
+            {
+                Name    => 'EventType',
+                Type    => 'String',
+                Default => 'Ticket',
+            },
+        ],
+    );
 
-    my $WebserviceID   = $Param{WebserviceID};
-    my $WebserviceData = $Param{WebserviceData};
-
-    # get needed objects
-    my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-
-    for my $Needed (qw(Invoker OldInvoker)) {
-
-        $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
-
-        if ( !$GetParam{$Needed} ) {
-            return $LayoutObject->ErrorScreen(
-                Message => $LayoutObject->{LanguageObject}->Translate( 'Need %s', $Needed ),
-            );
-        }
+    if ( $GetParam->{Error} ) {
+        return $LayoutObject->ErrorScreen(
+            Message => $GetParam->{Error},
+        );
     }
 
-    # Get config data of existing invoker.
-    if (
-        ref $WebserviceData->{Config} ne 'HASH'
-        || ref $WebserviceData->{Config}->{Requester} ne 'HASH'
-        || ref $WebserviceData->{Config}->{Requester}->{Invoker} ne 'HASH'
-        || ref $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam{OldInvoker} } ne
-        'HASH'
-        )
-    {
+    my $WebserviceData = $Param{WebserviceData};
+    my $InvokerConfig  = delete $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam->{OldInvoker} };
+    if ( !IsHashRefWithData($InvokerConfig) ) {
         return $LayoutObject->ErrorScreen(
             Message => $LayoutObject->{LanguageObject}
-                ->Translate( 'Could not determine config for invoker %s', $GetParam{OldInvoker} ),
+                ->Translate( 'Could not determine config for invoker %s', $GetParam->{OldInvoker} ),
         );
     }
 
-    my $InvokerConfig = $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam{OldInvoker} };
-
-    # Invoker was renamed, avoid conflicts
-    if ( $GetParam{OldInvoker} ne $GetParam{Invoker} ) {
-
-        # New name already exists, bail out
-        if ( exists $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam{Invoker} } ) {
-            $Errors{InvokerServerError} = 'ServerError';
-        }
-
-        # OK, remove old Invoker. New one will be added below.
-        if ( !%Errors ) {
-            delete $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam{OldInvoker} };
-        }
+    my %Errors;
+    if ( !IsStringWithData( $GetParam->{Invoker} ) ) {
+        $Errors{InvokerServerError} = 'ServerError';
     }
+
+    # Invoker was renamed and new name already exists.
+    elsif (
+        $GetParam->{OldInvoker} ne $GetParam->{Invoker}
+        && IsHashRefWithData( $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam->{Invoker} } )
+        )
+    {
+        $Errors{InvokerServerError} = 'ServerError';
+    }
+
+    $InvokerConfig->{Description} = $GetParam->{Description};
 
     if (%Errors) {
-
         return $Self->_ShowScreen(
             %Param,
-            %GetParam,
+            %{$GetParam},
             %Errors,
-            Mode            => 'Change',
-            WebserviceID    => $WebserviceID,
-            WebserviceData  => $WebserviceData,
-            WebserviceName  => $WebserviceData->{Name},
-            Invoker         => $GetParam{OldInvoker},
-            InvokerConfig   => $InvokerConfig,
-            MappingInbound  => $InvokerConfig->{MappingInbound}->{Type},
-            MappingOutbound => $InvokerConfig->{MappingOutbound}->{Type},
+            Mode          => 'Change',
+            Invoker       => $GetParam->{OldInvoker},
+            InvokerConfig => $InvokerConfig,
+            NewInvoker    => $GetParam->{Invoker},
         );
     }
 
-    # Now handle mappings. If mapping types were not changed, keep the mapping configuration.
-    my $MappingInbound = $ParamObject->GetParam( Param => 'MappingInbound' );
-    $MappingInbound = $Self->_MappingTypeCheck( MappingType => $MappingInbound ) ? $MappingInbound : '';
+    # If mapping types were not changed, keep the mapping configuration.
+    DIRECTION:
+    for my $Direction (qw(MappingInbound MappingOutbound)) {
 
-    # No inbound mapping set, make sure it is not present in the configuration.
-    if ( !$MappingInbound ) {
-        delete $InvokerConfig->{MappingInbound};
+        # No mapping set, make sure it is not present in the configuration.
+        if ( !$GetParam->{$Direction} ) {
+            delete $InvokerConfig->{$Direction};
+            next DIRECTION;
+        }
+
+        # Mapping added or changed, initialize with empty config.
+        my $OldMapping = $InvokerConfig->{$Direction}->{Type};
+        if ( !$OldMapping || ( $OldMapping && $GetParam->{$Direction} ne $OldMapping ) ) {
+            $InvokerConfig->{$Direction} = {
+                Type => $GetParam->{$Direction},
+            };
+        }
     }
-
-    # Inbound mapping changed, initialize with empty config.
-    my $ConfigMappingInbound = $InvokerConfig->{MappingInbound}->{Type} || '';
-    if ( $MappingInbound && $MappingInbound ne $ConfigMappingInbound ) {
-        $InvokerConfig->{MappingInbound} = {
-            Type => $MappingInbound,
-        };
-    }
-
-    my $MappingOutbound = $ParamObject->GetParam( Param => 'MappingOutbound' );
-    $MappingOutbound = $Self->_MappingTypeCheck( MappingType => $MappingOutbound ) ? $MappingOutbound : '';
-
-    # No outbound mapping set, make sure it is not present in the configuration.
-    if ( !$MappingOutbound ) {
-        delete $InvokerConfig->{MappingOutbound};
-    }
-
-    # Outbound mapping changed, initialize with empty config.
-    my $ConfigMappingOutbound = $InvokerConfig->{MappingOutbound}->{Type} || '';
-    if ( $MappingOutbound && $MappingOutbound ne $ConfigMappingOutbound ) {
-        $InvokerConfig->{MappingOutbound} = {
-            Type => $MappingOutbound,
-        };
-    }
-
-    $InvokerConfig->{Description} = $ParamObject->GetParam( Param => 'Description' )
-        || '';
 
     # Update invoker config.
-    $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam{Invoker} } = $InvokerConfig;
+    $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam->{Invoker} } = $InvokerConfig;
 
-    # Write new config to database.
-    $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceUpdate(
+    # Take care of error handlers with invoker filters if invoker was renamed.
+    if (
+        $GetParam->{OldInvoker} ne $GetParam->{Invoker}
+        && IsHashRefWithData( $WebserviceData->{Config}->{Requester}->{ErrorHandling} )
+        )
+    {
+        my $ErrorHandlingConfig = $WebserviceData->{Config}->{Requester}->{ErrorHandling};
+
+        ERRORHANDLING:
+        for my $ErrorHandling ( sort keys %{$ErrorHandlingConfig} ) {
+            next ERRORHANDLING if !IsHashRefWithData( $ErrorHandlingConfig->{$ErrorHandling} );
+
+            my $InvokerFilter = $ErrorHandlingConfig->{$ErrorHandling}->{InvokerFilter};
+            next ERRORHANDLING if !IsArrayRefWithData($InvokerFilter);
+
+            next ERRORHANDLING if !grep { $_ eq $GetParam->{OldInvoker} } @{$InvokerFilter};
+
+            # Rename invoker in error handling invoker filter to keep consistency.
+            my @NewInvokerFilter = map { $_ eq $GetParam->{OldInvoker} ? $GetParam->{Invoker} : $_ } @{$InvokerFilter};
+            $ErrorHandlingConfig->{$ErrorHandling}->{InvokerFilter} = \@NewInvokerFilter;
+        }
+
+        $WebserviceData->{Config}->{Requester}->{ErrorHandling} = $ErrorHandlingConfig;
+    }
+
+    my $UpdateSuccess = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceUpdate(
         %{$WebserviceData},
         UserID => $Self->{UserID},
     );
+    if ( !$UpdateSuccess ) {
+        return $LayoutObject->ErrorScreen(
+            Message => Translatable('Could not update web service'),
+        );
+    }
 
-    # remember the selected event type
-    my $SelectedEventType = $ParamObject->GetParam( Param => 'EventType' );
+    # If the user would like to continue editing the invoker config, just redirect to the edit screen.
+    my $RedirectURL;
+    if ( $GetParam->{ContinueAfterSave} eq 1 ) {
+        $RedirectURL =
+            'Action='
+            . $Self->{Action}
+            . ';Subaction=Change;WebserviceID='
+            . $Param{WebserviceID}
+            . ';Invoker='
+            . $LayoutObject->LinkEncode( $GetParam->{Invoker} )
+            . ';EventType='
+            . $GetParam->{EventType}
+            . ';';
+    }
 
-    # Save button: stay in edit mode.
-    my $RedirectURL = "Action=AdminGenericInterfaceInvokerDefault;Subaction=Change;WebserviceID=$WebserviceID;"
-        . "Invoker=$GetParam{Invoker};EventType=$SelectedEventType";
-
-    # Save and finish button: go to web service.
-    if ( $ParamObject->GetParam( Param => 'ReturnToWebservice' ) ) {
-        $RedirectURL = "Action=AdminGenericInterfaceWebservice;Subaction=Change;WebserviceID=$WebserviceID;";
-
+    # Otherwise return to overview.
+    else {
+        $RedirectURL =
+            'Action=AdminGenericInterfaceWebservice;Subaction=Change;WebserviceID='
+            . $Param{WebserviceID}
+            . ';';
     }
 
     return $LayoutObject->Redirect(
@@ -445,268 +481,336 @@ sub _ChangeAction {
 sub _DeleteAction {
     my ( $Self, %Param ) = @_;
 
-    my $WebserviceData = $Param{WebserviceData};
+    my $GetParam = $Self->_ParamsGet(
+        Definition => [
+            {
+                Name      => 'Invoker',
+                Type      => 'String',
+                Mandatory => 1,
+            },
+        ],
+    );
 
-    my $Invoker = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'Invoker' );
-
-    if ( !$Invoker ) {
+    if ( $GetParam->{Error} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Got no Invoker',
+            Message  => $GetParam->{Error},
         );
+        return $Self->_JSONResponse( Success => 0 );
     }
 
-    my $Success;
-
-    # Check if Invoker exists and delete it.
-    if ( $WebserviceData->{Config}->{Requester}->{Invoker}->{$Invoker} ) {
-        delete $WebserviceData->{Config}->{Requester}->{Invoker}->{$Invoker};
-
-        $Success = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceUpdate(
-            %{$WebserviceData},
-            UserID => $Self->{UserID},
+    if ( !IsHashRefWithData( $Param{WebserviceData}->{Config}->{Requester}->{Invoker}->{ $GetParam->{Invoker} } ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Could not determine config for invoker " . $GetParam->{Invoker},
         );
+        return $Self->_JSONResponse( Success => 0 );
     }
 
-    # get needed objects
+    # Remove invoker from config.
+    delete $Param{WebserviceData}->{Config}->{Requester}->{Invoker}->{ $GetParam->{Invoker} };
+    my $Success = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceUpdate(
+        %{ $Param{WebserviceData} },
+        UserID => $Self->{UserID},
+    );
+
+    return $Self->_JSONResponse( Success => $Success );
+}
+
+sub _AddEvent {
+    my ( $Self, %Param ) = @_;
+
+    my $GetParam = $Self->_ParamsGet(
+        Definition => [
+            {
+                Name      => 'Invoker',
+                Type      => 'String',
+                Mandatory => 1,
+            },
+            {
+                Name      => 'NewEvent',
+                Type      => 'String',
+                Mandatory => 1,
+            },
+            {
+                Name    => 'Asynchronous',
+                Type    => 'String',
+                Default => 0,
+            },
+            {
+                Name    => 'EventType',
+                Type    => 'String',
+                Default => 'Ticket',
+            },
+        ],
+    );
+
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    if ( $GetParam->{Error} ) {
+        return $LayoutObject->ErrorScreen(
+            Message => $GetParam->{Error},
+        );
+    }
 
-    # build JSON output
-    my $JSON = $LayoutObject->JSONEncode(
-        Data => {
-            Success => $Success,
-        },
+    my $WebserviceData = $Param{WebserviceData};
+    my $InvokerConfig  = $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam->{Invoker} };
+    if ( !IsHashRefWithData($InvokerConfig) ) {
+        return $LayoutObject->ErrorScreen(
+            Message => $LayoutObject->{LanguageObject}
+                ->Translate( 'Could not determine config for invoker %s', $GetParam->{Invoker} ),
+        );
+    }
+
+    # Add the new event to the list.
+    my @Events = IsArrayRefWithData( $InvokerConfig->{Events} ) ? @{ $InvokerConfig->{Events} } : ();
+    push @Events, {
+        Asynchronous => $GetParam->{Asynchronous},
+        Event        => $GetParam->{NewEvent},
+    };
+
+    $InvokerConfig->{Events} = \@Events;
+    $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam->{Invoker} } = $InvokerConfig;
+
+    my $UpdateSuccess = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceUpdate(
+        %{$WebserviceData},
+        UserID => $Self->{UserID},
+    );
+    if ( !$UpdateSuccess ) {
+        return $LayoutObject->ErrorScreen(
+            Message => Translatable('Could not update web service'),
+        );
+    }
+
+    # Stay in edit mode.
+    my $RedirectURL =
+        'Action='
+        . $Self->{Action}
+        . ';Subaction=Change;WebserviceID='
+        . $Param{WebserviceID}
+        . ';Invoker='
+        . $LayoutObject->LinkEncode( $GetParam->{Invoker} )
+        . ';EventType='
+        . $GetParam->{EventType}
+        . ';';
+
+    return $LayoutObject->Redirect(
+        OP => $RedirectURL,
+    );
+}
+
+sub _DeleteEvent {
+    my ( $Self, %Param ) = @_;
+
+    my $GetParam = $Self->_ParamsGet(
+        Definition => [
+            {
+                Name      => 'Invoker',
+                Type      => 'String',
+                Mandatory => 1,
+            },
+            {
+                Name      => 'EventName',
+                Type      => 'String',
+                Mandatory => 1,
+            },
+        ],
     );
 
-    # send JSON response
-    return $LayoutObject->Attachment(
-        ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
-        Content     => $JSON,
-        Type        => 'inline',
-        NoCache     => 1,
+    if ( $GetParam->{Error} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => $GetParam->{Error},
+        );
+        return $Self->_JSONResponse( Success => 0 );
+    }
+
+    my $WebserviceData = $Param{WebserviceData};
+    my $InvokerConfig  = $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam->{Invoker} };
+    if ( !IsHashRefWithData($InvokerConfig) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Could not determine config for invoker $GetParam->{Invoker}!",
+        );
+        return $Self->_JSONResponse( Success => 0 );
+    }
+
+    # delete selected event from list of events.
+    if ( !IsArrayRefWithData( $InvokerConfig->{Events} ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Could not find event to delete in config config for invoker $GetParam->{Invoker}!",
+        );
+        return $Self->_JSONResponse( Success => 0 );
+    }
+
+    @{ $InvokerConfig->{Events} } = grep { $_->{Event} ne $GetParam->{EventName} } @{ $InvokerConfig->{Events} };
+    $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam->{Invoker} } = $InvokerConfig;
+
+    my $UpdateSuccess = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceUpdate(
+        %{$WebserviceData},
+        UserID => $Self->{UserID},
     );
+    if ( !$UpdateSuccess ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Could not update web service',
+        );
+        return $Self->_JSONResponse( Success => 0 );
+    }
+
+    return $Self->_JSONResponse( Success => 1 );
 }
 
 sub _ShowScreen {
     my ( $Self, %Param ) = @_;
 
-    # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
 
-    # send data to JS
     $LayoutObject->AddJSData(
         Key   => 'Invoker',
-        Value => $Param{Invoker}
+        Value => $Param{Invoker},
     );
 
-    my %TemplateData;
-
-    if ( $Param{Mode} eq 'Add' ) {
-        $TemplateData{InvokerType} = $Param{InvokerType};
-
-    }
-    elsif ( $Param{Mode} eq 'Change' ) {
-        $LayoutObject->Block(
-            Name => 'ActionListDelete',
-            Data => \%Param
-        );
-
-        $LayoutObject->Block(
-            Name => 'SaveAndFinishButton',
-            Data => \%Param
-        );
-
-        $TemplateData{InvokerType} = $Param{InvokerConfig}->{Type};
-    }
-
-    $TemplateData{Description} = $Param{InvokerConfig}->{Description};
-
-    my $Mappings = $Kernel::OM->Get('Kernel::Config')->Get('GenericInterface::Mapping::Module') || {};
-
-    # Inbound mapping
-    my @MappingList = sort keys %{$Mappings};
-
-    my $MappingInbound = $Self->_MappingTypeCheck( MappingType => $Param{MappingInbound} )
-        ? $Param{MappingInbound}
-        : '';
-
-    $TemplateData{MappingInboundStrg} = $LayoutObject->BuildSelection(
-        Data          => \@MappingList,
-        Name          => 'MappingInbound',
-        SelectedValue => $MappingInbound,
-        Sort          => 'AlphanumericValue',
-        PossibleNone  => 1,
-        Class         => 'Modernize RegisterChange',
+    my %TemplateData = (
+        Description => $Param{InvokerConfig}->{Description},
+        InvokerType => $Param{InvokerConfig}->{Type},
+        Invoker     => $Param{Invoker},
+        NewInvoker  => $Param{NewInvoker} // $Param{Invoker},
     );
 
-    if ($MappingInbound) {
-        $TemplateData{MappingInboundConfigDialog} = $Mappings->{$MappingInbound}->{ConfigDialog};
-    }
+    # Handle mapping.
+    my $MappingModules    = $Kernel::OM->Get('Kernel::Config')->Get('GenericInterface::Mapping::Module') || {};
+    my @MappingModuleList = sort keys %{$MappingModules};
+    DIRECTION:
+    for my $Direction (qw(MappingInbound MappingOutbound)) {
+        my $OldMapping = $Param{InvokerConfig}->{$Direction}->{Type};
+        my $Mapping    = $Param{$Direction};
 
-    if ( $TemplateData{MappingInboundConfigDialog} && $Param{Mode} eq 'Change' ) {
+        $TemplateData{ $Direction . 'Strg' } = $LayoutObject->BuildSelection(
+            Data          => \@MappingModuleList,
+            Name          => $Direction,
+            SelectedValue => $Mapping,
+            Sort          => 'AlphanumericValue',
+            PossibleNone  => 1,
+            Class         => 'Modernize RegisterChange',
+        );
+
+        # Only show configure button if we have an unchanged existing mapping type.
+        next DIRECTION if !$OldMapping;
+        next DIRECTION if !$Mapping;
+        next DIRECTION if $Mapping ne $OldMapping;
+        next DIRECTION if !$MappingModules->{$Mapping}->{ConfigDialog};
+
         $LayoutObject->Block(
-            Name => 'MappingInboundConfigureButton',
+            Name => $Direction . 'ConfigureButton',
             Data => {
-                %Param,
-                %TemplateData,
-                }
-        );
-    }
-
-    # Outbound mapping
-    my $MappingOutbound = $Self->_MappingTypeCheck( MappingType => $Param{MappingOutbound} )
-        ? $Param{MappingOutbound}
-        : '';
-
-    $TemplateData{MappingOutboundStrg} = $LayoutObject->BuildSelection(
-        Data          => \@MappingList,
-        Name          => 'MappingOutbound',
-        SelectedValue => $MappingOutbound,
-        Sort          => 'AlphanumericValue',
-        PossibleNone  => 1,
-        Class         => 'Modernize RegisterChange',
-    );
-
-    if ($MappingOutbound) {
-        $TemplateData{MappingOutboundConfigDialog} = $Mappings->{$MappingOutbound}->{ConfigDialog};
-    }
-
-    if ( $TemplateData{MappingOutboundConfigDialog} && $Param{Mode} eq 'Change' ) {
-        $LayoutObject->Block(
-            Name => 'MappingOutboundConfigureButton',
-            Data => {
-                %Param,
-                %TemplateData,
+                $Direction . ConfigDialog => $MappingModules->{$Mapping}->{ConfigDialog},
             },
         );
     }
 
-    # store all invoker event triggers
-    my $InvokerEvents = $Param{InvokerConfig}->{Events};
+    if ( $Param{Mode} eq 'Change' ) {
 
-    if ( !IsArrayRefWithData($InvokerEvents) ) {
-        $LayoutObject->Block(
-            Name => 'NoDataFoundMsg',
-            Data => {},
-        );
-    }
-
-    my %RegisteredEvents = $Kernel::OM->Get('Kernel::System::Event')->EventList();
-
-    my %InvokerEventLookup;
-
-    # create the event triggers table
-    my @Events;
-    for my $Event ( @{$InvokerEvents} ) {
-
-        # to store the events that are already assigned to this invoker
-        # the selects should look for this values and omit them from their lists
-        $InvokerEventLookup{ $Event->{Event} } = 1;
-
-        # set if is Synchronous or Asynchronous
-        my $Asynchronous = 'No';
-        if ( $Event->{Asynchronous} ) {
-            $Asynchronous = 'Yes'
+        # Show all invoker event triggers.
+        my $InvokerEvents = $Param{InvokerConfig}->{Events} // [];
+        if ( !IsArrayRefWithData($InvokerEvents) ) {
+            $LayoutObject->Block(
+                Name => 'NoDataFoundMsg',
+                Data => {},
+            );
         }
 
-        # Set if event have a Condition.
-        my $Condition = 'No';
-        if ( IsHashRefWithData( $Event->{Condition} ) ) {
-            $Condition = 'Yes'
-        }
+        # Create the event triggers table.
+        my @Events;
+        my %InvokerEventLookup;
+        my %RegisteredEvents = $Kernel::OM->Get('Kernel::System::Event')->EventList();
+        for my $Event ( @{$InvokerEvents} ) {
+            push @Events, $Event->{Event};
 
-        # set the event type ( event object like Article or Ticket) not currently in use
-        # but left if is needed in future
-        my $EventType;
-        EVENTTYPE:
-        for my $Type ( sort keys %RegisteredEvents ) {
-            if ( grep { $_ eq $Event->{Event} } @{ $RegisteredEvents{$Type} || [] } ) {
+            # To store the events that are already assigned to this invoker
+            #   the selects should look for this values and omit them from their lists.
+            $InvokerEventLookup{ $Event->{Event} } = 1;
+
+            # Set the event type (event object like Article or Ticket).
+            # Value not currently in use but kept as it might be needed in the future.
+            my $EventType;
+            EVENTTYPE:
+            for my $Type ( sort keys %RegisteredEvents ) {
+                next EVENTTYPE if !IsArrayRefWithData( $RegisteredEvents{$Type} );
+                next EVENTTYPE if !grep { $_ eq $Event->{Event} } @{ $RegisteredEvents{$Type} };
+
                 $EventType = $Type;
                 last EVENTTYPE;
             }
+
+            $LayoutObject->Block(
+                Name => 'EventRow',
+                Data => {
+                    WebserviceID => $Param{WebserviceID},
+                    Invoker      => $Param{Invoker},
+                    Event        => $Event->{Event},
+                    Type         => $EventType // '-',
+                    Asynchronous => $Event->{Asynchronous} ? Translatable('Yes') : Translatable('No'),
+                    Condition    => IsHashRefWithData( $Event->{Condition} ) ? Translatable('Yes') : Translatable('No'),
+                },
+            );
         }
 
-        push @Events, $Event->{Event};
+        $LayoutObject->AddJSData(
+            Key   => 'Events',
+            Value => \@Events
+        );
 
-        # paint each event row in event triggers table
-        $LayoutObject->Block(
-            Name => 'EventRow',
-            Data => {
-                WebserviceID => $Param{WebserviceID},
-                Invoker      => $Param{Invoker},
-                Event        => $Event->{Event},
-                Type         => $EventType || '-',
-                Asynchronous => $Asynchronous,
-                Condition    => $Condition,
-            },
+        # Create event trigger selectors (one for each type).
+        my @EventTypeList;
+        TYPE:
+        for my $Type ( sort keys %RegisteredEvents ) {
+            next EVENTTYPE if !IsArrayRefWithData( $RegisteredEvents{$Type} );
+
+            # Refresh event list for each event type.
+            my @EventList = grep { !$InvokerEventLookup{$_} } @{ $RegisteredEvents{$Type} };
+
+            # hide inactive event lists
+            my $EventListHidden = '';
+            if ( $Type ne $Param{EventType} ) {
+                $EventListHidden = 'Hidden';
+            }
+
+            my $EventStrg = $LayoutObject->BuildSelection(
+                Data         => \@EventList,
+                Name         => $Type . 'Event',
+                Sort         => 'AlphanumericValue',
+                PossibleNone => 0,
+                Title        => $LayoutObject->{LanguageObject}->Translate('Event'),
+                Class        => 'Modernize EventList GenericInterfaceSpacing ' . $EventListHidden,
+            );
+
+            $LayoutObject->Block(
+                Name => 'EventAdd',
+                Data => {
+                    EventStrg => $EventStrg,
+                },
+            );
+
+            push @EventTypeList, $Type;
+        }
+
+        # Create event type selector.
+        $TemplateData{EventTypeStrg} = $LayoutObject->BuildSelection(
+            Data          => \@EventTypeList,
+            Name          => 'EventType',
+            Sort          => 'AlphanumericValue',
+            SelectedValue => $Param{EventType},
+            PossibleNone  => 0,
+            Class         => 'Modernize',
         );
     }
-
-    # send data to JS
-    $LayoutObject->AddJSData(
-        Key   => 'Events',
-        Value => \@Events
-    );
-
-    my @EventTypeList;
-
-    my $SelectedEventType = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'EventType' )
-        || 'Ticket';
-
-    # create event trigger selectors (one for each type)
-    TYPE:
-    for my $Type ( sort keys %RegisteredEvents ) {
-
-        # refresh event list for each event type
-        my @EventList;
-
-        EVENT:
-        for my $Event ( @{ $RegisteredEvents{$Type} || [] } ) {
-            next EVENT if $InvokerEventLookup{$Event};    # only add events that are not used yet
-            push @EventList, $Event;
-        }
-
-        # hide inactive event lists
-        my $EventListHidden = '';
-        if ( $Type ne $SelectedEventType ) {
-            $EventListHidden = 'Hidden';
-        }
-
-        # paint each selector
-        my $EventStrg = $LayoutObject->BuildSelection(
-            Data         => \@EventList,
-            Name         => $Type . 'Event',
-            Sort         => 'AlphanumericValue',
-            PossibleNone => 0,
-            Title        => $LayoutObject->{LanguageObject}->Translate('Event'),
-            Class        => 'EventList GenericInterfaceSpacing ' . $EventListHidden,
-        );
-
-        $LayoutObject->Block(
-            Name => 'EventAdd',
-            Data => {
-                EventStrg => $EventStrg,
-            },
-        );
-
-        push @EventTypeList, $Type;
-    }
-
-    # create event type selector
-    $TemplateData{EventTypeStrg} = $LayoutObject->BuildSelection(
-        Data          => \@EventTypeList,
-        Name          => 'EventType',
-        Sort          => 'AlphanumericValue',
-        SelectedValue => $SelectedEventType,
-        PossibleNone  => 0,
-        Class         => '',
-    );
 
     $Output .= $LayoutObject->Output(
-        TemplateFile => 'AdminGenericInterfaceInvokerDefault',
+        TemplateFile => $Self->{Action},
         Data         => {
             %Param,
             %TemplateData,
@@ -718,204 +822,98 @@ sub _ShowScreen {
     return $Output;
 }
 
-sub _AddEvent {
+sub _ParamsGet {
     my ( $Self, %Param ) = @_;
 
-    my %GetParam;
-
-    my $WebserviceID   = $Param{WebserviceID};
-    my $WebserviceData = $Param{WebserviceData};
-
-    # get needed objects
-    my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
+    my %GetParam;
+    DEFINITION:
+    for my $Definition ( @{ $Param{Definition} } ) {
+        my $Name = $Definition->{Name};
 
-    for my $Needed (qw(Invoker NewEvent)) {
+        if ( $Definition->{Type} eq 'String' ) {
+            $GetParam{$Name} = $ParamObject->GetParam( Param => $Name ) // $Definition->{Default};
+            next DEFINITION if IsStringWithData( $GetParam{$Name} );
 
-        $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
-
-        if ( !$GetParam{$Needed} ) {
-            return $LayoutObject->ErrorScreen(
-                Message => $LayoutObject->{LanguageObject}->Translate( 'Need %s', $Needed ),
-            );
+            next DEFINITION if !$Definition->{Mandatory};
+            $GetParam{Error} = $LayoutObject->{LanguageObject}->Translate( 'Need %s', $Name );
+            return \%GetParam;
         }
     }
 
-    # Get config data of existing invoker.
-    if (
-        ref $WebserviceData->{Config} ne 'HASH'
-        || ref $WebserviceData->{Config}->{Requester} ne 'HASH'
-        || ref $WebserviceData->{Config}->{Requester}->{Invoker} ne 'HASH'
-        || ref $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam{Invoker} } ne
-        'HASH'
-        )
-    {
-        return $LayoutObject->ErrorScreen(
-            Message => $LayoutObject->{LanguageObject}
-                ->Translate( 'Could not determine config for invoker %s', $GetParam{Invoker} ),
-        );
+    # Type checks.
+    DEFINITION:
+    for my $Definition ( @{ $Param{Definition} } ) {
+        next DEFINITION if !$Definition->{Check};
+
+        my $Name = $Definition->{Name};
+        next DEFINITION if !defined $GetParam{$Name};
+
+        if ( $Definition->{Check} eq 'InvokerType' ) {
+            next DEFINITION if $Self->_InvokerTypeCheck( InvokerType => $GetParam{$Name} );
+
+            $GetParam{Error}
+                = $LayoutObject->{LanguageObject}->Translate( 'InvokerType %s is not registered', $GetParam{$Name} );
+            return \%GetParam;
+        }
+
+        if ( $Definition->{Check} eq 'MappingType' ) {
+            next DEFINITION if !IsStringWithData( $GetParam{Name} );
+            next DEFINITION if $Self->_MappingTypeCheck( MappingType => $GetParam{$Name} );
+
+            $GetParam{Error}
+                = $LayoutObject->{LanguageObject}->Translate( 'MappingType %s is not registered', $GetParam{$Name} );
+            return \%GetParam;
+        }
     }
 
-    # get current invoker config
-    my $InvokerConfig = $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam{Invoker} };
-
-    # get Asynchronous Mode
-    $GetParam{AsynchronousMode} = $ParamObject->GetParam( Param => 'Asynchronous' ) || 0;
-
-    my @Events;
-
-    # store current events associated with the invoker
-    if ( IsArrayRefWithData( $InvokerConfig->{Events} ) ) {
-        @Events = @{ $InvokerConfig->{Events} };
-    }
-
-    # add the new event to the list
-    push @Events, {
-        Asynchronous => $GetParam{AsynchronousMode},
-        Event        => $GetParam{NewEvent},
-    };
-
-    # update configurations
-    $InvokerConfig->{Events} = \@Events;
-    $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam{Invoker} } = $InvokerConfig;
-
-    # Write new config to database.
-    $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceUpdate(
-        %{$WebserviceData},
-        UserID => $Self->{UserID},
-    );
-
-    # remember the selected event type
-    my $SelectedEventType = $ParamObject->GetParam( Param => 'EventType' );
-
-    # stay in edit mode.
-    my $RedirectURL = "Action=AdminGenericInterfaceInvokerDefault;Subaction=Change;WebserviceID=$WebserviceID;"
-        . "Invoker=$GetParam{Invoker};EventType=$SelectedEventType";
-
-    return $LayoutObject->Redirect(
-        OP => $RedirectURL,
-    );
+    return \%GetParam;
 }
 
-sub _DeleteEvent {
+sub _InvokerTypeCheck {
     my ( $Self, %Param ) = @_;
 
-    my %GetParam;
+    return if !$Param{InvokerType};
 
-    my $WebserviceID   = $Param{WebserviceID};
-    my $WebserviceData = $Param{WebserviceData};
+    my $Invokers = $Kernel::OM->Get('Kernel::Config')->Get('GenericInterface::Invoker::Module');
+    return if !IsHashRefWithData($Invokers);
 
-    # get needed objects
+    return if !IsHashRefWithData( $Invokers->{ $Param{InvokerType} } );
+    return 1;
+}
+
+sub _MappingTypeCheck {
+    my ( $Self, %Param ) = @_;
+
+    return if !$Param{MappingType};
+
+    my $Mappings = $Kernel::OM->Get('Kernel::Config')->Get('GenericInterface::Mapping::Module');
+    return if !IsHashRefWithData($Mappings);
+
+    return if !IsHashRefWithData( $Mappings->{ $Param{MappingType} } );
+    return 1;
+}
+
+sub _JSONResponse {
+    my ( $Self, %Param ) = @_;
+
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
 
-    for my $Needed (qw(Invoker EventName)) {
-
-        $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
-
-        if ( !$GetParam{$Needed} ) {
-            return $LayoutObject->ErrorScreen(
-                Message => $LayoutObject->{LanguageObject}->Translate( 'Need %s', $Needed ),
-            );
-        }
-    }
-
-    # Get config data of existing invoker.
-    if (
-        ref $WebserviceData->{Config} ne 'HASH'
-        || ref $WebserviceData->{Config}->{Requester} ne 'HASH'
-        || ref $WebserviceData->{Config}->{Requester}->{Invoker} ne 'HASH'
-        || ref $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam{Invoker} } ne
-        'HASH'
-        )
-    {
-        return $LayoutObject->ErrorScreen(
-            Message => $LayoutObject->{LanguageObject}
-                ->Translate( 'Could not determine config for invoker %s', $GetParam{Invoker} ),
-        );
-    }
-
-    # get current invoker config
-    my $InvokerConfig = $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam{Invoker} };
-
-    my @Events;
-
-    # store current events associated with the invoker
-    if ( IsArrayRefWithData( $InvokerConfig->{Events} ) ) {
-        @Events = @{ $InvokerConfig->{Events} };
-    }
-
-    my @UpdatedEvents;
-
-    # delete event from the list
-    # this can also be done using "delete" Perl function and an index
-    # instead of creating a new array
-    EVENT:
-    for my $Event (@Events) {
-        next EVENT if $Event->{Event} eq $GetParam{EventName};
-        push @UpdatedEvents, $Event;
-    }
-
-    # update configuration
-    $InvokerConfig->{Events} = \@UpdatedEvents;
-    $WebserviceData->{Config}->{Requester}->{Invoker}->{ $GetParam{Invoker} } = $InvokerConfig;
-
-    my $Success;
-
-    # Write new config to database.
-    $Success = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceUpdate(
-        %{$WebserviceData},
-        UserID => $Self->{UserID},
-    );
-
-    # build JSON output
+    # Build JSON output.
     my $JSON = $LayoutObject->JSONEncode(
         Data => {
-            Success => $Success,
+            Success => $Param{Success} // 0,
         },
     );
 
-    # send JSON response
+    # Send JSON response.
     return $LayoutObject->Attachment(
         ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
         Content     => $JSON,
         Type        => 'inline',
         NoCache     => 1,
     );
-}
-
-# =item _InvokerTypeCheck()
-#
-# checks if a given InvokerType is registered in the system.
-#
-# =cut
-
-sub _InvokerTypeCheck {
-    my ( $Self, %Param ) = @_;
-
-    return 0 if !$Param{InvokerType};
-
-    my $Invokers = $Kernel::OM->Get('Kernel::Config')->Get('GenericInterface::Invoker::Module');
-    return 0 if ref $Invokers ne 'HASH';
-
-    return ref $Invokers->{ $Param{InvokerType} } eq 'HASH' ? 1 : 0;
-}
-
-# =item _MappingTypeCheck()
-#
-# checks if a given MappingType is registered in the system.
-#
-# =cut
-
-sub _MappingTypeCheck {
-    my ( $Self, %Param ) = @_;
-
-    return 0 if !$Param{MappingType};
-
-    my $Mappings = $Kernel::OM->Get('Kernel::Config')->Get('GenericInterface::Mapping::Module');
-    return 0 if ref $Mappings ne 'HASH';
-
-    return ref $Mappings->{ $Param{MappingType} } eq 'HASH' ? 1 : 0;
 }
 
 1;

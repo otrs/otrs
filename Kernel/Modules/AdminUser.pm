@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AdminUser;
@@ -40,6 +40,9 @@ sub Run {
     my $Search       = $ParamObject->GetParam( Param => 'Search' )       || '';
     my $Notification = $ParamObject->GetParam( Param => 'Notification' ) || '';
 
+    # Get list of valid IDs.
+    my @ValidIDList = $Kernel::OM->Get('Kernel::System::Valid')->ValidIDsGet();
+
     # ------------------------------------------------------------ #
     #  switch to user
     # ------------------------------------------------------------ #
@@ -52,13 +55,14 @@ sub Run {
         # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
 
-        my $UserID = $ParamObject->GetParam( Param => 'UserID' ) || '';
+        my $UserID   = $ParamObject->GetParam( Param => 'UserID' ) || '';
         my %UserData = $UserObject->GetUserData(
             UserID        => $UserID,
             NoOutOfOffice => 1,
         );
 
-        my $NewSessionID = $Kernel::OM->Get('Kernel::System::AuthSession')->CreateSessionID(
+        my $SessionObject = $Kernel::OM->Get('Kernel::System::AuthSession');
+        my $NewSessionID  = $SessionObject->CreateSessionID(
             %UserData,
             UserLastRequest => $Kernel::OM->Create('Kernel::System::DateTime')->ToEpoch(),
             UserType        => 'User',
@@ -93,7 +97,7 @@ sub Run {
                 },
                 SessionID   => $NewSessionID,
                 SessionName => $ConfigObject->Get('SessionName'),
-                }
+            }
         );
 
         $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::Output::HTML::Layout'] );
@@ -103,6 +107,11 @@ sub Run {
         $LogObject->Log(
             Priority => 'notice',
             Message  => "Switched to User ($Self->{UserLogin} -=> $UserData{UserLogin})",
+        );
+
+        # Delete old session, see bug#14322 (https://bugs.otrs.org/show_bug.cgi?id=14322);
+        $SessionObject->RemoveSessionID(
+            SessionID => $LayoutObject->{SessionID}
         );
 
         # redirect with new session id
@@ -154,7 +163,6 @@ sub Run {
         {
             $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter ) || '';
         }
-        $GetParam{Preferences} = $ParamObject->GetParam( Param => 'Preferences' ) || '';
 
         for my $Needed (qw(UserID UserFirstname UserLastname UserLogin ValidID)) {
             if ( !$GetParam{$Needed} ) {
@@ -166,6 +174,7 @@ sub Run {
         if (
             $GetParam{UserEmail}
             && !$CheckItemObject->CheckEmail( Address => $GetParam{UserEmail} )
+            && grep { $_ eq $GetParam{ValidID} } @ValidIDList
             )
         {
             $Errors{UserEmailInvalid} = 'ServerError';
@@ -178,7 +187,7 @@ sub Run {
             UserID    => $GetParam{UserID}
         );
         if ($UserLoginExists) {
-            $Errors{UserLoginExists} = 1;
+            $Errors{UserLoginExists}    = 1;
             $Errors{'UserLoginInvalid'} = 'ServerError';
         }
 
@@ -193,83 +202,37 @@ sub Run {
             );
 
             if ($Update) {
-                my %Preferences = %{ $ConfigObject->Get('PreferencesGroups') };
 
-                GROUP:
-                for my $Group ( sort keys %Preferences ) {
-
-                    # skip groups should be changed in
-                    # AgentPreferences screen
-                    next GROUP if $Group eq 'Password';
-
-                    # get user data
-                    my %UserData = $UserObject->GetUserData(
-                        UserID        => $GetParam{UserID},
-                        NoOutOfOffice => 1,
+                # if the user would like to continue editing the agent, just redirect to the edit screen
+                # otherwise return to overview
+                if (
+                    defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
+                    && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
+                    )
+                {
+                    my $ID = $ParamObject->GetParam( Param => 'ID' ) || '';
+                    return $LayoutObject->Redirect(
+                        OP => "Action=$Self->{Action};Subaction=Change;UserID=$GetParam{UserID};Notification=Update"
                     );
-                    my $Module = $Preferences{$Group}->{Module};
-                    if ( !$MainObject->Require($Module) ) {
-                        return $LayoutObject->FatalError();
-                    }
-
-                    my $Object = $Module->new(
-                        %{$Self},
-                        UserObject => $UserObject,
-                        ConfigItem => $Preferences{$Group},
-                        Debug      => $Self->{Debug},
-                    );
-                    my @Params = $Object->Param( %{ $Preferences{$Group} }, UserData => \%UserData );
-                    if (@Params) {
-                        my %GetParam;
-                        for my $ParamItem (@Params) {
-                            my @Array = $ParamObject->GetArray( Param => $ParamItem->{Name} );
-                            if (@Array) {
-                                $GetParam{ $ParamItem->{Name} } = \@Array;
-                            }
-                        }
-                        if (
-                            !$Object->Run(
-                                GetParam => \%GetParam,
-                                UserData => \%UserData
-                            )
-                            )
-                        {
-                            $Note .= $LayoutObject->Notify(
-                                Info     => $Object->Error(),
-                                Priority => 'Error'
-                            );
-                        }
-                    }
                 }
-
-                if ( !$Note ) {
-
-                    # if the user would like to continue editing the agent, just redirect to the edit screen
-                    # otherwise return to overview
-                    if (
-                        defined $ParamObject->GetParam( Param => 'ContinueAfterSave' )
-                        && ( $ParamObject->GetParam( Param => 'ContinueAfterSave' ) eq '1' )
-                        )
-                    {
-                        my $ID = $ParamObject->GetParam( Param => 'ID' ) || '';
-                        return $LayoutObject->Redirect(
-                            OP => "Action=$Self->{Action};Subaction=Change;UserID=$GetParam{UserID};Notification=Update"
-                        );
-                    }
-                    else {
-                        return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Notification=Update" );
-                    }
+                else {
+                    return $LayoutObject->Redirect( OP => "Action=$Self->{Action};Notification=Update" );
                 }
             }
             else {
-                $Note .= $LogObject->GetLogEntry(
+                $Note = $LogObject->GetLogEntry(
                     Type => 'Error',
                     What => 'Message',
                 );
             }
         }
         my $Output = $LayoutObject->Header();
-        $Output .= $Note;
+        $Output .= $Note
+            ? $LayoutObject->Notify(
+            Priority => 'Error',
+            Info     => $Note,
+            )
+            : '';
         $Output .= $LayoutObject->NavigationBar();
         $Self->_Edit(
             Action    => 'Change',
@@ -326,7 +289,6 @@ sub Run {
         {
             $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter ) || '';
         }
-        $GetParam{Preferences} = $ParamObject->GetParam( Param => 'Preferences' ) || '';
 
         for my $Needed (qw(UserFirstname UserLastname UserLogin UserEmail ValidID)) {
             if ( !$GetParam{$Needed} ) {
@@ -338,6 +300,7 @@ sub Run {
         if (
             $GetParam{UserEmail}
             && !$CheckItemObject->CheckEmail( Address => $GetParam{UserEmail} )
+            && grep { $_ eq $GetParam{ValidID} } @ValidIDList
             )
         {
             $Errors{UserEmailInvalid} = 'ServerError';
@@ -347,7 +310,7 @@ sub Run {
         # check if a user with this login (username) already exits
         my $UserLoginExists = $UserObject->UserLoginExistsCheck( UserLogin => $GetParam{UserLogin} );
         if ($UserLoginExists) {
-            $Errors{UserLoginExists} = 1;
+            $Errors{UserLoginExists}    = 1;
             $Errors{'UserLoginInvalid'} = 'ServerError';
         }
 
@@ -362,54 +325,6 @@ sub Run {
             );
 
             if ($UserID) {
-
-                # update preferences
-                my %Preferences = %{ $ConfigObject->Get('PreferencesGroups') };
-                GROUP:
-                for my $Group ( sort keys %Preferences ) {
-                    next GROUP if $Group eq 'Password';
-
-                    # get user data
-                    my %UserData = $UserObject->GetUserData(
-                        UserID        => $UserID,
-                        NoOutOfOffice => 1,
-                    );
-                    my $Module = $Preferences{$Group}->{Module};
-                    if ( $MainObject->Require($Module) ) {
-
-                        # TODO: Change this to Object Manager
-                        my $Object = $Module->new(
-                            %{$Self},
-                            UserObject => $UserObject,
-                            ConfigItem => $Preferences{$Group},
-                            Debug      => $Self->{Debug},
-                        );
-                        my @Params = $Object->Param( UserData => \%UserData );
-
-                        if (@Params) {
-                            my %GetParam = ();
-                            PARAMITEM:
-                            for my $ParamItem (@Params) {
-                                next PARAMITEM if !$ParamItem->{Name};
-                                my @Array = $ParamObject->GetArray( Param => $ParamItem->{Name} );
-
-                                $GetParam{ $ParamItem->{Name} } = \@Array;
-                            }
-                            if (
-                                !$Object->Run(
-                                    GetParam => \%GetParam,
-                                    UserData => \%UserData,
-                                )
-                                )
-                            {
-                                $Note .= $LayoutObject->Notify( Info => $Object->Error() );
-                            }
-                        }
-                    }
-                    else {
-                        return $LayoutObject->FatalError();
-                    }
-                }
 
                 # redirect
                 if (
@@ -433,7 +348,7 @@ sub Run {
                 }
             }
             else {
-                $Note .= $LogObject->GetLogEntry(
+                $Note = $LogObject->GetLogEntry(
                     Type => 'Error',
                     What => 'Message',
                 );

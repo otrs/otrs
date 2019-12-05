@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::System::Calendar::Event::Notification;
@@ -233,7 +233,7 @@ sub Run {
 
                 my $Success = $Self->_SendRecipientNotification(
                     AppointmentID => $Appointment{AppointmentID} || '',
-                    CalendarID => $Calendar{CalendarID} || $Appointment{CalendarID} || '',
+                    CalendarID    => $Calendar{CalendarID}       || $Appointment{CalendarID} || '',
                     Notification          => $Bundle->{Notification},
                     CustomerMessageParams => $Param{Data}->{CustomerMessageParams} || {},
                     Recipient             => $Bundle->{Recipient},
@@ -269,7 +269,7 @@ sub Run {
 
                 my $Success = $Self->_SendRecipientNotification(
                     AppointmentID => $Appointment{AppointmentID} || '',
-                    CalendarID => $Calendar{CalendarID} || $Appointment{CalendarID} || '',
+                    CalendarID    => $Calendar{CalendarID}       || $Appointment{CalendarID} || '',
                     Notification          => \%ReplacedNotification,
                     CustomerMessageParams => $Param{Data}->{CustomerMessageParams} || {},
                     Recipient             => $Recipient,
@@ -277,26 +277,6 @@ sub Run {
                     Transport             => $Transport,
                     TransportObject       => $TransportObject,
                     UserID                => $Param{UserID},
-                );
-            }
-        }
-
-        if ( %AlreadySent && $Param{Data}->{ArticleID} && $Param{Data}->{ArticleType} ) {
-
-            # update to field
-            my $UpdateToSuccess = $Self->_ArticleToUpdate(
-                ArticleID   => $Param{Data}->{ArticleID},
-                ArticleType => $Param{Data}->{ArticleType},
-                UserIDs     => \%AlreadySent,
-                UserID      => $Param{UserID},
-            );
-
-            # check for errors
-            if ( !$UpdateToSuccess ) {
-
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'error',
-                    Message  => "Could not update To field for Article: $Param{Data}->{ArticleID}.",
                 );
             }
         }
@@ -383,6 +363,12 @@ sub _NotificationFilter {
                     }
                 }
             }
+            elsif ( $Key eq 'Title' || $Key eq 'Location' ) {
+                if ( defined $Param{Appointment}->{$Key} && $Param{Appointment}->{$Key} =~ m/$Value/i ) {
+                    $Match = 1;
+                    last VALUE;
+                }
+            }
             else {
 
                 if ( defined $Param{Appointment}->{$Key} && $Value eq $Param{Appointment}->{$Key} ) {
@@ -453,7 +439,7 @@ sub _RecipientsGet {
                     # get calendar information
                     my %Calendar = $CalendarObject->CalendarGet(
                         CalendarID => $Appointment{CalendarID} || $Param{Calendar}->{CalendarID},
-                        UserID => 1,
+                        UserID     => 1,
                     );
 
                     # get a list of read access users for the related calendar
@@ -475,7 +461,7 @@ sub _RecipientsGet {
                     # get calendar information
                     my %Calendar = $CalendarObject->CalendarGet(
                         CalendarID => $Appointment{CalendarID} || $Param{Calendar}->{CalendarID},
-                        UserID => 1,
+                        UserID     => 1,
                     );
 
                     # get a list of read access users for the related calendar

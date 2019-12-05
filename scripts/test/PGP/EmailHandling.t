@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -24,6 +24,7 @@ my $MainObject           = $Kernel::OM->Get('Kernel::System::Main');
 my $TicketObject         = $Kernel::OM->Get('Kernel::System::Ticket');
 my $ArticleObject        = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 my $ArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article::Backend::Email');
+my $UserObject           = $Kernel::OM->Get('Kernel::System::User');
 
 # get helper object
 $Kernel::OM->ObjectParamAdd(
@@ -33,6 +34,10 @@ $Kernel::OM->ObjectParamAdd(
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
+my ( $TestUserLogin, $TestUserID ) = $Helper->TestUserCreate(
+    Groups => [ 'admin', 'users' ],
+);
 
 # Disable email addresses checking.
 $Helper->ConfigSettingChange(
@@ -306,7 +311,7 @@ for my $Test (@Tests) {
         # use ArticleCheck::PGP to decrypt the article
         my $CheckObject = Kernel::Output::HTML::ArticleCheck::PGP->new(
             ArticleID => $Articles[0]->{ArticleID},
-            UserID    => 1,
+            UserID    => $TestUserID,
         );
 
         my %Article = $ArticleBackendObject->ArticleGet(
@@ -685,7 +690,7 @@ my $TicketID = $TicketObject->TicketCreate(
     CustomerNo   => '123465',
     CustomerUser => 'customer@example.com',
     OwnerID      => 1,
-    UserID       => 1,
+    UserID       => $TestUserID,
 );
 
 $Self->True(
@@ -723,7 +728,7 @@ for my $Test (@TestVariations) {
     #   which doesn't contain signatures etc.
     my $Email = $ArticleBackendObject->ArticlePlain(
         ArticleID => $ArticleID,
-        UserID    => 1,
+        UserID    => $TestUserID,
     );
 
     # Add ticket number to subject (to ensure mail will be attached to original ticket)
@@ -771,10 +776,20 @@ for my $Test (@TestVariations) {
 
     my $CheckObject = Kernel::Output::HTML::ArticleCheck::PGP->new(
         ArticleID => $Article{ArticleID},
-        UserID    => 1,
+        UserID    => $TestUserID,
     );
 
     my @CheckResult = $CheckObject->Check( Article => \%Article );
+
+    # Run check a second time to simulate repeated views.
+    my @FirstCheckResult = @CheckResult;
+    @CheckResult = $CheckObject->Check( Article => \%Article );
+
+    $Self->IsDeeply(
+        \@FirstCheckResult,
+        \@CheckResult,
+        "$Test->{Name} - CheckObject() stable",
+    );
 
     if ( $Test->{VerifySignature} ) {
         my $SignatureVerified =
@@ -857,6 +872,22 @@ for my $Test (@TestVariations) {
                 "$Test->{Name} - Attachment '$Attachment->{Filename}' was found"
             );
         }
+
+        # Remove all attachments, then run CheckObject again to verify they are not written again.
+        $ArticleBackendObject->ArticleDeleteAttachment(
+            ArticleID => $Article{ArticleID},
+            UserID    => 1,
+        );
+
+        $CheckObject->Check( Article => \%Article );
+
+        %Index = $ArticleBackendObject->ArticleAttachmentIndex(
+            ArticleID => $Article{ArticleID},
+        );
+        $Self->False(
+            scalar keys %Index,
+            "$Test->{Name} - Attachments not rewritten by ArticleCheck module"
+        );
     }
 }
 

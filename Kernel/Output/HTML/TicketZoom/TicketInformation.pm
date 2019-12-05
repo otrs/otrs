@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::TicketZoom::TicketInformation;
@@ -24,9 +24,19 @@ sub Run {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $UserObject   = $Kernel::OM->Get('Kernel::System::User');
 
     my %Ticket    = %{ $Param{Ticket} };
     my %AclAction = %{ $Param{AclAction} };
+
+    # Show created by name, if different then root user (ID=1).
+    if ( $Ticket{CreateBy} > 1 ) {
+        $Ticket{CreatedByUser} = $UserObject->UserName( UserID => $Ticket{CreateBy} );
+        $LayoutObject->Block(
+            Name => 'CreatedBy',
+            Data => {%Ticket},
+        );
+    }
 
     if ( $Ticket{ArchiveFlag} eq 'y' ) {
         $LayoutObject->Block(
@@ -178,9 +188,6 @@ sub Run {
         );
     }
 
-    # get user object
-    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
-
     # Check if agent has permission to start chats with agents.
     my $EnableChat               = 1;
     my $ChatStartingAgentsGroup  = $ConfigObject->Get('ChatEngine::PermissionGroup::ChatStartingAgents') || 'users';
@@ -204,7 +211,7 @@ sub Run {
 
     my %OnlineData;
     if ($EnableChat) {
-        my $VideoChatEnabled = 0;
+        my $VideoChatEnabled     = 0;
         my $VideoChatAgentsGroup = $ConfigObject->Get('ChatEngine::PermissionGroup::VideoChatAgents') || 'users';
         my $VideoChatAgentsGroupPermission = $Kernel::OM->Get('Kernel::System::Group')->PermissionCheck(
             UserID    => $Self->{UserID},
@@ -306,7 +313,7 @@ sub Run {
 
     # set display options
     $Param{WidgetTitle} = Translatable('Ticket Information');
-    $Param{Hook} = $ConfigObject->Get('Ticket::Hook') || 'Ticket#';
+    $Param{Hook}        = $ConfigObject->Get('Ticket::Hook') || 'Ticket#';
 
     # check if ticket is normal or process ticket
     my $IsProcessTicket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketCheckForProcessType(
@@ -374,6 +381,18 @@ sub Run {
         next DYNAMICFIELD if !defined $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} };
         next DYNAMICFIELD if $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} } eq '';
 
+        # Check if this field is supposed to be hidden from the ticket information box.
+        #   For example, it's displayed by a different mechanism (i.e. async widget).
+        if (
+            $DynamicFieldBeckendObject->HasBehavior(
+                DynamicFieldConfig => $DynamicFieldConfig,
+                Behavior           => 'IsHiddenInTicketInformation',
+            )
+            )
+        {
+            next DYNAMICFIELD;
+        }
+
         # use translation here to be able to reduce the character length in the template
         my $Label = $LayoutObject->{LanguageObject}->Translate( $DynamicFieldConfig->{Label} );
 
@@ -388,13 +407,17 @@ sub Run {
 
         if ( $Self->{DisplaySettings}->{DynamicField}->{ $DynamicFieldConfig->{Name} } ) {
             push @FieldsSidebar, {
+                $DynamicFieldConfig->{Name} => $ValueStrg->{Title},
                 Name                        => $DynamicFieldConfig->{Name},
                 Title                       => $ValueStrg->{Title},
                 Value                       => $ValueStrg->{Value},
                 Label                       => $Label,
                 Link                        => $ValueStrg->{Link},
                 LinkPreview                 => $ValueStrg->{LinkPreview},
-                $DynamicFieldConfig->{Name} => $ValueStrg->{Title},
+
+                # Include unique parameter with dynamic field name in case of collision with others.
+                #   Please see bug#13362 for more information.
+                "DynamicField_$DynamicFieldConfig->{Name}" => $ValueStrg->{Title},
             };
         }
 
@@ -429,15 +452,19 @@ sub Run {
             $LayoutObject->Block(
                 Name => 'TicketDynamicFieldLink',
                 Data => {
+                    $Field->{Name} => $Field->{Title},
                     %Ticket,
 
                     # alias for ticket title, Title will be overwritten
-                    TicketTitle    => $Ticket{Title},
-                    Value          => $Field->{Value},
-                    Title          => $Field->{Title},
-                    Link           => $Field->{Link},
-                    LinkPreview    => $Field->{LinkPreview},
-                    $Field->{Name} => $Field->{Title},
+                    TicketTitle => $Ticket{Title},
+                    Value       => $Field->{Value},
+                    Title       => $Field->{Title},
+                    Link        => $Field->{Link},
+                    LinkPreview => $Field->{LinkPreview},
+
+                    # Include unique parameter with dynamic field name in case of collision with others.
+                    #   Please see bug#13362 for more information.
+                    "DynamicField_$Field->{Name}" => $Field->{Title},
                 },
             );
         }

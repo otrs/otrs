@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 ## no critic (Modules::RequireExplicitPackage)
@@ -294,7 +294,7 @@ $Self->True(
     "TicketCreate() successful for Ticket ID $TicketID",
 );
 
-my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+my $ArticleObject        = $Kernel::OM->Get('Kernel::System::Ticket::Article');
 my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Email' );
 
 # create first article
@@ -1180,8 +1180,12 @@ my @Tests = (
         },
         ExpectedResults => [
             {
-                ToArray => [ 'foo@bar.com', 'test@otrsexample.com' ],
-                Body => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+                ToArray => ['foo@bar.com'],
+                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+            },
+            {
+                ToArray => ['test@otrsexample.com'],
+                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
         Success => 1,
@@ -1202,7 +1206,11 @@ my @Tests = (
         },
         ExpectedResults => [
             {
-                ToArray => [ 'test@otrsexample.com', 'foo@bar.com' ],
+                ToArray => ['foo@bar.com'],
+                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+            },
+            {
+                ToArray => ['test@otrsexample.com'],
                 Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
@@ -1226,7 +1234,11 @@ my @Tests = (
         },
         ExpectedResults => [
             {
-                ToArray => [ 'bar@foo.com', 'foo@bar.com' ],
+                ToArray => ['bar@foo.com'],
+                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+            },
+            {
+                ToArray => ['foo@bar.com'],
                 Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
@@ -1346,7 +1358,7 @@ my @Tests = (
             },
             {
                 ToArray => [ 'test3@otrsexample.com', 'test4@otrsexample.com' ],
-                Body => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
         Success => 1,
@@ -1632,7 +1644,7 @@ for my $Test (@Tests) {
 
         $Self->Is(
             scalar @ArticleBox,
-            1,
+            2,
             "$Test->{Name} - Article Type email-notification-int created for Customer recipient",
         );
     }

@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -105,11 +105,17 @@ $Selenium->RunTest(
                 ->VerifiedClick();
 
             # Set database type.
-            $Selenium->execute_script("\$('#DBType').val('$DBType').trigger('redraw.InputField').trigger('change');");
+            $Selenium->InputFieldValueSet(
+                Element => '#DBType',
+                Value   => $DBType,
+            );
 
             # Choose to use existing database for OTRS.
             if ( $DBType ne 'oracle' ) {
-                $Selenium->find_element( '#DBInstallTypeUseDB', 'css' )->VerifiedClick();
+                $Selenium->find_element( '#DBInstallTypeUseDB', 'css' )->click();
+                $Selenium->WaitFor(
+                    JavaScript => 'return typeof($) === "function" && $("#DBInstallTypeUseDB:checked").length'
+                );
             }
 
             # Go to next step of installation (Configure selected DB).
@@ -134,8 +140,15 @@ $Selenium->RunTest(
                 $Selenium->find_element( '#DBName', 'css' )->send_keys($DBName);
             }
 
-            $Selenium->find_element( '#ButtonCheckDB', 'css' )->VerifiedClick();
-            $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".Result:visible").length === 1;' );
+            $Selenium->WaitForjQueryEventBound(
+                CSSSelector => '#ButtonCheckDB',
+            );
+
+            $Selenium->find_element( '#ButtonCheckDB', 'css' )->click();
+            $Selenium->WaitFor(
+                Time       => 300,
+                JavaScript => 'return typeof($) === "function" && $(".Result:visible").length === 1;'
+            );
 
             $Self->Is(
                 $Selenium->execute_script("return \$('.Result p').text().trim();"),
@@ -143,8 +156,24 @@ $Selenium->RunTest(
                 'Database check was successful'
             );
 
+            $Selenium->WaitFor(
+                JavaScript => 'return typeof($) === "function" && !$("#FormDBSubmit").hasClass("Disabled");'
+            );
+
             # Go to next step of installation (Create Database).
-            $Selenium->find_element( '#FormDBSubmit', 'css' )->VerifiedClick();
+            $Selenium->find_element( '#FormDBSubmit', 'css' )->click();
+            $Selenium->WaitFor(
+                Time => 300,
+                JavaScript =>
+                    'return typeof($) === "function" && $(".Header h2").text().trim() === "Create Database (2/4)";'
+            );
+
+            # Verify we are on the second screen.
+            $Self->Is(
+                $Selenium->execute_script("return \$('.Header h2').text().trim()"),
+                'Create Database (2/4)',
+                'Loaded 2/4 screen'
+            );
 
             $Self->Is(
                 $Selenium->execute_script("return \$('.Result p').text().trim();"),
@@ -152,14 +181,60 @@ $Selenium->RunTest(
                 'Database setup was successful'
             );
 
+            $Selenium->WaitForjQueryEventBound(
+                CSSSelector => 'div.Center input',
+                Event       => 'change',
+            );
+
             # Go to next step of installation (System Settings).
             $Selenium->find_element("//button[\@type='submit']")->VerifiedClick();
+            $Selenium->WaitFor(
+                Time => 300,
+                JavaScript =>
+                    'return typeof($) === "function" && $(".Header h2").text().trim() === "System Settings (3/4)";'
+            );
+
+            # Verify we are on the the third screen.
+            $Self->Is(
+                $Selenium->execute_script("return \$('.Header h2').text().trim()"),
+                'System Settings (3/4)',
+                'Loaded 3/4 screen - System Settings'
+            );
 
             # Go to next step of installation (Mail Configuration).
+            $Selenium->WaitFor(
+                JavaScript => 'return typeof($) === "function" && $("#CheckMXRecord").length === 1;'
+            );
+
+            $Selenium->WaitForjQueryEventBound(
+                CSSSelector => '.TableLike',
+            );
+
             $Selenium->find_element("//button[\@type='submit']")->VerifiedClick();
+            $Selenium->WaitFor(
+                Time => 300,
+                JavaScript =>
+                    'return typeof($) === "function" && $(".Header h2").text().trim() === "Mail Configuration (3/4)";'
+            );
+
+            # Verify we are on the the third screen.
+            $Self->Is(
+                $Selenium->execute_script("return \$('.Header h2').text().trim()"),
+                'Mail Configuration (3/4)',
+                'Loaded 3/4 screen - Mail Configuration'
+            );
+
+            $Selenium->WaitForjQueryEventBound(
+                CSSSelector => '#ButtonSkipMail',
+            );
 
             # Go to last step of installation.
-            $Selenium->find_element( '#ButtonSkipMail', 'css' )->VerifiedClick();
+            $Selenium->find_element( '#ButtonSkipMail', 'css' )->click();
+            $Selenium->WaitFor(
+                Time => 300,
+                JavaScript =>
+                    'return typeof($) === "function" && $(".Header h2").text().trim() === "Finished (4/4)";'
+            );
 
             # Verify we are on the last screen.
             $Self->Is(

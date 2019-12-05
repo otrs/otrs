@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 use strict;
@@ -394,7 +394,7 @@ if ( !open $Filehandle, '<', $Path ) {    ## no critic
     );
 }
 
-my @Lines = <$Filehandle>;
+my @Lines         = <$Filehandle>;
 my $ImportContent = join '', @Lines;
 
 close $Filehandle;
@@ -443,11 +443,37 @@ $Self->Is(
     "Export-Importcheck - check if import file content equal export file content.\n Be careful, if it gives errors if you run OTRS with default charset utf-8,\n because the examplefile is iso-8859-1, but at my test there a no problems to compare a utf-8 string with an iso string?!\n",
 );
 
+# Import a static statistic with not exsting object module
+
+# load example file
+my $PathNotExistingStatistic = $ConfigObject->Get('Home') . '/scripts/test/sample/Stats/Stats.Static.NotExisting.xml';
+my $FilehandleNotExistingStatistic;
+if ( !open $FilehandleNotExistingStatistic, '<', $PathNotExistingStatistic ) {    ## no critic
+    $Self->True(
+        0,
+        'Get the file which should be imported',
+    );
+}
+
+@Lines = <$FilehandleNotExistingStatistic>;
+my $ImportContentNotExistingStatistic = join '', @Lines;
+
+close $Filehandle;
+
+my $NotExistingStatID = $StatsObject->Import(
+    Content => $ImportContentNotExistingStatistic,
+    UserID  => 1,
+);
+$Self->False(
+    $NotExistingStatID,
+    'Import() statistic with not existing object module must fail',
+);
+
 # try to use otrs.Console.pl Maint::Stats::Generate
 
 # check the imported stat
 my $Stat4 = $StatsObject->StatsGet( StatID => $StatID );
-my $Home = $ConfigObject->Get('Home');
+my $Home  = $ConfigObject->Get('Home');
 my ( $Result, $ExitCode );
 {
     local *STDOUT;
@@ -485,13 +511,114 @@ $Self->True(
     'StatsDelete() delete import stat',
 );
 
+# Some Stats Cleanup tests.
+my $StatCleanupID1 = $StatsObject->StatsAdd(
+    UserID => 1,
+);
+my $StatCleanupID2 = $StatsObject->StatsAdd(
+    UserID => 1,
+);
+
+$Update = $StatsObject->StatsUpdate(
+    StatID => $StatCleanupID1,
+    Hash   => {
+        Title        => 'TestTitle from UnitTest.pl',
+        Description  => 'some Description',
+        Object       => 'Ticket',
+        Format       => 'CSV',
+        ObjectModule => 'Kernel::System::Stats::Dynamic::Ticket',
+        Permission   => '1',
+        StatType     => 'dynamic',
+        SumCol       => '1',
+        SumRow       => '1',
+        Valid        => '1',
+    },
+    UserID => 1,
+);
+$Self->True(
+    $Update,
+    'StatsUpdate() Update StatCleanupID1',
+);
+
+$Update = $StatsObject->StatsUpdate(
+    StatID => $StatCleanupID2,
+    Hash   => {
+        Title        => 'TestTitle from UnitTest.pl with not existing object module',
+        Description  => 'some Description',
+        Object       => 'Ticket',
+        Format       => 'CSV',
+        ObjectModule => 'Kernel::System::Stats::Dynamic::TicketNotExists',
+        Permission   => '1',
+        StatType     => 'dynamic',
+        SumCol       => '1',
+        SumRow       => '1',
+        Valid        => '1',
+    },
+    UserID => 1,
+);
+$Self->True(
+    $Update,
+    'StatsUpdate() Update StatCleanupID2',
+);
+
 # try the clean up function
 $Result = $StatsObject->StatsCleanUp(
-    UserID => 1,
+    UserID      => 1,
+    ObjectNames => [
+        'Ticket',
+        'TicketNotExists',
+    ],
+);
+$Self->True(
+    $Result,
+    'StatsCleanUp() - clean up TicketNotExists stats',
+);
+
+my $StatCleanup = $StatsObject->StatsGet( StatID => $StatCleanupID1 );
+
+$Self->True(
+    $StatCleanup,
+    'StatsCleanUp() - statistic for Ticket object exists',
+);
+
+$StatCleanup = $StatsObject->StatsGet( StatID => $StatCleanupID2 );
+
+$Self->False(
+    $StatCleanup,
+    'StatsCleanUp() - statistic for  TicketNotExists object no longer exists',
+);
+
+# try the clean up function
+$Result = $StatsObject->StatsCleanUp(
+    UserID          => 1,
+    CheckAllObjects => 1,
 );
 $Self->True(
     $Result,
     'StatsCleanUp() - clean up stats',
+);
+
+# Check _ToOTRSTimeZone for invalid date (Daylight Saving Time).
+# See bug#14511 for more information.
+my $String = $StatsObject->_ToOTRSTimeZone(
+    String   => '2019-03-31 02:30:00',
+    TimeZone => 'Europe/Berlin',
+);
+
+$Self->False(
+    $String,
+    '_ToOTRSTimeZone() - invalid date',
+);
+
+# Check _ToOTRSTimeZone for valid date.
+$String = $StatsObject->_ToOTRSTimeZone(
+    String   => '2019-03-31 12:30:00',
+    TimeZone => 'Europe/Berlin',
+);
+
+$Self->True(
+    $String,
+    '_ToOTRSTimeZone() - valid date',
 );
 
 # cleanup is done by RestoreDatabase

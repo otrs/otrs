@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Output::HTML::TicketZoom::Customer::MIMEBase;
@@ -83,10 +83,18 @@ sub ArticleRender {
         || $LayoutObject->{BrowserRichText}
         || 0;
 
+    # Strip plain text attachments by default.
+    my $ExcludePlainText = 1;
+
+    # Do not strip plain text attachments if no plain text article body was found.
+    if ( $Article{Body} && $Article{Body} eq '- no text message => see attachment -' ) {
+        $ExcludePlainText = 0;
+    }
+
     # Get attachment index (excluding body attachments).
     my %AtmIndex = $ArticleBackendObject->ArticleAttachmentIndex(
         ArticleID        => $Param{ArticleID},
-        ExcludePlainText => 1,
+        ExcludePlainText => $ExcludePlainText,
         ExcludeHTMLBody  => $RichTextEnabled,
         ExcludeInline    => $RichTextEnabled,
     );
@@ -149,6 +157,29 @@ sub ArticleRender {
         ChannelID => $Article{CommunicationChannelID},
     );
 
+    # Get screen config for CustomerTicketZoom
+    my $ScreenConfig = $ConfigObject->Get('Ticket::Frontend::CustomerTicketZoom');
+
+    # Define if internal notes that are marked as "visible for customer" should show the real name of the agent
+    #   or just a default agent name.
+    if (
+        $ScreenConfig->{DisplayNoteFrom}
+        && $ScreenConfig->{DisplayNoteFrom} eq 'DefaultAgentName'
+        && $CommunicationChannel{ChannelName} eq 'Internal'
+        && $Article{SenderType} eq 'agent'
+        && $Article{IsVisibleForCustomer}
+        )
+    {
+
+        my $DefaultAgentName
+            = $LayoutObject->{LanguageObject}->Translate( $ScreenConfig->{DefaultAgentName} || 'Support Agent' );
+        $ArticleFields{From}->{Realname}   = $DefaultAgentName;
+        $ArticleFields{From}->{Value}      = $DefaultAgentName;
+        $ArticleFields{Sender}->{Realname} = $DefaultAgentName;
+        $ArticleFields{Sender}->{Value}    = $DefaultAgentName;
+        $Article{FromRealname}             = $DefaultAgentName;
+    }
+
     my $Content = $LayoutObject->Output(
         TemplateFile => 'CustomerTicketZoom/ArticleRender/MIMEBase',
         Data         => {
@@ -164,6 +195,7 @@ sub ArticleRender {
             ChannelIcon          => $CommunicationChannel{DisplayIcon},
             BrowserLinkMessage   => $Param{ShowBrowserLinkMessage} && $ShowHTML,
             BodyHTMLLoad         => $Param{ArticleExpanded},
+            Age                  => $Param{ArticleAge},
         },
     );
 

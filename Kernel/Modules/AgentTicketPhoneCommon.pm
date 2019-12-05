@@ -1,9 +1,9 @@
 # --
-# Copyright (C) 2001-2017 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
-# the enclosed file COPYING for license information (AGPL). If you
-# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# the enclosed file COPYING for license information (GPL). If you
+# did not receive this file, see https://www.gnu.org/licenses/gpl-3.0.txt.
 # --
 
 package Kernel::Modules::AgentTicketPhoneCommon;
@@ -121,7 +121,7 @@ sub Run {
     {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('Loading draft failed!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -134,25 +134,33 @@ sub Run {
     # get lock state && write (lock) permissions
     if ( $Config->{RequiredLock} ) {
         if ( !$TicketObject->TicketLockGet( TicketID => $Self->{TicketID} ) ) {
-            $TicketObject->TicketLockSet(
+            my $Lock = $TicketObject->TicketLockSet(
                 TicketID => $Self->{TicketID},
                 Lock     => 'lock',
-                UserID   => $Self->{UserID},
+                UserID   => $Self->{UserID}
             );
 
-            my $Success = $TicketObject->TicketOwnerSet(
-                TicketID  => $Self->{TicketID},
-                UserID    => $Self->{UserID},
-                NewUserID => $Self->{UserID},
-            );
+            if ($Lock) {
 
-            # show lock state
-            if ($Success) {
+                # Set new owner if ticket owner is different then logged user.
+                if ( $Ticket{OwnerID} != $Self->{UserID} ) {
+
+                    # Remember previous owner, which will be used to restore ticket owner on undo action.
+                    $Param{PreviousOwner} = $Ticket{OwnerID};
+
+                    $TicketObject->TicketOwnerSet(
+                        TicketID  => $Self->{TicketID},
+                        UserID    => $Self->{UserID},
+                        NewUserID => $Self->{UserID},
+                    );
+                }
+
+                # Show lock state.
                 $LayoutObject->Block(
                     Name => 'PropertiesLock',
                     Data => {
                         %Param,
-                        TicketID => $Self->{TicketID},
+                        TicketID => $Self->{TicketID}
                     },
                 );
             }
@@ -463,7 +471,7 @@ sub Run {
         if ( $FormDraftAction && !$Config->{FormDraft} ) {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('FormDraft functionality disabled!'),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -841,7 +849,7 @@ sub Run {
 
             my $From;
 
-            my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+            my $ArticleObject        = $Kernel::OM->Get('Kernel::System::Ticket::Article');
             my $ArticleBackendObject = $ArticleObject->BackendForChannel( ChannelName => 'Phone' );
 
             if ( lc $Config->{SenderType} eq 'customer' ) {
@@ -1002,7 +1010,7 @@ sub Run {
             {
                 return $LayoutObject->ErrorScreen(
                     Message => Translatable('Could not delete draft!'),
-                    Comment => Translatable('Please contact the admin.'),
+                    Comment => Translatable('Please contact the administrator.'),
                 );
             }
 
@@ -1219,7 +1227,7 @@ sub _GetUsers {
 
     # show all users who are rw in the queue group
     elsif ( $Param{QueueID} ) {
-        my $GID = $Kernel::OM->Get('Kernel::System::Queue')->GetQueueGroupID( QueueID => $Param{QueueID} );
+        my $GID        = $Kernel::OM->Get('Kernel::System::Queue')->GetQueueGroupID( QueueID => $Param{QueueID} );
         my %MemberList = $Kernel::OM->Get('Kernel::System::Group')->PermissionGroupGet(
             GroupID => $GID,
             Type    => 'rw',
@@ -1306,13 +1314,13 @@ sub _MaskPhone {
 
     # customer info string
     if ( $ConfigObject->Get('Ticket::Frontend::CustomerInfoCompose') ) {
+        my %TicketData = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet( TicketID => $Self->{TicketID} );
         $Param{CustomerTable} = $LayoutObject->AgentCustomerViewTable(
-            Data => {
-                %{ $Param{CustomerData} },
-                TicketID => $Self->{TicketID},
-            },
-            Max => $ConfigObject->Get('Ticket::Frontend::CustomerInfoComposeMaxSize'),
+            Data   => $Param{CustomerData},
+            Ticket => \%TicketData,
+            Max    => $ConfigObject->Get('Ticket::Frontend::CustomerInfoComposeMaxSize'),
         );
+
         $LayoutObject->Block(
             Name => 'CustomerTable',
             Data => \%Param,
@@ -1328,9 +1336,9 @@ sub _MaskPhone {
     # build text template string
     if ( IsHashRefWithData( \%StandardTemplates ) ) {
         $Param{StandardTemplateStrg} = $LayoutObject->BuildSelection(
-            Data       => $Param{StandardTemplates}  || {},
-            Name       => 'StandardTemplateID',
-            SelectedID => $Param{StandardTemplateID} || '',
+            Data         => $Param{StandardTemplates} || {},
+            Name         => 'StandardTemplateID',
+            SelectedID   => $Param{StandardTemplateID} || '',
             PossibleNone => 1,
             Sort         => 'AlphanumericValue',
             Translation  => 0,
@@ -1508,16 +1516,6 @@ sub _MaskPhone {
     }
 
     if ( IsHashRefWithData($LoadedFormDraft) ) {
-
-        my $DateTimeObject = $Kernel::OM->Create(
-            'Kernel::System::DateTime',
-            ObjectParams => {
-                String => $LoadedFormDraft->{ChangeTime},
-            },
-        );
-        my %RelativeTime = $LayoutObject->FormatRelativeTime( DateTimeObject => $DateTimeObject );
-        $LoadedFormDraft->{ChangeTimeRelative}
-            = $LayoutObject->{LanguageObject}->Translate( $RelativeTime{Message}, $RelativeTime{Value} );
 
         $LoadedFormDraft->{ChangeByName} = $Kernel::OM->Get('Kernel::System::User')->UserName(
             UserID => $LoadedFormDraft->{ChangeBy},
