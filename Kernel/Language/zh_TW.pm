@@ -26,7 +26,7 @@ sub Data {
     $Self->{DateFormatShort}     = '%Y.%M.%D';
     $Self->{DateInputFormat}     = '%Y.%M.%D';
     $Self->{DateInputFormatLong} = '%Y.%M.%D - %T';
-    $Self->{Completeness}        = 0.339452660207377;
+    $Self->{Completeness}        = 0.338649474041398;
 
     # csv separator
     $Self->{Separator}         = '';
@@ -676,6 +676,8 @@ sub Data {
         'Owner' => '所有者',
         'Responsible' => '負責人',
         'Ticket lock' => '工單鎖定',
+        'Dynamic fields' => '動態字段',
+        'Add dynamic field' => '',
         'Create times' => '創建時間',
         'No create time settings.' => '沒有創建時間。',
         'Ticket created' => '工單創建時間(相對)',
@@ -689,6 +691,10 @@ sub Data {
         'No change time settings.' => '沒有修改時間',
         'Ticket changed' => '修改工單時間(相對)',
         'Ticket changed between' => '工單修改時間(絕對)',
+        'Last close times' => '',
+        'No last close time settings.' => '',
+        'Ticket last close' => '',
+        'Ticket last close between' => '',
         'Close times' => '關閉時間',
         'No close time settings.' => '沒有關閉時間',
         'Ticket closed' => '工單關閉時間(相對)',
@@ -726,7 +732,6 @@ sub Data {
         'New customer ID' => '指定用戶ID',
         'New title' => '指定稱謂',
         'New type' => '指定類型',
-        'New Dynamic Field Values' => '新的動態字段值',
         'Archive selected tickets' => '歸檔選中的工單',
         'Add Note' => '添加備註',
         'Visible for customer' => '',
@@ -2160,6 +2165,14 @@ sub Data {
         'Do you really want to delete this template?' => '你確定要删除這個模板嗎？',
         'A standard template with this name already exists!' => '',
         'Template' => '模板',
+        'To get the first 20 characters of the subject of the current/latest agent article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 5 lines of the body of the current/latest agent article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 20 characters of the subject of the current/latest article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 5 lines of the body of the current/latest article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
         'Create type templates only supports this smart tags' => '',
         'Example template' => '模板舉例',
         'The current ticket state is' => '當前工單狀態是',
@@ -2927,7 +2940,6 @@ sub Data {
         # Template: DashboardEventsTicketCalendar
         'Event Information' => '事件信息',
         'Ticket fields' => '工單字段',
-        'Dynamic fields' => '動態字段',
 
         # Template: Error
         'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of OTRS.' =>
@@ -5501,6 +5513,7 @@ sub Data {
         'Deleting the field and its data. This may take a while...' => '',
 
         # JS File: Core.Agent.Admin.GenericAgent
+        'Remove this dynamic field' => '',
         'Remove selection' => '',
         'Do you really want to delete this generic agent job?' => '',
         'Delete this Event Trigger' => '刪除這個事件觸發器',
@@ -6174,6 +6187,8 @@ Thanks for your help!
         'Checks for communication log entries to be deleted.' => '',
         'Checks for queued outgoing emails to be sent.' => '',
         'Checks if an E-Mail is a followup to an existing ticket by searching the subject for a valid ticket number.' =>
+            '',
+        'Checks if an email is a follow-up to an existing ticket with external ticket number which can be found by ExternalTicketNumberRecognition filter module.' =>
             '',
         'Checks the SystemID in ticket number detection for follow-ups. If not enabled, SystemID will be changed after using the system.' =>
             '',
@@ -7130,6 +7145,7 @@ Thanks for your help!
             '',
         'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow OTRS to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
             '',
+        'Disable autocomplete in the login screen.' => '',
         'Disable cloud services' => '',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be enabled).' =>
             '',
@@ -8796,6 +8812,7 @@ Thanks for your help!
         '%s KB',
         '%s MB',
         '%s TB',
+        '+%s more',
         'A key with this name (\'%s\') already exists.',
         'A package upgrade was recently finished. Click here to see the results.',
         'A popup of this screen is already open. Do you want to close it and load this one instead?',
@@ -9024,6 +9041,7 @@ Thanks for your help!
         'Remove selection',
         'Remove the Transition from this Process',
         'Remove the filter',
+        'Remove this dynamic field',
         'Remove this entry',
         'Repeat',
         'Request Details',

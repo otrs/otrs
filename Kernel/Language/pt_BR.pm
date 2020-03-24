@@ -29,7 +29,7 @@ sub Data {
     $Self->{DateFormatShort}     = '%D/%M/%Y';
     $Self->{DateInputFormat}     = '%D/%M/%Y';
     $Self->{DateInputFormatLong} = '%D/%M/%Y - %T';
-    $Self->{Completeness}        = 0.938806731259561;
+    $Self->{Completeness}        = 0.940278249066848;
 
     # csv separator
     $Self->{Separator}         = ';';
@@ -679,6 +679,8 @@ sub Data {
         'Owner' => 'Proprietário',
         'Responsible' => 'Responsável',
         'Ticket lock' => 'Bloqueio de Chamado',
+        'Dynamic fields' => 'Campos dinâmicos',
+        'Add dynamic field' => '',
         'Create times' => 'Horários de criação',
         'No create time settings.' => 'Sem configurações de horário de criação',
         'Ticket created' => 'Chamado criado',
@@ -692,6 +694,10 @@ sub Data {
         'No change time settings.' => 'Sem configurações de horários de alteração.',
         'Ticket changed' => 'Chamado alterado',
         'Ticket changed between' => 'Chamado alterado entre',
+        'Last close times' => '',
+        'No last close time settings.' => '',
+        'Ticket last close' => '',
+        'Ticket last close between' => '',
         'Close times' => 'Horários de fechamento',
         'No close time settings.' => 'Ignorar horários de fechamento',
         'Ticket closed' => 'Chamado fechado',
@@ -729,7 +735,6 @@ sub Data {
         'New customer ID' => 'Novo ID de Cliente',
         'New title' => 'Novo Título',
         'New type' => 'Novo Tipo',
-        'New Dynamic Field Values' => 'Novos Valores de Campo Dinâmico',
         'Archive selected tickets' => 'Arquivar chamados selecionados',
         'Add Note' => 'Adicionar Nota',
         'Visible for customer' => 'Visível para o Cliente',
@@ -2163,6 +2168,14 @@ sub Data {
         'Do you really want to delete this template?' => 'Você quer realmente excluir este modelo?',
         'A standard template with this name already exists!' => 'Um modelo padrão com este nome já existe!',
         'Template' => 'Modelo',
+        'To get the first 20 characters of the subject of the current/latest agent article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 5 lines of the body of the current/latest agent article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 20 characters of the subject of the current/latest article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 5 lines of the body of the current/latest article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
         'Create type templates only supports this smart tags' => 'Criar modelos de tipo apenas suporta estas etiquetas inteligentes',
         'Example template' => 'Modelo exemplo',
         'The current ticket state is' => 'O estado atual do chamado é',
@@ -2482,7 +2495,7 @@ sub Data {
         'Split' => 'Dividir',
 
         # Template: AgentStatisticsAdd
-        'Statistics Management' => '',
+        'Statistics Management' => 'Gestão de Estatísticas',
         'Add Statistics' => 'Adicionar estatísticas',
         'Read more about statistics in OTRS' => 'Leia mais sobre estatísticas no OTRS',
         'Dynamic Matrix' => 'Matriz Dinâmica ',
@@ -2818,7 +2831,7 @@ sub Data {
         # Template: CustomerAccept
         'Dear Customer,' => 'Caro Cliente,',
         'thank you for using our services.' => 'obrigado por utilizar nossos serviços.',
-        'Yes, I accept your license.' => '',
+        'Yes, I accept your license.' => 'Sim, eu aceito a sua licença.',
 
         # Template: TicketCustomerIDSelection
         'The customer ID is not changeable, no other customer ID can be assigned to this ticket.' =>
@@ -2878,7 +2891,7 @@ sub Data {
         # Template: CustomerNavigationBar
         'Incoming Chat Requests' => 'Recebendo requisições de bate-papo',
         'Edit personal preferences' => 'Editar preferências pessoais',
-        'Logout %s' => '',
+        'Logout %s' => 'Fechar sessão %s',
 
         # Template: CustomerTicketMessage
         'Service level agreement' => 'Acordo de nível de serviço',
@@ -2929,7 +2942,6 @@ sub Data {
         # Template: DashboardEventsTicketCalendar
         'Event Information' => 'Informação do Evento',
         'Ticket fields' => 'Campos de chamado',
-        'Dynamic fields' => 'Campos dinâmicos',
 
         # Template: Error
         'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of OTRS.' =>
@@ -2971,14 +2983,14 @@ sub Data {
         'General Specifications and Mail Settings' => 'Especificações Gerais e Configurações de E-mail',
         'Finish' => 'Finalizar',
         'Welcome to %s' => 'Bem-vindo a %s',
-        'Germany' => '',
+        'Germany' => 'Alemanha',
         'Phone' => 'Telefone',
-        'United States' => '',
-        'Mexico' => '',
-        'Hungary' => '',
-        'Brazil' => '',
-        'Singapore' => '',
-        'Hong Kong' => '',
+        'United States' => 'Estados Unidos',
+        'Mexico' => 'México',
+        'Hungary' => 'Hungria',
+        'Brazil' => 'Brasil',
+        'Singapore' => 'Singapura',
+        'Hong Kong' => 'Hong Kong',
         'Web site' => 'Website',
 
         # Template: InstallerConfigureMail
@@ -3213,7 +3225,7 @@ sub Data {
         'This setting is currently being overridden in %s and can\'t thus be changed here!' =>
             'Esta definição está sendo sobrescrita em %s e, por isso, não pode ser alterada aqui!',
         'Changing this setting is only available in a higher config level!' =>
-            '',
+            'A alteração dessa configuração está disponível somente em um nível de configuração mais elevado!',
         '%s (%s) is currently working on this setting.' => '%s (%s) está atuando nesta definição no momento.',
         'Toggle advanced options for this setting' => 'Alternar opções avançadas para esta definição',
         'Disable this setting, so it is no longer effective' => 'Desative esta definição para que ela deixa de ser efetiva',
@@ -3325,7 +3337,7 @@ sub Data {
 
         # JS Template: DialogDeployment
         'Deployment comment...' => 'Comentário de implantação...',
-        'This field can have no more than 250 characters.' => '',
+        'This field can have no more than 250 characters.' => 'Este campo não pode ter mais de 250 caracteres.',
         'Deploying, please wait...' => 'Implantando, favor esperar...',
         'Preparing to deploy, please wait...' => 'Preparando para implantar, favor esperar...',
         'Deploy now' => 'Implantar agora',
@@ -3505,9 +3517,9 @@ sub Data {
         # Perl Module: Kernel/Modules/AdminDynamicField.pm
         'Fields configuration is not valid' => 'Configuração do campo não é válida.',
         'Objects configuration is not valid' => 'Configuração dos objetos não são válidas',
-        'Database (%s)' => '',
-        'Web service (%s)' => '',
-        'Contact with data (%s)' => '',
+        'Database (%s)' => 'Base de dados (%s)',
+        'Web service (%s)' => 'Web service (%s)',
+        'Contact with data (%s)' => 'Contato com dados (%s)',
         'Could not reset Dynamic Field order properly, please check the error log for more details.' =>
             'Não foi possível resetar corretamente a ordem do campo Dinâmico, verifique o log de erros para obter mais detalhes.',
 
@@ -3680,7 +3692,7 @@ sub Data {
         'Web service "%s" created!' => 'Web service "%s" criado!',
         'Need Name!' => 'Necessário Nome!',
         'Need ExampleWebService!' => 'Necessário ExampleWebService!',
-        'Could not load %s.' => '',
+        'Could not load %s.' => 'Não foi possível carregar %s.',
         'Could not read %s!' => 'Não pôde ser lido %s!',
         'Need a file to import!' => 'Necessário um arquivo para importar!',
         'The imported file has not valid YAML content! Please check OTRS log for details' =>
@@ -3718,8 +3730,8 @@ sub Data {
         'Customer user of the ticket' => 'Usuário cliente do ticket',
         'All recipients of the first article' => 'Todos os destinatários do primeiro artigo',
         'All recipients of the last article' => 'Todos os destinatários do último artigo',
-        'Invisible to customer' => '',
-        'Visible to customer' => '',
+        'Invisible to customer' => 'Não visível para o cliente',
+        'Visible to customer' => 'Visível para o cliente',
 
         # Perl Module: Kernel/Modules/AdminOTRSBusiness.pm
         'Your system was successfully upgraded to %s.' => 'Seu sistema foi atualizado com sucesso para %s.',
@@ -4581,7 +4593,7 @@ sub Data {
 
         # Perl Module: Kernel/Output/HTML/Layout.pm
         'Standard' => 'Padrão',
-        'The following tickets are not updated: %s.' => '',
+        'The following tickets are not updated: %s.' => 'Os tickets a seguir não foram atualizados: %s.',
         'h' => 'h',
         'm' => 'm',
         'd' => 'd',
@@ -5360,7 +5372,7 @@ sub Data {
             'Nova conta criada. Enviadas informações de login para %s. Por favor, verifique seu e-mail.',
 
         # Perl Module: Kernel/System/Web/InterfaceInstaller.pm
-        'Action "%s" not found!' => '',
+        'Action "%s" not found!' => 'Ação "%s" não encontrada!',
 
         # Database XML Definition: scripts/database/otrs-initial_insert.xml
         'invalid-temporarily' => 'inválido-temporariamente',
@@ -5503,6 +5515,7 @@ sub Data {
         'Deleting the field and its data. This may take a while...' => 'Delindo o campo e seus dados.  Isto pode levar um tempo…',
 
         # JS File: Core.Agent.Admin.GenericAgent
+        'Remove this dynamic field' => '',
         'Remove selection' => 'Remover tradução',
         'Do you really want to delete this generic agent job?' => '',
         'Delete this Event Trigger' => 'Excluir este disparador de evento',
@@ -6187,6 +6200,8 @@ Obrigado pela ajuda!
         'Checks for queued outgoing emails to be sent.' => 'Verifica e-mails enfileirados para envio a serem enviados.',
         'Checks if an E-Mail is a followup to an existing ticket by searching the subject for a valid ticket number.' =>
             'Verifica se o e-mail é uma continuação de um ticket existente ao pesquisar no assunto por um número de ticket válido.',
+        'Checks if an email is a follow-up to an existing ticket with external ticket number which can be found by ExternalTicketNumberRecognition filter module.' =>
+            '',
         'Checks the SystemID in ticket number detection for follow-ups. If not enabled, SystemID will be changed after using the system.' =>
             'Verifica o ID do Sistema na detecção de número de tickets para respostas. Se não ativado, o ID do sistema será alterado após utlização do sistema.',
         'Checks the availability of OTRS Business Solution™ for this system.' =>
@@ -7142,6 +7157,7 @@ Obrigado pela ajuda!
             'Desativa o cabeçalho HTTP "Content-Security-Policy" para permitir o carregamento de conteúdos de scripts externos. Desativar este cabeçalho HTTP pode ser um problema de segurança! So desative se você souber o que está fazendo.',
         'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow OTRS to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
             'Desativa o cabeçalho HTTP "X-Frame-Options: SAMEORIGIN" para que o OTRS seja incluído como um IFrame em outras páginas web. Desativar este cabeçalho HTTP pode ser um problema de segurança! Só desative se você souber o que está fazendo.',
+        'Disable autocomplete in the login screen.' => '',
         'Disable cloud services' => 'Desabilitar serviços de nuvem',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be enabled).' =>
             'Desativa o envio automático de notificações de lembrete para o agente responsável por um ticket (Ticket::Responsible precisa estar ativado).',
@@ -8808,6 +8824,7 @@ Obrigado pela ajuda!
         '%s KB',
         '%s MB',
         '%s TB',
+        '+%s more',
         'A key with this name (\'%s\') already exists.',
         'A package upgrade was recently finished. Click here to see the results.',
         'A popup of this screen is already open. Do you want to close it and load this one instead?',
@@ -9036,6 +9053,7 @@ Obrigado pela ajuda!
         'Remove selection',
         'Remove the Transition from this Process',
         'Remove the filter',
+        'Remove this dynamic field',
         'Remove this entry',
         'Repeat',
         'Request Details',

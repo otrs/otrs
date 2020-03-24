@@ -363,6 +363,7 @@ my %DynamicFieldDropdownConfig = (
             1 => 'One',
             2 => 'Two',
             3 => 'Three',
+            0 => '0',
         },
     },
 );
@@ -622,6 +623,48 @@ my $RequesterSessionResult = $RequesterSessionObject->Run(
         Password  => $Password,
     },
 );
+
+my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+my $TestTicketDelete = sub {
+    my %Param = @_;
+
+    my @TicketIDs = @{ $Param{TicketIDs} };
+
+    # Allow some time for all history entries to be written to the ticket before deleting it,
+    #   otherwise TicketDelete could fail.
+    sleep 1;
+    TICKETID:
+    for my $TicketID (@TicketIDs) {
+
+        next TICKETID if !$TicketID;
+
+        my $TicketDelete = $TicketObject->TicketDelete(
+            TicketID => $TicketID,
+            UserID   => 1,
+        );
+
+        # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
+        if ( !$TicketDelete ) {
+            sleep 3;
+            $TicketDelete = $TicketObject->TicketDelete(
+                TicketID => $TicketID,
+                UserID   => 1,
+            );
+        }
+        $Self->True(
+            $TicketDelete,
+            "Delete ticket - $TicketID"
+        );
+
+        # sanity check
+        $Self->True(
+            $TicketDelete,
+            "TicketDelete() successful for Ticket ID $TicketID"
+        );
+    }
+    return 1;
+};
 
 my $NewSessionID = $RequesterSessionResult->{Data}->{SessionID};
 my @Tests        = (
@@ -3930,6 +3973,60 @@ my @Tests        = (
         Operation => 'TicketCreate',
     },
     {
+        Name           => 'Create DynamicFields (with dropdown value 0)',    # see bug#14858
+        SuccessRequest => 1,
+        SuccessCreate  => 1,
+        RequestData    => {
+            Ticket => {
+                Title         => 'Ticket Title',
+                CustomerUser  => $TestCustomerUserLogin,
+                QueueID       => $Queues[0]->{QueueID},
+                TypeID        => $TypeID,
+                ServiceID     => $ServiceID,
+                SLAID         => $SLAID,
+                StateID       => $StateID,
+                PriorityID    => $PriorityID,
+                OwnerID       => $OwnerID,
+                ResponsibleID => $ResponsibleID,
+                PendingTime   => {
+                    Year   => 2012,
+                    Month  => 12,
+                    Day    => 16,
+                    Hour   => 20,
+                    Minute => 48,
+                },
+            },
+            Article => {
+                Subject                         => 'Article subject',
+                Body                            => 'Article body',
+                AutoResponseType                => 'auto reply',
+                SenderTypeID                    => 1,
+                IsVisibleForCustomer            => 1,
+                From                            => 'enjoy@otrs.com',
+                ContentType                     => 'text/plain; charset=utf8',
+                HistoryType                     => 'NewTicket',
+                HistoryComment                  => '% % ',
+                TimeUnit                        => 25,
+                ForceNotificationToUserID       => [$UserID],
+                ExcludeNotificationToUserID     => [$UserID],
+                ExcludeMuteNotificationToUserID => [$UserID],
+            },
+            DynamicField => [
+                {
+                    Name  => "Unittest2$RandomID",
+                    Value => '0',
+                },
+            ],
+            Attachment => {
+                Content     => 'VGhpcyBpcyBhIHRlc3QgdGV4dC4=',
+                ContentType => 'text/plain; charset=utf8',
+                Disposition => 'attachment',
+                Filename    => 'Test.txt',
+            },
+        },
+        Operation => 'TicketCreate',
+    },
+    {
         Name           => 'Create DynamicFields (with wrong value type)',
         SuccessRequest => 1,
         SuccessCreate  => 0,
@@ -4405,8 +4502,6 @@ $Self->Is(
     'DebuggerObject instantiate correctly'
 );
 
-my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
 TEST:
 for my $Test (@Tests) {
 
@@ -4487,6 +4582,12 @@ for my $Test (@Tests) {
         'faultcode: Server, faultstring: Attachment could not be created, please contact the system administrator'
         )
     {
+
+        my @TicketIDs = ( $LocalResult->{Data}->{TicketID}, $RequesterResult->{Data}->{TicketID} );
+        $TestTicketDelete->(
+            TicketIDs => \@TicketIDs,
+        );
+
         next TEST;
     }
 
@@ -4765,6 +4866,11 @@ for my $Test (@Tests) {
             \%RequesterArticleData,
             "$Test->{Name} - Local article result matched with remote result."
         );
+
+        my @TicketIDs = ( $LocalResult->{Data}->{TicketID}, $RequesterResult->{Data}->{TicketID} );
+        $TestTicketDelete->(
+            TicketIDs => \@TicketIDs,
+        );
     }
 
     # tests supposed to fail
@@ -4852,36 +4958,9 @@ my @TicketIDs = $TicketObject->TicketSearch(
     UserID   => 1,
 );
 
-# Delete the tickets.
-# Allow some time for all history entries to be written to the ticket before deleting it,
-#   otherwise TicketDelete could fail.
-sleep 1;
-for my $TicketID (@TicketIDs) {
-
-    my $TicketDelete = $TicketObject->TicketDelete(
-        TicketID => $TicketID,
-        UserID   => 1,
-    );
-
-    # Ticket deletion could fail if apache still writes to ticket history. Try again in this case.
-    if ( !$TicketDelete ) {
-        sleep 3;
-        $TicketDelete = $TicketObject->TicketDelete(
-            TicketID => $TicketID,
-            UserID   => 1,
-        );
-    }
-    $Self->True(
-        $TicketDelete,
-        "Delete ticket - $TicketID"
-    );
-
-    # sanity check
-    $Self->True(
-        $TicketDelete,
-        "TicketDelete() successful for Ticket ID $TicketID"
-    );
-}
+$TestTicketDelete->(
+    TicketIDs => \@TicketIDs,
+);
 
 # delete queues
 for my $QueueData (@Queues) {

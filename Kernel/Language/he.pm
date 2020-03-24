@@ -26,7 +26,7 @@ sub Data {
     $Self->{DateFormatShort}     = '%D/%M/%Y';
     $Self->{DateInputFormat}     = '%D/%M/%Y';
     $Self->{DateInputFormatLong} = '%D/%M/%Y - %T';
-    $Self->{Completeness}        = 0.241373448920619;
+    $Self->{Completeness}        = 0.24075330844927;
 
     # csv separator
     $Self->{Separator}         = '';
@@ -680,6 +680,8 @@ sub Data {
         'Owner' => 'בעלים',
         'Responsible' => 'אחראי',
         'Ticket lock' => 'נעילת פניה',
+        'Dynamic fields' => 'שדות דינמיים',
+        'Add dynamic field' => '',
         'Create times' => 'זמני יצירה',
         'No create time settings.' => '',
         'Ticket created' => 'הפניה נוצרה',
@@ -693,6 +695,10 @@ sub Data {
         'No change time settings.' => '',
         'Ticket changed' => 'הפניה השתנתה',
         'Ticket changed between' => 'הפניה שונתה בין',
+        'Last close times' => '',
+        'No last close time settings.' => '',
+        'Ticket last close' => '',
+        'Ticket last close between' => '',
         'Close times' => 'זמן הסגירה',
         'No close time settings.' => 'אין הגדרות זמן סגירה',
         'Ticket closed' => 'הפניה נסגרה',
@@ -730,7 +736,6 @@ sub Data {
         'New customer ID' => 'מספר זיהוי לקוח חדש',
         'New title' => 'כותרת חדשה',
         'New type' => 'סוג חדש',
-        'New Dynamic Field Values' => 'ערכי שדות דינמיים חדשים',
         'Archive selected tickets' => 'העבר פניות שנבחרו לארכיון',
         'Add Note' => 'הוסף הודעה',
         'Visible for customer' => '',
@@ -2164,6 +2169,14 @@ sub Data {
         'Do you really want to delete this template?' => '',
         'A standard template with this name already exists!' => '',
         'Template' => 'תבנית',
+        'To get the first 20 characters of the subject of the current/latest agent article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 5 lines of the body of the current/latest agent article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 20 characters of the subject of the current/latest article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 5 lines of the body of the current/latest article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
         'Create type templates only supports this smart tags' => 'צור סוג תבניות שתומכות רק בתגית חכמה זו',
         'Example template' => 'תבנית לדוגמא',
         'The current ticket state is' => 'מצב הפניה הנוכחי הוא',
@@ -2930,7 +2943,6 @@ sub Data {
         # Template: DashboardEventsTicketCalendar
         'Event Information' => 'פרטי האירוע',
         'Ticket fields' => 'שדות הפניה',
-        'Dynamic fields' => 'שדות דינמיים',
 
         # Template: Error
         'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of OTRS.' =>
@@ -5504,6 +5516,7 @@ sub Data {
         'Deleting the field and its data. This may take a while...' => '',
 
         # JS File: Core.Agent.Admin.GenericAgent
+        'Remove this dynamic field' => '',
         'Remove selection' => '',
         'Do you really want to delete this generic agent job?' => '',
         'Delete this Event Trigger' => 'מחק את טריגר האירוע',
@@ -6176,6 +6189,8 @@ Thanks for your help!
         'Checks for communication log entries to be deleted.' => '',
         'Checks for queued outgoing emails to be sent.' => '',
         'Checks if an E-Mail is a followup to an existing ticket by searching the subject for a valid ticket number.' =>
+            '',
+        'Checks if an email is a follow-up to an existing ticket with external ticket number which can be found by ExternalTicketNumberRecognition filter module.' =>
             '',
         'Checks the SystemID in ticket number detection for follow-ups. If not enabled, SystemID will be changed after using the system.' =>
             '',
@@ -7132,6 +7147,7 @@ Thanks for your help!
             '',
         'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow OTRS to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
             '',
+        'Disable autocomplete in the login screen.' => '',
         'Disable cloud services' => '',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be enabled).' =>
             '',
@@ -8798,6 +8814,7 @@ Thanks for your help!
         '%s KB',
         '%s MB',
         '%s TB',
+        '+%s more',
         'A key with this name (\'%s\') already exists.',
         'A package upgrade was recently finished. Click here to see the results.',
         'A popup of this screen is already open. Do you want to close it and load this one instead?',
@@ -9026,6 +9043,7 @@ Thanks for your help!
         'Remove selection',
         'Remove the Transition from this Process',
         'Remove the filter',
+        'Remove this dynamic field',
         'Remove this entry',
         'Repeat',
         'Request Details',

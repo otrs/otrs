@@ -27,7 +27,7 @@ sub Data {
     $Self->{DateFormatShort}     = '%D/%M/%Y';
     $Self->{DateInputFormat}     = '%D/%M/%Y';
     $Self->{DateInputFormatLong} = '%D/%M/%Y - %T';
-    $Self->{Completeness}        = 0.67652558218596;
+    $Self->{Completeness}        = 0.675093315235833;
 
     # csv separator
     $Self->{Separator}         = ',';
@@ -677,6 +677,8 @@ sub Data {
         'Owner' => 'Owner',
         'Responsible' => 'Responsible',
         'Ticket lock' => 'Ticket lock',
+        'Dynamic fields' => 'Dynamic fields',
+        'Add dynamic field' => '',
         'Create times' => 'Create times',
         'No create time settings.' => 'No create time settings.',
         'Ticket created' => 'Ticket created',
@@ -690,6 +692,10 @@ sub Data {
         'No change time settings.' => 'No change time settings.',
         'Ticket changed' => 'Ticket changed',
         'Ticket changed between' => 'Ticket changed between',
+        'Last close times' => '',
+        'No last close time settings.' => '',
+        'Ticket last close' => '',
+        'Ticket last close between' => '',
         'Close times' => 'Close times',
         'No close time settings.' => 'No close time settings.',
         'Ticket closed' => 'Ticket closed',
@@ -727,7 +733,6 @@ sub Data {
         'New customer ID' => 'New customer ID',
         'New title' => 'New title',
         'New type' => 'New type',
-        'New Dynamic Field Values' => 'New Dynamic Field Values',
         'Archive selected tickets' => 'Archive selected tickets',
         'Add Note' => 'Add Note',
         'Visible for customer' => '',
@@ -2161,6 +2166,14 @@ sub Data {
         'Do you really want to delete this template?' => 'Do you really want to delete this template?',
         'A standard template with this name already exists!' => 'A standard template with this name already exists!',
         'Template' => 'Template',
+        'To get the first 20 characters of the subject of the current/latest agent article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 5 lines of the body of the current/latest agent article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 20 characters of the subject of the current/latest article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 5 lines of the body of the current/latest article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
         'Create type templates only supports this smart tags' => 'Create type templates only supports this smart tags',
         'Example template' => 'Example template',
         'The current ticket state is' => 'The current ticket state is',
@@ -2927,7 +2940,6 @@ sub Data {
         # Template: DashboardEventsTicketCalendar
         'Event Information' => 'Event Information',
         'Ticket fields' => 'Ticket fields',
-        'Dynamic fields' => 'Dynamic fields',
 
         # Template: Error
         'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of OTRS.' =>
@@ -5501,6 +5513,7 @@ sub Data {
         'Deleting the field and its data. This may take a while...' => 'Deleting the field and its data. This may take a while...',
 
         # JS File: Core.Agent.Admin.GenericAgent
+        'Remove this dynamic field' => '',
         'Remove selection' => 'Remove selection',
         'Do you really want to delete this generic agent job?' => '',
         'Delete this Event Trigger' => 'Delete this Event Trigger',
@@ -6185,6 +6198,8 @@ Thanks for your help!
         'Checks for queued outgoing emails to be sent.' => '',
         'Checks if an E-Mail is a followup to an existing ticket by searching the subject for a valid ticket number.' =>
             'Checks if an E-Mail is a followup to an existing ticket by searching the subject for a valid ticket number.',
+        'Checks if an email is a follow-up to an existing ticket with external ticket number which can be found by ExternalTicketNumberRecognition filter module.' =>
+            '',
         'Checks the SystemID in ticket number detection for follow-ups. If not enabled, SystemID will be changed after using the system.' =>
             '',
         'Checks the availability of OTRS Business Solution™ for this system.' =>
@@ -7140,6 +7155,7 @@ Thanks for your help!
             '',
         'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow OTRS to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
             'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow OTRS to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!',
+        'Disable autocomplete in the login screen.' => '',
         'Disable cloud services' => '',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be enabled).' =>
             '',
@@ -8806,6 +8822,7 @@ Thanks for your help!
         '%s KB',
         '%s MB',
         '%s TB',
+        '+%s more',
         'A key with this name (\'%s\') already exists.',
         'A package upgrade was recently finished. Click here to see the results.',
         'A popup of this screen is already open. Do you want to close it and load this one instead?',
@@ -9034,6 +9051,7 @@ Thanks for your help!
         'Remove selection',
         'Remove the Transition from this Process',
         'Remove the filter',
+        'Remove this dynamic field',
         'Remove this entry',
         'Repeat',
         'Request Details',
