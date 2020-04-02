@@ -712,9 +712,19 @@ sub _RecipientsGet {
 
                     push @{ $Notification{Data}->{RecipientAgents} }, @UserIDs;
                 }
-                elsif ( $Recipient eq 'AgentCreateBy' && $Ticket{CreateBy} != 1 ) {
+                elsif ( $Recipient eq 'AgentCreateBy' ) {
 
-                    push @{ $Notification{Data}->{RecipientAgents} }, $Ticket{CreateBy};
+                    # Check if the first article was created by an agent.
+                    my @Articles = $ArticleObject->ArticleList(
+                        TicketID   => $Param{Data}->{TicketID},
+                        SenderType => 'agent',
+                        OnlyFirst  => 1,
+                    );
+
+                    if ( $Articles[0] && $Articles[0]->{ArticleNumber} == 1 ) {
+                        push @{ $Notification{Data}->{RecipientAgents} }, $Ticket{CreateBy};
+                    }
+
                 }
             }
 

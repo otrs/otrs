@@ -738,17 +738,17 @@ sub DocumentCleanup {
     # replace MS Word 12 <p|div> with class "MsoNormal" by using <br/> because
     # it's not used as <p><div> (margin:0cm; margin-bottom:.0001pt;)
     $Param{String} =~ s{
-        <p\s{1,3}class=(|"|')MsoNormal(|"|')(.*?)>(.+?)</p>
+        <p\s{1,3}class= (["']?) MsoNormal \1 [^>]? >(.*?)</p>
     }
     {
-        $4 . '<br/>';
+        $2 . '<br/>';
     }segxmi;
 
     $Param{String} =~ s{
-        <div\s{1,3}class=(|"|')MsoNormal(|"|')(.*?)>(.+?)</div>
+        <div\s{1,3}class= (["']?) MsoNormal \1 .*? >(.+?)</div>
     }
     {
-        $4 . '<br/>';
+        $2 . '<br/>';
     }segxmi;
 
     # replace <blockquote> by using
