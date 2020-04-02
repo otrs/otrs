@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -225,6 +225,36 @@ my %TypeListValid = $TypeObject->TypeList( Valid => 1 );
 $Self->False(
     exists $TypeListValid{$TypeID},
     'TypeList() does not contain the type ' . $TypeUpdateName . ' with ID ' . $TypeID,
+);
+
+# Check log message if TypeGet is not found any data.
+# See PR#2009 for more information ( https://github.com/OTRS/otrs/pull/2009 ).
+my $LogObject = $Kernel::OM->Get('Kernel::System::Log');
+%Type = $TypeObject->TypeGet( ID => '999999' );
+
+my $ErrorMessage = $LogObject->GetLogEntry(
+    Type => 'error',
+    What => 'Message',
+);
+
+$Self->Is(
+    $ErrorMessage,
+    "TypeID '999999' not found!",
+    "TypeGet() - '999999' not found",
+);
+
+my $NoDataType = 'no_data_type' . $Helper->GetRandomID();
+%Type = $TypeObject->TypeGet( Name => $NoDataType );
+
+$ErrorMessage = $LogObject->GetLogEntry(
+    Type => 'error',
+    What => 'Message',
+);
+
+$Self->Is(
+    $ErrorMessage,
+    "TypeID for Type '$NoDataType' not found!",
+    "TypeGet() - $NoDataType not found",
 );
 
 # cleanup is done by RestoreDatabase.

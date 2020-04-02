@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -20,6 +20,7 @@ our @ObjectDependencies = (
     'Kernel::Output::HTML::Layout',
     'Kernel::System::DynamicField',
     'Kernel::System::DynamicField::Backend',
+    'Kernel::System::Encode',
     'Kernel::System::Log',
     'Kernel::System::SystemAddress',
     'Kernel::System::Ticket::Article',
@@ -216,7 +217,7 @@ sub _ArticleSenderImage {
                     $DefaultIcon = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::Gravatar::DefaultImage') | 'mp';
                 }
             }
-
+            $Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput( \$Email );
             $Result = '//www.gravatar.com/avatar/' . md5_hex( lc $Email ) . '?s=' . $Size . '&d=' . $DefaultIcon;
         }
     }

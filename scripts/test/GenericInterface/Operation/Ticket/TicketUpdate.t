@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -104,6 +104,7 @@ my %DynamicFieldDropdownConfig = (
             1 => 'One',
             2 => 'Two',
             3 => 'Three',
+            0 => '0',
         },
     },
 );
@@ -582,6 +583,38 @@ my @Tests = (
                 {
                     Name  => "Unittest3$RandomID",
                     Value => [ 1, 2 ],
+                },
+            ],
+        },
+        Auth => {
+            SessionID => $NewSessionID,
+        },
+        ExpectedReturnRemoteData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        ExpectedReturnLocalData => {
+            Success => 1,
+            Data    => {
+                TicketID     => $Ticket{TicketID},
+                TicketNumber => $Ticket{TicketNumber},
+            },
+        },
+        Operation => 'TicketUpdate',
+    },
+
+    {
+        Name           => 'Update Dropdown DynamicField (with value 0)',
+        SuccessRequest => '1',
+        RequestData    => {
+            TicketID     => $TicketID1,
+            DynamicField => [
+                {
+                    Name  => "Unittest2$RandomID",
+                    Value => '0',
                 },
             ],
         },

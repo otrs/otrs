@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -74,6 +74,17 @@ sub Run {
 
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+    # get ticket data
+    my %Ticket = $TicketObject->TicketGet(
+        TicketID      => $Self->{TicketID},
+        DynamicFields => 1,
+    );
+
+    $Self->{GetParam}->{From} = $Kernel::OM->Get('Kernel::System::TemplateGenerator')->Sender(
+        QueueID => $Ticket{QueueID},
+        UserID  => $Self->{UserID},
+    );
 
     my $ACL = $TicketObject->TicketAcl(
         Data          => \%PossibleActions,
@@ -1257,13 +1268,15 @@ sub SendEmail {
         $IsVisibleForCustomer = $GetParam{IsVisibleForCustomer} ? 1 : 0;
     }
 
-    my $From = $Kernel::OM->Get('Kernel::System::TemplateGenerator')->Sender(
-        QueueID => $Ticket{QueueID},
-        UserID  => $Self->{UserID},
-    );
-
     my $EmailArticleBackendObject = $Kernel::OM->Get('Kernel::System::Ticket::Article')->BackendForChannel(
         ChannelName => 'Email',
+    );
+
+    # Get attributes like sender address.
+    my %Data = $Kernel::OM->Get('Kernel::System::TemplateGenerator')->Attributes(
+        TicketID => $Self->{TicketID},
+        Data     => {},
+        UserID   => $Self->{UserID},
     );
 
     my $ArticleID = $EmailArticleBackendObject->ArticleSend(
@@ -1272,7 +1285,7 @@ sub SendEmail {
         IsVisibleForCustomer => $IsVisibleForCustomer,
         HistoryType          => 'Forward',
         HistoryComment       => "\%\%$To",
-        From                 => $From,
+        From                 => $Data{From},
         To                   => $GetParam{To},
         Cc                   => $GetParam{Cc},
         Bcc                  => $GetParam{Bcc},
@@ -2037,7 +2050,7 @@ sub _GetExtendedParams {
 
     my @MultipleCustomer;
     my $CustomersNumber = $ParamObject->GetParam( Param => 'CustomerTicketCounterToCustomer' ) || 0;
-    my $Selected = $ParamObject->GetParam( Param => 'CustomerSelected' ) || '';
+    my $Selected        = $ParamObject->GetParam( Param => 'CustomerSelected' )                || '';
 
     # get check item object
     my $CheckItemObject = $Kernel::OM->Get('Kernel::System::CheckItem');

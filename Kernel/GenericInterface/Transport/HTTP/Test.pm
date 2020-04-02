@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -45,7 +45,7 @@ by using Kernel::GenericInterface::Transport->new();
 
 In the config parameter 'Fail' you can tell the transport to simulate
 failed network requests. If 'Fail' is set to 0, the transport will return
-the query string of the requests as return data (see L<RequesterPerformRequest>
+the query string of the requests as return data (see L</RequesterPerformRequest()>
 for an example);
 
 =cut

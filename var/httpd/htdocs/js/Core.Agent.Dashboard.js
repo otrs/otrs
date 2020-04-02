@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+// Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -1086,7 +1086,7 @@ Core.Agent.Dashboard = (function (TargetNS) {
 
             // set ColumnFilter value for current ColumnFilter
             ColumnFilterName = $(this).attr('name');
-            LinkPage = LinkPage + ColumnFilterName + '=' + $(this).val() + ';';
+            LinkPage = LinkPage + ColumnFilterName + '=' + encodeURIComponent($(this).val()) + ';';
 
             // remember the current ColumnFilter ID
             ColumnFilterID = $(this).attr('ID');
@@ -1102,7 +1102,7 @@ Core.Agent.Dashboard = (function (TargetNS) {
                     // get all options of current column filter
                     $(this).children().each(function() {
                         if ($(this).attr('value') && $(this).attr('selected')) {
-                            LinkPage = LinkPage + ColumnFilterName + '=' + $(this).attr('value') + ';';
+                            LinkPage = LinkPage + ColumnFilterName + '=' + encodeURIComponent($(this).attr('value')) + ';';
                         }
                     });
                 }
@@ -1125,7 +1125,7 @@ Core.Agent.Dashboard = (function (TargetNS) {
 
             // set ColumnFilter value for current ColumnFilter
             ColumnFilterName = $(this).attr('name');
-            LinkPage = LinkPage + ColumnFilterName + '=' + $(this).val() + ';';
+            LinkPage = LinkPage + ColumnFilterName + '=' + encodeURIComponent($(this).val()) + ';';
 
             // remember the current ColumnFilter ID
             ColumnFilterID = $(this).attr('ID');
@@ -1141,7 +1141,7 @@ Core.Agent.Dashboard = (function (TargetNS) {
                     // get all options of current column filter
                     $(this).children().each(function() {
                         if ($(this).attr('value') && $(this).attr('selected')) {
-                            LinkPage = LinkPage + ColumnFilterName + '=' + $(this).attr('value') + ';';
+                            LinkPage = LinkPage + ColumnFilterName + '=' + encodeURIComponent($(this).attr('value')) + ';';
                         }
                     });
                 }

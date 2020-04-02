@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -59,8 +59,9 @@ sub Run {
                 Identifier => 'ServerEncoding',
                 Label      => Translatable('Server Database Charset'),
                 Value      => $Row[1],
-                Message =>
-                    "This character set is not yet supported, please see https://bugs.otrs.org/show_bug.cgi?id=12361. Please convert your database to the character set 'utf8'.",
+                Message    => Translatable(
+                    "This character set is not yet supported, please see https://bugs.otrs.org/show_bug.cgi?id=12361. Please convert your database to the character set 'utf8'."
+                ),
             );
         }
         elsif ( $Row[1] =~ /utf8/i ) {

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -712,6 +712,9 @@ sub _MaskPasswords {
     #         Params => {
     #             UserPw => 'xxx',
     $StringToMask =~ s/((?:Password|Pw)\d*\s*=>\s*)\'.*?\'/$1\'xxx\'/mg;
+
+    # Obfuscate user login data to avoid showing it.
+    $StringToMask =~ s{://\w+:\w+@}{://[user]:[password]@}smxg;
 
     return $StringToMask;
 

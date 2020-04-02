@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -125,6 +125,12 @@ my $EmailAttachment = $MainObject->FileRead(
     Result => 'ARRAY',
 );
 
+# Read email content that contains inline image.
+my $EmailInlineImage = $MainObject->FileRead(
+    Location => $ConfigObject->Get('Home') . '/scripts/test/sample/PostMaster/InlineImage.box',
+    Result   => 'ARRAY',
+);
+
 # Workaround due used email have not a From value
 unshift @{$EmailAttachment}, 'From: Sender <sender@example.com>';
 
@@ -193,6 +199,34 @@ my @Tests = (
             DynamicField_TicketFreeText2 => 'AtLeastOneAttachment',
         },
         Email => $EmailAttachment,
+    },
+    {
+        Name  => '#3 - With Inline Images',
+        Match => [
+            {
+                Key   => 'X-OTRS-AttachmentExists',
+                Value => 'yes',
+            },
+            {
+                Key   => 'X-OTRS-AttachmentCount',
+                Value => 1,
+            }
+        ],
+        Set => [
+            {
+                Key   => 'X-OTRS-DynamicField-TicketFreeText1',
+                Value => 'This should not be set',
+            },
+            {
+                Key   => 'X-OTRS-DynamicField-TicketFreeText2',
+                Value => 'This should not be set',
+            },
+        ],
+        Check => {
+            DynamicField_TicketFreeText1 => undef,
+            DynamicField_TicketFreeText2 => undef,
+        },
+        Email => $EmailInlineImage,
     },
 );
 

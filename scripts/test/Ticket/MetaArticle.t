@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -380,6 +380,18 @@ $Self->Is(
     $SenderImage,
     '//www.gravatar.com/avatar/' . md5_hex( lc $Email ) . '?s=80&d=' . $DefaultImage,
     'Avatar link is generated successfully'
+);
+
+# Test case for bug#14953 when in email there are utf-8 chars.
+$Email       = 'нештотест@example.com';
+$SenderImage = $Kernel::OM->Get('Kernel::Output::HTML::TicketZoom::Agent::Base')->_ArticleSenderImage(
+    Sender => "Some Agent <$Email>",
+);
+$Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput( \$Email );
+$Self->Is(
+    $SenderImage,
+    '//www.gravatar.com/avatar/' . md5_hex( lc $Email ) . '?s=80&d=' . $DefaultImage,
+    'Avatar link is generated successfully with utf-8 chars.'
 );
 
 # cleanup is done by RestoreDatabase.

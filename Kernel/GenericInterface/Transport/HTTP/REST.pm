@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -218,7 +218,9 @@ sub ProviderProcessRequest {
     my $Length = $ENV{'CONTENT_LENGTH'};
 
     # No length provided, return the information we have.
-    if ( !$Length ) {
+    # Also return for 'GET' method because it does not allow sending an entity-body in requests.
+    # For more information, see https://bugs.otrs.org/show_bug.cgi?id=14203.
+    if ( !$Length || $RequestMethod eq 'GET' ) {
         return {
             Success   => 1,
             Operation => $Operation,

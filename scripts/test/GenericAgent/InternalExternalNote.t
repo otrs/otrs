@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -27,15 +27,13 @@ my $RandomID = $HelperObject->GetRandomID();
 
 # Create a ticket to test JobRun.
 my $TicketID = $TicketObject->TicketCreate(
-    Title        => 'Testticket for Untittest of the Generic Agent',
-    Queue        => 'Raw',
-    Lock         => 'lock',
-    PriorityID   => 1,
-    StateID      => 1,
-    CustomerNo   => '123465',
-    CustomerUser => 'customerUnitTest@example.com',
-    OwnerID      => 1,
-    UserID       => 1,
+    Title      => 'Testticket for Untittest of the Generic Agent',
+    Queue      => 'Raw',
+    Lock       => 'lock',
+    PriorityID => 1,
+    StateID    => 1,
+    OwnerID    => 1,
+    UserID     => 1,
 );
 
 # Create test article.

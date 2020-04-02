@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -123,6 +123,7 @@ one or more ticket entries in one call.
                     Changed            => '2010-10-27 20:15:15',
                     ChangeBy           => 123,
                     ArchiveFlag        => 'y',
+                    TimeUnit           => 123,
 
                     # If DynamicFields => 1 was passed, you'll get an entry like this for each dynamic field:
                     DynamicField => [
@@ -195,6 +196,7 @@ one or more ticket entries in one call.
                             Charset
                             MimeType
                             IncomingTime
+                            TimeUnit
 
                             # If DynamicFields => 1 was passed, you'll get an entry like this for each dynamic field:
                             DynamicField => [

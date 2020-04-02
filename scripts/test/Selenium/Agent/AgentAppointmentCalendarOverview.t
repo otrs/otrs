@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -11,6 +11,12 @@ use warnings;
 use utf8;
 
 use vars (qw($Self));
+
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        DisableAsyncCalls => 1,
+    },
+);
 
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
@@ -73,11 +79,6 @@ my $ElementExists = sub {
 
 $Selenium->RunTest(
     sub {
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                DisableAsyncCalls => 1,
-            },
-        );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         my $GroupObject    = $Kernel::OM->Get('Kernel::System::Group');
@@ -403,7 +404,7 @@ $Selenium->RunTest(
         );
 
         # Hide the first calendar from view.
-        $Selenium->find_element( 'Calendar' . $Calendar1{CalendarID}, 'id' )->click();
+        $Selenium->execute_script("\$('#Calendar$Calendar1{CalendarID}').click();");
         $Selenium->WaitFor(
             JavaScript => 'return typeof($) === "function" && $("#Calendar'
                 . $Calendar1{CalendarID}
@@ -475,7 +476,7 @@ $Selenium->RunTest(
         );
 
         # Hide the second calendar from view.
-        $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->click();
+        $Selenium->execute_script("\$('#Calendar$Calendar2{CalendarID}').click();");
         $Selenium->WaitFor(
             JavaScript => 'return typeof($) === "function" && $("#Calendar'
                 . $Calendar2{CalendarID}

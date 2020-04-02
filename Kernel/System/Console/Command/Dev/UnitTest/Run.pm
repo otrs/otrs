@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -43,6 +43,13 @@ sub Configure {
         Description => "Show details for all tests, not just failing.",
         Required    => 0,
         HasValue    => 0,
+    );
+    $Self->AddOption(
+        Name        => 'data-diff-type',
+        Description => "Choose which diff type to use for the data diff (table or unified).",
+        Required    => 0,
+        HasValue    => 1,
+        ValueRegex  => qr/^(table|unified)$/ismx,
     );
     $Self->AddOption(
         Name        => 'submit-url',
@@ -146,6 +153,7 @@ sub Run {
         SubmitAuth             => $Self->GetOption('submit-auth'),
         SubmitResultAsExitCode => $Self->GetOption('submit-result-as-exit-code') || '',
         Verbose                => $Self->GetOption('verbose'),
+        DataDiffType           => $Self->GetOption('data-diff-type'),
         AttachmentPath         => $Self->GetOption('attachment-path'),
         PostTestScripts        => $Self->GetOption('post-test-script'),
         PreSubmitScripts       => $Self->GetOption('pre-submit-script'),

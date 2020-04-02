@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -258,8 +258,9 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => "return !\$('.Dialog.Modal').length;" );
 
         # Check Restrictions configuration dialog.
-        $Selenium->find_element( ".EditRestrictions", 'css' )->click();
+        $Selenium->find_element("//span[contains(.,\'Filter\')]")->click();
         $Selenium->WaitFor( JavaScript => "return \$('.Dialog.Modal').length;" );
+        $Selenium->WaitFor( JavaScript => "return \$('#EditDialog select').length;" );
 
         $Selenium->InputFieldValueSet(
             Element => '#EditDialog select',

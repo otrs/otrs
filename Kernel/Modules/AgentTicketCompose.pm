@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -200,12 +200,18 @@ sub Run {
         $GetParam{$_} = $ParamObject->GetParam( Param => $_ );
     }
 
+    # Make sure sender is correct one. See bug#14872 ( https://bugs.otrs.org/show_bug.cgi?id=14872 ).
+    $GetParam{From} = $Kernel::OM->Get('Kernel::System::TemplateGenerator')->Sender(
+        QueueID => $Ticket{QueueID},
+        UserID  => $Self->{UserID},
+    );
+
     # hash for check duplicated entries
     my %AddressesList;
 
     my @MultipleCustomer;
     my $CustomersNumber = $ParamObject->GetParam( Param => 'CustomerTicketCounterToCustomer' ) || 0;
-    my $Selected = $ParamObject->GetParam( Param => 'CustomerSelected' ) || '';
+    my $Selected        = $ParamObject->GetParam( Param => 'CustomerSelected' )                || '';
 
     # get check item object
     my $CheckItemObject = $Kernel::OM->Get('Kernel::System::CheckItem');
@@ -868,12 +874,6 @@ sub Run {
                 );
         }
 
-        # Make sure sender is correct one. See bug#14872 ( https://bugs.otrs.org/show_bug.cgi?id=14872 ).
-        $GetParam{From} = $Kernel::OM->Get('Kernel::System::TemplateGenerator')->Sender(
-            QueueID => $Ticket{QueueID},
-            UserID  => $Self->{UserID},
-        );
-
         if ( $Self->{LoadedFormDraftID} ) {
 
             # Make sure we don't save form if a draft was loaded.
@@ -1000,9 +1000,11 @@ sub Run {
             $IsVisibleForCustomer = $GetParam{IsVisibleForCustomer} ? 1 : 0;
         }
 
-        my $From = $Kernel::OM->Get('Kernel::System::TemplateGenerator')->Sender(
-            QueueID => $Ticket{QueueID},
-            UserID  => $Self->{UserID},
+        # Get attributes like sender address
+        my %Data = $Kernel::OM->Get('Kernel::System::TemplateGenerator')->Attributes(
+            TicketID => $Self->{TicketID},
+            Data     => {},
+            UserID   => $Self->{UserID},
         );
 
         # send email
@@ -1012,7 +1014,7 @@ sub Run {
             TicketID             => $Self->{TicketID},
             HistoryType          => 'SendAnswer',
             HistoryComment       => "\%\%$Recipients",
-            From                 => $From,
+            From                 => $Data{From},
             To                   => $GetParam{To},
             Cc                   => $GetParam{Cc},
             Bcc                  => $GetParam{Bcc},

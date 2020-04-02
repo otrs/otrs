@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -770,7 +770,7 @@ sub Run {
         }
 
         # Set article filter with value if it exists.
-        elsif (
+        if (
             $EventTypeFilterSessionString
             && $EventTypeFilterSessionString =~ m{ EventTypeFilter < ( [^<>]+ ) > }xms
             )
@@ -2121,7 +2121,7 @@ sub _ArticleTree {
 
         # build article filter reset link only if filter is set
         if (
-            ( !$Self->{ZoomTimeline}   && IsHashRefWithData( $Self->{ArticleFilter} ) )
+            ( !$Self->{ZoomTimeline} && IsHashRefWithData( $Self->{ArticleFilter} ) )
             || ( $Self->{ZoomTimeline} && $Self->{EventTypeFilter} )
             )
         {

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -819,6 +819,10 @@ sub Login {
     # if not in PreLogin mode, show normal login form
     else {
 
+        my $DisableLoginAutocomplete = $ConfigObject->Get('DisableLoginAutocomplete');
+        $Param{UserNameAutocomplete} = $DisableLoginAutocomplete ? 'off' : 'username';
+        $Param{PasswordAutocomplete} = $DisableLoginAutocomplete ? 'off' : 'current-password';
+
         $Self->Block(
             Name => 'LoginBox',
             Data => \%Param,
@@ -1488,6 +1492,7 @@ sub Header {
         # generate avatar
         if ( $ConfigObject->Get('Frontend::AvatarEngine') eq 'Gravatar' && $Self->{UserEmail} ) {
             my $DefaultIcon = $ConfigObject->Get('Frontend::Gravatar::DefaultImage') || 'mp';
+            $Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput( \$Self->{UserEmail} );
             $Param{Avatar}
                 = '//www.gravatar.com/avatar/' . md5_hex( lc $Self->{UserEmail} ) . '?s=100&d=' . $DefaultIcon;
         }
@@ -2691,10 +2696,10 @@ sub PageNavBar {
     my $Limit = $Param{Limit} || 0;
     $Param{AllHits}  = 0 if ( !$Param{AllHits} );
     $Param{StartHit} = 0 if ( !$Param{AllHits} );
-    my $Pages = int( ( $Param{AllHits} / $Param{PageShown} ) + 0.99999 );
-    my $Page  = int( ( $Param{StartHit} / $Param{PageShown} ) + 0.99999 );
+    my $Pages      = int( ( $Param{AllHits} / $Param{PageShown} ) + 0.99999 );
+    my $Page       = int( ( $Param{StartHit} / $Param{PageShown} ) + 0.99999 );
     my $WindowSize = $Param{WindowSize} || 5;
-    my $IDPrefix   = $Param{IDPrefix}   || 'Generic';
+    my $IDPrefix   = $Param{IDPrefix} || 'Generic';
 
     # build Results (1-5 or 16-30)
     if ( $Param{AllHits} >= ( $Param{StartHit} + $Param{PageShown} ) ) {
@@ -3144,7 +3149,14 @@ sub NavigationBar {
             Name => 'ItemAreaSub',
             Data => $Item,
         );
-        for my $Key ( sort keys %{$Sub} ) {
+
+        # Sort Admin sub modules (favorites) correctly. See bug#13103 for more details.
+        my @Subs = sort keys %{$Sub};
+        if ( $Item->{NameForID} eq 'Admin' ) {
+            @Subs = sort { $a <=> $b } keys %{$Sub};
+        }
+
+        for my $Key (@Subs) {
             my $ItemSub = $Sub->{$Key};
             $ItemSub->{NameForID} = $ItemSub->{Name};
             $ItemSub->{NameForID} =~ s/[ &;]//ig;
@@ -3951,6 +3963,10 @@ sub CustomerLogin {
     # if not in PreLogin mode, show normal login form
     else {
 
+        my $DisableLoginAutocomplete = $ConfigObject->Get('DisableLoginAutocomplete');
+        $Param{UserNameAutocomplete} = $DisableLoginAutocomplete ? 'off' : 'username';
+        $Param{PasswordAutocomplete} = $DisableLoginAutocomplete ? 'off' : 'current-password';
+
         $Self->Block(
             Name => 'LoginBox',
             Data => \%Param,
@@ -4566,7 +4582,7 @@ sub CustomerNavigationBar {
             if (
                 !$SelectedFlag
                 && $NavBarModule{$Item}->{Link} =~ /Action=$Self->{Action}/
-                && $NavBarModule{$Item}->{Link} =~ /$Self->{Subaction}/    # Subaction can be empty
+                && $NavBarModule{$Item}->{Link} =~ /$Self->{Subaction}/       # Subaction can be empty
                 )
             {
                 $NavBarModule{$Item}->{Class} .= ' Selected';
@@ -6108,7 +6124,7 @@ sub SetRichTextParameters {
     if ( $RichTextType eq 'CodeMirror' ) {
         @Toolbar = @ToolbarWithoutImage = [
             [ 'autoFormat', 'CommentSelectedRange', 'UncommentSelectedRange', 'AutoComplete' ],
-            [ 'Find', 'Replace', '-', 'SelectAll' ],
+            [ 'Find',       'Replace',              '-',                      'SelectAll' ],
             ['Maximize'],
         ];
     }

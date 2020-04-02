@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -460,5 +460,33 @@ for my $Test (@Tests) {
         'CreditCardClean - String',
     );
 }
+
+# disable dns lookups
+$ConfigObject->Set(
+    Key   => 'CheckMXRecord',
+    Value => 1,
+);
+
+my $Result = $CheckItemObject->CheckEmail( Address => 'some..body@example.com' );
+
+# Execute unit test.
+$Self->False(
+    $Result,
+    "CheckEmail() - 'some..body\@example.com'",
+);
+
+$Self->Is(
+    $CheckItemObject->CheckError(),
+    'invalid some..body@example.com (Invalid syntax)! ',
+    "CheckError() - 'some..body\@example.com'",
+);
+
+$Result = $CheckItemObject->CheckEmail( Address => 'somebody123456789@otrs.com' );
+
+# Execute unit test.
+$Self->True(
+    $Result,
+    "CheckEmail() - 'somebody123456789\@otrs.com'",
+);
 
 1;

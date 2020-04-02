@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -502,6 +502,19 @@ sub _Replace {
             }
 
             $Replacement = $TranslatedString;
+        }
+
+        # process description tag
+        elsif (
+            $Attribute eq 'Description'
+            && $Self->{RichText}
+            && $Appointment{$Attribute}
+            )
+        {
+            my $HTMLUtilsObject = $Kernel::OM->Get('Kernel::System::HTMLUtils');
+            $Replacement = $HTMLUtilsObject->ToHTML(
+                String => $Appointment{$Attribute},
+            );
         }
 
         # process all other single values

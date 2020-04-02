@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -24,7 +24,7 @@ sub Data {
     $Self->{DateFormatShort}     = '%D/%M/%Y';
     $Self->{DateInputFormat}     = '%D/%M/%Y';
     $Self->{DateInputFormatLong} = '%D/%M/%Y - %T';
-    $Self->{Completeness}        = 0.58796532381438;
+    $Self->{Completeness}        = 0.586698337292161;
 
     # csv separator
     $Self->{Separator}         = ',';
@@ -674,6 +674,8 @@ sub Data {
         'Owner' => 'เจ้าของ',
         'Responsible' => 'การตอบสนอง',
         'Ticket lock' => 'ตั๋วล็อค',
+        'Dynamic fields' => 'ไดมานิคฟิลด์',
+        'Add dynamic field' => '',
         'Create times' => 'เวลาที่สร้าง',
         'No create time settings.' => 'ไม่มีการตั้งค่าเวลาที่สร้าง',
         'Ticket created' => 'ตั๋วที่สร้างขึ้น',
@@ -687,6 +689,10 @@ sub Data {
         'No change time settings.' => 'ไม่มีการตั้งค่าเวลาการเปลี่ยนแปลง',
         'Ticket changed' => 'ตั๋วถูกเปลี่ยนแปลง',
         'Ticket changed between' => 'ตั๋วถูกเปลี่ยนแปลงระหว่าง',
+        'Last close times' => '',
+        'No last close time settings.' => '',
+        'Ticket last close' => '',
+        'Ticket last close between' => '',
         'Close times' => 'เวลาที่ปิด',
         'No close time settings.' => 'ไม่มีการตั้งค่าเวลาที่ปิด',
         'Ticket closed' => 'ตั๋วถูกปิด',
@@ -724,7 +730,6 @@ sub Data {
         'New customer ID' => 'ไอดีลูกค้าใหม่',
         'New title' => 'หัวข้อใหม่',
         'New type' => 'ประเภทใหม่',
-        'New Dynamic Field Values' => 'ค่าไดนามิกฟิลด์ใหม่ ',
         'Archive selected tickets' => 'การเก็บถาวรของตั๋วที่ถูกเลือก',
         'Add Note' => 'เพิ่มโน้ต',
         'Visible for customer' => '',
@@ -2161,6 +2166,14 @@ sub Data {
         'Do you really want to delete this template?' => 'คุณต้องการที่จะลบแม่แบบนี้หรือไม่?',
         'A standard template with this name already exists!' => 'แม่แบบมาตรฐานที่ใช้ชื่อนี้มีอยู่แล้ว!',
         'Template' => 'แม่แบบ',
+        'To get the first 20 characters of the subject of the current/latest agent article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 5 lines of the body of the current/latest agent article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 20 characters of the subject of the current/latest article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 5 lines of the body of the current/latest article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
         'Create type templates only supports this smart tags' => 'สร้างประเภทแม่แบบซึ่งสนับสนุนเฉพาะสมาร์ทแท็กนี้',
         'Example template' => 'ตัวอย่างแม่แบบ',
         'The current ticket state is' => 'สถานะตั๋วปัจจุบัน',
@@ -2927,7 +2940,6 @@ sub Data {
         # Template: DashboardEventsTicketCalendar
         'Event Information' => 'ข้อมูลกิจกรรม',
         'Ticket fields' => 'ช่องข้อมูลตั๋ว',
-        'Dynamic fields' => 'ไดมานิคฟิลด์',
 
         # Template: Error
         'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of OTRS.' =>
@@ -5501,6 +5513,7 @@ sub Data {
         'Deleting the field and its data. This may take a while...' => 'การลบฟิลด์และข้อมูล อาจจะใช้เวลาสักครู่ ...',
 
         # JS File: Core.Agent.Admin.GenericAgent
+        'Remove this dynamic field' => '',
         'Remove selection' => 'ลบการคัดเลือก',
         'Do you really want to delete this generic agent job?' => '',
         'Delete this Event Trigger' => 'ลบกระตุ้นกิจกรรมนี้',
@@ -6185,6 +6198,8 @@ Thanks for your help!
         'Checks for queued outgoing emails to be sent.' => '',
         'Checks if an E-Mail is a followup to an existing ticket by searching the subject for a valid ticket number.' =>
             'ตรวจสอบ หากอีเมลนั้นๆคือการติดตามตั๋วที่มีอยู่โดยการค้นหาหัวข้อสำหรับจำนวนตั๋วที่ถูกต้อง',
+        'Checks if an email is a follow-up to an existing ticket with external ticket number which can be found by ExternalTicketNumberRecognition filter module.' =>
+            '',
         'Checks the SystemID in ticket number detection for follow-ups. If not enabled, SystemID will be changed after using the system.' =>
             '',
         'Checks the availability of OTRS Business Solution™ for this system.' =>
@@ -7143,6 +7158,7 @@ Thanks for your help!
             '',
         'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow OTRS to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
             'ปิดการใช้งานส่วนหัวของ HTTP "X-Frame-Options: SAMEORIGIN" เพื่อช่วยให้ OTRS ถูกรวมเป็น IFrame ในเว็บไซต์อื่น ๆ ปิดการใช้งานส่วนหัวของ HTTP นี้อาจจะเกิดปัญหาด้านความปลอดภัย! ปิดการใช้งานเมื่อคุณรู้ว่าสิ่งที่คุณกำลังทำคืออะไรเท่านั้น!',
+        'Disable autocomplete in the login screen.' => '',
         'Disable cloud services' => '',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be enabled).' =>
             '',
@@ -8809,6 +8825,7 @@ Thanks for your help!
         '%s KB',
         '%s MB',
         '%s TB',
+        '+%s more',
         'A key with this name (\'%s\') already exists.',
         'A package upgrade was recently finished. Click here to see the results.',
         'A popup of this screen is already open. Do you want to close it and load this one instead?',
@@ -9037,6 +9054,7 @@ Thanks for your help!
         'Remove selection',
         'Remove the Transition from this Process',
         'Remove the filter',
+        'Remove this dynamic field',
         'Remove this entry',
         'Repeat',
         'Request Details',

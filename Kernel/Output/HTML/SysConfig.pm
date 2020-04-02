@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -254,6 +254,7 @@ sub SettingAddItem {
 
         my $Index = 0;
 
+        STRUCTURE:
         for my $StructureItem (@SettingStructure) {
             if ( $StructureItem eq 'Hash' ) {
                 my $HashKey = $Structure[$Index];
@@ -344,7 +345,12 @@ sub SettingAddItem {
             }
         }
         else {
-            $DefaultItem = $DefaultItem->{Hash}->[0]->{DefaultItem}->[0];
+            if ( $DefaultItem->{Hash} && $DefaultItem->{Hash}->[0]->{Item} ) {
+                ($DefaultItem) = grep { $_->{Key} eq $Param{Key} } @{ $DefaultItem->{Hash}->[0]->{Item} };
+            }
+            elsif ( $DefaultItem->{Hash}->[0]->{DefaultItem}->[0] ) {
+                $DefaultItem = $DefaultItem->{Hash}->[0]->{DefaultItem}->[0];
+            }
 
             if ( !$DefaultItem ) {
                 $DefaultItem = {

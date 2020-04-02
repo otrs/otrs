@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -117,6 +117,7 @@ sub Run {
                 Data         => \%QueueList,
                 SelectedID   => $GetParam{QueueID},
                 TreeView     => $TreeView,
+                Translation  => 0,
                 PossibleNone => 1,
             },
         );
@@ -942,7 +943,7 @@ sub Run {
                         TicketID             => $TicketID,
                         SenderType           => 'agent',
                         IsVisibleForCustomer => $GetParam{IsVisibleForCustomer},
-                        From                 => "$Self->{UserFullname} <$Self->{UserEmail}>",
+                        From                 => "\"$Self->{UserFullname}\" <$Self->{UserEmail}>",
                         Subject              => $GetParam{'Subject'},
                         Body                 => $GetParam{'Body'},
                         MimeType             => $MimeType,

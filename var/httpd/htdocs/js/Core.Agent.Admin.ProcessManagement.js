@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+// Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -1571,6 +1571,8 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
 
             Form.submit();
         });
+
+        InitProcessPopups();
 
         // Init handling of closing popup with the OS functionality ("X")
         $(window).off("beforeunload.PMPopup").on("beforeunload.PMPopup", function () {

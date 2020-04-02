@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -12,6 +12,8 @@ use strict;
 use warnings;
 
 use parent qw(Kernel::System::Console::BaseCommand);
+
+use Time::HiRes qw(usleep);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -50,7 +52,6 @@ sub Run {
     my $InvalidBeforeDTObject = $Kernel::OM->Create('Kernel::System::DateTime');
     $InvalidBeforeDTObject->Subtract( Seconds => 60 * 60 * 24 * 31 );
 
-    # get user object
     my $UserObject = $Kernel::OM->Get('Kernel::System::User');
     my $MicroSleep = $Self->GetOption('micro-sleep');
 
@@ -147,7 +148,7 @@ sub _CleanupLocks {
     }
     $Self->Print(
         "  <green>Done</green> (unlocked <yellow>"
-            . @TicketIDs
+            . scalar(@TicketIDs)
             . "</yellow> and changed state of <yellow>$StateCount</yellow> tickets).\n"
     );
 
@@ -175,8 +176,9 @@ sub _CleanupFlags {
                 SELECT DISTINCT(ticket.id)
                 FROM ticket
                     INNER JOIN ticket_flag ON ticket.id = ticket_flag.ticket_id
-                WHERE ticket_flag.create_by = $User->{UserID}
+                WHERE ticket_flag.create_by = ?
                     AND ticket_flag.ticket_key = 'Seen'",
+            Bind  => [ \$User->{UserID} ],
             Limit => 1_000_000,
         );
 
@@ -194,7 +196,7 @@ sub _CleanupFlags {
                 Key      => 'Seen',
                 UserID   => $User->{UserID},
             );
-            $Count++ if $Delete;
+            $Count++                                  if $Delete;
             Time::HiRes::usleep( $Param{MicroSleep} ) if $Param{MicroSleep};
         }
 
@@ -209,8 +211,9 @@ sub _CleanupFlags {
                 FROM article
                     INNER JOIN ticket ON ticket.id = article.ticket_id
                     INNER JOIN article_flag ON article.id = article_flag.article_id
-                WHERE article_flag.create_by = $User->{UserID}
+                WHERE article_flag.create_by = ?
                     AND article_flag.article_key = 'Seen'",
+            Bind  => [ \$User->{UserID} ],
             Limit => 1_000_000,
         );
 
@@ -231,7 +234,7 @@ sub _CleanupFlags {
                 Key       => 'Seen',
                 UserID    => $User->{UserID},
             );
-            $Count++ if $Delete;
+            $Count++                                  if $Delete;
             Time::HiRes::usleep( $Param{MicroSleep} ) if $Param{MicroSleep};
         }
 
@@ -246,27 +249,29 @@ sub _CleanupFlags {
             );
 
             return if !$DBObject->Prepare(
-                SQL => "
-                    SELECT DISTINCT(ticket.id)
-                    FROM ticket
-                        INNER JOIN ticket_watcher ON ticket.id = ticket_watcher.ticket_id",
+                SQL => '
+                    SELECT t.id
+                    FROM ticket t
+                        INNER JOIN ticket_watcher tw ON t.id = tw.ticket_id
+                    WHERE tw.user_id = ?',
+                Bind  => [ \$User->{UserID} ],
                 Limit => 1_000_000,
             );
 
-            @TicketIDs = ();
+            my @WatchTicketIDs;
             while ( my @Row = $DBObject->FetchrowArray() ) {
-                push @TicketIDs, $Row[0];
+                push @WatchTicketIDs, $Row[0];
             }
 
             my $Count = 0;
-            for my $TicketID (@TicketIDs) {
+            for my $TicketID (@WatchTicketIDs) {
 
                 my $Unsubscribe = $TicketObject->TicketWatchUnsubscribe(
                     TicketID    => $TicketID,
                     WatchUserID => $User->{UserID},
                     UserID      => 1,
                 );
-                $Count++ if $Unsubscribe;
+                $Count++                                  if $Unsubscribe;
                 Time::HiRes::usleep( $Param{MicroSleep} ) if $Param{MicroSleep};
             }
 

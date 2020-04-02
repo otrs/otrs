@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -122,7 +122,7 @@ sub FieldValueValidate {
 
     # Check if value parameter exists in possible values config.
     if ( length $Param{Value} ) {
-        return if !$Param{DynamicFieldConfig}->{Config}->{PossibleValues}->{ $Param{Value} };
+        return if !defined $Param{DynamicFieldConfig}->{Config}->{PossibleValues}->{ $Param{Value} };
     }
 
     return 1;

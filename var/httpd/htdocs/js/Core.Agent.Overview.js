@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+// Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -163,7 +163,8 @@ Core.Agent.Overview = (function (TargetNS) {
                 URL += encodeURIComponent(Key) + '=' + encodeURIComponent(Value) + ';';
             });
             ColumnFilter = $(this)[0].name;
-            NewColumnFilterStrg = $(this)[0].name + '=' + $(this).val() + ';';
+            NewColumnFilterStrg = $(this)[0].name + '=' + encodeURIComponent($(this).val()) + ';';
+
             MyRegEx = new  RegExp(ColumnFilter+"=[^;]*;");
 
             // check for already set parameter and replace

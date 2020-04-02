@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -43,6 +43,11 @@ $Selenium->RunTest(
                 TN           => $TicketObject->TicketCreateNumber(),
                 CustomerUser => $Helper->GetRandomID() . '@third.com',
                 CustomerID   => 'CustomerCompany' . $Helper->GetRandomID() . '(#)',
+            },
+            {
+                TN           => $TicketObject->TicketCreateNumber(),
+                CustomerUser => $Helper->GetRandomID() . '@fourth.com',
+                CustomerID   => 'CustomerCompany#%' . $Helper->GetRandomID() . '(#)',
             },
         );
 
@@ -341,6 +346,37 @@ $Selenium->RunTest(
                     'return typeof($) === "function" && !$("#Dashboard0120-TicketNew-box.Loading").length'
             );
 
+            # Verify if CustomerID containing special characters is filtered correctly. See bug#14982.
+            $Selenium->find_element("//a[contains(\@title, \'Customer ID\' )]")->click();
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return typeof(\$) === 'function' && \$('.CustomerIDAutoComplete:visible').length;"
+            );
+
+            $Selenium->find_element( ".CustomerIDAutoComplete", 'css' )->send_keys( $Tickets[3]->{CustomerID} );
+
+            # Wait for AJAX to finish.
+            $Selenium->WaitFor(
+                JavaScript =>
+                    'return typeof($) === "function" && !$("span.AJAXLoader:visible").length'
+            );
+
+            # Choose the value.
+            $Selenium->execute_script(
+                "\$('#ColumnFilterCustomerID0120-TicketNew').val('$Tickets[3]->{CustomerID}').trigger('change');"
+            );
+
+            # Wait for autocomplete action.
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return typeof(\$) === 'function' && \$('td div[title=\"$Tickets[3]->{CustomerID}\"]').length == 1;"
+            );
+
+            # Verify CustomerID containing special characters is found.
+            $Self->True(
+                index( $Selenium->get_page_source(), $Tickets[3]->{TN} ) > -1,
+                "Test ticket with TN $Tickets[3]->{TN} - found on screen after filtering with customer - $Tickets[3]->{CustomerID}",
+            );
         }
 
         # Delete test tickets.

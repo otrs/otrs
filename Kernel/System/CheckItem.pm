@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -120,10 +120,9 @@ sub CheckEmail {
         $Self->{ErrorType} = 'InvalidSyntax';
     }
 
-    # email address syntax check
     # period (".") may not be used to end the local part,
     # nor may two or more consecutive periods appear
-    if ( $Param{Address} =~ /(\.\.)|(\.@)/ ) {
+    elsif ( $Param{Address} =~ /(\.\.)|(\.@)/ ) {
         $Error = "Invalid syntax";
         $Self->{ErrorType} = 'InvalidSyntax';
     }

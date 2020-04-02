@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -125,7 +125,7 @@ sub new {
         $Map{$Key} = 'SCALAR';
     }
     for my $Type (
-        qw(TicketCreate TicketChange TicketClose TicketLastChange TicketPending TicketEscalation TicketEscalationResponse TicketEscalationUpdate TicketEscalationSolution)
+        qw(TicketCreate TicketChange TicketClose TicketLastChange TicketLastClose TicketPending TicketEscalation TicketEscalationResponse TicketEscalationUpdate TicketEscalationSolution)
         )
     {
         for my $Attribute (
@@ -608,6 +608,7 @@ sub JobGet {
         TicketChange             => 'ChangeTime',
         TicketClose              => 'CloseTime',
         TicketLastChange         => 'LastChangeTime',
+        TicketLastClose          => 'LastCloseTime',
         TicketPending            => 'TimePending',
         TicketEscalation         => 'EscalationTime',
         TicketEscalationResponse => 'EscalationResponseTime',
@@ -616,7 +617,7 @@ sub JobGet {
     );
 
     for my $Type (
-        qw(TicketCreate TicketChange TicketClose TicketLastChange TicketPending TicketEscalation TicketEscalationResponse TicketEscalationUpdate TicketEscalationSolution)
+        qw(TicketCreate TicketChange TicketClose TicketLastChange TicketLastClose TicketPending TicketEscalation TicketEscalationResponse TicketEscalationUpdate TicketEscalationSolution)
         )
     {
         my $SearchType = $Map{$Type} . 'SearchType';
@@ -982,13 +983,14 @@ sub _JobRunTicket {
             DynamicFields => 0,
         );
 
-        my %CustomerUserData;
+        if ( IsHashRefWithData( \%Ticket ) ) {
 
-        # We can only do OTRS Tag replacement if we have a CustomerUserID (langauge settings...)
-        if ( IsHashRefWithData( \%Ticket ) && IsStringWithData( $Ticket{CustomerUserID} ) ) {
-            my %CustomerUserData = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
-                User => $Ticket{CustomerUserID},
-            );
+            my %CustomerUserData = {};
+            if ( IsStringWithData( $Ticket{CustomerUserID} ) ) {
+                %CustomerUserData = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
+                    User => $Ticket{CustomerUserID},
+                );
+            }
 
             my %Notification = (
                 Subject     => $Param{Config}->{New}->{NoteSubject},
@@ -998,7 +1000,7 @@ sub _JobRunTicket {
 
             my %GenericAgentArticle = $Kernel::OM->Get('Kernel::System::TemplateGenerator')->GenericAgentArticle(
                 TicketID     => $Param{TicketID},
-                Recipient    => \%CustomerUserData,    # Agent or Customer data get result
+                Recipient    => \%CustomerUserData,
                 Notification => \%Notification,
                 UserID       => $Param{UserID},
             );

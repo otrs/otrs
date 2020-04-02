@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -641,6 +641,90 @@ my @Tests = (
             {
                 '3th' => 'option-1',
                 '4th' => 'option-2',
+            },
+        ],
+    },
+    {
+        Name     => 'ExampleAoHTextarea',
+        Commands => [
+            {
+                Hover => '.Content',
+            },
+            {
+                JqueryClick => '.SettingEdit',
+            },
+            {
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
+            },
+            {
+                JqueryClick => '.Setting > .Array > .AddArrayItem',
+            },
+            {
+                Select => '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(1) input',
+            },
+            {
+                # Write key - all keys except 'Text' should be input.
+                Write => 'AnyKey',
+            },
+            {
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(1) .AddKey',
+            },
+            {
+                Select =>
+                    '.Setting > .Array > .ArrayItem:nth-of-type(3) .HashItem:nth-of-type(1) .SettingContent input',
+            },
+            {
+                # Value
+                Clear => 1,
+            },
+            {
+                # Value
+                Write => 'value',
+            },
+            {
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) > .RemoveButton',
+            },
+            {
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) .AddHashKey',
+            },
+            {
+                Select => '.Setting > .Array > .ArrayItem:nth-of-type(2) .HashItem:nth-of-type(2) input',
+            },
+            {
+                # Write key - Text key should be textarea.
+                Write => 'Text',
+            },
+            {
+                JqueryClick => '.Setting > .Array > .ArrayItem:nth-of-type(2) .HashItem:nth-of-type(2) .AddKey',
+            },
+            {
+                Select =>
+                    '.Setting > .Array > .ArrayItem:nth-of-type(2) .HashItem:nth-of-type(2) .SettingContent textarea',
+            },
+            {
+                # Value
+                Clear => 1,
+            },
+            {
+                # Value
+                Write => 'value for textarea',
+            },
+            {
+                JqueryClick => '.Update',
+            },
+            {
+                Select => 'input',
+            },
+        ],
+        ExpectedResult => [
+            {
+                'ID'    => '1',
+                'Text'  => 'Textarea content.',
+                'Title' => 'Title'
+            },
+            {
+                'AnyKey' => 'value',
+                'Text'   => 'value for textarea',
             },
         ],
     },

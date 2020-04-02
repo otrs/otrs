@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -217,9 +217,10 @@ sub StateGet {
 
     # no data found...
     if ( !%Data ) {
+        my $Error = $Param{Name} ? "State '$Param{Name}'" : "StateID '$Param{ID}'";
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "State '$Param{Name}' not found!",
+            Message  => $Error . " not found!",
         );
         return;
     }

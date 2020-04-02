@@ -24,7 +24,7 @@ sub Data {
     $Self->{DateFormatShort}     = '%M/%D/%Y';
     $Self->{DateInputFormat}     = '%M/%D/%Y';
     $Self->{DateInputFormatLong} = '%M/%D/%Y - %T';
-    $Self->{Completeness}        = 0.497025327214006;
+    $Self->{Completeness}        = 0.495928062436376;
 
     # csv separator
     $Self->{Separator}         = ',';
@@ -674,6 +674,8 @@ sub Data {
         'Owner' => 'Власник',
         'Responsible' => 'Відповідальний',
         'Ticket lock' => 'Блокування заявки',
+        'Dynamic fields' => 'Динамічні поля',
+        'Add dynamic field' => '',
         'Create times' => 'Часи створення',
         'No create time settings.' => ' Без обліку часу створення',
         'Ticket created' => 'Заявка створена',
@@ -687,6 +689,10 @@ sub Data {
         'No change time settings.' => 'Не змінювати параметри часу',
         'Ticket changed' => 'Заявка змінена',
         'Ticket changed between' => 'Заявка змінена в період',
+        'Last close times' => '',
+        'No last close time settings.' => '',
+        'Ticket last close' => '',
+        'Ticket last close between' => '',
         'Close times' => 'Часів закриття',
         'No close time settings.' => ' Без обліку часу закриття',
         'Ticket closed' => 'Заявка закрита',
@@ -724,7 +730,6 @@ sub Data {
         'New customer ID' => 'ID нового клієнта',
         'New title' => 'Новий заголовок',
         'New type' => 'Новий тип',
-        'New Dynamic Field Values' => 'Нові значення динамічного поля',
         'Archive selected tickets' => 'Заархівувати обрані заявки',
         'Add Note' => 'Додати замітку',
         'Visible for customer' => '',
@@ -2158,6 +2163,14 @@ sub Data {
         'Do you really want to delete this template?' => 'Ви дійсно бажаєте вилучити цей шаблон?',
         'A standard template with this name already exists!' => 'Стандартний шаблон з таким ім\'ям вже існує!',
         'Template' => 'Зразок',
+        'To get the first 20 characters of the subject of the current/latest agent article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 5 lines of the body of the current/latest agent article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 20 characters of the subject of the current/latest article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
+        'To get the first 5 lines of the body of the current/latest article (current for Answer and Forward, latest for Note template type). This tag is not supported for other template types.' =>
+            '',
         'Create type templates only supports this smart tags' => 'Створення типу шаблонів підтримує тільки ці смарт-теги',
         'Example template' => 'Приклад шаблону',
         'The current ticket state is' => 'Поточний стан заявки',
@@ -2924,7 +2937,6 @@ sub Data {
         # Template: DashboardEventsTicketCalendar
         'Event Information' => 'Інформація про подію',
         'Ticket fields' => 'Поля квитка',
-        'Dynamic fields' => 'Динамічні поля',
 
         # Template: Error
         'Really a bug? 5 out of 10 bug reports result from a wrong or incomplete installation of OTRS.' =>
@@ -5498,6 +5510,7 @@ sub Data {
         'Deleting the field and its data. This may take a while...' => 'Вилучення поля та його даних. Це може зайняти деякий час...',
 
         # JS File: Core.Agent.Admin.GenericAgent
+        'Remove this dynamic field' => '',
         'Remove selection' => 'Вилучити обране',
         'Do you really want to delete this generic agent job?' => '',
         'Delete this Event Trigger' => 'Вилучити цей тригер події',
@@ -6170,6 +6183,8 @@ Thanks for your help!
         'Checks for communication log entries to be deleted.' => '',
         'Checks for queued outgoing emails to be sent.' => '',
         'Checks if an E-Mail is a followup to an existing ticket by searching the subject for a valid ticket number.' =>
+            '',
+        'Checks if an email is a follow-up to an existing ticket with external ticket number which can be found by ExternalTicketNumberRecognition filter module.' =>
             '',
         'Checks the SystemID in ticket number detection for follow-ups. If not enabled, SystemID will be changed after using the system.' =>
             '',
@@ -7126,6 +7141,7 @@ Thanks for your help!
             '',
         'Disable HTTP header "X-Frame-Options: SAMEORIGIN" to allow OTRS to be included as an IFrame in other websites. Disabling this HTTP header can be a security issue! Only disable it, if you know what you are doing!' =>
             '',
+        'Disable autocomplete in the login screen.' => '',
         'Disable cloud services' => '',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be enabled).' =>
             '',
@@ -8792,6 +8808,7 @@ Thanks for your help!
         '%s KB',
         '%s MB',
         '%s TB',
+        '+%s more',
         'A key with this name (\'%s\') already exists.',
         'A package upgrade was recently finished. Click here to see the results.',
         'A popup of this screen is already open. Do you want to close it and load this one instead?',
@@ -9020,6 +9037,7 @@ Thanks for your help!
         'Remove selection',
         'Remove the Transition from this Process',
         'Remove the filter',
+        'Remove this dynamic field',
         'Remove this entry',
         'Repeat',
         'Request Details',

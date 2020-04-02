@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+// Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (GPL). If you
@@ -1415,7 +1415,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     Values.splice(-Count, 2);
                     $('<a />').attr('href', '#')
                         .addClass('DialogTooltipLink')
-                        .text('+' + (Count-2) + ' more')
+                        .text(Core.Language.Translate('+%s more', Count-2))
                         .off('click.AppointmentCalendar')
                         .on('click.AppointmentCalendar', function (Event) {
                             var $TooltipObj,

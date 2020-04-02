@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2019 OTRS AG, https://otrs.com/
+# Copyright (C) 2001-2020 OTRS AG, https://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (GPL). If you
@@ -133,7 +133,7 @@ my $TableStructureGet = sub {
                             WHEN p.contype = 'f' THEN p.conkey
                         END AS foreignkey_connnum,
                         CASE
-                            WHEN f.atthasdef = 't' THEN d.adsrc
+                            WHEN f.atthasdef = 't' THEN pg_get_expr(d.adbin, d.adrelid)
                         END AS default
                     FROM pg_attribute f
                         JOIN pg_class c ON c.oid = f.attrelid
