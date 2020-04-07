@@ -130,7 +130,7 @@ my @Tests = (
             UserID => $UserID,
             Ticket => \%Ticket,
             Config => {
-                CustomerID => 'test',
+                CustomerID => 'test' . $Helper->GetRandomNumber(),
             },
         },
         Success => 1,
@@ -152,7 +152,7 @@ my @Tests = (
             UserID => $UserID,
             Ticket => \%Ticket,
             Config => {
-                No => 'test',
+                No => 'test' . $Helper->GetRandomNumber(),
             },
         },
         Success => 1,

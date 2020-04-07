@@ -3090,11 +3090,27 @@ sub TicketCustomerSet {
     # db customer id update
     if ( defined $Param{No} ) {
 
-        my $Ok = $DBObject->Do(
-            SQL => 'UPDATE ticket SET customer_id = ?, '
-                . ' change_time = current_timestamp, change_by = ? WHERE id = ?',
-            Bind => [ \$Param{No}, \$Param{UserID}, \$Param{TicketID} ]
+        # Check that we are actualy have a different value
+        # than already stored
+        my $Success = $DBObject->Prepare(
+            SQL => 'SELECT customer_id FROM ticket'
+                . ' WHERE id = ?',
+            Bind => [ \$Param{TicketID} ]
         );
+
+        my ( $Ok, $Result );
+
+        ($Result) = $DBObject->FetchrowArray() if $Success;
+
+        if ( !$Result || ( $Result && ( $Result !~ /^$Param{No}$/ ) ) ) {
+
+            $Ok = $DBObject->Do(
+                SQL => 'UPDATE ticket SET customer_id = ?, '
+                    . ' change_time = current_timestamp, change_by = ? WHERE id = ?',
+                Bind => [ \$Param{No}, \$Param{UserID}, \$Param{TicketID} ]
+            );
+
+        }
 
         if ($Ok) {
             $Param{History} = "CustomerID=$Param{No};";
@@ -3104,24 +3120,41 @@ sub TicketCustomerSet {
     # db customer user update
     if ( defined $Param{User} ) {
 
-        my $Ok = $DBObject->Do(
-            SQL => 'UPDATE ticket SET customer_user_id = ?, '
-                . 'change_time = current_timestamp, change_by = ? WHERE id = ?',
-            Bind => [ \$Param{User}, \$Param{UserID}, \$Param{TicketID} ],
+        # Check that we are actualy have a different value
+        # than already stored
+        my $Success = $DBObject->Prepare(
+            SQL => 'SELECT customer_user_id FROM ticket'
+                . ' WHERE id = ?',
+            Bind => [ \$Param{TicketID} ]
         );
+
+        my ( $Ok, $Result );
+
+        $Result = $DBObject->FetchrowArray() if $Success;
+
+        if ( !$Result || ( $Result && ( $Result !~ /^$Param{User}$/ ) ) ) {
+
+            $Ok = $DBObject->Do(
+                SQL => 'UPDATE ticket SET customer_user_id = ?, '
+                    . 'change_time = current_timestamp, change_by = ? WHERE id = ?',
+                Bind => [ \$Param{User}, \$Param{UserID}, \$Param{TicketID} ],
+            );
+
+        }
 
         if ($Ok) {
             $Param{History} .= "CustomerUser=$Param{User};";
         }
     }
 
-    # clear ticket cache
-    $Self->_TicketCacheClear( TicketID => $Param{TicketID} );
-
     # if no change
     if ( !$Param{History} ) {
         return;
     }
+
+    # clear ticket cache only when something
+    # actualy changed
+    $Self->_TicketCacheClear( TicketID => $Param{TicketID} );
 
     # history insert
     $Self->HistoryAdd(
