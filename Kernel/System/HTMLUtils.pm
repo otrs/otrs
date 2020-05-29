@@ -874,7 +874,7 @@ sub LinkQuote {
             )?
             (?:                                    # link hash string
                 [\#]                               #
-                [a-zA-Z0-9&;=%\-_:\.\/]*           # hash string content, this will also catch entities like &amp;
+                [a-zA-Z0-9&;=%\-_:\.\/\?!]*        # hash string content, this will also catch entities like &amp;
             )?
         )
         (?=                                        # $4
