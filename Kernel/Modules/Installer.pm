@@ -508,6 +508,13 @@ sub Run {
                     "CREATE USER `$DB{OTRSDBUser}`\@`$Host` IDENTIFIED BY '$DB{OTRSDBPassword}'",
                     "GRANT ALL PRIVILEGES ON `$DB{DBName}`.* TO `$DB{OTRSDBUser}`\@`$Host` WITH GRANT OPTION",
                 );
+                 @Statements = (
+                     "CREATE DATABASE `$DB{DBName}` charset utf8",
+                     "GRANT ALL PRIVILEGES ON `$DB{DBName}`.* TO `$DB{OTRSDBUser}`\@`$DB{Host}` IDENTIFIED BY '$DB{OTRSDBPassword}' WITH GRANT OPTION",
+                     "FLUSH PRIVILEGES",
+                 );
+             }
+
             }
 
             # Set DSN for Config.pm.
