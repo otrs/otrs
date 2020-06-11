@@ -294,7 +294,7 @@ sub CustomerSearch {
 
 =head2 CustomerSearchDetail()
 
-To find customer user in the system.
+To find customer users in the system.
 
 The search criteria are logically AND connected.
 When a list is passed as criteria, the individual members are OR connected.
@@ -537,7 +537,7 @@ sub CustomerUserSearchFields {
             next ENTRY if $SearchFieldsExists{$SearchFieldName};
             next ENTRY if $SearchFieldName =~ m{(Password|Pw)\d*$}smxi;
 
-            # Remeber the already collected search field name.
+            # Remember the already collected search field name.
             $SearchFieldsExists{$SearchFieldName} = 1;
 
             my %FieldConfig = $Self->GetFieldConfig(
