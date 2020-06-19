@@ -552,7 +552,8 @@ sub LinkAdd {
             'Cache::LinkListRaw'
             . '::Direction' . $Direction
             . '::ObjectID' . $Param{ $Direction . 'ObjectID' }
-            . '::StateID' . $StateID;
+            . '::StateID' . $StateID
+            . '::Key' . $Param{ $Direction . 'Key' };
         $CacheObject->Delete(
             Type => $Self->{CacheType},
             Key  => $CacheKey,
@@ -836,7 +837,8 @@ sub LinkDelete {
                     'Cache::LinkListRaw'
                     . '::Direction' . $Direction
                     . '::ObjectID' . $Param{ 'Object' . $DirectionNumber . 'ID' }
-                    . '::StateID' . $StateID;
+                    . '::StateID' . $StateID
+                    . '::Key' . $Param{ 'Key' . $DirectionNumber };
                 $CacheObject->Delete(
                     Type => $Self->{CacheType},
                     Key  => $CacheKey,
@@ -2398,7 +2400,8 @@ sub _LinkListRaw {
         'Cache::LinkListRaw'
         . '::Direction' . $Param{Direction}
         . '::ObjectID' . $Param{ObjectID}
-        . '::StateID' . $Param{StateID};
+        . '::StateID' . $Param{StateID}
+        . '::Key' . $Param{Key};
     my $CachedLinks = $Kernel::OM->Get('Kernel::System::Cache')->Get(
         Type => $Self->{CacheType},
         Key  => $CacheKey,
@@ -2412,7 +2415,7 @@ sub _LinkListRaw {
 
         # prepare SQL statement
         my $TypeSQL = '';
-        my @Bind    = ( \$Param{ObjectID}, \$Param{StateID} );
+        my @Bind    = ( \$Param{ObjectID}, \$Param{Key}, \$Param{StateID} );
 
         # get fields based on type
         my $SQL;
@@ -2420,17 +2423,19 @@ sub _LinkListRaw {
             $SQL =
                 'SELECT target_object_id, target_key, type_id, source_key'
                 . ' FROM link_relation'
-                . ' WHERE source_object_id = ?';
+                . ' WHERE source_object_id = ?'
+                . ' AND source_key = ?';
         }
         else {
             $SQL =
                 'SELECT source_object_id, source_key, type_id, target_key'
                 . ' FROM link_relation'
-                . ' WHERE target_object_id = ?';
+                . ' WHERE target_object_id = ?'
+                . ' AND target_key = ?';
         }
         $SQL .= ' AND state_id = ?' . $TypeSQL;
 
-        # get all links for object/state/type (for better caching)
+        # get all links for object/state/type/key
         my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
         return if !$DBObject->Prepare(
             SQL  => $SQL,
@@ -2462,7 +2467,6 @@ sub _LinkListRaw {
     my %List;
     LINK:
     for my $Link (@Links) {
-        next LINK if $Link->{RequestKey} ne $Param{Key};
         next LINK if $Param{TypeID} && $Link->{TypeID} ne $Param{TypeID};
         $List{ $Link->{ObjectID} }->{ $Link->{TypeID} }->{ $Link->{ResponseKey} } = 1;
     }
