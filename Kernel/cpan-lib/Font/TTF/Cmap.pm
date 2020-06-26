@@ -65,8 +65,8 @@ The following cmap options are controlled by instance variables that start with 
 
 By default, when generating format 4 cmap subtables character codes that point to glyph zero
 (normally called .notdef) are not included in the subtable. In some cases including some of these
-character codes can result in a smaller format 4 subtable. To enable this behavior, set allowholes 
-to non-zero. 
+character codes can result in a smaller format 4 subtable. To enable this behavior, set allowholes
+to non-zero.
 
 =back
 
@@ -128,7 +128,7 @@ sub read
         } elsif ($form == 6)
         {
             my ($start, $ecount);
-            
+
             $fh->read($dat, 8);
             ($len, $s->{'Ver'}, $start, $ecount) = unpack('n4', $dat);
             $fh->read($dat, $ecount << 1);
@@ -288,10 +288,10 @@ sub ms_enc
 {
     my ($self) = @_;
     my ($s);
-    
-    return $self->{' mstable'}{'Encoding'} 
+
+    return $self->{' mstable'}{'Encoding'}
         if (defined $self->{' mstable'} && $self->{' mstable'}{'Platform'} == 3);
-    
+
     foreach $s (@{$self->{'Tables'}})
     {
         return $s->{'Encoding'} if ($s->{'Platform'} == 3);
@@ -338,7 +338,7 @@ sub out
         { $fh->print(pack("n3", $s->{'Format'}, 0, $s->{'Ver'})); }       # come back for length
         else
         { $fh->print(pack("n2N2", $s->{'Format'}, 0, 0, $s->{'Ver'})); }
-            
+
         if ($s->{'Format'} == 0)
         {
             $fh->print(pack("C256", map {defined $_ ? $_ : 0} @{$s->{'val'}}{0 .. 255}));
@@ -398,7 +398,7 @@ sub out
                         next unless $subHeader_->[4];
                         $d = $subHeader_->[5];
                         if ($subHeader->[5] =~ /\Q$d\E/) {
-                            my $o = length($`)/6;               #`
+                            my $o = $-[0]/6;
                             $subHeader_->[2] +=
                                 $subHeader_->[4]->[$o] - $subHeader->[4]->[0];
                             $subHeader_->[3] = $subHeader->[3] + $o;
@@ -437,9 +437,9 @@ sub out
             # Instead, for now *remove* 0xFFFF from the USV list, and add a segement
             # for it after all the other segments are computed.
             pop @keys if $keys[-1] == 0xFFFF;
-            
+
             # Step 1: divide into maximal length idDelta runs
-            
+
             my ($prevUSV, $prevgid);
             for ($j = 0; $j <= $#keys; $j++)
             {
@@ -455,20 +455,20 @@ sub out
                 $prevgid = $g;
             }
             push @ends, $prevUSV;
-            
+
             # Step 2: find each macro-range
-            
+
             my ($start, $end);  # Start and end of macro-range
             for ($start = 0; $start < $#starts; $start++)
             {
                 next if $ends[$start] - $starts[$start]  >  7;      # if count > 8, we always treat this as a run unto itself
                 for ($end = $start+1; $end <= $#starts; $end++)
                 {
-                    last if $starts[$end] - $ends[$end-1] > ($self->{' allowholes'} ? 5 : 1) 
+                    last if $starts[$end] - $ends[$end-1] > ($self->{' allowholes'} ? 5 : 1)
                         || $ends[$end] - $starts[$end] > 7;   # gap > 4 or count > 8 so $end is beyond end of macro-range
                 }
                 $end--; #Ending index of this macro-range
-                
+
                 # Step 3: optimize this macro-range (from $start through $end)
                 L1: for ($j = $start; $j < $end; )
                 {
@@ -490,7 +490,7 @@ sub out
                     # Nothing coalesced
                     $j++;
                 }
-                
+
                 # Finished with this macro-range
                 $start = $end;
             }
@@ -500,9 +500,9 @@ sub out
             push @starts, 0xFFFF;
             push @ends, 0xFFFF;
             push @range, 0;
-            
+
             # What is left is a collection of segments that will represent the cmap in mimimum-sized format 4 subtable
-            
+
             my ($num, $count, $sRange, $eSel, $eShift);
 
             $num = scalar(@starts);
@@ -537,7 +537,7 @@ sub out
         } elsif ($s->{'Format'} == 8 || $s->{'Format'} == 12 || $s->{'Format'} == 13)
         {
             my (@jobs, $start, $current, $curr_glyf, $map);
-            
+
             $current = 0; $curr_glyf = 0;
             $map = "\000" x 8192;
             foreach $j (@keys)
@@ -636,7 +636,7 @@ sub update
 {
     my ($self) = @_;
     my ($max, $code, $gid, @keep);
-    
+
     return undef unless ($self->SUPER::update);
 
     foreach my $s (@{$self->{'Tables'}})
@@ -657,11 +657,11 @@ sub update
         }
         push @keep, $s unless $s->{'Platform'} == 3 && $s->{'Encoding'} == 10 && $s->{'Format'} == 12 && $max <= 0xFFFF;
     }
-    
-    $self->{'Tables'} = [ @keep ];  
-    
+
+    $self->{'Tables'} = [ @keep ];
+
     delete $self->{' mstable'};     # Force rediscovery of this.
-    
+
     $self;
 }
 
@@ -730,14 +730,14 @@ Format 14 (Unicode Variation Sequences) cmaps are not supported.
 
 =head1 AUTHOR
 
-Martin Hosken L<http://scripts.sil.org/FontUtils>. 
+Martin Hosken L<http://scripts.sil.org/FontUtils>.
 
 
 =head1 LICENSING
 
-Copyright (c) 1998-2016, SIL International (http://www.sil.org) 
+Copyright (c) 1998-2016, SIL International (http://www.sil.org)
 
-This module is released under the terms of the Artistic License 2.0. 
+This module is released under the terms of the Artistic License 2.0.
 For details, see the full text of the license in the file LICENSE.
 
 
